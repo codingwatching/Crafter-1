@@ -6,7 +6,7 @@
 
 ---
 
-## Be sure to install the clientside mod for this game mode: [Download here](https://github.com/oilboi/crafter_client)
+## Be sure to install the clientside mod for this game mode: [Download here](https://github.com/jordan4ibanez/crafter_client)
 
 
 
@@ -29,7 +29,7 @@ max_packets_per_iteration = 10096
 
 # ALPHA STATE CHANGELOG
 
-> [Old Version Changelogs](https://github.com/oilboi/Crafter/blob/master/old_changelog.md)
+> [Old Version Changelogs](https://github.com/jordan4ibanez/Crafter/blob/master/old_changelog.md)
 
 ## Alpha 0.07
 > RailRoad Tech
