@@ -110,11 +110,8 @@ local function calc_fall_damage(player,hp_change)
 end
 
 local pool = {}
-local name
 local new_vel
 local old_vel
-local damage_calc
-local pos
 minetest.register_globalstep(function(dtime)
     for _,player in ipairs(minetest.get_connected_players()) do
         name = player:get_player_name()
