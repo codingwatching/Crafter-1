@@ -1,6 +1,5 @@
 local register_on_joinplayer = minetest.register_on_joinplayer
 
-
 local function addVersionInfo(player)
 
     -- This adds the version info to the hud to emulate how MC used to show it
