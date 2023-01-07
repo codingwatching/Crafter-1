@@ -1,7 +1,16 @@
-local
-minetest,math,pairs,ipairs,table,vec_new
-=
-minetest,math,pairs,ipairs,table,vector.new
+local pairs = pairs
+local ipairs = ipairs
+local vec_new = vector.new
+local table_insert = table.insert
+local find_nodes   = minetest.find_nodes_in_area
+local get_item_group = minetest.get_item_group
+local sound_play = minetest.sound_play
+local add_particlespawner = minetest.add_particlespawner
+local get_node_or_nil = minetest.get_node_or_nil
+local get_connected_players = minetest.get_connected_players
+local math_random = math.random
+local math_abs = math.abs
+local math_ceil = math.ceil
 
 local pos
 local name
@@ -29,11 +38,11 @@ local cancel_fall_damage = function(player)
         pos.y+0.85,
         pos.z+0.25
     )
-    _,saving_nodes = minetest.find_nodes_in_area( a_min,  a_max, {"group:disable_fall_damage"})
+    _,saving_nodes = find_nodes( a_min,  a_max, { "group:disable_fall_damage" } )
     real_nodes = {}
     for node_data,_ in pairs(saving_nodes) do
         if saving_nodes[node_data] > 0 then
-            table.insert(real_nodes,node_data)
+            table_insert(real_nodes,node_data)
         end
     end
 
@@ -52,9 +61,9 @@ local function calc_fall_damage(player,hp_change)
         if name ~= "" then
             local absorption = 0
 
-            absorption = minetest.get_item_group(name,"armor_level")*2
+            absorption = get_item_group(name,"armor_level")*2
             --print("absorbtion:",absorption)
-            local wear_level = ((9-minetest.get_item_group(name,"armor_level"))*8)*(5-minetest.get_item_group(name,"armor_type"))*math.abs(hp_change)
+            local wear_level = ((9-get_item_group(name,"armor_level"))*8)*(5-get_item_group(name,"armor_type"))*math_abs(hp_change)
             
             stack:add_wear(wear_level)
             
@@ -63,13 +72,13 @@ local function calc_fall_damage(player,hp_change)
             local new_stack = inv:get_stack("armor_feet",1):get_name()
 
             if new_stack == "" then                    
-                minetest.sound_play("armor_break",{to_player=player:get_player_name(),gain=1,pitch=math.random(80,100)/100})
+                sound_play("armor_break",{to_player=player:get_player_name(),gain=1,pitch=math_random(80,100)/100})
                 recalculate_armor(player)
                 set_armor_gui(player)
                 --do particles too
-            elseif minetest.get_item_group(new_stack,"boots") > 0 then 
+            elseif get_item_group(new_stack,"boots") > 0 then
                 local pos = player:get_pos()
-                minetest.add_particlespawner({
+                add_particlespawner({
                     amount = 30,
                     time = 0.00001,
                     minpos = {x=pos.x-0.5, y=pos.y+0.1, z=pos.z-0.5},
@@ -89,7 +98,7 @@ local function calc_fall_damage(player,hp_change)
                     node = {name= name.."particletexture"},
                     --texture = "eat_particles_1.png"
                 })
-                minetest.sound_play("armor_fall_damage", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math.random(80,100)/100})    
+                sound_play("armor_fall_damage", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math_random(80,100)/100})
             end
 
             hp_change = hp_change + absorption
@@ -98,11 +107,11 @@ local function calc_fall_damage(player,hp_change)
                 hp_change = 0
             else
                 player:set_hp(player:get_hp()+hp_change,{reason="correction"})
-                minetest.sound_play("hurt", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math.random(80,100)/100})
+                sound_play("hurt", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math_random(80,100)/100})
             end
         else
             player:set_hp(player:get_hp()+hp_change,{reason="correction"})
-            minetest.sound_play("hurt", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math.random(80,100)/100})
+            sound_play("hurt", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math_random(80,100)/100})
         end
     end
 end
@@ -113,7 +122,7 @@ local old_vel
 
 minetest.register_globalstep(function()
 
-    for _,player in ipairs(minetest.get_connected_players()) do
+    for _,player in ipairs( get_connected_players() ) do
 
         name = player:get_player_name()
 
@@ -130,9 +139,9 @@ minetest.register_globalstep(function()
 
         pos.y = pos.y - 1
 
-        if not minetest.get_node_or_nil(pos) then goto continue end
+        if not get_node_or_nil(pos) then goto continue end
 
-        calc_fall_damage(player,math.ceil(old_vel+14))
+        calc_fall_damage( player, math_ceil( old_vel + 14 ) )
 
         ::continue::
 
