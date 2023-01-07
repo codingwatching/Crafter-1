@@ -36,11 +36,9 @@ local cancel_fall_damage = function(player)
             table.insert(real_nodes,node_data)
         end
     end
+    
     -- find the highest damage node
-    if #real_nodes > 0 then
-        return(true)
-    end
-    return(false)
+    return #real_nodes > 0
 end
 
 
