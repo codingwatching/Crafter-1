@@ -112,21 +112,32 @@ end
 local pool = {}
 local new_vel
 local old_vel
-minetest.register_globalstep(function(dtime)
+
+minetest.register_globalstep(function()
+
     for _,player in ipairs(minetest.get_connected_players()) do
+
         name = player:get_player_name()
+
         old_vel = pool[name]
-        if old_vel then
-            new_vel = player:get_velocity().y
-            if old_vel < -15 and new_vel >= -0.5 then
-                --don't do fall damage on unloaded areas
-                pos = player:get_pos()
-                pos.y = pos.y - 1
-                if minetest.get_node_or_nil(pos) then
-                    calc_fall_damage(player,math.ceil(old_vel+14))
-                end
-            end
-        end
+
+        if not old_vel then goto continue end
+
+        new_vel = player:get_velocity().y
+
+        if not (old_vel < -15 and new_vel >= -0.5) then goto continue end
+
+        --don't do fall damage on unloaded areas
+        pos = player:get_pos()
+
+        pos.y = pos.y - 1
+
+        if not minetest.get_node_or_nil(pos) then goto continue end
+
+        calc_fall_damage(player,math.ceil(old_vel+14))
+
+        ::continue::
+
         pool[name] = player:get_velocity().y
     end
 end)
