@@ -1,7 +1,7 @@
-local 
-minetest,math,pairs,ipairs,table
+local
+minetest,math,pairs,ipairs,table,vec_new
 =
-minetest,math,pairs,ipairs,table
+minetest,math,pairs,ipairs,table,vector.new
 
 local pos
 local name
@@ -12,19 +12,19 @@ local a_max
 local _
 local cancel_fall_damage = function(player)
     name = player:get_player_name()
-    if player:get_hp() <= 0 then
-        return
-    end
+
+    if player:get_hp() <= 0 then return end
+
     -- used for finding a damage node from the center of the player
     -- rudementary collision detection
     pos = player:get_pos()
     pos.y = pos.y
-    a_min = vector.new(
+    a_min = vec_new(
         pos.x-0.25,
         pos.y-0.85,
         pos.z-0.25
     )
-    a_max = vector.new(
+    a_max = vec_new(
         pos.x+0.25,
         pos.y+0.85,
         pos.z+0.25
@@ -36,7 +36,7 @@ local cancel_fall_damage = function(player)
             table.insert(real_nodes,node_data)
         end
     end
-    
+
     -- find the highest damage node
     return #real_nodes > 0
 end
@@ -74,8 +74,8 @@ local function calc_fall_damage(player,hp_change)
                     time = 0.00001,
                     minpos = {x=pos.x-0.5, y=pos.y+0.1, z=pos.z-0.5},
                     maxpos = {x=pos.x+0.5, y=pos.y+0.1, z=pos.z+0.5},
-                    minvel = vector.new(-0.5,1,-0.5),
-                    maxvel = vector.new(0.5 ,2 ,0.5),
+                    minvel = vec_new(-0.5,1,-0.5),
+                    maxvel = vec_new(0.5 ,2 ,0.5),
                     minacc = {x=0, y=-9.81, z=1},
                     maxacc = {x=0, y=-9.81, z=1},
                     minexptime = 0.5,
