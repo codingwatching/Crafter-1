@@ -17,8 +17,8 @@ when cooking have fire and smoke on cooking item
 
 --furnace class
 minetest.register_craftitem("utility:nothing", {
-	description = "Nothing",
-	inventory_image = "wood.png",
+    description = "Nothing",
+    inventory_image = "wood.png",
 })
 
 local furnace = {}
@@ -29,23 +29,23 @@ local output_height = 1.85
 
 --furnace
 function furnace.get_hotbar_bg(x,y)
-	local out = ""
-	for i=0,7,1 do
-		out = out .."image["..x+i..","..y..";1,1;gui_furnace_arrow_bg.png]"
-	end
-	return(out)
+    local out = ""
+    for i=0,7,1 do
+        out = out .."image["..x+i..","..y..";1,1;gui_furnace_arrow_bg.png]"
+    end
+    return(out)
 end
 
 function furnace.get_inventory_drops(pos, inventory, drops)
-	local inv = minetest.get_meta(pos):get_inventory()
-	local n = #drops
-	for i = 1, inv:get_size(inventory) do
-		local stack = inv:get_stack(inventory, i)
-		if stack:get_count() > 0 then
-			drops[n+1] = stack:to_table()
-			n = n + 1
-		end
-	end
+    local inv = minetest.get_meta(pos):get_inventory()
+    local n = #drops
+    for i = 1, inv:get_size(inventory) do
+        local stack = inv:get_stack(inventory, i)
+        if stack:get_count() > 0 then
+            drops[n+1] = stack:to_table()
+            n = n + 1
+        end
+    end
 end
 --local aftercooked
 --cooked, aftercooked = minetest.get_craft_result({method = "cooking", width = 1, items = srclist})
@@ -55,74 +55,74 @@ end
 --
 
 local function furnace_setup(pos)
-	local obj = minetest.add_entity(vector.new(pos.x,pos.y+fuel_height,pos.z), "utility:fuel")
-	obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
-	local obj = minetest.add_entity(vector.new(pos.x,pos.y+cook_height,pos.z), "utility:cook")
-	obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
-	local obj = minetest.add_entity(vector.new(pos.x,pos.y+output_height,pos.z), "utility:output")
-	obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
+    local obj = minetest.add_entity(vector.new(pos.x,pos.y+fuel_height,pos.z), "utility:fuel")
+    obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
+    local obj = minetest.add_entity(vector.new(pos.x,pos.y+cook_height,pos.z), "utility:cook")
+    obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
+    local obj = minetest.add_entity(vector.new(pos.x,pos.y+output_height,pos.z), "utility:output")
+    obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
 end
 
 local function furnace_remove(pos)
-	for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+fuel_height,pos.z), 0.1)) do
-		if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:fuel" then
-			local pos = object:getpos()
-			local item = object:get_luaentity().itemstring
-			if item ~= "utility:nothing" then
-				local obj = minetest.add_item(pos,item)			    
-			end
-			object:remove()
-		end
-	end
-	for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+cook_height,pos.z), 0.1)) do
-		if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:cook" then
-			local pos = object:getpos()
-			local item = object:get_luaentity().itemstring
-			if item ~= "utility:nothing" then
-				local obj = minetest.add_item(pos,item)
-			end
-			object:remove()
-		end
-	end
-	for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+output_height,pos.z), 0.1)) do
-		if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:output" then
-			local pos = object:getpos()
-			local item = object:get_luaentity().itemstring
-			if item ~= "utility:nothing" then
-				local obj = minetest.add_item(pos,item)
-			end
-			object:remove()
-		end
-	end
+    for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+fuel_height,pos.z), 0.1)) do
+        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:fuel" then
+            local pos = object:getpos()
+            local item = object:get_luaentity().itemstring
+            if item ~= "utility:nothing" then
+                local obj = minetest.add_item(pos,item)                
+            end
+            object:remove()
+        end
+    end
+    for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+cook_height,pos.z), 0.1)) do
+        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:cook" then
+            local pos = object:getpos()
+            local item = object:get_luaentity().itemstring
+            if item ~= "utility:nothing" then
+                local obj = minetest.add_item(pos,item)
+            end
+            object:remove()
+        end
+    end
+    for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+output_height,pos.z), 0.1)) do
+        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:output" then
+            local pos = object:getpos()
+            local item = object:get_luaentity().itemstring
+            if item ~= "utility:nothing" then
+                local obj = minetest.add_item(pos,item)
+            end
+            object:remove()
+        end
+    end
 end
 
 minetest.register_node("utility:furnace", {
-	description = "Furnace",
-	tiles = {
-		"furnace_top.png", "furnace_bottom.png",
-		"furnace_side.png", "furnace_side.png",
-		"furnace_side.png", "furnace_front.png"
-	},
-	paramtype2 = "facedir",
-	groups = {stone=2},
-	legacy_facedir_simple = true,
-	is_ground_content = false,
-	sounds = main.stoneSound(),
-	on_construct = function(pos)
-		furnace_setup(pos)
-	end,
-	on_destruct = function(pos)
-		furnace_remove(pos)
-	end,
+    description = "Furnace",
+    tiles = {
+        "furnace_top.png", "furnace_bottom.png",
+        "furnace_side.png", "furnace_side.png",
+        "furnace_side.png", "furnace_front.png"
+    },
+    paramtype2 = "facedir",
+    groups = {stone=2},
+    legacy_facedir_simple = true,
+    is_ground_content = false,
+    sounds = main.stoneSound(),
+    on_construct = function(pos)
+        furnace_setup(pos)
+    end,
+    on_destruct = function(pos)
+        furnace_remove(pos)
+    end,
 })
 
 minetest.register_craft({
-	output = "utility:furnace",
-	recipe = {
-		{"main:stone", "main:stone", "main:stone"},
-		{"main:stone", "",	     "main:stone"},
-		{"main:stone", "main:stone", "main:stone"},
-	}
+    output = "utility:furnace",
+    recipe = {
+        {"main:stone", "main:stone", "main:stone"},
+        {"main:stone", "",         "main:stone"},
+        {"main:stone", "main:stone", "main:stone"},
+    }
 })
 
 --------------------------------------------------------------------------------------------------
@@ -139,27 +139,27 @@ space in between = 0.55
 
 --fuel entity
 minetest.register_entity("utility:fuel", {
-	initial_properties = {
-		hp_max = 1,
-		physical = true,
-		collide_with_objects = false,
-		collisionbox = {-0.3, -0.3, -0.3, 0.3, 0.3, 0.3},
-		visual = "wielditem",
-		visual_size = {x = 0.6, y = 0.6},
-		textures = {""},
-		spritediv = {x = 1, y = 1},
-		initial_sprite_basepos = {x = 0, y = 0},
-		is_visible = false,
-		pointable = true,
-	},
+    initial_properties = {
+        hp_max = 1,
+        physical = true,
+        collide_with_objects = false,
+        collisionbox = {-0.3, -0.3, -0.3, 0.3, 0.3, 0.3},
+        visual = "wielditem",
+        visual_size = {x = 0.6, y = 0.6},
+        textures = {""},
+        spritediv = {x = 1, y = 1},
+        initial_sprite_basepos = {x = 0, y = 0},
+        is_visible = false,
+        pointable = true,
+    },
 
-	itemstring = "",
-	count = 0,
-	cooking = false,
-	cook_timer = false,
-	fuel_timer = 0,
+    itemstring = "",
+    count = 0,
+    cooking = false,
+    cook_timer = false,
+    fuel_timer = 0,
 
-	set_item = function(self, item)
+    set_item = function(self, item)
 		local stack = ItemStack(item or self.itemstring)
 		self.itemstring = stack:to_string()
 		--if self.itemstring == "" then

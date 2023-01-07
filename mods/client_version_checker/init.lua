@@ -8,7 +8,7 @@ local current_development_cycle = "alpha"
 local current_version = 0.07000
 
 minetest.register_on_joinplayer(function(player)
-	local name = player:get_player_name()
+    local name = player:get_player_name()
     client_version_channels[name] = minetest.mod_channel_join(name..":client_version_channel")
 end)
 

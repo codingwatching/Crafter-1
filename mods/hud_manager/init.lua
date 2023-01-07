@@ -13,13 +13,13 @@ end)
 hud_manager.add_hud = function(player,hud_name,def)
     local name = player:get_player_name()
     local local_hud = player:hud_add({
-		hud_elem_type = def.hud_elem_type,
-		position      = def.position,
-		text          = def.text,
-		number        = def.number,
-		direction     = def.direction,
-		size          = def.size,
-		offset        = def.offset,
+        hud_elem_type = def.hud_elem_type,
+        position      = def.position,
+        text          = def.text,
+        number        = def.number,
+        direction     = def.direction,
+        size          = def.size,
+        offset        = def.offset,
     })
     -- create new 3d array here
     -- depends.txt is not needed

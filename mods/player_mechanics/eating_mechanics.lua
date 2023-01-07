@@ -25,9 +25,9 @@ local name
 local create_data = function(player)
     name = player:get_player_name()
     if not food_control_pool[name] then
-		food_control_pool[name] = {
-			eating_step  = 0,
-			eating_timer = 0,
+        food_control_pool[name] = {
+            eating_step  = 0,
+            eating_timer = 0,
         }
     end
 end
@@ -36,17 +36,17 @@ end
 -- removes movement data
 local name
 local terminate = function(player)
-	name = player:get_player_name()
-	if food_control_pool[name] then
-		food_control_pool[name] = nil
-	end
+    name = player:get_player_name()
+    if food_control_pool[name] then
+        food_control_pool[name] = nil
+    end
 end
 
 minetest.register_on_joinplayer(function(player)
-	create_data(player)
+    create_data(player)
 end)
 minetest.register_on_leaveplayer(function(player)
-	terminate(player)
+    terminate(player)
 end)
 
 -- manages player eating effects
@@ -155,7 +155,7 @@ end
 
 local player
 minetest.register_globalstep(function(dtime)
-	for _,player in ipairs(minetest.get_connected_players()) do
-		manage_eating(player,dtime)
-	end
+    for _,player in ipairs(minetest.get_connected_players()) do
+        manage_eating(player,dtime)
+    end
 end)

@@ -26,19 +26,19 @@ local axis
 local inner = 18
 local outer = 50
 local int = {-1,1}
-local position_calculation = function(pos)				
-	--this is used to determine the axis buffer from the player
-	axis = math.random(0,1)
+local position_calculation = function(pos)                
+    --this is used to determine the axis buffer from the player
+    axis = math.random(0,1)
 
-	--cast towards the direction
-	if axis == 0 then --x
-		pos.x = pos.x + math.random(inner,outer)*int[math.random(1,2)]
-		pos.z = pos.z + math.random(-outer,outer)
-	else --z
-		pos.z = pos.z + math.random(inner,outer)*int[math.random(1,2)]
-		pos.x = pos.x + math.random(-outer,outer)
-	end
-	return(pos)
+    --cast towards the direction
+    if axis == 0 then --x
+        pos.x = pos.x + math.random(inner,outer)*int[math.random(1,2)]
+        pos.z = pos.z + math.random(-outer,outer)
+    else --z
+        pos.z = pos.z + math.random(inner,outer)*int[math.random(1,2)]
+        pos.x = pos.x + math.random(-outer,outer)
+    end
+    return(pos)
 end
 
 
@@ -46,16 +46,16 @@ local object_list
 local entity
 local counter
 local get_mobs_in_radius = function(pos)
-	counter = 0
-	object_list = minetest.get_objects_inside_radius(pos, outer)
-	for _,object in ipairs(object_list) do
-		if not object:is_player() then
-			if object:get_luaentity().mobname then
-				counter = counter + 1
-			end
-		end
-	end
-	return(counter)
+    counter = 0
+    object_list = minetest.get_objects_inside_radius(pos, outer)
+    for _,object in ipairs(object_list) do
+        if not object:is_player() then
+            if object:get_luaentity().mobname then
+                counter = counter + 1
+            end
+        end
+    end
+    return(counter)
 end
 
 
@@ -66,86 +66,86 @@ local mob_spawning
 local light_level
 local mob_pos
 local function spawn_mobs(player)
-	pos = player:get_pos()
-	mobs = get_mobs_in_radius(pos)
-	if mobs > spawn_goal_per_player then
-		return
-	end
+    pos = player:get_pos()
+    mobs = get_mobs_in_radius(pos)
+    if mobs > spawn_goal_per_player then
+        return
+    end
 
-	for i = 1,math.random(2,5) do
-	
-	pos = position_calculation(pos)
+    for i = 1,math.random(2,5) do
+    
+    pos = position_calculation(pos)
 
-	spawner = {}
-	if pos.y >= 21000 then
-		spawner = minetest.find_nodes_in_area_under_air(vector.new(pos.x,pos.y-find_node_height,pos.z), vector.new(pos.x,pos.y+find_node_height,pos.z), {"aether:grass"})
-	elseif pos.y <= -10033 and pos.y >= -20112 then
-		spawner = minetest.find_nodes_in_area_under_air(vector.new(pos.x,pos.y-find_node_height,pos.z), vector.new(pos.x,pos.y+find_node_height,pos.z), {"nether:netherrack"})
-	else
-		spawner = minetest.find_nodes_in_area_under_air(vector.new(pos.x,pos.y-find_node_height,pos.z), vector.new(pos.x,pos.y+find_node_height,pos.z), {"main:grass","main:sand","main:water"})
-	end
-	
-	--print(dump(spawner))
-	if table.getn(spawner) > 0 then
-		mob_pos = spawner[math.random(1,table.getn(spawner))]
-		mob_pos.y = mob_pos.y + 1
-		--print("spawning", dump(mob_pos))
+    spawner = {}
+    if pos.y >= 21000 then
+        spawner = minetest.find_nodes_in_area_under_air(vector.new(pos.x,pos.y-find_node_height,pos.z), vector.new(pos.x,pos.y+find_node_height,pos.z), {"aether:grass"})
+    elseif pos.y <= -10033 and pos.y >= -20112 then
+        spawner = minetest.find_nodes_in_area_under_air(vector.new(pos.x,pos.y-find_node_height,pos.z), vector.new(pos.x,pos.y+find_node_height,pos.z), {"nether:netherrack"})
+    else
+        spawner = minetest.find_nodes_in_area_under_air(vector.new(pos.x,pos.y-find_node_height,pos.z), vector.new(pos.x,pos.y+find_node_height,pos.z), {"main:grass","main:sand","main:water"})
+    end
+    
+    --print(dump(spawner))
+    if table.getn(spawner) > 0 then
+        mob_pos = spawner[math.random(1,table.getn(spawner))]
+        mob_pos.y = mob_pos.y + 1
+        --print("spawning", dump(mob_pos))
 
-		--aether spawning
-		if mob_pos.y >= 21000 then
-			mob_spawning = aether_spawn_table[math.random(1,table.getn(aether_spawn_table))]
-			--print("Aether Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
-			minetest.add_entity(mob_pos,"mob:"..mob_spawning)
-		elseif mob_pos.y <= -10033 and mob_pos.y >= -20112 then
-			mob_spawning = nether_spawn_table[math.random(1,table.getn(nether_spawn_table))]
-			--print("Nether Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
-			minetest.add_entity(mob_pos,"mob:"..mob_spawning)
-		else
-			light_level = minetest.get_node_light(mob_pos)
+        --aether spawning
+        if mob_pos.y >= 21000 then
+            mob_spawning = aether_spawn_table[math.random(1,table.getn(aether_spawn_table))]
+            --print("Aether Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
+            minetest.add_entity(mob_pos,"mob:"..mob_spawning)
+        elseif mob_pos.y <= -10033 and mob_pos.y >= -20112 then
+            mob_spawning = nether_spawn_table[math.random(1,table.getn(nether_spawn_table))]
+            --print("Nether Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
+            minetest.add_entity(mob_pos,"mob:"..mob_spawning)
+        else
+            light_level = minetest.get_node_light(mob_pos)
 
-			if weather_type == 1 then
-				if light_level < 7 then
-					mob_spawning = snow_dark_spawn_table[math.random(1,table.getn(snow_dark_spawn_table))]
-					--print("Snow Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
-					minetest.add_entity(mob_pos,"mob:"..mob_spawning)
-				else
-					local mob_spawning = snow_light_spawn_table[math.random(1,table.getn(snow_light_spawn_table))]
-					--print("Snow Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
-					minetest.add_entity(mob_pos,"mob:"..mob_spawning)
-				end
-			else
-				if light_level < 7 then
-					mob_spawning = dark_spawn_table[math.random(1,table.getn(dark_spawn_table))]
-					--print("Dark Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
-					minetest.add_entity(mob_pos,"mob:"..mob_spawning)
-				else
-					mob_spawning = spawn_table[math.random(1,table.getn(spawn_table))]
-					--print("Light Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
-					minetest.add_entity(mob_pos,"mob:"..mob_spawning)
-				end
-			end
-		end
-	end
-	end
+            if weather_type == 1 then
+                if light_level < 7 then
+                    mob_spawning = snow_dark_spawn_table[math.random(1,table.getn(snow_dark_spawn_table))]
+                    --print("Snow Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
+                    minetest.add_entity(mob_pos,"mob:"..mob_spawning)
+                else
+                    local mob_spawning = snow_light_spawn_table[math.random(1,table.getn(snow_light_spawn_table))]
+                    --print("Snow Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
+                    minetest.add_entity(mob_pos,"mob:"..mob_spawning)
+                end
+            else
+                if light_level < 7 then
+                    mob_spawning = dark_spawn_table[math.random(1,table.getn(dark_spawn_table))]
+                    --print("Dark Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
+                    minetest.add_entity(mob_pos,"mob:"..mob_spawning)
+                else
+                    mob_spawning = spawn_table[math.random(1,table.getn(spawn_table))]
+                    --print("Light Spawning "..mob_spawning.." at: "..minetest.pos_to_string(mob_pos))
+                    minetest.add_entity(mob_pos,"mob:"..mob_spawning)
+                end
+            end
+        end
+    end
+    end
 end
 
 local function per_player_handling()
-	--check through players
-	for _,player in ipairs(minetest.get_connected_players()) do
-		spawn_mobs(player)
-	end
+    --check through players
+    for _,player in ipairs(minetest.get_connected_players()) do
+        spawn_mobs(player)
+    end
 
-	minetest.after(10, function()
-		per_player_handling()
-	end)
+    minetest.after(10, function()
+        per_player_handling()
+    end)
 end
 
 if spawn then
-	minetest.register_on_mods_loaded(function()
-		minetest.after(0,function()
-			per_player_handling()
-		end)
-	end)
+    minetest.register_on_mods_loaded(function()
+        minetest.after(0,function()
+            per_player_handling()
+        end)
+    end)
 end
 
 

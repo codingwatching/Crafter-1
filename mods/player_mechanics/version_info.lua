@@ -1,7 +1,7 @@
 local minetest = minetest
 minetest.register_on_joinplayer(function(player)
-	--add in version info
-	player:hud_add({
+    --add in version info
+    player:hud_add({
         hud_elem_type = "text",
         position = {x=1, y=0},
         name = "versionbg",

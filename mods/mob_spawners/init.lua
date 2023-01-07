@@ -10,8 +10,8 @@ function register_mob_spawner(mobname,texture,mesh)
     minetest.register_node(":mob_spawners:"..mobname,{
         description = mobname:gsub("^%l", string.upper).." Spawner",
         drawtype = "allfaces",
-		tiles = {"spawner.png"},
-		groups = {stone = 3, pathable = 1},
+        tiles = {"spawner.png"},
+        groups = {stone = 3, pathable = 1},
         sounds = main.stoneSound(),
         sunlight_propagates = true,
         paramtype = "light",
@@ -89,7 +89,7 @@ function register_mob_spawner(mobname,texture,mesh)
                     minetest.add_entity(newpos,"mob:"..mobname)
                 end
             end
-	    end,
+        end,
     })
 
     local spawner_entity = {}

@@ -33,7 +33,7 @@ end
 
 -- Fancy debug wrapper to download an URL
 local function fetch_url(url, callback)
-	http.fetch({
+    http.fetch({
         url = url,
         timeout = 3,
     }, function(result)
@@ -41,7 +41,7 @@ local function fetch_url(url, callback)
             if result.code == 404 then
                 return(nil)
             end
-			if result.code ~= 200 then
+            if result.code ~= 200 then
                 return(nil)
             end
             return callback(result.data)
@@ -49,7 +49,7 @@ local function fetch_url(url, callback)
             return(nil)
         end
         return(nil)
-	end)
+    end)
 end
 
 -- gets github raw data of skin
@@ -179,9 +179,9 @@ end
 
 local cape_object = {}
 cape_object.initial_properties = {
-	visual = "mesh",
-	mesh = "cape.x",
-	textures = {"cape_core.png"},
+    visual = "mesh",
+    mesh = "cape.x",
+    textures = {"cape_core.png"},
     pointable = false,
     collisionbox = {0, 0, 0, 0, 0, 0}
 }

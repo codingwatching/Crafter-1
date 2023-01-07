@@ -99,11 +99,11 @@ function set_armor_gui(player)
     if not player or (player and not player:is_player()) then return end
     level = calculate_armor_absorbtion(player)
     hud_manager.change_hud({
-		player    =  player ,
-		hud_name  = "armor_fg",
-		element   = "number",
-		data      =  level
-	})
+        player    =  player ,
+        hud_name  = "armor_fg",
+        element   = "number",
+        data      =  level
+    })
 end
 
 
@@ -179,22 +179,22 @@ end
 
 local inv
 minetest.register_on_joinplayer(function(player)
-	hud_manager.add_hud(player,"armor_bg",{
-		hud_elem_type = "statbar",
-		position = {x = 0.5, y = 1},
-		text = "armor_icon_bg.png",
-		number = 20,
-		size = {x = 24, y = 24},
-		offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
-	})
-	hud_manager.add_hud(player,"armor_fg",{
-		hud_elem_type = "statbar",
-		position = {x = 0.5, y = 1},
-		text = "armor_icon.png",
-		number = calculate_armor_absorbtion(player),
-		size = {x = 24, y = 24},
-		offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
-	})
+    hud_manager.add_hud(player,"armor_bg",{
+        hud_elem_type = "statbar",
+        position = {x = 0.5, y = 1},
+        text = "armor_icon_bg.png",
+        number = 20,
+        size = {x = 24, y = 24},
+        offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
+    })
+    hud_manager.add_hud(player,"armor_fg",{
+        hud_elem_type = "statbar",
+        position = {x = 0.5, y = 1},
+        text = "armor_icon.png",
+        number = calculate_armor_absorbtion(player),
+        size = {x = 24, y = 24},
+        offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
+    })
     
     inv = player:get_inventory()
     inv:set_size("armor_head" ,1)
