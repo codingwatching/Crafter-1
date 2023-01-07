@@ -1,13 +1,12 @@
-<img src="https://github.com/oilboi/Crafter/blob/master/menu/header.png">
+![](https://raw.githubusercontent.com/jordan4ibanez/Crafter/master/menu/header.png)
 
-> Designed for Minetest 5.3.0-DEV
+> Designed for Minetest 5.7.0-DEV
 
->Built using textures from <a href="https://forum.minetest.net/viewtopic.php?t=16407">Mineclone 2</a> 
+> Built using textures from [MineClone 2](https://forum.minetest.net/viewtopic.php?t=16407)
 
 ---
 
-## Be sure to install the clientside mod for this game mode: <a href="https://github.com/oilboi/crafter_client">Download here</a>
-
+## Be sure to install the clientside mod for this game mode: [Download here](https://github.com/oilboi/crafter_client)
 
 
 
@@ -30,7 +29,7 @@ max_packets_per_iteration = 10096
 
 # ALPHA STATE CHANGELOG
 
-> <a href="https://github.com/oilboi/Crafter/blob/master/old_changelog.md">Old Version Changelogs</a>
+> [Old Version Changelogs](https://github.com/oilboi/Crafter/blob/master/old_changelog.md)
 
 ## Alpha 0.07
 > RailRoad Tech
