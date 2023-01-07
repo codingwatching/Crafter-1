@@ -138,7 +138,7 @@ function minetest.item_drop(itemstack, dropper, pos)
 			dir.x = dir.x * 2.9
 			dir.y = dir.y * 2.9 + 2
 			dir.z = dir.z * 2.9
-			dir = vector.add(dir,dropper:get_player_velocity())
+			dir = vector.add(dir,dropper:get_velocity())
 			object:set_velocity(dir)
 			object:get_luaentity().dropped_by = dropper:get_player_name()
 			object:get_luaentity().collection_timer = 0
@@ -283,7 +283,7 @@ local item_step = function(self, dtime, moveresult)
 
 			--get the variables
 			pos2 = collector:get_pos()
-			player_velocity = collector:get_player_velocity()
+			player_velocity = collector:get_velocity()
 			pos2.y = pos2.y + 0.5
 							
 			distance = vector.distance(pos2,pos)

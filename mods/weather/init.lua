@@ -407,7 +407,7 @@ local snowball_throw = function(player)
 	minetest.sound_play("woosh",{pos=pos, exclude_player = player:get_player_name(), pitch = math.random(80,100)/100})
 	local snowball = minetest.add_entity(pos,"weather:snowball")
 	if snowball then
-		local vel = player:get_player_velocity()
+		local vel = player:get_velocity()
 		snowball:set_velocity(vector.add(vel,vector.multiply(player:get_look_dir(),20)))
 		snowball:get_luaentity().thrower = player:get_player_name()
 		return(true)

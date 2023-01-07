@@ -120,7 +120,7 @@ minetest.register_globalstep(function(dtime)
 		name = player:get_player_name()
 		old_vel = pool[name]
 		if old_vel then
-			new_vel = player:get_player_velocity().y
+			new_vel = player:get_velocity().y
 			if old_vel < -15 and new_vel >= -0.5 then
 				--don't do fall damage on unloaded areas
 				pos = player:get_pos()
@@ -130,7 +130,7 @@ minetest.register_globalstep(function(dtime)
 				end
 			end
 		end
-		pool[name] = player:get_player_velocity().y
+		pool[name] = player:get_velocity().y
 	end
 end)
 

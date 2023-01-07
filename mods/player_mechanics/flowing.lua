@@ -22,7 +22,7 @@ minetest.register_globalstep(function()
             --buffer continuation
             if pool[name] then
                 c_flow = pool[name]
-                vel = player:get_player_velocity()
+                vel = player:get_velocity()
                 acceleration = nil
                 if c_flow.x ~= 0 then
                     acceleration = vector.new(c_flow.x,0,0)
@@ -32,7 +32,7 @@ minetest.register_globalstep(function()
                 acceleration = vector.multiply(acceleration, 0.075)
                 player:add_player_velocity(acceleration)
 
-                newvel = player:get_player_velocity()
+                newvel = player:get_velocity()
 
                 if newvel.x ~= 0 or newvel.z ~= 0 then
                     return
@@ -41,7 +41,7 @@ minetest.register_globalstep(function()
                 end
             else
                 flow_dir = vector.multiply(flow_dir,10)
-                vel = player:get_player_velocity()
+                vel = player:get_velocity()
                 acceleration = nil
                 if flow_dir.x ~= 0 then
                     acceleration = vector.new(flow_dir.x,0,0)

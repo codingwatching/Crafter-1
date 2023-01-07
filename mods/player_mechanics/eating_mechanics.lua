@@ -56,7 +56,7 @@ local offset
 local temp_particle
 local manage_eating_effects = function(player,timer,sneaking,item)
     position    = player:get_pos()
-    velocity    = player:get_player_velocity()
+    velocity    = player:get_velocity()
 
     if sneaking then
         position.y  = position.y + 1.2

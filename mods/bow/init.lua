@@ -175,7 +175,7 @@ local function arrow_step(self, dtime,moveresult)
 
 				--get the variables
 				pos2 = owner:get_pos()
-				player_velocity = owner:get_player_velocity()
+				player_velocity = owner:get_velocity()
 				pos2.y = pos2.y + self.collection_height
 								
 				direction = normalize_vec(sub_vec(pos2,pos))

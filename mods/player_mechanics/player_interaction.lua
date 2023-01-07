@@ -241,7 +241,7 @@ minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, 
 		temp_pool = minetest.get_us_time()/1000000
 
 		if hitter:is_player() and hitter ~= player then
-			puncher_vel = hitter:get_player_velocity().y
+			puncher_vel = hitter:get_velocity().y
 			if puncher_vel < 0 then
 				hurt = hurt * 1.5
 				do_critical_particles(player:get_pos())
@@ -250,7 +250,7 @@ minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, 
 		end
 
 		dir = multiply_vec(dir,10)
-		vel = player:get_player_velocity()
+		vel = player:get_velocity()
 		dir.y = 0
 		if vel.y <= 0 then
 			dir.y = 7
@@ -279,7 +279,7 @@ end)
 
 local inv
 minetest.register_on_respawnplayer(function(player)
-	player:add_player_velocity(multiply_vec(player:get_player_velocity(),-1))
+	player:add_player_velocity(multiply_vec(player:get_velocity(),-1))
 	inv = player:get_inventory()
 	inv:set_list("main", {})
 	inv:set_list("craft", {})

@@ -320,7 +320,7 @@ local function xp_step(self, dtime)
 			pos = self.object:get_pos()
 			pos2 = collector:get_pos()
 			
-			player_velocity = collector:get_player_velocity()
+			player_velocity = collector:get_velocity()
 										
 			pos2.y = pos2.y + 0.8
 							

@@ -268,7 +268,7 @@ mobs.create_interaction_functions = function(def,mob_register)
 		--criticals
 		pos = self.object:get_pos()
 		if puncher:is_player() then
-			puncher_vel = puncher:get_player_velocity().y
+			puncher_vel = puncher:get_velocity().y
 			if puncher_vel < 0 then
 				hurt = hurt * 1.5
 				critical = true
