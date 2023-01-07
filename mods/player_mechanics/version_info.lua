@@ -1,5 +1,6 @@
-local minetest = minetest
-minetest.register_on_joinplayer(function(player)
+local register_on_joinplayer = minetest.register_on_joinplayer
+
+register_on_joinplayer(function(player)
     --add in version info
     player:hud_add({
         hud_elem_type = "text",
@@ -10,7 +11,7 @@ minetest.register_on_joinplayer(function(player)
         offset = {x = -98, y = 20},
         size = { x=2, y=2 },
         z_index = 0,
-    })                            
+    })
     player:hud_add({
         hud_elem_type = "text",
         position = {x=1, y=0},
@@ -20,5 +21,5 @@ minetest.register_on_joinplayer(function(player)
         offset = {x = -100, y = 18},
         size = { x=2, y=2 },
         z_index = 0,
-    }) 
+    })
 end)
