@@ -5,13 +5,13 @@ register_on_joinplayer(function(player)
     -- This adds the version info to the hud to emulate how MC used to show it
 
     player:hud_add({
+        name = "versionbg",
+        text = "Alpha 0.07b",
         hud_elem_type = "text",
         position = {
             x = 1,
             y = 0
         },
-        name = "versionbg",
-        text = "Alpha 0.07b",
         number = 0x000000,
         offset = {
             x = -98,
@@ -26,8 +26,8 @@ register_on_joinplayer(function(player)
     player:hud_add({
         hud_elem_type = "text",
         position = {
-            x=1,
-            y=0
+            x = 1,
+            y = 0
         },
         name = "versionfg",
         text = "Alpha 0.07b",
