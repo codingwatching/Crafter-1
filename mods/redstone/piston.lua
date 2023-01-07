@@ -60,13 +60,13 @@ local function push_objects(pos,dir)
 			if dir.y == 1 then
 				if compare.y <= 0.5 and compare.x < 0.8 and compare.z < 0.8 then
 					object:move_to(vector.add(dir,pos2))
-					object:add_player_velocity(vector.multiply(dir,20))
+					object:add_velocity(vector.multiply(dir,20))
 				end
 			--piston sideways
 			elseif dir.x ~=0 or dir.z ~= 0 then
 				if real_y <= 0.5 and real_y >= -1.6 and compare.x < 0.8 and compare.z < 0.8 then
 					object:move_to(vector.add(dir,pos2))
-					object:add_player_velocity(vector.multiply(dir,19))
+					object:add_velocity(vector.multiply(dir,19))
 				end
 			end
 		elseif not object:is_player() and object:get_luaentity().name == "__builtin:falling_node" then

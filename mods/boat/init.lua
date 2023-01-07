@@ -112,7 +112,7 @@ minetest.register_entity("boat:boat", {
 			local pos = self.object:get_pos()
 			pos.y = pos.y + 1
 			clicker:move_to(pos)
-			clicker:add_player_velocity(vector.new(0,11,0))
+			clicker:add_velocity(vector.new(0,11,0))
 			self.rider = nil
 			
 			player_is_attached(clicker,false)
@@ -182,7 +182,7 @@ minetest.register_entity("boat:boat", {
 				local acceleration = vector.new(vel.x-currentvel.x,0,vel.z-currentvel.z)
 				self.object:add_velocity(acceleration)
 				acceleration = vector.multiply(acceleration, -1)
-				object:add_player_velocity(acceleration)
+				object:add_velocity(acceleration)
 			end
 		end
 	end,
@@ -350,7 +350,7 @@ minetest.register_entity("boat:iron_boat", {
 			local pos = self.object:get_pos()
 			pos.y = pos.y + 1
 			clicker:move_to(pos)
-			clicker:add_player_velocity(vector.new(0,11,0))
+			clicker:add_velocity(vector.new(0,11,0))
 			self.rider = nil
 			
 			player_is_attached(clicker,false)
@@ -415,7 +415,7 @@ minetest.register_entity("boat:iron_boat", {
 				local acceleration = vector.new(vel.x-currentvel.x,0,vel.z-currentvel.z)
 				self.object:add_velocity(acceleration)
 				acceleration = vector.multiply(acceleration, -1)
-				object:add_player_velocity(acceleration)
+				object:add_velocity(acceleration)
 			end
 		end
 	end,

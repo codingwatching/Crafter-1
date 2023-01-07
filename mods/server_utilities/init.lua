@@ -44,7 +44,7 @@ minetest.register_chatcommand("home", {
 			local newpos = minetest.deserialize(mod_storage:get_string(name.."home"))
 			
 			if newpos then
-				player:add_player_velocity(vector.multiply(player:get_velocity(),-1))
+				player:add_velocity(vector.multiply(player:get_velocity(),-1))
 				player:move_to(newpos)
 				pool[name] = time
 			else

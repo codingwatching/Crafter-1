@@ -32,7 +32,7 @@ minetest.register_globalstep(function(dtime)
                 if name ~= "" and name == "jetpack:jetpack" then
                     --boost
                     if player:get_player_control().jump and player:get_velocity().y < 20 then
-                        player:add_player_velocity(vector.new(0,1,0))
+                        player:add_velocity(vector.new(0,1,0))
                         player:set_physics_override({gravity=1.25})
                     --hover
                     elseif player:get_player_control().sneak then
@@ -40,7 +40,7 @@ minetest.register_globalstep(function(dtime)
                         local goal = 0
 			            local acceleration = vector.new(0,goal-currentvel.y,0)
 			            acceleration = vector.multiply(acceleration, 0.05)
-                        player:add_player_velocity(acceleration)
+                        player:add_velocity(acceleration)
                         player:set_physics_override({gravity=0})
                     end
                     

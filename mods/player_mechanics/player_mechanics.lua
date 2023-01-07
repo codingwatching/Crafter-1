@@ -123,7 +123,7 @@ local control_state = function(player)
 		elseif swim_bump and minetest.get_us_time()/1000000-temp_pool.swim_bumped > 1 then
 			if player:get_velocity().y <= 0 then
 				temp_pool.swim_bumped = minetest.get_us_time()/1000000
-				player:add_player_velocity(vector.new(0,9,0))
+				player:add_velocity(vector.new(0,9,0))
 			end
 		end
 	end	

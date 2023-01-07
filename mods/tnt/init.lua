@@ -190,7 +190,7 @@ function tnt(pos,range,explosion_type)
 								damage_groups = {damage=math.floor(power)},
 								})
 						end
-						object:add_player_velocity(force)
+						object:add_velocity(force)
 					elseif object:get_luaentity() and (object:get_luaentity().name == "__builtin:item" or object:get_luaentity().name == "tnt:tnt" or object:get_luaentity().is_mob == true)  then
 						if object:get_luaentity().name == "tnt:tnt" then
 							object:get_luaentity().shot = true

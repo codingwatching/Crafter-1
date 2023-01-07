@@ -427,7 +427,7 @@ mobs.create_interaction_functions = function(def,mob_register)
 					self.object:add_velocity(vel1)
 					
 					if object:is_player() then
-						object:add_player_velocity(vel2)
+						object:add_velocity(vel2)
 						if self.on_fire then
 							start_fire(object)
 						end

@@ -271,7 +271,7 @@ minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, 
 			hurt = 0
 		end
 
-		player:add_player_velocity(dir)
+		player:add_velocity(dir)
 
 		player:set_hp(hp-hurt)
 	end
@@ -279,7 +279,7 @@ end)
 
 local inv
 minetest.register_on_respawnplayer(function(player)
-	player:add_player_velocity(multiply_vec(player:get_velocity(),-1))
+	player:add_velocity(multiply_vec(player:get_velocity(),-1))
 	inv = player:get_inventory()
 	inv:set_list("main", {})
 	inv:set_list("craft", {})

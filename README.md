@@ -256,7 +256,7 @@ if object:is_player() and object:get_player_name() ~= self.rider then
       end
       
       - acceleration = vector.multiply(acceleration, -1)
-      - object:add_player_velocity(acceleration)
+      - object:add_velocity(acceleration)
 end
 ```
 
