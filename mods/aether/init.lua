@@ -43,7 +43,12 @@ local function assemble_vec4d( x, y, z, axis, a, b, c )
     return initializing_vector
 end
 
--- Build Queue is build upon 7d vectors with the fourth axis being a boolean
+-- Build Queue is build upon 7d vectors with:
+--[[
+    x,y,z = new position
+    axis = x or z definition (boolean)
+    a,b,c = origin position
+]]
 local build_queue = {}
 
 
