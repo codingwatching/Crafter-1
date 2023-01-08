@@ -47,6 +47,7 @@ end
 local inv
 local stack
 local absorption
+local stack_name
 
 local function calc_fall_damage(player,hp_change)
 
@@ -55,13 +56,13 @@ local function calc_fall_damage(player,hp_change)
     else
         inv = player:get_inventory()
         stack = inv:get_stack("armor_feet", 1)
-        name = stack:get_name()
+        stack_name = stack:get_name()
 
-        if name ~= "" then
+        if stack_name ~= "" then
 
-            absorption = get_item_group( name, "armor_level" ) * 2
+            absorption = get_item_group( stack_name, "armor_level" ) * 2
             
-            local wear_level = ( ( 9 - get_item_group( name, "armor_level" ) ) * 8 ) * ( 5 - get_item_group( name, "armor_type" ) ) * math_abs( hp_change )
+            local wear_level = ( ( 9 - get_item_group( stack_name, "armor_level" ) ) * 8 ) * ( 5 - get_item_group( stack_name, "armor_type" ) ) * math_abs( hp_change )
             
             stack:add_wear( wear_level )
             
@@ -101,7 +102,7 @@ local function calc_fall_damage(player,hp_change)
                     collisiondetection = true,
                     collision_removal = true,
                     vertical = false,
-                    node = {name= name.."particletexture"},
+                    node = {name= stack_name.."particletexture"},
                     --texture = "eat_particles_1.png"
                 })
                 sound_play(
@@ -147,10 +148,11 @@ local function calc_fall_damage(player,hp_change)
 end
 
 local pool = {}
+local damage_memory = {}
 local new_vel
 local old_vel
 
-minetest.register_globalstep(function()
+minetest.register_globalstep(function(dtime)
 
     for _,player in ipairs( get_connected_players() ) do
 
@@ -158,15 +160,30 @@ minetest.register_globalstep(function()
 
         old_vel = pool[name]
 
-        if not old_vel then goto continue end
+
+        if not old_vel then
+            goto continue
+        end
 
         new_vel = player:get_velocity().y
 
-        print("vel: " .. new_vel .. " oldvel: " .. old_vel)
+        -- print("vel: " .. new_vel .. " oldvel: " .. old_vel)
+
+        if damage_memory[name] == nil then
+            damage_memory[name] = 0
+            print("memory was nil!")
+            goto continue
+        end
+
+        if damage_memory[name] > 0 then
+            damage_memory[name] = damage_memory[name] - dtime
+            print("counting down")
+            goto continue
+        end
 
         if not (old_vel < -15 and new_vel >= -0.5) then goto continue end
 
-        --don't do fall damage on unloaded areas
+        -- Don't do fall damage on unloaded areas
         pos = player:get_pos()
 
         pos.y = pos.y - 1
@@ -174,6 +191,11 @@ minetest.register_globalstep(function()
         if not get_node_or_nil(pos) then goto continue end
 
         calc_fall_damage( player, math_ceil( old_vel + 14 ) )
+
+        -- Reset the damage memory
+        damage_memory[name] = 0.5
+
+        print(name)
         
         print("player is being damaged!")
 
