@@ -357,16 +357,16 @@ local destroy_sorted_table
 local function destroy_portal_modify_map(destroy_n_copy)
     destroy_sorted_table = {}
     for x,datax in pairs(destroy_n_copy) do
-        for y,datay in pairs(datax) do
-            for z,index in pairs(datay) do
-                table_insert(destroy_sorted_table, new_vector(x,y,z))
-            end
-        end
+    for y,datay in pairs(datax) do
+    for z,_ in pairs(datay) do
+        table_insert( destroy_sorted_table, new_vector( x, y, z ) )
     end
-    bulk_set_node(destroy_sorted_table, {name="air"})
+    end
+    end
+    bulk_set_node( destroy_sorted_table, { name = "air" } )
 end
 
-minetest.register_globalstep(function(dtime)
+minetest.register_globalstep(function()
     --if indexes exist then calculate redstone
     if a_index and next(a_index) and aether_portal_failure == false then
         --create the old version to help with deactivation calculation
