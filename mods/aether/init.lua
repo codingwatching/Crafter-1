@@ -51,14 +51,30 @@ end
 ]]
 local build_queue = {}
 local deletion_queue = {}
-local steps = {
+
+local steps_x = {
     vec_new(  1,  0,  0),
     vec_new( -1,  0,  0),
+    vec_new(  0,  1,  0),
+    vec_new(  0, -1,  0),
+}
+
+local steps_z = {
     vec_new(  0,  1,  0),
     vec_new(  0, -1,  0),
     vec_new(  0,  0,  1),
     vec_new(  0,  0, -1),
 }
+
+local steps = {
+    steps_x,
+    steps_z
+}
+
+local function axis_to_integer(axis)
+    if axis then return 2 end
+    return 1
+end
 
 local function match_origin( a, b, c, vec)
     return vec.a == a and vec.b == b and vec.c == c
@@ -86,21 +102,16 @@ end
 --this can be used globally to create aether portals from obsidian
 local function local_create_aether_portal(vec_7d)
 
+    local pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
     local axis = vec_7d.axis or false
 
     --2d virtual memory map creation (x axis)
     if not axis then
-        for direction in steps do
-
-            --index only direct neighbors
-
-            if not (x_failed == false and (abs(x)+abs(y) == 1)) then goto continue end
-
-            local i = add_vector(pos,vec_new(x,y,0))
+        for direction in steps_x do
             
-            execute_collection = not(a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
+            local i = add_vector(pos,direction)
 
-            if not execute_collection then goto continue end
+            if match_full_build_queue(vec_7d) then goto continue end
 
             if get_node(i).name == "air" then
                 
