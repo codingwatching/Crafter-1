@@ -1,4 +1,4 @@
-aetherportalSchematic = {
+aether_portal_schematic = {
     size = {x = 4, y = 5, z = 3},
     data = {
         -- The side of the bush, with the air on top

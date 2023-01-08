@@ -3,7 +3,7 @@ dofile(path.."/schem.lua")
 dofile(path.."/nodes.lua")
 dofile(path.."/biomes.lua")
 
-local aetherportalSchematic = aetherportalSchematic
+local aether_portal_schematic = aether_portal_schematic
 
 local
 minetest,math,vector,pairs
