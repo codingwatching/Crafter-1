@@ -20,6 +20,7 @@ local a_min
 local a_max
 
 local cancel_fall_damage = function(player)
+
     name = player:get_player_name()
 
     if player:get_hp() <= 0 then return true end
@@ -32,7 +33,9 @@ local cancel_fall_damage = function(player)
     a_max = vec_new( pos.x+0.25, pos.y+0.85, pos.z+0.25 )
 
     _,saving_nodes = find_nodes( a_min,  a_max, { "group:disable_fall_damage" } )
+
     real_nodes = {}
+
     for node_data,_ in pairs(saving_nodes) do
         if saving_nodes[node_data] > 0 then
             table_insert( real_nodes, node_data )
