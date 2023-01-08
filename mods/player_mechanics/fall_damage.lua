@@ -149,6 +149,7 @@ local pool = {}
 local damage_memory = {}
 local new_vel
 local old_vel
+local timer
 
 minetest.register_globalstep(function(dtime)
 
@@ -160,8 +161,10 @@ minetest.register_globalstep(function(dtime)
 
         new_vel = player:get_velocity().y
 
-        if damage_memory[name] > 0 then
-            damage_memory[name] = damage_memory[name] - dtime
+        timer = damage_memory[name]
+
+        if timer > 0 then
+            timer = timer - dtime
             goto continue
         end
 
@@ -177,11 +180,12 @@ minetest.register_globalstep(function(dtime)
         calc_fall_damage( player, math_ceil( old_vel + 14 ) )
 
         -- Reset the damage memory
-        damage_memory[name] = 0.5
+        timer = 0.5
 
         ::continue::
 
         pool[name] = player:get_velocity().y
+        damage_memory[name] = timer
     end
 end)
 
