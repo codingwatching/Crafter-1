@@ -3,6 +3,7 @@
         "minetest",
         "vector",
         "get_player_hunger",
-        "ItemStack"
+        "ItemStack",
+        "dump_craft"
     ]
 }
