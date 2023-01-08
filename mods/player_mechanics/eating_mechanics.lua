@@ -78,25 +78,25 @@ local manage_eating_effects = function(player,timer,sneaking,item)
         )
         return(0)
     end
+
     return(timer)
 end
 
 
 local item
 local finish_eating = function(player,timer)
-    if timer >= 1 then
-        item = player:get_wielded_item()
+    if timer < 1 then return timer end
 
-        player_eat_food(player,item)
+    item = player:get_wielded_item()
 
-        sound_play("eat_finish", {
-            object = player,
-            gain = 0.025,
-            pitch = math_random(60,85)/100}
-        )
-        return(0)
-    end
-    return(timer)
+    player_eat_food(player,item)
+
+    sound_play("eat_finish", {
+        object = player,
+        gain = 0.025,
+        pitch = math_random(60,85)/100}
+    )
+    return(0)
 end
 
 
