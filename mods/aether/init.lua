@@ -100,13 +100,27 @@ local function match_full_deletion_queue(vec)
     end
 end
 
+local function insert_new_build_item(vec_7d)
+    table_insert(build_queue, vec_7d)
+end
+local function insert_new_deletion_item(vec_7d)
+    table_insert(build_queue, vec_7d)
+end
 
+local function clear_build_queue()
+    build_queue = {}
+end
+local function clear_deletion_queue()
+    deletion_queue = {}
+end
 
---this can be used globally to create aether portals from obsidian
+-- TODO: make this name more generic
 local function local_create_aether_portal(vec_7d)
 
+    -- TODO: make these a reused heap object
     local pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
     local axis = vec_7d.axis or false
+    local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
     --2d virtual memory map creation (x axis)
     for direction in steps[axis_to_integer(axis)] do
@@ -117,7 +131,7 @@ local function local_create_aether_portal(vec_7d)
 
         if get_node(new_position).name == "air" then
             
-            if vec_distance(i,origin) < 50 then
+            if vec_distance(new_position,origin) < 50 then
 
                 --add data to both maps
                 if not a_index[i.x] then a_index[i.x] = {} end
@@ -243,6 +257,8 @@ end
 
 
 -------------------------------------------------------------------------------
+
+-- TODO: make this a while loop!
 
 local destroy_a_index = {}
 local destroy_aether_portal_failure = false
