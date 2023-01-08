@@ -146,7 +146,7 @@ local function local_create_aether_portal(vec_7d)
     local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
     -- 2d virtual memory map creation
-    for direction in steps[axis_to_integer(axis)] do
+    for direction in ipairs(steps[axis_to_integer(axis)]) do
 
         local new_position = add_vector(pos,direction)
 
@@ -184,9 +184,7 @@ local function local_destroy_aether_portal(pos,origin)
         origin = pos
     end
     --3d virtual memory map creation (x axis)
-    for x = -1,1 do
-    for z = -1,1 do
-    for y = -1,1 do
+    for _,position in ipairs(steps_3d) do
         --index only direct neighbors
         if (abs(x)+abs(z)+abs(y) ~= 1) then goto continue end
 
@@ -212,8 +210,6 @@ local function local_destroy_aether_portal(pos,origin)
         local_destroy_aether_portal(i,origin)
 
         ::continue::
-    end
-    end
     end
 end
 
