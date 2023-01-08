@@ -136,31 +136,34 @@ minetest.register_on_placenode(function(pos, newnode, _, _, _, _)
 end)
 
 -- Replace stack when you are building, aka, when you place the last node it will try to plop one back into your hand
-minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing)
+local old
+local new
+minetest.register_on_placenode(function(position, newnode, placer, oldnode, itemstack, pointed_thing)
 
     old = itemstack:get_name()
 
     -- Pass through to check
 
-    minetest.after(0,function(_, _, placer, _, _, _,old)
+    minetest.after(0,function(_, _, placer2, _, _, _,old2)
         if not placer then
             return
         end
-        new = placer:get_wielded_item():get_name()
+        new = placer2:get_wielded_item():get_name()
+        
         if old ~= new and new == "" then
-            inv = placer:get_inventory()
+            inv = placer2:get_inventory()
             --check if another stack
-            if inv:contains_item("main", old) then
+            if inv:contains_item("main", old2) then
                 --print("moving stack")
                 --run through inventory
                 for i = 1,inv:get_size("main") do
                     --if found set wielded item and remove old stack
-                    if inv:get_stack("main", i):get_name() == old then
+                    if inv:get_stack("main", i):get_name() == old2 then
                         count = inv:get_stack("main", i):get_count()
-                        placer:set_wielded_item(old.." "..count)
-                        inv:set_stack("main",i,ItemStack(""))    
+                        placer2:set_wielded_item(old2.." "..count)
+                        inv:set_stack("main",i,ItemStack(""))
                         play_sound("pickup", {
-                              to_player = player,
+                              to_player = placer2,
                               gain = 0.7,
                               pitch = random(60,100)/100
                         })
@@ -169,7 +172,7 @@ minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack
                 end
             end
         end
-    end,pos, newnode, placer, oldnode, itemstack, pointed_thing,old)
+    end,position, newnode, placer, oldnode, itemstack, pointed_thing,old)
 end)
 
 local do_critical_particles = function(pos)
