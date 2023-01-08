@@ -171,6 +171,13 @@ local function local_create_aether_portal(vec_7d)
     end
 end
 
+-- TODO: this is poop, generic this
+-- This is the generic entry point for the portal creation
+function create_aether_portal(position, --[[frame_node, portal_node, size_limit, something_else?]])
+
+end
+
+
 -- TODO: make this a while loop!
 
 local destroy_a_index = {}
@@ -219,11 +226,6 @@ local function destroy_portal_modify_map(destroy_n_copy)
     end
     bulk_set_node( destroy_sorted_table, { name = "air" } )
 end
-
-
--- TODO: this is poop, generic this
--- Send it off into the global scope
-create_aether_portal = local_create_aether_portal
 
 -- creates a aether portal in the aether
 -- this essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal
