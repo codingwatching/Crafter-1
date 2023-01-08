@@ -53,17 +53,17 @@ local build_queue = {}
 local deletion_queue = {}
 
 local steps_x = {
-    vec_new(  1,  0,  0),
-    vec_new( -1,  0,  0),
-    vec_new(  0,  1,  0),
-    vec_new(  0, -1,  0),
+    vec_new(  1,  0,  0 ),
+    vec_new( -1,  0,  0 ),
+    vec_new(  0,  1,  0 ),
+    vec_new(  0, -1,  0 ),
 }
 
 local steps_z = {
-    vec_new(  0,  1,  0),
-    vec_new(  0, -1,  0),
-    vec_new(  0,  0,  1),
-    vec_new(  0,  0, -1),
+    vec_new(  0,  1,  0 ),
+    vec_new(  0, -1,  0 ),
+    vec_new(  0,  0,  1 ),
+    vec_new(  0,  0, -1 ),
 }
 
 local steps = {
