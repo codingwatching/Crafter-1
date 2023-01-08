@@ -50,10 +50,10 @@ minetest.register_on_respawnplayer(function(player)
     name = player:get_player_name()
     pool[name].state = 0
     pool[name].was_in_water = false
-    pool[name].swim_bumped = get_us_time()/1000000
+    pool[name].swim_bumped = get_us_time() / 1000000
     local_send_running_cancellation(player,false)
     player:set_properties({
-        collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3},
+        collisionbox = { -0.3, 0.0, -0.3, 0.3, 1.7, 0.3 },
     })
 end)
 
@@ -134,73 +134,85 @@ local control_state = function(player)
             end
         end
     end
-    if (in_water ~= temp_pool.was_in_water) or 
-    (temp_pool.state ~= temp_pool.old_state) or 
-    ((temp_pool.state == 1 or temp_pool.state == 2) and hunger <= 6) then
+    if ( in_water ~= temp_pool.was_in_water ) or
+    ( temp_pool.state ~= temp_pool.old_state ) or
+    ( ( temp_pool.state == 1 or temp_pool.state == 2 ) and hunger <= 6 ) then
 
-        if (not in_water and temp_pool.was_in_water) then
+        if ( not in_water and temp_pool.was_in_water ) then
             player:set_physics_override({
-                sneak   = true,
+                sneak = true,
             })
 
             force_update_animation(player)
 
             player:set_properties({
-                collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3},
+                collisionbox = { -0.3, 0.0, -0.3, 0.3, 1.7, 0.3 },
             })
+
         elseif in_water and not temp_pool.was_in_water then
             
             player:set_physics_override({
-                sneak   = false,
+                sneak = false,
             })
 
             force_update_animation(player)
 
             player:set_properties({
-                collisionbox = {-0.3, 0.8, -0.3, 0.3, 1.6, 0.3},
+                collisionbox = { -0.3, 0.8, -0.3, 0.3, 1.6, 0.3 },
             })
-            player:set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})
+            player:set_eye_offset(
+                { x = 0, y = 0, z = 0 },
+                { x = 0, y = 0, z = 0 }
+            )
         end
 
         -- running/swimming fov modifier
-        if hunger > 6 and (temp_pool.state == 1 or temp_pool.state == 2) then
-            player:set_fov(1.25, true, 0.15)
+        if hunger > 6 and ( temp_pool.state == 1 or temp_pool.state == 2 ) then
+            player:set_fov( 1.25, true, 0.15 )
 
             if temp_pool.state == 2 then
-                player:set_physics_override({speed=1.75})
+                player:set_physics_override( { speed = 1.75 } )
             elseif temp_pool.state == 1 then
-                player:set_physics_override({speed=1.5})
+                player:set_physics_override( { speed = 1.5 } )
             end
 
-        elseif (not in_water and temp_pool.state ~= 1 and temp_pool.state ~= 2 and 
-        (temp_pool.old_state == 1 or temp_pool.old_state == 2)) or
-        (in_water and temp_pool.state ~= 1 and temp_pool.state ~= 2 and temp_pool.state ~= 3 and 
-        (temp_pool.old_state == 1 or temp_pool.old_state == 2 or temp_pool.old_state == 3))then
+        elseif ( not in_water and temp_pool.state ~= 1 and temp_pool.state ~= 2 and
+        ( temp_pool.old_state == 1 or temp_pool.old_state == 2 ) ) or
+        ( in_water and temp_pool.state ~= 1 and temp_pool.state ~= 2 and temp_pool.state ~= 3 and
+        ( temp_pool.old_state == 1 or temp_pool.old_state == 2 or temp_pool.old_state == 3 ) )then
 
-            player:set_fov(1, true,0.15)
-            player:set_physics_override({speed=1})
+            player:set_fov( 1, true,0.15 )
+            player:set_physics_override( { speed = 1 } )
 
             -- Preserve network data
-            local_send_running_cancellation(player,temp_pool.state==3)
-        elseif (temp_pool.state == 1 or temp_pool.state == 2) and hunger <= 6 then
-            player:set_fov(1, true,0.15)
-            player:set_physics_override({speed=1})
+            local_send_running_cancellation( player, temp_pool.state==3 )
+
+        elseif ( temp_pool.state == 1 or temp_pool.state == 2 ) and hunger <= 6 then
+            player:set_fov( 1, true, 0.15 )
+            player:set_physics_override( { speed = 1 } )
             -- Preserve network data
-            local_send_running_cancellation(player,false)
+            local_send_running_cancellation( player, false )
         end
 
-        --sneaking
+        -- Sneaking
         if temp_pool.state == 3 and in_water then
-            --local_send_running_cancellation(player,false)
+            -- Don't allow player to fast move under water as it's glitchy
+            local_send_running_cancellation( player, false )
         elseif not in_water and temp_pool.state == 3 and temp_pool.old_state ~= 3 then
-            player:set_eye_offset({x=0,y=-1,z=0},{x=0,y=0,z=0})
+            player:set_eye_offset(
+                { x = 0, y = -1, z = 0 },
+                { x = 0, y = 0, z = 0 }
+            )
         elseif not in_water and temp_pool.old_state == 3 and temp_pool.state ~= 3 then
-            player:set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})
+            player:set_eye_offset(
+                { x = 0, y = 0, z = 0 },
+                { x = 0, y = 0, z = 0 }
+            )
         end
 
-        temp_pool.old_state    = state
+        temp_pool.old_state = state
         temp_pool.was_in_water = in_water
-    
+
     -- Water movement
 
     elseif in_water then
