@@ -41,14 +41,13 @@ minetest.register_on_respawnplayer(function(player)
 end)
 
 
--- delete data on player leaving
-local name
+-- Delete data on player leaving
 minetest.register_on_leaveplayer(function(player)
     name = player:get_player_name()
     pool[name] = nil
 end)
 
--- tells the client to stop sending running/bunnyhop data
+-- Tells the client to stop sending running/bunnyhop data
 local name
 send_running_cancellation = function(player,sneaking)
     name = player:get_player_name()
