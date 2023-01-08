@@ -8,13 +8,18 @@ local ceil         = math.ceil
 local vec_new      = vector.new
 local vec_multiply = vector.multiply
 
---hurt sound and disable fall damage group handling
+-- Hurt sound and disable fall damage group handling
 minetest.register_on_player_hpchange(function(player, hp_change, reason)
-    if reason.type == "fall" then
-        --fall damage is handled on another globalstep calc
+    if type(reason) == "fall" then
+        -- Fall damage is handled on another globalstep calculation
         return(0)
     elseif hp_change < 0 and reason.reason ~= "correction" then
-        play_sound("hurt", {object=player, gain = 1.0, max_hear_distance = 60,pitch = random(80,100)/100})
+        play_sound( "hurt", {
+            object = player,
+            gain = 1.0,
+            max_hear_distance = 60,
+            pitch = random( 80, 100) / 100
+        })
     end
     return(hp_change)
 end, true)
