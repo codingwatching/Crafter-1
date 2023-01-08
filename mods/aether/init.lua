@@ -310,7 +310,7 @@ local destroy_aether_portal_failure = false
 local destroy_aether_portal_failed = false
 
 --this can be used globally to create aether portals from obsidian
-function local_destroy_aether_portal(pos,origin,axis)
+local function local_destroy_aether_portal(pos,origin,axis)
     --create the origin node for stored memory
     if not origin then
         origin = pos
