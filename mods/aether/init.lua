@@ -67,7 +67,7 @@ local function local_create_aether_portal(pos,origin,axis)
             execute_collection = not(a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
 
             if not execute_collection then return false end
-            
+
             if get_node(i).name == "air" then
                 
                 if vec_distance(i,origin) < 50 then
@@ -97,37 +97,31 @@ local function local_create_aether_portal(pos,origin,axis)
         for z = -1,1 do
         for y = -1,1 do
             --index only direct neighbors
-            if x_failed == true and aether_portal_failure == false and (abs(z)+abs(y) == 1) then
-                local i = add_vector(pos,new_vector(0,y,z))
-                execute_collection = true
-                if a_index[i.x] and a_index[i.x][i.y] then
-                    if a_index[i.x][i.y][i.z] then
-                        execute_collection = false
-                    end
-                end    
-                
-                if execute_collection == true then
-                    --print(get_node(i).name)
-                    --index air
-                    if get_node(i).name == "air" then
-                        if vec_distance(i,origin) < 50 then
-                            --add data to both maps
-                            if not a_index[i.x] then a_index[i.x] = {} end
-                            if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
-                            a_index[i.x][i.y][i.z] = {aether_portal=1}
-                            --the data to the 3d array must be written to memory before this is executed
-                            --or a stack overflow occurs!!!
-                            --pass down info for activators
-                            local_create_aether_portal(i,origin,"z")
-                        else
-                            aether_portal_failure = true
-                            a_index = {}
-                        end
-                    elseif get_node(i).name ~= "nether:glowstone" then
-                        aether_portal_failure = true
-                        a_index = {}
-                    end
+            if not (x_failed == true and aether_portal_failure == false and (abs(z)+abs(y) == 1)) then return false end
+
+            local i = add_vector(pos,new_vector(0,y,z))
+
+            execute_collection = not (a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
+            
+            if not execute_collection then return false end
+            
+            if get_node(i).name == "air" then
+                if vec_distance(i,origin) < 50 then
+                    --add data to both maps
+                    if not a_index[i.x] then a_index[i.x] = {} end
+                    if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
+                    a_index[i.x][i.y][i.z] = {aether_portal=1}
+                    --the data to the 3d array must be written to memory before this is executed
+                    --or a stack overflow occurs!!!
+                    --pass down info for activators
+                    local_create_aether_portal(i,origin,"z")
+                else
+                    aether_portal_failure = true
+                    a_index = {}
                 end
+            elseif get_node(i).name ~= "nether:glowstone" then
+                aether_portal_failure = true
+                a_index = {}
             end
         end
         end
