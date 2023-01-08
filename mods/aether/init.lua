@@ -18,9 +18,8 @@ local sub_vector   = vector.subtract
 local vec_distance = vector.distance
 local new_vector   = vector.new
 
-local t_copy   = table.copy
-local t_insert = table.insert
-local t_getn   = table.getn
+local table_copy   = table.copy
+local table_insert = table.insert
 
 local emerge_area                  = minetest.emerge_area
 local get_node                     = minetest.get_node
@@ -154,7 +153,7 @@ local function spawn_portal_into_aether_callback(blockpos, action, calls_remaini
             
             if platform and next(platform) then
                 --print("setting the platform")
-                local platform_location = platform[random(1,t_getn(platform))]
+                local platform_location = platform[random(1, #platform)]
                 
                 place_schematic(platform_location, aetherportalSchematic,"0",nil,true,"place_center_x, place_center_z")
             else
@@ -179,7 +178,7 @@ local function spawn_portal_into_overworld_callback(blockpos, action, calls_rema
             
             if platform and next(platform) then
                 --print("setting the platform")
-                local platform_location = platform[random(1,t_getn(platform))]
+                local platform_location = platform[random(1,#platform)]
                 
                 place_schematic(platform_location, aetherportalSchematic,"0",nil,true,"place_center_x, place_center_z")
             else
@@ -231,7 +230,7 @@ local function portal_modify_map(n_copy)
                     created_portal = true
                     generate_aether_portal_in_aether(new_vector(x,y,z))
                 end
-                t_insert(sorted_table, new_vector(x,y,z))
+                table_insert(sorted_table, new_vector(x,y,z))
             end
         end
     end
@@ -357,7 +356,7 @@ local function destroy_portal_modify_map(destroy_n_copy)
     for x,datax in pairs(destroy_n_copy) do
         for y,datay in pairs(datax) do
             for z,index in pairs(datay) do
-                t_insert(destroy_sorted_table, new_vector(x,y,z))
+                table_insert(destroy_sorted_table, new_vector(x,y,z))
             end
         end
     end
