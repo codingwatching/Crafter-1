@@ -1,11 +1,9 @@
-local ipairs = ipairs
-local vec_new = vector.new
-local vec_multiply = vector.multiply
-
+local ipairs                = ipairs
+local vec_new               = vector.new
+local vec_multiply          = vector.multiply
 local get_connected_players = minetest.get_connected_players
 
 local pool = {}
-
 local c_flow
 local acceleration
 local newvel
@@ -56,7 +54,6 @@ minetest.register_globalstep(function()
         else
             pool[name] = nil
         end
-
 
         ::continue::
     end
