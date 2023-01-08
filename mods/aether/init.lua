@@ -270,34 +270,36 @@ end
 --this initializes all teleporter commands from the client
 minetest.register_on_modchannel_message(function(channel_name, sender, _)
     local channel_decyphered = channel_name:gsub(sender,"")
-    if channel_decyphered == ":aether_teleporters" then
-        local player = minetest.get_player_by_name(sender)
-        local pos = player:get_pos()
-        
-        if pos.y < 20000 then
-            --center the location to the lava height
-            pos.y = 25000--+random(-30,30)    
-            aether_origin_pos = pos
-            
-            local min = sub_vector(aether_origin_pos,30)
-            local max = add_vector(aether_origin_pos,30)
-            
-            --force load the area
-            teleporting_player = player
-            emerge_area(min, max, teleport_to_aether)
-        else
-            --center the location to the water height
-            pos.y = 0--+random(-30,30)    
-            aether_origin_pos = pos
-            --prefer height for mountains
-            local min = sub_vector(aether_origin_pos,new_vector(30,30,30))
-            local max = add_vector(aether_origin_pos,new_vector(30,120,30))
-            
-            --force load the area
-            teleporting_player = player
-            emerge_area(min, max, teleport_to_overworld)
-        end
+    if channel_decyphered ~= ":aether_teleporters" then goto continue end
+
+    local player = minetest.get_player_by_name(sender)
+    local pos = player:get_pos()
+
+    if pos.y < 20000 then
+        --center the location to the lava height
+        pos.y = 25000--+random(-30,30)    
+        aether_origin_pos = pos
+
+        local min = sub_vector(aether_origin_pos,30)
+        local max = add_vector(aether_origin_pos,30)
+
+        --force load the area
+        teleporting_player = player
+        emerge_area(min, max, teleport_to_aether)
+    else
+        --center the location to the water height
+        pos.y = 0--+random(-30,30)    
+        aether_origin_pos = pos
+        --prefer height for mountains
+        local min = sub_vector(aether_origin_pos,new_vector(30,30,30))
+        local max = add_vector(aether_origin_pos,new_vector(30,120,30))
+
+        --force load the area
+        teleporting_player = player
+        emerge_area(min, max, teleport_to_overworld)
     end
+
+    ::continue::
 end)
 -------------------------------------------------------------------------------------------
 
@@ -306,9 +308,9 @@ end)
 local destroy_a_index = {}
 local destroy_aether_portal_failure = false
 local destroy_aether_portal_failed = false
-local execute_collection
+
 --this can be used globally to create aether portals from obsidian
-function destroy_aether_portal(pos,origin,axis)
+function local_destroy_aether_portal(pos,origin,axis)
     --create the origin node for stored memory
     if not origin then
         origin = pos
@@ -350,6 +352,9 @@ function destroy_aether_portal(pos,origin,axis)
     end
     end
 end
+
+-- Send it out into the global scope
+destroy_aether_portal = local_destroy_aether_portal
 
 --modify the map with the collected data
 local destroy_sorted_table
