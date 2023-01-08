@@ -1,6 +1,10 @@
-local minetest,math,vector,ipairs,tonumber = minetest,math,vector,ipairs,tonumber
+local ipairs = ipairs
+local tonumber = tonumber
+local get_us_time = minetest.get_us_time
 
-local state_channels = {} -- holds every player's channel
+
+-- Holds every player's channel
+local state_channels = {}
 local pool           = {}
 
 -- creates specific channels for players
@@ -21,16 +25,15 @@ minetest.register_on_joinplayer(function(player)
     temp_pool.old_state    = 0
     temp_pool.was_in_water = false
     temp_pool.swimming     = false
-    temp_pool.swim_bumped  = minetest.get_us_time()/1000000
+    temp_pool.swim_bumped  = get_us_time()/1000000
 end)
 
--- resets the player's state on death
-local name
+-- Resets the player's state on death
 minetest.register_on_respawnplayer(function(player)
     name = player:get_player_name()
     pool[name].state = 0
     pool[name].was_in_water = false
-    pool[name].swim_bumped = minetest.get_us_time()/1000000
+    pool[name].swim_bumped = get_us_time()/1000000
     send_running_cancellation(player,false)
     player:set_properties({
         collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3},
@@ -119,10 +122,10 @@ local control_state = function(player)
         if swim_unlock then
             in_water = false
             temp_pool.swimming = false
-            temp_pool.swim_bumped = minetest.get_us_time()/1000000
-        elseif swim_bump and minetest.get_us_time()/1000000-temp_pool.swim_bumped > 1 then
+            temp_pool.swim_bumped = get_us_time()/1000000
+        elseif swim_bump and get_us_time()/1000000-temp_pool.swim_bumped > 1 then
             if player:get_velocity().y <= 0 then
-                temp_pool.swim_bumped = minetest.get_us_time()/1000000
+                temp_pool.swim_bumped = get_us_time()/1000000
                 player:add_velocity(vector.new(0,9,0))
             end
         end
