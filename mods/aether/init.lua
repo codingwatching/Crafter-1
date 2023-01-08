@@ -43,6 +43,7 @@ local x_failed = false
 local execute_collection
 
 -- TODO: Make this a queue not a recursion
+-- TODO: make this thing use vectors holy moly
 --this can be used globally to create aether portals from obsidian
 local function local_create_aether_portal(pos,origin,axis)
 
@@ -104,7 +105,7 @@ local function local_create_aether_portal(pos,origin,axis)
             execute_collection = not (a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
             
             if not execute_collection then return false end
-            
+
             if get_node(i).name == "air" then
                 if vec_distance(i,origin) < 50 then
                     --add data to both maps
@@ -134,7 +135,8 @@ create_aether_portal = local_create_aether_portal
 --creates a aether portal in the aether
 --this essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal
 local aether_origin_pos = nil
-local function spawn_portal_into_aether_callback(blockpos, action, calls_remaining, param)
+
+local function spawn_portal_into_aether_callback(_, _, calls_remaining, param)
     if calls_remaining == 0 then
         local portal_exists = find_node_near(aether_origin_pos, 30, {"aether:portal"})
                 
