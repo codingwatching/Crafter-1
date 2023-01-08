@@ -70,16 +70,15 @@ local manage_eating_effects = function(player,timer,sneaking,item)
 
     add_particlespawner(temp_particle)
 
-    if timer >= 0.2 then
-        sound_play("eat", {
-            object = player,
-            gain = 0.2                      ,
-            pitch = math_random(60,85)/100}
-        )
-        return(0)
-    end
+    if timer < 0.2 then return timer end
 
-    return(timer)
+    sound_play("eat", {
+        object = player,
+        gain = 0.2,
+        pitch = math_random( 60, 85 ) / 100
+    })
+
+    return(0)
 end
 
 
@@ -91,11 +90,11 @@ local finish_eating = function(player,timer)
 
     player_eat_food(player,item)
 
-    sound_play("eat_finish", {
+    sound_play( "eat_finish", {
         object = player,
         gain = 0.025,
-        pitch = math_random(60,85)/100}
-    )
+        pitch = math_random( 60, 85 ) / 100
+    })
     return(0)
 end
 
