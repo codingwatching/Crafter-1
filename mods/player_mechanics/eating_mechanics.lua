@@ -123,6 +123,8 @@ local hunger
 local eating_step
 local eating_timer
 local pool
+
+-- TODO: break this down into individual flat tables
 local manage_eating = function(player,dtime)
 
     control = player:get_player_control()
@@ -146,6 +148,8 @@ local manage_eating = function(player,dtime)
 
     satiation = get_item_group( item, "satiation" )
     hunger = get_item_group( item, "hunger" )
+
+    print(hunger)
 
     if hunger > 0 or satiation > 0  then
 
