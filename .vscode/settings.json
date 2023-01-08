@@ -12,6 +12,7 @@
         "dump",
         "create_aether_portal",
         "aetherportalSchematic",
-        "aether_portal_schematic"
+        "aether_portal_schematic",
+        "destroy_aether_portal"
     ]
 }
