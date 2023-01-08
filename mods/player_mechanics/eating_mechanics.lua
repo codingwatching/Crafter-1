@@ -63,11 +63,11 @@ local velocity
 local offset
 local temp_particle
 local manage_eating_effects = function(player,timer,sneaking,item)
-    position    = player:get_pos()
-    velocity    = player:get_velocity()
+    position = player:get_pos()
+    velocity = player:get_velocity()
 
     if sneaking then
-        position.y  = position.y + 1.2
+        position.y = position.y + 1.2
         offset = 0.6
     else
         position.y = position.y + 1.3
@@ -106,7 +106,7 @@ local finish_eating = function(player,timer)
 
         sound_play("eat_finish", {
             object = player,
-            gain = 0.025                      ,
+            gain = 0.025,
             pitch = math_random(60,85)/100}
         )
         return(0)
