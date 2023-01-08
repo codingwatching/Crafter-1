@@ -112,8 +112,7 @@ minetest.register_on_generated(function(minp, maxp)
             else
                 --force create grass
                 n_pos = area:index(x,y-1,z)
-                node2 = get_name_from_content_id(data[n_pos])
-                if node2 == "aether:dirt" then
+                if data[n_pos] == c_dirt then
                     data[n_pos] = c_grass
                 end
             end
