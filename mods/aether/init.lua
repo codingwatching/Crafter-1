@@ -35,7 +35,7 @@ end)
 --TODO: add biome information into the thing, or dimensions? or maybe a dimension ID?
 -- Micro 7d vector factory function
 --[[
-local function assemble_vec4d( x, y, z, axis, a, b, c )
+local function assemble_vec7d( x, y, z, axis, a, b, c )
     -- Piggyback on vec3d for new pointers in lua vm
     local initializing_vector = vec_new( x, y, z )
     initializing_vector.axis = axis
@@ -45,7 +45,7 @@ local function assemble_vec4d( x, y, z, axis, a, b, c )
     return initializing_vector
 end
 ]]
-local function assemble_vec4d( vec, axis, origin )
+local function assemble_vec7d( vec, axis, origin )
     -- Piggyback on vec3d for new pointers in lua vm
     local initializing_vector = vec_copy(vec)
     initializing_vector.axis = axis
@@ -155,11 +155,11 @@ local function local_create_aether_portal(vec_7d)
         if get_node(new_position).name == "air" then
             if vec_distance(new_position,origin) < 50 then
                 -- Everything is going well
-                insert_new_build_item(assemble_vec4d(new_position, axis, origin))
+                insert_new_build_item(assemble_vec7d(new_position, axis, origin))
             else
                 -- This means the portal failed to intialize, so try the other axis
                 clear_build_queue()
-                insert_new_build_item(assemble_vec4d(origin, not axis, origin))
+                insert_new_build_item(assemble_vec7d(origin, not axis, origin))
             end
         elseif get_node(new_position).name ~= "nether:glowstone" then
             -- This part basically means the portal exceeded the size limit and it failed completely, exits out here in the globalstep
@@ -194,7 +194,7 @@ local function local_destroy_aether_portal(vec_7d)
         if get_node(new_position).name ~= "aether:portal" then goto continue end
         if vec_distance(new_position,origin) >= 50 then goto continue end
         
-        insert_new_deletion_item(assemble_vec4d(new_position, axis, origin))
+        insert_new_deletion_item(assemble_vec7d(new_position, axis, origin))
         destroy_aether_portal_failed = false
 
         ::continue::
