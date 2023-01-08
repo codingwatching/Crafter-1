@@ -99,14 +99,9 @@ local finish_eating = function(player,timer)
     return(0)
 end
 
-
-local name
 local control
-local item
 local satiation
 local hunger
-local eating_step
-local eating_timer
 local pool
 
 -- TODO: break this down into individual flat tables
@@ -114,7 +109,8 @@ local manage_eating = function(player,dtime)
 
     control = player:get_player_control()
     name = player:get_player_name()
-    pool = food_control_pool[name]
+    
+    
 
     -- Not eating
     if not control.RMB then
@@ -124,7 +120,6 @@ local manage_eating = function(player,dtime)
     end
 
     -- Is eating
-
 
     -- Abusing dynamic types
     item = player:get_wielded_item()
@@ -136,27 +131,26 @@ local manage_eating = function(player,dtime)
 
     print(hunger)
 
-    if hunger > 0 or satiation > 0  then
-
-        pool.eating_step  = pool.eating_step  + dtime
-        pool.eating_timer = pool.eating_timer + dtime
-
-        pool.eating_timer = manage_eating_effects(
-            player,
-            pool.eating_timer,
-            control.sneak,
-            item
-        )
-
-        pool.eating_step = finish_eating(
-            player,
-            pool.eating_step
-        )
-
-    else
+    if hunger <= 0 or satiation <= 0 then
         pool.eating_step  = 0
         pool.eating_timer = 0
+        return
     end
+    
+    pool.eating_step  = pool.eating_step  + dtime
+    pool.eating_timer = pool.eating_timer + dtime
+
+    pool.eating_timer = manage_eating_effects(
+        player,
+        pool.eating_timer,
+        control.sneak,
+        item
+    )
+
+    pool.eating_step = finish_eating(
+        player,
+        pool.eating_step
+    )
 end
 
 minetest.register_globalstep(function(dtime)
