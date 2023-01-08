@@ -1,17 +1,24 @@
 ![](https://raw.githubusercontent.com/jordan4ibanez/Crafter/master/menu/header.png)
 
-> Designed for Minetest 5.7.0-DEV
+---
+Designed for Minetest 5.7.0-DEV
+
+---
 
 Built using textures from [MineClone 2](https://forum.minetest.net/viewtopic.php?t=16407)
 
 ---
-### Be sure to install the clientside mod for this game mode: [Download here](https://github.com/jordan4ibanez/crafter_client)
----
-## Discord: https://discord.gg/dRPyvubfyg
+
+Be sure to install the clientside mod for this game mode: [Download here](https://github.com/jordan4ibanez/crafter_client)
+
 ---
 
-## If you want to run this on a server you might want to add this to your server minetest.conf:
-### Don't be afraid to experiment with it!
+Discord: https://discord.gg/dRPyvubfyg
+
+---
+
+If you want to run this on a server you might want to add this to your server minetest.conf:
+Don't be afraid to experiment with it!
 
 ```
 enable_client_modding = true
@@ -21,14 +28,16 @@ secure.http_mods = skins
 max_objects_per_block = 4096
 max_packets_per_iteration = 10096
 ```
+---
 
 
-
-## This game is in early alpha and uses a lot of experimental features in the engine
+**This game is in early alpha and is being updated from like 2 years of api changes!**
 
 ---
 
 # ALPHA STATE CHANGELOG
+
+**This is probably extremely outdated maybe?**
 
 > [Old Version Changelogs](https://github.com/jordan4ibanez/Crafter/blob/master/old_changelog.md)
 
@@ -41,10 +50,11 @@ max_packets_per_iteration = 10096
 - Added in prototype of Engine by using a furnace on a minecart
 - Added in SolarShrine's vignette
 
+
 ---
-
-
-# IDEAS:
+IDEAS:
+---
+---
 
 
 ## REDSTONE:
