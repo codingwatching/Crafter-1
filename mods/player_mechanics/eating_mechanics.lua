@@ -1,5 +1,13 @@
-local minetest,math,vector,ipairs,pairs,table = 
-      minetest,math,vector,ipairs,pairs,table
+local ipairs = ipairs
+local pairs = pairs
+local add_particlespawner = minetest.add_particlespawner
+local sound_play = minetest.sound_play
+local get_connected_players = minetest.get_connected_players
+local get_item_group = minetest.get_item_group
+local table_copy = table.copy
+local vec_add = vector.add
+local vec_multiply = vector.multiply
+local math_random = math.random
 
 local food_control_pool  = {}
 
@@ -66,22 +74,22 @@ local manage_eating_effects = function(player,timer,sneaking,item)
         offset = 0.3
     end
 
-    position = vector.add(position, vector.multiply(player:get_look_dir(),offset))
+    position = vec_add(position, vec_multiply(player:get_look_dir(),offset))
 
-    temp_particle = table.copy(particle_constant)
-    temp_particle.minpos = vector.add(position,temp_particle.minpos)
-    temp_particle.maxpos = vector.add(position,temp_particle.maxpos)
-    temp_particle.minvel = vector.add(velocity,temp_particle.minvel)
-    temp_particle.maxvel = vector.add(velocity,temp_particle.maxvel)
+    temp_particle = table_copy(particle_constant)
+    temp_particle.minpos = vec_add(position,temp_particle.minpos)
+    temp_particle.maxpos = vec_add(position,temp_particle.maxpos)
+    temp_particle.minvel = vec_add(velocity,temp_particle.minvel)
+    temp_particle.maxvel = vec_add(velocity,temp_particle.maxvel)
     temp_particle.node   = {name=item.."node"}
 
-    minetest.add_particlespawner(temp_particle)
+    add_particlespawner(temp_particle)
 
     if timer >= 0.2 then
-        minetest.sound_play("eat", {
+        sound_play("eat", {
             object = player,
             gain = 0.2                      ,
-            pitch = math.random(60,85)/100}
+            pitch = math_random(60,85)/100}
         )
         return(0)
     end
@@ -96,10 +104,10 @@ local finish_eating = function(player,timer)
 
         player_eat_food(player,item)
 
-        minetest.sound_play("eat_finish", {
+        sound_play("eat_finish", {
             object = player,
             gain = 0.025                      ,
-            pitch = math.random(60,85)/100}
+            pitch = math_random(60,85)/100}
         )
         return(0)
     end
@@ -123,8 +131,8 @@ local manage_eating = function(player,dtime)
     if control.RMB then
         item      = player:get_wielded_item():get_name()
 
-        satiation = minetest.get_item_group( item, "satiation")
-        hunger    = minetest.get_item_group( item, "hunger"   )
+        satiation = get_item_group( item, "satiation")
+        hunger    = get_item_group( item, "hunger"   )
 
         if hunger > 0 or satiation > 0  then
 
@@ -153,9 +161,8 @@ local manage_eating = function(player,dtime)
     end
 end
 
-local player
 minetest.register_globalstep(function(dtime)
-    for _,player in ipairs(minetest.get_connected_players()) do
+    for _,player in ipairs(get_connected_players()) do
         manage_eating(player,dtime)
     end
 end)
