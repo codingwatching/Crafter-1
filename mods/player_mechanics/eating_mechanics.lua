@@ -124,7 +124,10 @@ local eating_step
 local eating_timer
 local pool
 local manage_eating = function(player,dtime)
+
     control = player:get_player_control()
+    name = player:get_player_name()
+    pool = food_control_pool[name]
 
     -- Not eating
     if not control.RMB then
@@ -134,9 +137,6 @@ local manage_eating = function(player,dtime)
     end
 
     -- Is eating
-
-    name = player:get_player_name()
-    pool = food_control_pool[name]
 
     item = player:get_wielded_item():get_name()
 
