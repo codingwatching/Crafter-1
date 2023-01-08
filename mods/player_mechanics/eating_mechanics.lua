@@ -125,18 +125,22 @@ local eating_timer
 local pool
 local manage_eating = function(player,dtime)
     control = player:get_player_control()
-    name    = player:get_player_name()
-    pool    = food_control_pool[name]
-    --eating
+
+    -- Not eating
     if not control.RMB then
         pool.eating_step  = 0
         pool.eating_timer = 0
         return
     end
-    item      = player:get_wielded_item():get_name()
 
-    satiation = get_item_group( item, "satiation")
-    hunger    = get_item_group( item, "hunger"   )
+    name    = player:get_player_name()
+    pool    = food_control_pool[name]
+
+    -- Eating
+    item = player:get_wielded_item():get_name()
+
+    satiation = get_item_group( item, "satiation" )
+    hunger = get_item_group( item, "hunger" )
 
     if hunger > 0 or satiation > 0  then
 
