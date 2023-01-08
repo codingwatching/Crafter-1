@@ -49,6 +49,8 @@ end
     axis = x or z definition (boolean) - false = x, true = z
     a,b,c = origin position
 ]]
+
+-- This is single threaded, only one queue can exist at a time, it will pause the server while it builds it
 local build_queue = {}
 local deletion_queue = {}
 
@@ -108,25 +110,27 @@ local function local_create_aether_portal(vec_7d)
     --2d virtual memory map creation (x axis)
     for direction in steps[axis_to_integer(axis)] do
         
-        local i = add_vector(pos,direction)
+        local new_position = add_vector(pos,direction)
 
         if match_full_build_queue(vec_7d) then goto continue end
 
-        if get_node(i).name == "air" then
+        if get_node(new_position).name == "air" then
             
             if vec_distance(i,origin) < 50 then
+
                 --add data to both maps
                 if not a_index[i.x] then a_index[i.x] = {} end
                 if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
-                a_index[i.x][i.y][i.z] = {aether_portal=1} --get_group(i,"redstone_power")}        
+
+                a_index[i.x][i.y][i.z] = {aether_portal=1}
+
                 --the data to the 3d array must be written to memory before this is executed
                 --or a stack overflow occurs!!!
                 --pass down info for activators
+
                 local_create_aether_portal(i,origin,"x")
+
             else
-                --print("try z")
-                x_failed = true
-                a_index = {}
                 local_create_aether_portal(origin,origin,"z")
             end
         elseif get_node(i).name ~= "nether:glowstone" then
