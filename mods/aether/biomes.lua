@@ -1,7 +1,7 @@
-local 
-minetest,math
-=
-minetest,math
+local VoxelArea = VoxelArea
+local get_name_from_content_id = minetest.get_name_from_content_id
+local get_perlin_map = minetest.get_perlin_map
+local get_mapgen_object = minetest.get_mapgen_object
 
 
 minetest.register_biome({
@@ -50,23 +50,19 @@ local np_terrain = {
 local nobj_terrain = nil
 local n_pos = {}
 local node2 = ""
-local vi = {}
-local sidelen = {}
+local vi
+local sidelen
 local permapdims3d  = {}
 local nobj_terrain = {}
 local vm = {}
 local emin = {}
 local emax = {}
-local area = {}
+local area = VoxelArea:new({MinEdge = 0, MaxEdge = 0})
 local ni = 1
 local density_noise  = {}
 
 local nvals_terrain = {}
 local data = {}
-
-local content_id = minetest.get_name_from_content_id
-local get_map = minetest.get_perlin_map
-local get_mapgen_object = minetest.get_mapgen_object
 
 local c_dirt = minetest.get_content_id("aether:dirt")
 local c_stone = minetest.get_content_id("aether:stone")
@@ -76,7 +72,7 @@ local c_grass = minetest.get_content_id("aether:grass")
 
 -- 'minp' and 'maxp' are the minimum and maximum positions of the mapchunk that
 -- define the 3D volume.
-minetest.register_on_generated(function(minp, maxp, seed)
+minetest.register_on_generated(function(minp, maxp)
     --aether starts at 21000
     if minp.y < 21000 then
         return
@@ -89,7 +85,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
     permapdims3d = {x = sidelen, y = sidelen, z = sidelen}
 
-    nobj_terrain = get_map(np_terrain, permapdims3d)
+    nobj_terrain = get_perlin_map(np_terrain, permapdims3d)
 
     nobj_terrain:get_3d_map_flat(minp, nvals_terrain)
 
@@ -97,7 +93,9 @@ minetest.register_on_generated(function(minp, maxp, seed)
 
     vm, emin, emax = get_mapgen_object("voxelmanip")
 
-    area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
+    -- area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+    area.MinEdge = emin
+    area.MaxEdge = emax
 
     vm:get_data(data)
 
@@ -114,7 +112,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
             else
                 --force create grass
                 n_pos = area:index(x,y-1,z)
-                node2 = content_id(data[n_pos])
+                node2 = get_name_from_content_id(data[n_pos])
                 if node2 == "aether:dirt" then
                     data[n_pos] = c_grass
                 end
