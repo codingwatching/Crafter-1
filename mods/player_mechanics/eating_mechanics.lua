@@ -9,6 +9,9 @@ local vec_add = vector.add
 local vec_multiply = vector.multiply
 local math_random = math.random
 
+-- This is pulled from mods/hunger/init.lua
+local player_eat_food = player_eat_food
+
 local name
 local eating_step = {}
 local eating_timer = {}
@@ -47,7 +50,8 @@ local position
 local velocity
 local offset
 local temp_particle
-local manage_eating_effects = function(player,timer,sneaking,item)
+local manage_eating_effects = function( player, timer, sneaking, item )
+
     position = player:get_pos()
     velocity = player:get_velocity()
 
@@ -84,6 +88,7 @@ end
 
 local item
 local finish_eating = function(player,timer)
+
     if timer < 1 then return timer end
 
     item = player:get_wielded_item()
@@ -102,20 +107,19 @@ end
 local control
 local satiation
 local hunger
-local pool
+local current_eating_step
+local current_eating_timer
 
 -- TODO: break this down into individual flat tables
 local manage_eating = function(player,dtime)
 
     control = player:get_player_control()
     name = player:get_player_name()
-    
-    
 
     -- Not eating
     if not control.RMB then
-        pool.eating_step  = 0
-        pool.eating_timer = 0
+        eating_step[name] = 0
+        eating_timer[name] = 0
         return
     end
 
@@ -129,27 +133,25 @@ local manage_eating = function(player,dtime)
     satiation = get_item_group( item, "satiation" )
     hunger = get_item_group( item, "hunger" )
 
-    print(hunger)
-
     if hunger <= 0 or satiation <= 0 then
-        pool.eating_step  = 0
-        pool.eating_timer = 0
+        eating_step[name] = 0
+        eating_timer[name] = 0
         return
     end
-    
-    pool.eating_step  = pool.eating_step  + dtime
-    pool.eating_timer = pool.eating_timer + dtime
 
-    pool.eating_timer = manage_eating_effects(
+    current_eating_step = eating_step[name] + dtime
+    current_eating_timer = eating_timer[name] + dtime
+
+    eating_timer[name] = manage_eating_effects(
         player,
-        pool.eating_timer,
+        current_eating_timer,
         control.sneak,
         item
     )
 
-    pool.eating_step = finish_eating(
+    eating_step[name] = finish_eating(
         player,
-        pool.eating_step
+        current_eating_step
     )
 end
 
