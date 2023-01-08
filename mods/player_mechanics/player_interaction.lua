@@ -53,13 +53,18 @@ local function local_dump_craft(player)
         stack = inv:get_stack("craft", i)
         name = stack:get_name()
         count = stack:get_count()
-        if name ~= "" then
-            obj = add_item(pos, stack)
+
+        if name == "" then goto continue end
+
+        for _ = 1,count do
+            obj = add_item(pos, name)
             if obj then
                 obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
             end
-            inv:set_stack("craft", i, ItemStack(""))
         end
+        inv:set_stack("craft", i, ItemStack(""))
+
+        ::continue::
     end
 end
 
