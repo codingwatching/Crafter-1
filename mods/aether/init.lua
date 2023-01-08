@@ -213,22 +213,28 @@ local function portal_modify_map(n_copy)
     local sorted_table = {}
     local created_portal = false
     for x,datax in pairs(n_copy) do
-        for y,datay in pairs(datax) do
-            for z,index in pairs(datay) do
-                --try to create a return side aether portal
-                if created_portal == false then
-                    created_portal = true
-                    generate_aether_portal_in_aether(new_vector(x,y,z))
-                end
-                table_insert(sorted_table, new_vector(x,y,z))
-            end
-        end
+    for y,datay in pairs(datax) do
+    for z,_ in pairs(datay) do
+
+        --try to create a return side aether portal
+        if created_portal then goto continue end
+
+        created_portal = true
+        generate_aether_portal_in_aether(new_vector(x,y,z))
+
+        ::continue::
+
+        table_insert(sorted_table, new_vector(x,y,z))
     end
-    bulk_set_node(sorted_table, {name="aether:portal"})
+    end
+    end
+
+    bulk_set_node( sorted_table, { name = "aether:portal" } )
 end
 
 -------------------------------------------------------------------------------------------
---the teleporter parts - stored here for now so I can read from other functions
+
+-- The teleporter functions - Stored here for now so I can differentiate this portion of the code from the other parts
 local teleporting_player = nil
 local function teleport_to_overworld(blockpos, action, calls_remaining, param)
     if calls_remaining == 0 then
