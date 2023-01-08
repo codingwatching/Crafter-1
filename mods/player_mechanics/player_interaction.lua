@@ -134,7 +134,7 @@ minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack
     end
 end)
 
---replace stack when empty (building)
+-- Replace stack when you are building, aka, when you place the last node it will try to plop one back into your hand
 local new
 local inv
 local old
