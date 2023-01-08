@@ -4,7 +4,6 @@ local get_perlin_map = minetest.get_perlin_map
 local get_mapgen_object = minetest.get_mapgen_object
 local vec_new = vector.new
 
-
 minetest.register_biome({
     name = "aether",
     node_top = "air",
@@ -35,36 +34,24 @@ local noise_parameters = {
     octaves = 5,
     persist = 0.63,
     lacunarity = 2.0,
-    --flags = ""
 }
 
-
--- Set singlenode mapgen (air nodes only).
--- Disable the engine lighting calculation since that will be done for a
--- mapchunk of air nodes and will be incorrect after we place nodes.
---minetest.set_mapgen_params({mgname = "singlenode", flags = "nolight"})
--- Get the content IDs for the nodes used.
-
-local nobj_terrain = nil
-local n_pos = {}
-local node2 = ""
-local vi
-local sidelen
-local permapdims3d  = {}
 local vm = {}
 local emin = {}
 local emax = {}
 local area = VoxelArea:new({MinEdge = vec_new(0,0,0), MaxEdge = vec_new(0,0,0)})
-local node_index = 1
 local density_noise  = {}
 
-local perlin_data = {}
 local data = {}
 
 local c_dirt = get_content_id("aether:dirt")
 local c_stone = get_content_id("aether:stone")
 local c_air = get_content_id("air")
 local c_grass = get_content_id("aether:grass")
+
+local index
+local pos
+local below_index
 
 local constant_area = {x = 80, y = 80, z = 80}
 local constant_perlin
@@ -83,48 +70,33 @@ minetest.register_on_generated(function(minp, maxp)
         return
     end
 
-    perlin_data = constant_perlin:get_3d_map_flat(minp, perlin_data)
-    node_index = 1
+    constant_perlin:get_3d_map_flat(minp, density_noise)
     vm, emin, emax = get_mapgen_object("voxelmanip")
-    area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
-
     vm:get_data(data)
+    area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
+    index = 1
 
-    for z = minp.z, maxp.z do
-    for y = minp.y, maxp.y do
+    -- Use the much faster pointer based iterator
+    -- Important note: z,y,x
+    for weird_index in area:iterp(minp, maxp) do
 
-        vi = area:index(minp.x, y, z)
-        for x = minp.x, maxp.x do
+        if density_noise[index] > 0.1 then
+            data[weird_index] = c_dirt
+        else
+            -- This puts grass on top
+            pos = area:position(weird_index)
+            pos.y = pos.y - 1
+            below_index = area:indexp(pos)
 
-            density_noise = perlin_data[node_index]
-
-            if density_noise > 0.1 then
-                data[vi] = c_dirt
-            else
-                --force create grass
-                n_pos = area:index(x,y-1,z)
-                if data[n_pos] == c_dirt then
-                    data[n_pos] = c_grass
-                end
+            if data[below_index] == c_dirt then
+                data[below_index] = c_grass
             end
-
-            node_index = node_index + 1
-
-            vi = vi + 1
         end
-    end
-    end
 
+        index = index + 1
+    end
 
     vm:set_data(data)
-    vm:set_lighting({day=15,night=10}, minp, maxp)
+    vm:calc_lighting(nil, nil, false)
     vm:write_to_map()
-        
-        
-    -- Liquid nodes were placed so set them flowing.
-    --vm:update_liquids()
-
-    -- Print generation time of this mapchunk.
-    --local chugent = math.ceil((minetest.get_us_time()/1000000- t0) * 1000)
-    --print ("[lvm_example] Mapchunk generation time " .. chugent .. " ms")
 end)
