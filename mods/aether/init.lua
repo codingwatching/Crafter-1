@@ -43,16 +43,18 @@ local function assemble_vec4d( x, y, z, axis, a, b, c )
     return initializing_vector
 end
 
--- Build Queue is build upon 7d vectors with:
+local function match_origin( a, b, c, vec)
+    return vec.a == a and vec.b == b and vec.c == c
+end
+
+-- Queue is build upon 7d vectors with:
 --[[
     x,y,z = new position
     axis = x or z definition (boolean)
     a,b,c = origin position
 ]]
 local build_queue = {}
-
-
-
+local deletion_queue = {}
 
 
 --branch out from center
