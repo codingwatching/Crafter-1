@@ -61,6 +61,3 @@ minetest.register_globalstep(function()
         ::continue::
     end
 end)
-
-
---coal armor stops fire from hurting you
