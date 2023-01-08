@@ -1,8 +1,8 @@
-local VoxelArea = VoxelArea
-local get_content_id = minetest.get_content_id
-local get_perlin_map = minetest.get_perlin_map
+local VoxelArea         = VoxelArea
+local get_content_id    = minetest.get_content_id
+local get_perlin_map    = minetest.get_perlin_map
 local get_mapgen_object = minetest.get_mapgen_object
-local vec_new = vector.new
+local vec_new           = vector.new
 
 minetest.register_biome({
     name = "aether",
