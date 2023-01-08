@@ -138,7 +138,11 @@ local manage_eating = function(player,dtime)
 
     -- Is eating
 
-    item = player:get_wielded_item():get_name()
+
+    -- Abusing dynamic types
+    item = player:get_wielded_item()
+    if not item then return end
+    item = item:get_name()
 
     satiation = get_item_group( item, "satiation" )
     hunger = get_item_group( item, "hunger" )
