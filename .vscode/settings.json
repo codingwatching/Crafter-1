@@ -6,7 +6,6 @@
         "ItemStack",
         "dump_craft",
         "player_can_be_punched",
-        "send_running_cancellation",
         "is_player_swimming",
         "get_player_state"
     ]
