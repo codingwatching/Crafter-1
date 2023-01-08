@@ -75,8 +75,7 @@ end)
 
 
 
--- allows other mods to retrieve data for the game to use
-local name
+-- Allows other mods to retrieve data for the game to use
 get_player_state = function(player)
     name = player:get_player_name()
     return(pool[name].state)
@@ -87,7 +86,7 @@ is_player_swimming = function(player)
     return(pool[name].swimming)
 end
 
--- controls player states
+-- Controls player states
 local hunger
 local head
 local legs
@@ -103,14 +102,14 @@ local control_state = function(player)
     temp_pool = pool[name]
 
 
-    -- water movement data
+    -- Water movement data
     head = minetest.get_item_group(get_player_head_env(player),"water") > 0
     -- TODO: implement legs
     legs = minetest.get_item_group(get_player_legs_env(player),"water") > 0
 
     in_water = temp_pool.swimming
 
-    --check if in water
+    -- Check if in water
     if head then
         in_water = true
         temp_pool.swimming = true
@@ -127,7 +126,7 @@ local control_state = function(player)
                 player:add_velocity(vector.new(0,9,0))
             end
         end
-    end    
+    end
     if (in_water ~= temp_pool.was_in_water) or 
     (temp_pool.state ~= temp_pool.old_state) or 
     ((temp_pool.state == 1 or temp_pool.state == 2) and hunger <= 6) then
@@ -174,12 +173,13 @@ local control_state = function(player)
             player:set_fov(1, true,0.15)
             player:set_physics_override({speed=1})
 
-            send_running_cancellation(player,temp_pool.state==3) --preserve network data
-            
+            -- Preserve network data
+            send_running_cancellation(player,temp_pool.state==3)
         elseif (temp_pool.state == 1 or temp_pool.state == 2) and hunger <= 6 then
             player:set_fov(1, true,0.15)
-            player:set_physics_override({speed=1})                
-            send_running_cancellation(player,false) --preserve network data
+            player:set_physics_override({speed=1})
+            -- Preserve network data
+            send_running_cancellation(player,false)
         end
 
         --sneaking
@@ -194,15 +194,15 @@ local control_state = function(player)
         temp_pool.old_state    = state
         temp_pool.was_in_water = in_water
     
-    -- water movement
+    -- Water movement
 
     elseif in_water then
         if not temp_pool.was_in_water then
             player:set_physics_override({
-                sneak   = false ,
+                sneak = false,
             })
         end
-        temp_pool.old_state    = temp_pool.old_state
+        temp_pool.old_state = temp_pool.old_state
         temp_pool.was_in_water = in_water
     end
 
