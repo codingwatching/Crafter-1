@@ -310,44 +310,40 @@ local destroy_aether_portal_failure = false
 local destroy_aether_portal_failed = false
 
 --this can be used globally to create aether portals from obsidian
-local function local_destroy_aether_portal(pos,origin,axis)
+local function local_destroy_aether_portal(pos,origin)
     --create the origin node for stored memory
     if not origin then
         origin = pos
-    end        
+    end
     --3d virtual memory map creation (x axis)
     for x = -1,1 do
     for z = -1,1 do
     for y = -1,1 do
         --index only direct neighbors
-        if (abs(x)+abs(z)+abs(y) == 1) then
-            local i = add_vector(pos,new_vector(x,y,z))
-            
-            execute_collection = true
-            
-            if destroy_a_index[i.x] and destroy_a_index[i.x][i.y] then
-                if destroy_a_index[i.x][i.y][i.z] then
-                    execute_collection = false
-                end
-            end    
-            
-            if execute_collection == true then
-                --print(get_node(i).name)
-                --index air
-                if get_node(i).name == "aether:portal" then
-                    if vec_distance(i,origin) < 50 then
-                        --add data to both maps
-                        if not destroy_a_index[i.x] then destroy_a_index[i.x] = {} end
-                        if not destroy_a_index[i.x][i.y] then destroy_a_index[i.x][i.y] = {} end
-                        destroy_a_index[i.x][i.y][i.z] = {aether_portal=1} --get_group(i,"redstone_power")}                
-                        --the data to the 3d array must be written to memory before this is executed
-                        --or a stack overflow occurs!!!
-                        --pass down info for activators
-                        destroy_aether_portal(i,origin,"z")
-                    end
-                end
-            end
-        end
+        if (abs(x)+abs(z)+abs(y) ~= 1) then goto continue end
+
+        local i = add_vector(pos,new_vector(x,y,z))
+
+        execute_collection = true
+
+        execute_collection = not (destroy_a_index[i.x] and destroy_a_index[i.x][i.y] and destroy_a_index[i.x][i.y][i.z])
+
+        if not execute_collection then goto continue end
+
+        if get_node(i).name ~= "aether:portal" then goto continue end
+
+        if vec_distance(i,origin) >= 50 then goto continue end
+
+        --add data to both maps
+        if not destroy_a_index[i.x] then destroy_a_index[i.x] = {} end
+        if not destroy_a_index[i.x][i.y] then destroy_a_index[i.x][i.y] = {} end
+        destroy_a_index[i.x][i.y][i.z] = {aether_portal=1} --get_group(i,"redstone_power")}                
+        --the data to the 3d array must be written to memory before this is executed
+        --or a stack overflow occurs!!!
+        --pass down info for activators
+        local_destroy_aether_portal(i,origin)
+
+        ::continue::
     end
     end
     end
