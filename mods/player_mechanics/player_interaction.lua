@@ -145,38 +145,36 @@ end)
 -- Replace stack when you are building, aka, when you place the last node it will try to plop one back into your hand
 local old
 local new
-minetest.register_on_placenode(function(position, newnode, placer, oldnode, itemstack, pointed_thing)
+minetest.register_on_placenode(function(_, _, placer, _, itemstack)
 
     old = itemstack:get_name()
 
     -- Pass through to check
 
-    minetest_after(0,function(_, _, placer2, _, _, _,old2)
-        if not placer then
-            return
-        end
-        new = placer2:get_wielded_item():get_name()
+    minetest_after( 0, function()
+        if not placer then return end
+        new = placer:get_wielded_item():get_name()
 
         if old == new and new ~= "" then return end
 
-        inv = placer2:get_inventory()
+        inv = placer:get_inventory()
 
         -- Check if the inventory has another one of the items
-        if not inv:contains_item("main", old2) then return end
+        if not inv:contains_item("main", old) then return end
 
         --run through inventory
         for i = 1,inv:get_size("main") do
 
-            if inv:get_stack("main", i):get_name() ~= old2 then goto continue end
+            if inv:get_stack("main", i):get_name() ~= old then goto continue end
 
             -- If found set wielded item and remove old stack
 
             count = inv:get_stack("main", i):get_count()
-            placer2:set_wielded_item(old2.." "..count)
+            placer:set_wielded_item( old.." "..count )
             inv:set_stack("main",i,ItemStack(""))
 
             play_sound("pickup", {
-                to_player = placer2,
+                to_player = placer,
                 gain = 0.7,
                 pitch = random( 60, 100 ) / 100
             })
@@ -187,7 +185,7 @@ minetest.register_on_placenode(function(position, newnode, placer, oldnode, item
             ::continue::
         end
 
-    end,position, newnode, placer, oldnode, itemstack, pointed_thing,old)
+    end)
 end)
 
 local do_critical_particles = function(position)
