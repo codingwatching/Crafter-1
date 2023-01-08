@@ -1,16 +1,16 @@
-local pairs = pairs
-local ipairs = ipairs
-local vec_new = vector.new
-local table_insert = table.insert
-local find_nodes   = minetest.find_nodes_in_area
-local get_item_group = minetest.get_item_group
-local sound_play = minetest.sound_play
-local add_particlespawner = minetest.add_particlespawner
-local get_node_or_nil = minetest.get_node_or_nil
+local pairs                 = pairs
+local ipairs                = ipairs
+local vec_new               = vector.new
+local table_insert          = table.insert
+local find_nodes            = minetest.find_nodes_in_area
+local get_item_group        = minetest.get_item_group
+local sound_play            = minetest.sound_play
+local add_particlespawner   = minetest.add_particlespawner
+local get_node_or_nil       = minetest.get_node_or_nil
 local get_connected_players = minetest.get_connected_players
-local math_random = math.random
-local math_abs = math.abs
-local math_ceil = math.ceil
+local math_random           = math.random
+local math_abs              = math.abs
+local math_ceil             = math.ceil
 
 local pos
 local name
