@@ -42,7 +42,7 @@ local aether_portal_failure = false
 local x_failed = false
 local execute_collection
 --this can be used globally to create aether portals from obsidian
-function create_aether_portal(pos,origin,axis)
+local function local_create_aether_portal(pos,origin,axis)
     --create the origin node for stored memory
     if not origin then
         origin = pos
@@ -81,17 +81,17 @@ function create_aether_portal(pos,origin,axis)
                             --the data to the 3d array must be written to memory before this is executed
                             --or a stack overflow occurs!!!
                             --pass down info for activators
-                            create_aether_portal(i,origin,"x")
+                            local_create_aether_portal(i,origin,"x")
                         else
                             --print("try z")
                             x_failed = true
                             a_index = {}
-                            create_aether_portal(origin,origin,"z")
+                            local_create_aether_portal(origin,origin,"z")
                         end
                     elseif get_node(i).name ~= "nether:glowstone" then
                         x_failed = true
                         a_index = {}
-                        create_aether_portal(origin,origin,"z")
+                        local_create_aether_portal(origin,origin,"z")
                     end
                 end
             end
@@ -123,7 +123,7 @@ function create_aether_portal(pos,origin,axis)
                             --the data to the 3d array must be written to memory before this is executed
                             --or a stack overflow occurs!!!
                             --pass down info for activators
-                            create_aether_portal(i,origin,"z")
+                            local_create_aether_portal(i,origin,"z")
                         else
                             aether_portal_failure = true
                             a_index = {}
@@ -138,6 +138,9 @@ function create_aether_portal(pos,origin,axis)
         end
     end
 end
+
+-- Send it off into the global scope
+create_aether_portal = local_create_aether_portal
 
 --creates a aether portal in the aether
 --this essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal

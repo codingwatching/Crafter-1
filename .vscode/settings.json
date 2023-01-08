@@ -9,6 +9,7 @@
         "is_player_swimming",
         "get_player_state",
         "VoxelArea",
-        "dump"
+        "dump",
+        "create_aether_portal"
     ]
 }
