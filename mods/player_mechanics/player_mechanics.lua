@@ -5,9 +5,9 @@ local get_us_time = minetest.get_us_time
 
 -- Holds every player's channel
 local state_channels = {}
-local pool           = {}
+local pool = {}
 
--- creates specific channels for players
+-- Creates specific channels for players
 local name
 local temp_pool
 minetest.register_on_joinplayer(function(player)
@@ -48,7 +48,6 @@ minetest.register_on_leaveplayer(function(player)
 end)
 
 -- Tells the client to stop sending running/bunnyhop data
-local name
 send_running_cancellation = function(player,sneaking)
     name = player:get_player_name()
     state_channels[name]:send_all(
@@ -59,7 +58,7 @@ send_running_cancellation = function(player,sneaking)
     ))
 end
 
--- intercept incoming data messages
+-- Intercept incoming data messages
 local channel_decyphered
 local state
 minetest.register_on_modchannel_message(function(channel_name, sender, message)
