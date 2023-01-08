@@ -1,8 +1,4 @@
-
-local
-minetest,vector,math,pairs
-=
-minetest,vector,math,pairs
+local ipairs = ipairs
 
 local pool = {}
 
@@ -12,7 +8,8 @@ local newvel
 local flow_dir
 local name
 minetest.register_globalstep(function()
-    for _,player in ipairs(minetest.get_connected_players()) do
+
+    for _,player in ipairs( minetest.get_connected_players() ) do
         flow_dir = flow(player:get_pos())
         name = player:get_player_name()
         if flow_dir then
