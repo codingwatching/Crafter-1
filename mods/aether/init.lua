@@ -50,37 +50,28 @@ end
 -- Queue is build upon 7d vectors with:
 --[[
     x,y,z = new position
-    axis = x or z definition (boolean)
+    axis = x or z definition (boolean) - false = x, true = z
     a,b,c = origin position
 ]]
 local build_queue = {}
 local deletion_queue = {}
-
-
---branch out from center
---these are assigned initially for a reason
-local a_index = {}
-local aether_portal_failure = false
-local x_failed = false
-local execute_collection
-
--- TODO: Make this a queue not a recursion
--- TODO: make this thing use vectors holy moly
+local steps = {
+    vec_new(  1,  0,  0),
+    vec_new( -1,  0,  0),
+    vec_new(  0,  1,  0),
+    vec_new(  0, -1,  0),
+    vec_new(  0,  0,  1),
+    vec_new(  0,  0, -1),
+}
 
 
 --this can be used globally to create aether portals from obsidian
-local function local_create_aether_portal(pos,origin,axis)
+local function local_create_aether_portal(vec_7d)
 
-    --create the origin node for stored memory
-    if not origin then
-        origin = pos
-        aether_portal_failure = false
-    end
-
-    axis = axis or "x"
+    local axis = vec_7d.axis or false
 
     --2d virtual memory map creation (x axis)
-    if axis == "x" then
+    if not axis then
         for x = -1,1 do
         for y = -1,1 do
 
