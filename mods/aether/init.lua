@@ -72,8 +72,7 @@ local function local_create_aether_portal(vec_7d)
 
     --2d virtual memory map creation (x axis)
     if not axis then
-        for x = -1,1 do
-        for y = -1,1 do
+        for direction in steps do
 
             --index only direct neighbors
 
@@ -110,11 +109,9 @@ local function local_create_aether_portal(vec_7d)
 
             ::continue::
         end
-        end
     --2d virtual memory map creation (z axis)
     elseif axis == "z" then
-        for z = -1,1 do
-        for y = -1,1 do
+        for direction in steps do
             --index only direct neighbors
             if not (x_failed == true and aether_portal_failure == false and (abs(z)+abs(y) == 1)) then goto continue end
 
@@ -144,7 +141,6 @@ local function local_create_aether_portal(vec_7d)
             end
 
             ::continue::
-        end
         end
     end
 end
