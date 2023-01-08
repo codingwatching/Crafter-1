@@ -178,37 +178,20 @@ local destroy_aether_portal_failure = false
 local destroy_aether_portal_failed = false
 
 --this can be used globally to create aether portals from obsidian
-local function local_destroy_aether_portal(pos,origin)
-    --create the origin node for stored memory
-    if not origin then
-        origin = pos
-    end
+local function local_destroy_aether_portal(vec_7d)
+
+    -- TODO: make these a reused heap object
+    local pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
+    local axis = vec_7d.axis
+    local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
+
     --3d virtual memory map creation (x axis)
     for _,position in ipairs(steps_3d) do
-        --index only direct neighbors
-        if (abs(x)+abs(z)+abs(y) ~= 1) then goto continue end
-
-        local i = add_vector(pos,vec_new(x,y,z))
-
-        execute_collection = true
-
-        execute_collection = not (destroy_a_index[i.x] and destroy_a_index[i.x][i.y] and destroy_a_index[i.x][i.y][i.z])
-
-        if not execute_collection then goto continue end
-
-        if get_node(i).name ~= "aether:portal" then goto continue end
-
-        if vec_distance(i,origin) >= 50 then goto continue end
-
-        --add data to both maps
-        if not destroy_a_index[i.x] then destroy_a_index[i.x] = {} end
-        if not destroy_a_index[i.x][i.y] then destroy_a_index[i.x][i.y] = {} end
-        destroy_a_index[i.x][i.y][i.z] = {aether_portal=1} --get_group(i,"redstone_power")}                
-        --the data to the 3d array must be written to memory before this is executed
-        --or a stack overflow occurs!!!
-        --pass down info for activators
-        local_destroy_aether_portal(i,origin)
-
+        local new_position = add_vector(pos,position)
+        if match_full_deletion_queue(vec_7d) then goto continue end
+        if get_node(new_position).name ~= "aether:portal" then goto continue end
+        if vec_distance(new_position,origin) >= 50 then goto continue end
+        insert_new_deletion_item(assemble_vec4d(new_position, axis, origin))
         ::continue::
     end
 end
