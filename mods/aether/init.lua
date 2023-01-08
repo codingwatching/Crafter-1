@@ -367,7 +367,7 @@ minetest.register_globalstep(function(dtime)
     --if indexes exist then calculate redstone
     if a_index and next(a_index) and aether_portal_failure == false then
         --create the old version to help with deactivation calculation
-        local n_copy = t_copy(a_index)
+        local n_copy = table_copy(a_index)
         portal_modify_map(n_copy)
         aether_portal_failure = false
     end
@@ -384,7 +384,7 @@ minetest.register_globalstep(function(dtime)
     --if indexes exist then calculate redstone
     if destroy_a_index and next(destroy_a_index) and destroy_aether_portal_failure == false then
         --create the old version to help with deactivation calculation
-        local destroy_n_copy = t_copy(destroy_a_index)
+        local destroy_n_copy = table_copy(destroy_a_index)
         destroy_portal_modify_map(destroy_n_copy)
     end
     --clear the index to avoid cpu looping wasting processing power
