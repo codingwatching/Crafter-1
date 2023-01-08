@@ -45,6 +45,7 @@ local execute_collection
 -- TODO: Make this a queue not a recursion
 --this can be used globally to create aether portals from obsidian
 local function local_create_aether_portal(pos,origin,axis)
+    
     --create the origin node for stored memory
     if not origin then
         origin = pos
