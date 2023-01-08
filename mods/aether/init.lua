@@ -31,7 +31,7 @@ minetest.register_on_joinplayer(function(player)
     aether_channels[name] = minetest.mod_channel_join(name..":aether_teleporters")
 end)
 
-
+--TODO: add biome information into the thing, or dimensions? or maybe a dimension ID?
 -- Micro 7d vector factory function
 local function assemble_vec4d( x, y, z, axis, a, b, c )
     -- Piggyback on vec3d for new pointers in lua vm
