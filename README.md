@@ -7,7 +7,7 @@ Built using textures from [MineClone 2](https://forum.minetest.net/viewtopic.php
 ---
 ### Be sure to install the clientside mod for this game mode: [Download here](https://github.com/jordan4ibanez/crafter_client)
 ---
-# Discord: https://discord.gg/dRPyvubfyg
+## Discord: https://discord.gg/dRPyvubfyg
 ---
 
 ## If you want to run this on a server you might want to add this to your server minetest.conf:
