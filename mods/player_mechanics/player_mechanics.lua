@@ -1,9 +1,12 @@
 local ipairs = ipairs
 local tonumber = tonumber
+local type = type
 local get_us_time = minetest.get_us_time
 local mod_channel_join = minetest.mod_channel_join
 local serialize = minetest.serialize
-
+local get_item_group = minetest.get_item_group
+local get_connected_players = minetest.get_connected_players
+local vec_new = vector.new
 
 
 -- Holds every player's channel
@@ -107,9 +110,9 @@ local control_state = function(player)
 
 
     -- Water movement data
-    head = minetest.get_item_group(get_player_head_env(player),"water") > 0
+    head = get_item_group(get_player_head_env(player),"water") > 0
     -- TODO: implement legs
-    legs = minetest.get_item_group(get_player_legs_env(player),"water") > 0
+    legs = get_item_group(get_player_legs_env(player),"water") > 0
 
     in_water = temp_pool.swimming
 
@@ -127,7 +130,7 @@ local control_state = function(player)
         elseif swim_bump and get_us_time()/1000000-temp_pool.swim_bumped > 1 then
             if player:get_velocity().y <= 0 then
                 temp_pool.swim_bumped = get_us_time()/1000000
-                player:add_velocity(vector.new(0,9,0))
+                player:add_velocity(vec_new(0,9,0))
             end
         end
     end
@@ -213,7 +216,7 @@ local control_state = function(player)
 end
 
 minetest.register_globalstep(function(dtime)
-    for _,player in ipairs(minetest.get_connected_players()) do
+    for _,player in ipairs(get_connected_players()) do
         control_state(player)
     end
 end)
