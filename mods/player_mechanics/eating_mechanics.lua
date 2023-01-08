@@ -121,8 +121,12 @@ local manage_eating = function(player,dtime)
         return
     end
 
-    local test = get_player_hunger(player)
-    print("player hunger is: " .. tostring(test))
+    -- Can't eat
+    if get_player_hunger(player) >= 20 then
+        eating_step[name] = 0
+        eating_timer[name] = 0
+        return
+    end
 
     -- Is eating
 
