@@ -236,7 +236,7 @@ end
 
 -- The teleporter functions - Stored here for now so I can differentiate this portion of the code from the other parts
 local teleporting_player = nil
-local function teleport_to_overworld(blockpos, action, calls_remaining, param)
+local function teleport_to_overworld(_, _, calls_remaining)
     if calls_remaining > 0 then goto continue end
 
     local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
@@ -251,21 +251,24 @@ local function teleport_to_overworld(blockpos, action, calls_remaining, param)
 
     ::continue::
 end
-local function teleport_to_aether(blockpos, action, calls_remaining, param)
-    if calls_remaining == 0 then
-        local portal_exists = find_node_near(aether_origin_pos, 30, {"aether:portal"})
-        if portal_exists then
-            --print(teleporting_player)
-            if teleporting_player then
-                teleporting_player:set_pos(new_vector(portal_exists.x,portal_exists.y-0.5,portal_exists.z))
-            end
-        end
-        teleporting_player = nil
-    end
+local function teleport_to_aether(_, _, calls_remaining)
+    if calls_remaining > 0 then goto continue end
+
+    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
+
+    if not portal_exists then goto continue end
+    --print(teleporting_player)
+    if not teleporting_player then goto continue end
+
+    teleporting_player:set_pos( new_vector( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
+
+    teleporting_player = nil
+
+    ::continue::
 end
 
 --this initializes all teleporter commands from the client
-minetest.register_on_modchannel_message(function(channel_name, sender, message)
+minetest.register_on_modchannel_message(function(channel_name, sender, _)
     local channel_decyphered = channel_name:gsub(sender,"")
     if channel_decyphered == ":aether_teleporters" then
         local player = minetest.get_player_by_name(sender)
