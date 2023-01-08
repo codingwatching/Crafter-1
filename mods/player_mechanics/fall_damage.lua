@@ -164,11 +164,6 @@ minetest.register_globalstep(function(dtime)
 
         new_vel = player:get_velocity().y
 
-        if damage_memory[name] == nil then
-            damage_memory[name] = 0
-            goto continue
-        end
-
         if damage_memory[name] > 0 then
             damage_memory[name] = damage_memory[name] - dtime
             goto continue
@@ -194,3 +189,11 @@ minetest.register_globalstep(function(dtime)
     end
 end)
 
+-- Sets the intial memory in the memory pool
+-- Let the player log out to reset this, if they find that glitch it's fun
+minetest.register_on_joinplayer(
+    function(player)
+        local player_name = player:get_player_name()
+        damage_memory[player_name] = 0
+    end
+)
