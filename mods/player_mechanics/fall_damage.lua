@@ -51,7 +51,7 @@ local stack_name
 local function calc_fall_damage(player,hp_change)
 
     if cancel_fall_damage(player) then return end
-    
+
     inv = player:get_inventory()
     stack = inv:get_stack("armor_feet", 1)
     stack_name = stack:get_name()
@@ -59,13 +59,13 @@ local function calc_fall_damage(player,hp_change)
     if stack_name ~= "" then
 
         absorption = get_item_group( stack_name, "armor_level" ) * 2
-        
+
         local wear_level = ( ( 9 - get_item_group( stack_name, "armor_level" ) ) * 8 ) * ( 5 - get_item_group( stack_name, "armor_type" ) ) * math_abs( hp_change )
-        
+
         stack:add_wear( wear_level )
-        
+
         inv:set_stack( "armor_feet", 1, stack )
-        
+
         local new_stack = inv:get_stack( "armor_feet", 1 ):get_name()
 
         if new_stack == "" then
