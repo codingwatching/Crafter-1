@@ -383,7 +383,7 @@ minetest.register_globalstep(function()
     --clear the index to avoid cpu looping wasting processing power
     a_index = {}
     
-    
+    -- TODO: why is this even a queue if it's relying on recursion?
     --if indexes exist then calculate redstone
     if destroy_a_index and next(destroy_a_index) and destroy_aether_portal_failure == false then
         --create the old version to help with deactivation calculation
