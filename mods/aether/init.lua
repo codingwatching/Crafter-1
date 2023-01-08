@@ -32,16 +32,18 @@ minetest.register_on_joinplayer(function(player)
 end)
 
 
--- Micro 5d vector factory function
-local function assemble_vec4d( x, y, z, axis, origin )
+-- Micro 7d vector factory function
+local function assemble_vec4d( x, y, z, axis, a, b, c )
     -- Piggyback on vec3d for new pointers in lua vm
     local initializing_vector = vec_new( x, y, z )
     initializing_vector.axis = axis
-    initializing_vector.origin = origin
+    initializing_vector.a = a
+    initializing_vector.b = b
+    initializing_vector.c = c
     return initializing_vector
 end
 
--- Build Queue is build upon 5d vectors with the fourth axis being a boolean
+-- Build Queue is build upon 7d vectors with the fourth axis being a boolean
 local build_queue = {}
 
 
