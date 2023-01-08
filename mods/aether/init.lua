@@ -54,20 +54,23 @@ local function local_create_aether_portal(pos,origin,axis)
     end
 
     axis = axis or "x"
-        
+
+    print("hi " .. axis)
+
     --2d virtual memory map creation (x axis)
     if axis == "x" then
         for x = -1,1 do
         for y = -1,1 do
 
             --index only direct neighbors
-            if not (x_failed == false and (abs(x)+abs(y) == 1)) then return false end
+
+            if not (x_failed == false and (abs(x)+abs(y) == 1)) then goto continue end
 
             local i = add_vector(pos,new_vector(x,y,0))
             
             execute_collection = not(a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
 
-            if not execute_collection then return false end
+            if not execute_collection then goto continue end
 
             if get_node(i).name == "air" then
                 
@@ -91,6 +94,8 @@ local function local_create_aether_portal(pos,origin,axis)
                 a_index = {}
                 local_create_aether_portal(origin,origin,"z")
             end
+
+            ::continue::
         end
         end
     --2d virtual memory map creation (z axis)
@@ -98,13 +103,13 @@ local function local_create_aether_portal(pos,origin,axis)
         for z = -1,1 do
         for y = -1,1 do
             --index only direct neighbors
-            if not (x_failed == true and aether_portal_failure == false and (abs(z)+abs(y) == 1)) then return false end
+            if not (x_failed == true and aether_portal_failure == false and (abs(z)+abs(y) == 1)) then goto continue end
 
             local i = add_vector(pos,new_vector(0,y,z))
 
             execute_collection = not (a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
             
-            if not execute_collection then return false end
+            if not execute_collection then goto continue end
 
             if get_node(i).name == "air" then
                 if vec_distance(i,origin) < 50 then
@@ -124,6 +129,8 @@ local function local_create_aether_portal(pos,origin,axis)
                 aether_portal_failure = true
                 a_index = {}
             end
+
+            ::continue::
         end
         end
     end
@@ -138,7 +145,7 @@ local aether_origin_pos = nil
 
 local function spawn_portal_into_aether_callback(_, _, calls_remaining, param)
 
-    if calls_remaining > 0 then return false end
+    if calls_remaining ~= 0 then return false end
 
     local portal_exists = find_node_near(aether_origin_pos, 30, {"aether:portal"})
             
