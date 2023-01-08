@@ -185,19 +185,26 @@ local function local_destroy_aether_portal(vec_7d)
     local axis = vec_7d.axis
     local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
+    destroy_aether_portal_failed = true
+
     --3d virtual memory map creation (x axis)
     for _,position in ipairs(steps_3d) do
         local new_position = add_vector(pos,position)
         if match_full_deletion_queue(vec_7d) then goto continue end
         if get_node(new_position).name ~= "aether:portal" then goto continue end
         if vec_distance(new_position,origin) >= 50 then goto continue end
+        
         insert_new_deletion_item(assemble_vec4d(new_position, axis, origin))
+        destroy_aether_portal_failed = false
+
         ::continue::
     end
 end
 
 -- Send it out into the global scope
 destroy_aether_portal = local_destroy_aether_portal
+
+
 
 --modify the map with the collected data
 local destroy_sorted_table
@@ -318,7 +325,9 @@ end
 
 
 
+--[[
 minetest.register_globalstep(function()
+    
     --if indexes exist then calculate redstone
     if a_index and next(a_index) and aether_portal_failure == false then
         --create the old version to help with deactivation calculation
@@ -345,6 +354,7 @@ minetest.register_globalstep(function()
     --clear the index to avoid cpu looping wasting processing power
     destroy_a_index = {}
 end)
+]]
 
 
 
