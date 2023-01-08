@@ -5,6 +5,7 @@
         "get_player_hunger",
         "ItemStack",
         "dump_craft",
-        "player_can_be_punched"
+        "player_can_be_punched",
+        "send_running_cancellation"
     ]
 }
