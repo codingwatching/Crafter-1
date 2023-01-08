@@ -69,6 +69,7 @@ local c_grass = get_content_id("aether:grass")
 local constant_area = {x = 80, y = 80, z = 80}
 local constant_perlin
 
+-- This grabs the perlin generator on the start of the server, exactly on the first tick
 minetest.register_on_mods_loaded(function()
     minetest.after(0,function()
         constant_perlin = get_perlin_map(noise_parameters, constant_area)
