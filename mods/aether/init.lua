@@ -5,21 +5,17 @@ dofile(path.."/biomes.lua")
 
 local aether_portal_schematic = aether_portal_schematic
 
-local
-minetest,math,vector,pairs
-=
-minetest,math,vector,pairs
-
 local abs    = math.abs
 local random = math.random
 
 local add_vector   = vector.add
 local sub_vector   = vector.subtract
 local vec_distance = vector.distance
-local new_vector   = vector.new
+local vec_new   = vector.new
 
 local table_copy   = table.copy
 local table_insert = table.insert
+local pairs = pairs
 
 local emerge_area                  = minetest.emerge_area
 local get_node                     = minetest.get_node
@@ -44,6 +40,8 @@ local execute_collection
 
 -- TODO: Make this a queue not a recursion
 -- TODO: make this thing use vectors holy moly
+
+
 --this can be used globally to create aether portals from obsidian
 local function local_create_aether_portal(pos,origin,axis)
 
@@ -64,7 +62,7 @@ local function local_create_aether_portal(pos,origin,axis)
 
             if not (x_failed == false and (abs(x)+abs(y) == 1)) then goto continue end
 
-            local i = add_vector(pos,new_vector(x,y,0))
+            local i = add_vector(pos,vec_new(x,y,0))
             
             execute_collection = not(a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
 
@@ -103,7 +101,7 @@ local function local_create_aether_portal(pos,origin,axis)
             --index only direct neighbors
             if not (x_failed == true and aether_portal_failure == false and (abs(z)+abs(y) == 1)) then goto continue end
 
-            local i = add_vector(pos,new_vector(0,y,z))
+            local i = add_vector(pos,vec_new(0,y,z))
 
             execute_collection = not (a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
             
@@ -199,8 +197,8 @@ local function generate_aether_portal_in_aether(pos)
         pos.y = 0--+random(-30,30)    
         aether_origin_pos = pos
         --prefer height for mountains
-        local min = sub_vector(aether_origin_pos,new_vector(30,30,30))
-        local max = add_vector(aether_origin_pos,new_vector(30,120,30))
+        local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
+        local max = add_vector(aether_origin_pos,vec_new(30,120,30))
         
         --force load the area
         emerge_area(min, max, spawn_portal_into_overworld_callback)
@@ -220,11 +218,11 @@ local function portal_modify_map(n_copy)
         if created_portal then goto continue end
 
         created_portal = true
-        generate_aether_portal_in_aether(new_vector(x,y,z))
+        generate_aether_portal_in_aether(vec_new(x,y,z))
 
         ::continue::
 
-        table_insert(sorted_table, new_vector(x,y,z))
+        table_insert(sorted_table, vec_new(x,y,z))
     end
     end
     end
@@ -252,7 +250,7 @@ local function local_destroy_aether_portal(pos,origin)
         --index only direct neighbors
         if (abs(x)+abs(z)+abs(y) ~= 1) then goto continue end
 
-        local i = add_vector(pos,new_vector(x,y,z))
+        local i = add_vector(pos,vec_new(x,y,z))
 
         execute_collection = true
 
@@ -289,7 +287,7 @@ local function destroy_portal_modify_map(destroy_n_copy)
     for x,datax in pairs(destroy_n_copy) do
     for y,datay in pairs(datax) do
     for z,_ in pairs(datay) do
-        table_insert( destroy_sorted_table, new_vector( x, y, z ) )
+        table_insert( destroy_sorted_table, vec_new( x, y, z ) )
     end
     end
     end
@@ -339,7 +337,7 @@ local function teleport_to_overworld(_, _, calls_remaining)
 
     if not teleporting_player then goto continue end
 
-    teleporting_player:set_pos( new_vector( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
+    teleporting_player:set_pos( vec_new( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
 
     teleporting_player = nil
 
@@ -354,7 +352,7 @@ local function teleport_to_aether(_, _, calls_remaining)
     --print(teleporting_player)
     if not teleporting_player then goto continue end
 
-    teleporting_player:set_pos( new_vector( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
+    teleporting_player:set_pos( vec_new( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
 
     teleporting_player = nil
 
@@ -385,8 +383,8 @@ minetest.register_on_modchannel_message(function(channel_name, sender, _)
         pos.y = 0--+random(-30,30)    
         aether_origin_pos = pos
         --prefer height for mountains
-        local min = sub_vector(aether_origin_pos,new_vector(30,30,30))
-        local max = add_vector(aether_origin_pos,new_vector(30,120,30))
+        local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
+        local max = add_vector(aether_origin_pos,vec_new(30,120,30))
 
         --force load the area
         teleporting_player = player
