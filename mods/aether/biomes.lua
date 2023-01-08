@@ -67,6 +67,13 @@ local c_air = get_content_id("air")
 local c_grass = get_content_id("aether:grass")
 
 local constant_area = {x = 80, y = 80, z = 80}
+local constant_perlin
+
+minetest.register_on_mods_loaded(function()
+    minetest.after(0,function()
+        constant_perlin = get_perlin_map(noise_parameters, constant_area)
+    end)
+end)
 
 minetest.register_on_generated(function(minp, maxp)
 
@@ -75,7 +82,7 @@ minetest.register_on_generated(function(minp, maxp)
         return
     end
 
-    perlin_data = get_perlin_map(noise_parameters, constant_area):get_3d_map_flat(minp, perlin_data)
+    perlin_data = constant_perlin:get_3d_map_flat(minp, perlin_data)
     node_index = 1
     vm, emin, emax = get_mapgen_object("voxelmanip")
     area = VoxelArea:new({MinEdge = emin, MaxEdge = emax})
@@ -88,7 +95,7 @@ minetest.register_on_generated(function(minp, maxp)
         vi = area:index(minp.x, y, z)
         for x = minp.x, maxp.x do
 
-            density_noise = perlin_data[ni]
+            density_noise = perlin_data[node_index]
 
             if density_noise > 0.1 then
                 data[vi] = c_dirt
