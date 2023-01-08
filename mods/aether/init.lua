@@ -55,8 +55,6 @@ local function local_create_aether_portal(pos,origin,axis)
 
     axis = axis or "x"
 
-    print("hi " .. axis)
-
     --2d virtual memory map creation (x axis)
     if axis == "x" then
         for x = -1,1 do
