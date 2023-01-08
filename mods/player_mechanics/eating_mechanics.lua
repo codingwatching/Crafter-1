@@ -95,6 +95,7 @@ local finish_eating = function(player,timer)
         gain = 0.025,
         pitch = math_random( 60, 85 ) / 100
     })
+
     return(0)
 end
 
