@@ -9,6 +9,7 @@ local vec_add = vector.add
 local vec_multiply = vector.multiply
 local math_random = math.random
 
+local name
 local eating_step = {}
 local eating_timer = {}
 
@@ -29,34 +30,16 @@ local particle_constant = {
     vertical = false,
 }
 
--- creates volitile data for the game to use
-local name
-
-local create_data = function(player)
-    name = player:get_player_name()
-    if not food_control_pool[name] then
-        food_control_pool[name] = {
-            eating_step  = 0,
-            eating_timer = 0,
-        }
-    end
-end
-
-
--- removes movement data
-local name
-local terminate = function(player)
-    name = player:get_player_name()
-    if food_control_pool[name] then
-        food_control_pool[name] = nil
-    end
-end
-
 minetest.register_on_joinplayer(function(player)
-    create_data(player)
+    name = player:get_player_name()
+    eating_step[name] = 0
+    eating_timer[name] = 0
 end)
+
 minetest.register_on_leaveplayer(function(player)
-    terminate(player)
+    name = player:get_player_name()
+    eating_step[name] = nil
+    eating_timer[name] = nil
 end)
 
 -- manages player eating effects
