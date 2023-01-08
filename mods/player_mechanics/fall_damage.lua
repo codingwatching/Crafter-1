@@ -200,3 +200,12 @@ minetest.register_on_joinplayer(
         pool[player_name] = 0
     end
 )
+
+-- Free the heap
+minetest.register_on_leaveplayer(
+    function(player)
+        local player_name = player:get_player_name()
+        damage_memory[player_name] = nil
+        pool[player_name] = nil
+    end
+)
