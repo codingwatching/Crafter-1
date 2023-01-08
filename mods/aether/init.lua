@@ -67,11 +67,20 @@ end
 local function match_full_build_queue(vec)
     for _,this in ipairs(build_queue) do
         for key,value in this do
-            if not vec[key] == value then goto continue end
+            if vec[key] ~= value then goto continue end
         end
         ::continue::
     end
 end
+local function match_full_deletion_queue(vec)
+    for _,this in ipairs(deletion_queue) do
+        for key,value in this do
+            if vec[key] ~= value then goto continue end
+        end
+        ::continue::
+    end
+end
+
 
 
 --this can be used globally to create aether portals from obsidian
