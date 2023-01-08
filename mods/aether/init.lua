@@ -51,51 +51,44 @@ local function local_create_aether_portal(pos,origin,axis)
         origin = pos
         aether_portal_failure = false
     end
-    
+
     axis = axis or "x"
         
     --2d virtual memory map creation (x axis)
     if axis == "x" then
         for x = -1,1 do
         for y = -1,1 do
+
             --index only direct neighbors
-            if x_failed == false and (abs(x)+abs(y) == 1) then
-                local i = add_vector(pos,new_vector(x,y,0))
+            if not (x_failed == false and (abs(x)+abs(y) == 1)) then return false end
+
+            local i = add_vector(pos,new_vector(x,y,0))
+            
+            execute_collection = not(a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
+
+            if not execute_collection then return false end
+            
+            if get_node(i).name == "air" then
                 
-                execute_collection = true
-                
-                if a_index[i.x] and a_index[i.x][i.y] then
-                    if a_index[i.x][i.y][i.z] then
-                        execute_collection = false
-                    end
-                end    
-                
-                if execute_collection == true then
-                    --print(get_node(i).name)
-                    --index air
-                    if get_node(i).name == "air" then
-                        
-                        if vec_distance(i,origin) < 50 then
-                            --add data to both maps
-                            if not a_index[i.x] then a_index[i.x] = {} end
-                            if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
-                            a_index[i.x][i.y][i.z] = {aether_portal=1} --get_group(i,"redstone_power")}        
-                            --the data to the 3d array must be written to memory before this is executed
-                            --or a stack overflow occurs!!!
-                            --pass down info for activators
-                            local_create_aether_portal(i,origin,"x")
-                        else
-                            --print("try z")
-                            x_failed = true
-                            a_index = {}
-                            local_create_aether_portal(origin,origin,"z")
-                        end
-                    elseif get_node(i).name ~= "nether:glowstone" then
-                        x_failed = true
-                        a_index = {}
-                        local_create_aether_portal(origin,origin,"z")
-                    end
+                if vec_distance(i,origin) < 50 then
+                    --add data to both maps
+                    if not a_index[i.x] then a_index[i.x] = {} end
+                    if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
+                    a_index[i.x][i.y][i.z] = {aether_portal=1} --get_group(i,"redstone_power")}        
+                    --the data to the 3d array must be written to memory before this is executed
+                    --or a stack overflow occurs!!!
+                    --pass down info for activators
+                    local_create_aether_portal(i,origin,"x")
+                else
+                    --print("try z")
+                    x_failed = true
+                    a_index = {}
+                    local_create_aether_portal(origin,origin,"z")
                 end
+            elseif get_node(i).name ~= "nether:glowstone" then
+                x_failed = true
+                a_index = {}
+                local_create_aether_portal(origin,origin,"z")
             end
         end
         end
