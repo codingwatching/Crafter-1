@@ -9,7 +9,8 @@ local vec_add = vector.add
 local vec_multiply = vector.multiply
 local math_random = math.random
 
-local food_control_pool  = {}
+local eating_step = {}
+local eating_timer = {}
 
 local particle_constant = {
     amount = 12,
@@ -30,6 +31,7 @@ local particle_constant = {
 
 -- creates volitile data for the game to use
 local name
+
 local create_data = function(player)
     name = player:get_player_name()
     if not food_control_pool[name] then
