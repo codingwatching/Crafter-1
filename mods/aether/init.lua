@@ -156,9 +156,9 @@ local function spawn_portal_into_aether_callback(_, _, calls_remaining, param)
     local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
     
     if platform and next(platform) then
-        place_schematic( platform[ random( 1, #platform )] , aetherportalSchematic, "0", nil, true, "place_center_x, place_center_z" )
+        place_schematic( platform[ random( 1, #platform )] , aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
     else
-        place_schematic( aether_origin_pos, aetherportalSchematic, "0", nil, true, "place_center_x, place_center_z" )
+        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
     end
 end
 --creates aether portals in the overworld
@@ -175,10 +175,10 @@ local function spawn_portal_into_overworld_callback(blockpos, action, calls_rema
                 --print("setting the platform")
                 local platform_location = platform[random(1,#platform)]
                 
-                place_schematic(platform_location, aetherportalSchematic,"0",nil,true,"place_center_x, place_center_z")
+                place_schematic(platform_location, aether_portal_schematic,"0",nil,true,"place_center_x, place_center_z")
             else
                 --print("generate a portal within overworld stone")
-                place_schematic(aether_origin_pos, aetherportalSchematic,"0",nil,true,"place_center_x, place_center_z")
+                place_schematic(aether_origin_pos, aether_portal_schematic,"0",nil,true,"place_center_x, place_center_z")
             end
         else
             --print("portal exists, utilizing")
