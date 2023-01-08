@@ -1,12 +1,17 @@
 local register_on_joinplayer = minetest.register_on_joinplayer
 
+local release_state = "Alpha"
+local release_version = "0.07b"
+
+local version_info = release_state .. " " .. release_version
+
 local function addVersionInfo(player)
 
     -- This adds the version info to the hud to emulate how MC used to show it
 
     player:hud_add({
         name = "versionbg",
-        text = "Alpha 0.07b",
+        text = version_info,
         hud_elem_type = "text",
         position = {
             x = 1,
@@ -30,7 +35,7 @@ local function addVersionInfo(player)
             y = 0
         },
         name = "versionfg",
-        text = "Alpha 0.07b",
+        text = version_info,
         number = 0xFFFFFF,
         offset = {
             x = -100,
