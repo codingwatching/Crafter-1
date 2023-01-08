@@ -18,7 +18,6 @@ local saving_nodes
 local real_nodes
 local a_min
 local a_max
-local _
 
 local cancel_fall_damage = function(player)
     name = player:get_player_name()
