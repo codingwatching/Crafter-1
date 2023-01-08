@@ -143,11 +143,11 @@ local aether_origin_pos = nil
 
 local function spawn_portal_into_aether_callback(_, _, calls_remaining, param)
 
-    if calls_remaining ~= 0 then return false end
+    if calls_remaining > 0 then goto continue end
 
     local portal_exists = find_node_near(aether_origin_pos, 30, {"aether:portal"})
             
-    if portal_exists then return false end
+    if portal_exists then goto continue end
 
     local min = sub_vector(aether_origin_pos,30)
     local max = add_vector(aether_origin_pos,30)
@@ -158,6 +158,8 @@ local function spawn_portal_into_aether_callback(_, _, calls_remaining, param)
     else
         place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
     end
+
+    ::continue::
 end
 --creates aether portals in the overworld
 local function spawn_portal_into_overworld_callback(blockpos, action, calls_remaining, param)
