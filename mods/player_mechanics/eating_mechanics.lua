@@ -1,13 +1,12 @@
-local ipairs = ipairs
-local pairs = pairs
-local add_particlespawner = minetest.add_particlespawner
-local sound_play = minetest.sound_play
+local ipairs                = ipairs
+local add_particlespawner   = minetest.add_particlespawner
+local sound_play            = minetest.sound_play
 local get_connected_players = minetest.get_connected_players
-local get_item_group = minetest.get_item_group
-local table_copy = table.copy
-local vec_add = vector.add
-local vec_multiply = vector.multiply
-local math_random = math.random
+local get_item_group        = minetest.get_item_group
+local table_copy            = table.copy
+local vec_add               = vector.add
+local vec_multiply          = vector.multiply
+local math_random           = math.random
 
 -- This is pulled from mods/hunger/init.lua
 local eat_food = player_eat_food
