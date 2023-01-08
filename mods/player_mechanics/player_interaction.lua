@@ -1,12 +1,14 @@
-local type = type
-local add_item     = minetest.add_item
-local random       = math.random
-local play_sound   = minetest.sound_play
-local add_ps       = minetest.add_particlespawner
-local abs          = math.abs
-local ceil         = math.ceil
-local vec_new      = vector.new
-local vec_multiply = vector.multiply
+local type                = type
+local add_item            = minetest.add_item
+local random              = math.random
+local play_sound          = minetest.sound_play
+local add_particlespawner = minetest.add_particlespawner
+local math_abs            = math.abs
+local math_ceil           = math.ceil
+local vec_new             = vector.new
+local vec_multiply        = vector.multiply
+local minetest_after      = minetest.after
+local get_us_time         = minetest.get_us_time
 
 -- Hurt sound and disable fall damage group handling
 minetest.register_on_player_hpchange(function(player, hp_change, reason)
@@ -122,17 +124,17 @@ end)
 local node
 local sound
 local placing
-minetest.register_on_placenode(function(pos, newnode, _, _, _, _)
+minetest.register_on_placenode(function(position, newnode, _, _, _, _)
     node = registered_nodes[newnode.name]
     sound = node.sounds
     placing = ""
     if sound then
         placing = sound.placing
     end
-    --only play the sound when is defined
+    -- Only play the sound when is defined
     if type(placing) == "table" then
         play_sound(placing.name, {
-              pos = pos,
+              pos = position,
               gain = placing.gain,
               max_hear_distance = 32,
               --pitch = random(60,100)/100
@@ -149,7 +151,7 @@ minetest.register_on_placenode(function(position, newnode, placer, oldnode, item
 
     -- Pass through to check
 
-    minetest.after(0,function(_, _, placer2, _, _, _,old2)
+    minetest_after(0,function(_, _, placer2, _, _, _,old2)
         if not placer then
             return
         end
@@ -184,20 +186,20 @@ minetest.register_on_placenode(function(position, newnode, placer, oldnode, item
 
             ::continue::
         end
-        
+
     end,position, newnode, placer, oldnode, itemstack, pointed_thing,old)
 end)
 
-local do_critical_particles = function(pos)
-    add_ps({
+local do_critical_particles = function(position)
+    add_particlespawner({
         amount = 40,
         time = 0.001,
-        minpos = pos,
-        maxpos = pos,
-        minvel = vec_new(-2,-2,-2),
-        maxvel = vec_new(2,8,2),
-        minacc = {x=0, y=4, z=0},
-        maxacc = {x=0, y=12, z=0},
+        minpos = position,
+        maxpos = position,
+        minvel = vec_new( -2, -2, -2 ),
+        maxvel = vec_new( 2, 8, 2 ),
+        minacc = { x = 0, y = 4, z = 0},
+        maxacc = { x = 0, y = 12, z = 0 },
         minexptime = 1.1,
         maxexptime = 1.5,
         minsize = 1,
@@ -208,37 +210,34 @@ local do_critical_particles = function(pos)
     })
 end
 
---we need to do this to override the default damage mechanics
+-- This needs to be done to override the default damages mechanics
 local pool = {}
 
-local name
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
-    pool[name] = minetest.get_us_time()/1000000
+    pool[name] = get_us_time() / 1000000
 end)
 
-local name
 function player_can_be_punched(player)
     name = player:get_player_name()
-    return((minetest.get_us_time()/1000000)-pool[name] >= 0.5)
+    return( ( get_us_time() / 1000000 ) - pool[name] >= 0.5 )
 end
 
---this throws the player when they're punched and activates the custom damage mechanics
-local name
+-- This throws the player when they're punched and activates the custom damage mechanics
 local temp_pool
 local hurt
 local punch_diff
-local hurt
 local hp
 local puncher_vel
 local vel
 local hp_modifier
 local modify_output
-minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, tool_capabilities, dir, damage)
+minetest.register_on_punchplayer(function(player, hitter, _, tool_capabilities, dir, _)
+
     name = player:get_player_name()
     temp_pool = pool[name]
 
-    punch_diff = (minetest.get_us_time()/1000000)-temp_pool
+    punch_diff = ( get_us_time() / 1000000 ) - temp_pool
 
     hurt = tool_capabilities.damage_groups.damage
     if not hurt then
@@ -246,56 +245,58 @@ minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, 
     end
     hp = player:get_hp()
 
-    if punch_diff >= 0.5 and hp > 0 then
-        
-        temp_pool = minetest.get_us_time()/1000000
+    if not (punch_diff >= 0.5 and hp > 0) then return end
 
-        if hitter:is_player() and hitter ~= player then
-            puncher_vel = hitter:get_velocity().y
-            if puncher_vel < 0 then
-                hurt = hurt * 1.5
-                do_critical_particles(player:get_pos())
-                play_sound("critical", {pos=player:get_pos(), gain = 0.1, max_hear_distance = 16,pitch = random(80,100)/100})
-            end
+    temp_pool = get_us_time() / 1000000
+
+    if hitter:is_player() and hitter ~= player then
+        puncher_vel = hitter:get_velocity().y
+        if puncher_vel < 0 then
+            hurt = hurt * 1.5
+            do_critical_particles(player:get_pos())
+            play_sound("critical", {
+                pos = player:get_pos(),
+                gain = 0.1,
+                max_hear_distance = 16,
+                pitch = random( 80, 100 ) / 100
+            })
         end
-
-        dir = vec_multiply(dir,10)
-        vel = player:get_velocity()
-        dir.y = 0
-        if vel.y <= 0 then
-            dir.y = 7
-        end
-
-        hp_modifier = ceil(calculate_armor_absorbtion(player)/3)
-        --print("hp_modifier:",hp_modifier)
-        damage_armor(player,abs(hurt))
-
-        --print("hurt:",hurt,"|","hp_modifier:",hp_modifier)
-        modify_output = (hurt == 0)
-        
-        hurt = hurt - hp_modifier
-
-        if not modify_output and hurt <= 0 then
-            hurt = 1
-        elseif modify_output then
-            hurt = 0
-        end
-
-        player:add_velocity(dir)
-
-        player:set_hp(hp-hurt)
     end
+
+    dir = vec_multiply(dir,10)
+    vel = player:get_velocity()
+    dir.y = 0
+    if vel.y <= 0 then
+        dir.y = 7
+    end
+
+    hp_modifier = math_ceil( calculate_armor_absorbtion( player ) / 3 )
+
+    damage_armor( player, math_abs( hurt ) )
+
+    modify_output = ( hurt == 0 )
+
+    hurt = hurt - hp_modifier
+
+    if not modify_output and hurt <= 0 then
+        hurt = 1
+    elseif modify_output then
+        hurt = 0
+    end
+
+    player:add_velocity(dir)
+
+    player:set_hp( hp - hurt )
 end)
 
-local inv
 minetest.register_on_respawnplayer(function(player)
-    player:add_velocity(vec_multiply(player:get_velocity(),-1))
+    player:add_velocity( vec_multiply( player:get_velocity(), -1 ) )
     inv = player:get_inventory()
-    inv:set_list("main", {})
-    inv:set_list("craft", {})
-    inv:set_list("craftpreview", {})
-    inv:set_list("armor_head", {})
-    inv:set_list("armor_torso", {})
-    inv:set_list("armor_legs", {})
-    inv:set_list("armor_feet", {})
+    inv:set_list( "main", {} )
+    inv:set_list( "craft", {} )
+    inv:set_list( "craftpreview", {} )
+    inv:set_list( "armor_head", {} )
+    inv:set_list( "armor_torso", {} )
+    inv:set_list( "armor_legs", {} )
+    inv:set_list( "armor_feet", {} )
 end)
