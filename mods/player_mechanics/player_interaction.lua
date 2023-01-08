@@ -32,12 +32,12 @@ local obj
 local name
 
 -- Dumps the inventory specified and slot
-local function auto_dump(inv_name, slot)
+local function auto_dump(inv_name, slot, position)
     stack = inv:get_stack(inv_name, slot)
     name = stack:get_name()
 
     if name ~= "" then
-        obj = add_item( pos, stack )
+        obj = add_item( position, stack )
         if obj then
             obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
         end
@@ -92,10 +92,10 @@ minetest.register_on_dieplayer(function(player)
         ::continue::
     end
 
-    auto_dump( "armor_head", 1 )
-    auto_dump( "armor_torso", 1 )
-    auto_dump( "armor_legs", 1 )
-    auto_dump( "armor_feet", 1 )
+    auto_dump( "armor_head", 1, pos )
+    auto_dump( "armor_torso", 1, pos )
+    auto_dump( "armor_legs", 1, pos )
+    auto_dump( "armor_feet", 1, pos )
 
     local_dump_craft(player)
 
@@ -112,11 +112,12 @@ minetest.register_on_mods_loaded(function()
     registered_nodes = minetest.registered_nodes
 end)
 
---play sound to keep up with player's placing vs inconsistent client placing sound 
+-- Play sound to keep up with player's placing vs inconsistent client placing sound
+-- This also makes it easier for a player to tell how much lag the server has
 local node
 local sound
 local placing
-minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing)
+minetest.register_on_placenode(function(pos, newnode, _, _, _, _)
     node = registered_nodes[newnode.name]
     sound = node.sounds
     placing = ""
@@ -135,14 +136,13 @@ minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack
 end)
 
 -- Replace stack when you are building, aka, when you place the last node it will try to plop one back into your hand
-local new
-local inv
-local old
-local count
 minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing)
+
     old = itemstack:get_name()
-    --pass through to check
-    minetest.after(0,function(pos, newnode, placer, oldnode, itemstack, pointed_thing,old)
+
+    -- Pass through to check
+
+    minetest.after(0,function(_, _, placer, _, _, _,old)
         if not placer then
             return
         end
