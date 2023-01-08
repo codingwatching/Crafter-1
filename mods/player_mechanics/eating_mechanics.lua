@@ -133,10 +133,11 @@ local manage_eating = function(player,dtime)
         return
     end
 
-    name    = player:get_player_name()
-    pool    = food_control_pool[name]
+    -- Is eating
 
-    -- Eating
+    name = player:get_player_name()
+    pool = food_control_pool[name]
+
     item = player:get_wielded_item():get_name()
 
     satiation = get_item_group( item, "satiation" )
