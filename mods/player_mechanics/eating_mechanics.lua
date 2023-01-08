@@ -42,7 +42,7 @@ minetest.register_on_leaveplayer(function(player)
     eating_timer[name] = nil
 end)
 
--- manages player eating effects
+-- Logic for player eating effects
 local position
 local velocity
 local offset
@@ -59,14 +59,14 @@ local manage_eating_effects = function(player,timer,sneaking,item)
         offset = 0.3
     end
 
-    position = vec_add(position, vec_multiply(player:get_look_dir(),offset))
+    position = vec_add( position, vec_multiply( player:get_look_dir(), offset ) )
 
-    temp_particle = table_copy(particle_constant)
-    temp_particle.minpos = vec_add(position,temp_particle.minpos)
-    temp_particle.maxpos = vec_add(position,temp_particle.maxpos)
-    temp_particle.minvel = vec_add(velocity,temp_particle.minvel)
-    temp_particle.maxvel = vec_add(velocity,temp_particle.maxvel)
-    temp_particle.node   = {name=item.."node"}
+    temp_particle = table_copy( particle_constant )
+    temp_particle.minpos = vec_add( position,temp_particle.minpos )
+    temp_particle.maxpos = vec_add( position,temp_particle.maxpos )
+    temp_particle.minvel = vec_add( velocity,temp_particle.minvel )
+    temp_particle.maxvel = vec_add( velocity,temp_particle.maxvel )
+    temp_particle.node   = { name = item.."node" }
 
     add_particlespawner(temp_particle)
 
