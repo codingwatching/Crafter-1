@@ -24,89 +24,29 @@ minetest.register_on_player_hpchange(function(player, hp_change, reason)
     return(hp_change)
 end, true)
 
---throw all items on death
 local pos
 local inv
 local stack
 local count
 local obj
 local name
-minetest.register_on_dieplayer(function(player, reason)
-    pos = player:get_pos()
-    inv = player:get_inventory()
-    
-    for i = 1,inv:get_size("main") do
 
-        stack = inv:get_stack("main", i)
-        name = stack:get_name()
-        count = stack:get_count()
-
-        if name == "" then goto continue end
-
-        -- An explosion of items
-        for _ = 1,count do
-
-            obj = add_item(pos, name)
-            
-            if obj then
-                obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
-            end
-        end
-
-        inv:set_stack("main", i, ItemStack(""))
-
-        ::continue::
-    end
-
-    stack = inv:get_stack("armor_head", 1)
+-- Dumps the inventory specified and slot
+local function auto_dump(inv_name, slot)
+    stack = inv:get_stack(inv_name, slot)
     name = stack:get_name()
+
     if name ~= "" then
-        obj = add_item(pos, stack)
+        obj = add_item( pos, stack )
         if obj then
             obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
         end
-        inv:set_stack("armor_head", 1, ItemStack(""))
+        inv:set_stack(inv_name, slot, ItemStack(""))
     end
+end
 
-    stack = inv:get_stack("armor_torso", 1)
-    name = stack:get_name()
-    if name ~= "" then
-        obj = add_item(pos, stack)
-        if obj then
-            obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
-        end
-        inv:set_stack("armor_torso", 1, ItemStack(""))
-    end
-
-    stack = inv:get_stack("armor_legs", 1)
-    name = stack:get_name()
-    if name ~= "" then
-        obj = add_item(pos, stack)
-        if obj then
-            obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
-        end
-        inv:set_stack("armor_legs", 1, ItemStack(""))
-    end
-
-
-    stack = inv:get_stack("armor_feet", 1)
-    name = stack:get_name()
-    if name ~= "" then
-        obj = add_item(pos, stack)
-        if obj then
-            obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
-        end
-        inv:set_stack("armor_feet", 1, ItemStack(""))
-    end
-
-    dump_craft(player)
-
-    recalculate_armor(player)
-end)
-
-
---this dumps the players crafting table on closing the inventory
-dump_craft = function(player)
+-- This dumps the players crafting table on closing the inventory and on death
+local function local_dump_craft(player)
     pos = player:get_pos()
     inv = player:get_inventory()
     for i = 1,inv:get_size("craft") do
@@ -122,6 +62,49 @@ dump_craft = function(player)
         end
     end
 end
+
+-- Dumps all inventory items in player's inventory onto the ground on death
+minetest.register_on_dieplayer(function(player)
+    pos = player:get_pos()
+    inv = player:get_inventory()
+
+    -- Dumps the main player inventory
+    for i = 1,inv:get_size( "main" ) do
+
+        stack = inv:get_stack( "main", i )
+        name = stack:get_name()
+        count = stack:get_count()
+
+        if name == "" then goto continue end
+
+        -- An explosion of items
+        for _ = 1,count do
+
+            obj = add_item(pos, name)
+
+            if obj then
+                obj:set_velocity( vec_new( random( -3, 3 ), random( 4, 8 ), random( -3, 3 ) ) )
+            end
+        end
+
+        inv:set_stack( "main", i, ItemStack("") )
+
+        ::continue::
+    end
+
+    auto_dump( "armor_head", 1 )
+    auto_dump( "armor_torso", 1 )
+    auto_dump( "armor_legs", 1 )
+    auto_dump( "armor_feet", 1 )
+
+    local_dump_craft(player)
+
+    recalculate_armor(player)
+end)
+
+-- Send it out to global state
+dump_craft = local_dump_craft
+
 
 
 local registered_nodes
