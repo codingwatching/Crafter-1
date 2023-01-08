@@ -15,7 +15,7 @@ local vec_new   = vector.new
 
 local table_copy   = table.copy
 local table_insert = table.insert
-local pairs = pairs
+local ipairs = ipairs
 
 local emerge_area                  = minetest.emerge_area
 local get_node                     = minetest.get_node
@@ -43,10 +43,6 @@ local function assemble_vec4d( x, y, z, axis, a, b, c )
     return initializing_vector
 end
 
-local function match_origin( a, b, c, vec)
-    return vec.a == a and vec.b == b and vec.c == c
-end
-
 -- Queue is build upon 7d vectors with:
 --[[
     x,y,z = new position
@@ -63,6 +59,19 @@ local steps = {
     vec_new(  0,  0,  1),
     vec_new(  0,  0, -1),
 }
+
+local function match_origin( a, b, c, vec)
+    return vec.a == a and vec.b == b and vec.c == c
+end
+
+local function match_full_build_queue(vec)
+    for _,this in ipairs(build_queue) do
+        for key,value in this do
+            if not vec[key] == value then goto continue end
+        end
+        ::continue::
+    end
+end
 
 
 --this can be used globally to create aether portals from obsidian
