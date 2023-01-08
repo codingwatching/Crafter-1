@@ -6,10 +6,7 @@ minetest,vector,math,pairs
 
 local pool = {}
 
-local legs
-local flowing
 local c_flow
-local vel
 local acceleration
 local newvel
 local flow_dir
@@ -22,7 +19,6 @@ minetest.register_globalstep(function()
             --buffer continuation
             if pool[name] then
                 c_flow = pool[name]
-                vel = player:get_velocity()
                 acceleration = nil
                 if c_flow.x ~= 0 then
                     acceleration = vector.new(c_flow.x,0,0)
@@ -41,7 +37,6 @@ minetest.register_globalstep(function()
                 end
             else
                 flow_dir = vector.multiply(flow_dir,10)
-                vel = player:get_velocity()
                 acceleration = nil
                 if flow_dir.x ~= 0 then
                     acceleration = vector.new(flow_dir.x,0,0)
@@ -50,7 +45,7 @@ minetest.register_globalstep(function()
                 end
                 acceleration = vector.multiply(acceleration, 0.075)
                 player:add_velocity(acceleration)
-                pool[name] = flow_dir 
+                pool[name] = flow_dir
             end
         else
             pool[name] = nil
