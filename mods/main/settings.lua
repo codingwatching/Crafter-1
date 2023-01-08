@@ -1,6 +1,6 @@
 local creative_mode = minetest.settings:get_bool("creative_mode")
 
---make stack max 1000 for everything
+--make stack max 64 for everything
 minetest.register_on_mods_loaded(function()
 	for name,def in pairs(minetest.registered_nodes) do
 		if creative_mode == true then
@@ -9,7 +9,7 @@ minetest.register_on_mods_loaded(function()
 		end
 		local stack_max = minetest.registered_items[name].stack_max
 		if stack_max == 99 then
-			stack_max = 1000
+			stack_max = 64
 		end
 		minetest.override_item(name, {
 			stack_max = stack_max,
@@ -19,7 +19,7 @@ minetest.register_on_mods_loaded(function()
 		local stack_max = minetest.registered_items[name].stack_max
 		if stack_max == 99 then
 			minetest.override_item(name, {
-				stack_max = 1000,
+				stack_max = 64,
 			})
 		end
 	end
