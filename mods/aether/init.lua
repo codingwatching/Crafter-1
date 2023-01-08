@@ -53,6 +53,7 @@ end
 -- This is single threaded, only one queue can exist at a time, it will pause the server while it builds it
 local build_queue = {}
 local deletion_queue = {}
+local failure = false
 
 local steps_x = {
     vec_new(  1,  0,  0 ),
@@ -134,9 +135,8 @@ local function local_create_aether_portal(vec_7d)
                 local_create_aether_portal(origin,origin,"z")
             end
         elseif get_node(i).name ~= "nether:glowstone" then
-            x_failed = true
-            a_index = {}
-            local_create_aether_portal(origin,origin,"z")
+            -- This part basically means the portal exceeded the size limit and it failed completely, exits out here in the globalstep
+            failure = true
         end
 
         ::continue::
