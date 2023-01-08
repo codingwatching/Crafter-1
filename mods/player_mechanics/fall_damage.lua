@@ -158,10 +158,6 @@ minetest.register_globalstep(function(dtime)
 
         old_vel = pool[name]
 
-        if not old_vel then
-            goto continue
-        end
-
         new_vel = player:get_velocity().y
 
         if damage_memory[name] > 0 then
@@ -195,5 +191,6 @@ minetest.register_on_joinplayer(
     function(player)
         local player_name = player:get_player_name()
         damage_memory[player_name] = 0
+        pool[player_name] = 0
     end
 )
