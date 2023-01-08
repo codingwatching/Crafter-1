@@ -36,16 +36,26 @@ minetest.register_on_dieplayer(function(player, reason)
     inv = player:get_inventory()
     
     for i = 1,inv:get_size("main") do
+
         stack = inv:get_stack("main", i)
         name = stack:get_name()
         count = stack:get_count()
-        if name ~= "" then
-            obj = add_item(pos, stack)
+
+        if name == "" then goto continue end
+
+        -- An explosion of items
+        for _ = 1,count do
+
+            obj = add_item(pos, name)
+            
             if obj then
                 obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
             end
-            inv:set_stack("main", i, ItemStack(""))
         end
+
+        inv:set_stack("main", i, ItemStack(""))
+
+        ::continue::
     end
 
     stack = inv:get_stack("armor_head", 1)
