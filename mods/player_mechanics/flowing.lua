@@ -31,7 +31,7 @@ minetest.register_globalstep(function()
             elseif flow_dir.z ~= 0 then
                 acceleration = vec_new( 0, 0, flow_dir.z )
             end
-            acceleration = vec_multiply( acceleration, 0.075 )
+            acceleration = vec_multiply( acceleration, 0.0355 )
             player:add_velocity(acceleration)
             pool[name] = flow_dir
             goto continue
@@ -44,7 +44,7 @@ minetest.register_globalstep(function()
         elseif c_flow.z ~= 0 then
             acceleration = vec_new( 0, 0, c_flow.z )
         end
-        acceleration = vec_multiply( acceleration, 0.075 )
+        acceleration = vec_multiply( acceleration, 0.0355 )
         player:add_velocity( acceleration )
 
         newvel = player:get_velocity()
