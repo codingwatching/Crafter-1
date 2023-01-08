@@ -145,14 +145,14 @@ local function spawn_portal_into_aether_callback(_, _, calls_remaining)
 
     if calls_remaining > 0 then goto continue end
 
-    local portal_exists = find_node_near(aether_origin_pos, 30, {"aether:portal"})
-            
+    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
+
     if portal_exists then goto continue end
 
     local min = sub_vector(aether_origin_pos,30)
     local max = add_vector(aether_origin_pos,30)
     local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
-    
+
     if platform and next(platform) then
         place_schematic( platform[ random( 1, #platform )] , aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
     else
