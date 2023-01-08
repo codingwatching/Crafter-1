@@ -89,8 +89,6 @@ end
 
 -- controls player states
 local hunger
-local name
-local temp_pool
 local head
 local legs
 local in_water
@@ -107,6 +105,7 @@ local control_state = function(player)
 
     -- water movement data
     head = minetest.get_item_group(get_player_head_env(player),"water") > 0
+    -- TODO: implement legs
     legs = minetest.get_item_group(get_player_legs_env(player),"water") > 0
 
     in_water = temp_pool.swimming
