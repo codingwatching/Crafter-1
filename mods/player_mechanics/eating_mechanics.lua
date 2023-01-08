@@ -10,7 +10,7 @@ local vec_multiply = vector.multiply
 local math_random = math.random
 
 -- This is pulled from mods/hunger/init.lua
-local player_eat_food = player_eat_food
+local eat_food = player_eat_food
 
 local name
 local eating_step = {}
@@ -93,7 +93,7 @@ local finish_eating = function(player,timer)
 
     item = player:get_wielded_item()
 
-    player_eat_food(player,item)
+    eat_food(player,item)
 
     sound_play( "eat_finish", {
         object = player,
@@ -109,8 +109,6 @@ local satiation
 local hunger
 local current_eating_step
 local current_eating_timer
-
--- TODO: break this down into individual flat tables
 local manage_eating = function(player,dtime)
 
     control = player:get_player_control()
@@ -122,6 +120,9 @@ local manage_eating = function(player,dtime)
         eating_timer[name] = 0
         return
     end
+
+    local test = get_player_hunger(player)
+    print("player hunger is: " .. tostring(test))
 
     -- Is eating
 
