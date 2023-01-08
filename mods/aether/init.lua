@@ -106,71 +106,36 @@ local function local_create_aether_portal(vec_7d)
     local axis = vec_7d.axis or false
 
     --2d virtual memory map creation (x axis)
-    if not axis then
-        for direction in steps_x do
+    for direction in steps[axis_to_integer(axis)] do
+        
+        local i = add_vector(pos,direction)
+
+        if match_full_build_queue(vec_7d) then goto continue end
+
+        if get_node(i).name == "air" then
             
-            local i = add_vector(pos,direction)
-
-            if match_full_build_queue(vec_7d) then goto continue end
-
-            if get_node(i).name == "air" then
-                
-                if vec_distance(i,origin) < 50 then
-                    --add data to both maps
-                    if not a_index[i.x] then a_index[i.x] = {} end
-                    if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
-                    a_index[i.x][i.y][i.z] = {aether_portal=1} --get_group(i,"redstone_power")}        
-                    --the data to the 3d array must be written to memory before this is executed
-                    --or a stack overflow occurs!!!
-                    --pass down info for activators
-                    local_create_aether_portal(i,origin,"x")
-                else
-                    --print("try z")
-                    x_failed = true
-                    a_index = {}
-                    local_create_aether_portal(origin,origin,"z")
-                end
-            elseif get_node(i).name ~= "nether:glowstone" then
+            if vec_distance(i,origin) < 50 then
+                --add data to both maps
+                if not a_index[i.x] then a_index[i.x] = {} end
+                if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
+                a_index[i.x][i.y][i.z] = {aether_portal=1} --get_group(i,"redstone_power")}        
+                --the data to the 3d array must be written to memory before this is executed
+                --or a stack overflow occurs!!!
+                --pass down info for activators
+                local_create_aether_portal(i,origin,"x")
+            else
+                --print("try z")
                 x_failed = true
                 a_index = {}
                 local_create_aether_portal(origin,origin,"z")
             end
-
-            ::continue::
+        elseif get_node(i).name ~= "nether:glowstone" then
+            x_failed = true
+            a_index = {}
+            local_create_aether_portal(origin,origin,"z")
         end
-    --2d virtual memory map creation (z axis)
-    elseif axis == "z" then
-        for direction in steps do
-            --index only direct neighbors
-            if not (x_failed == true and aether_portal_failure == false and (abs(z)+abs(y) == 1)) then goto continue end
 
-            local i = add_vector(pos,vec_new(0,y,z))
-
-            execute_collection = not (a_index[i.x] and a_index[i.x][i.y] and a_index[i.x][i.y][i.z])
-            
-            if not execute_collection then goto continue end
-
-            if get_node(i).name == "air" then
-                if vec_distance(i,origin) < 50 then
-                    --add data to both maps
-                    if not a_index[i.x] then a_index[i.x] = {} end
-                    if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
-                    a_index[i.x][i.y][i.z] = {aether_portal=1}
-                    --the data to the 3d array must be written to memory before this is executed
-                    --or a stack overflow occurs!!!
-                    --pass down info for activators
-                    local_create_aether_portal(i,origin,"z")
-                else
-                    aether_portal_failure = true
-                    a_index = {}
-                end
-            elseif get_node(i).name ~= "nether:glowstone" then
-                aether_portal_failure = true
-                a_index = {}
-            end
-
-            ::continue::
-        end
+        ::continue::
     end
 end
 
