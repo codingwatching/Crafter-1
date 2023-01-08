@@ -149,29 +149,30 @@ minetest.register_on_placenode(function(position, newnode, placer, oldnode, item
             return
         end
         new = placer2:get_wielded_item():get_name()
-        
-        if old ~= new and new == "" then
-            inv = placer2:get_inventory()
-            --check if another stack
-            if inv:contains_item("main", old2) then
-                --print("moving stack")
-                --run through inventory
-                for i = 1,inv:get_size("main") do
-                    --if found set wielded item and remove old stack
-                    if inv:get_stack("main", i):get_name() == old2 then
-                        count = inv:get_stack("main", i):get_count()
-                        placer2:set_wielded_item(old2.." "..count)
-                        inv:set_stack("main",i,ItemStack(""))
-                        play_sound("pickup", {
-                              to_player = placer2,
-                              gain = 0.7,
-                              pitch = random(60,100)/100
-                        })
-                        return                
-                    end
+
+        if old == new and new ~= "" then return end
+
+        inv = placer2:get_inventory()
+        --check if another stack
+        if inv:contains_item("main", old2) then
+            --print("moving stack")
+            --run through inventory
+            for i = 1,inv:get_size("main") do
+                --if found set wielded item and remove old stack
+                if inv:get_stack("main", i):get_name() == old2 then
+                    count = inv:get_stack("main", i):get_count()
+                    placer2:set_wielded_item(old2.." "..count)
+                    inv:set_stack("main",i,ItemStack(""))
+                    play_sound("pickup", {
+                            to_player = placer2,
+                            gain = 0.7,
+                            pitch = random(60,100)/100
+                    })
+                    return
                 end
             end
         end
+        
     end,position, newnode, placer, oldnode, itemstack, pointed_thing,old)
 end)
 
