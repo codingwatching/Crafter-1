@@ -232,76 +232,6 @@ local function portal_modify_map(n_copy)
     bulk_set_node( sorted_table, { name = "aether:portal" } )
 end
 
--------------------------------------------------------------------------------------------
-
--- The teleporter functions - Stored here for now so I can differentiate this portion of the code from the other parts
-local teleporting_player = nil
-local function teleport_to_overworld(_, _, calls_remaining)
-    if calls_remaining > 0 then goto continue end
-
-    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
-
-    if not portal_exists then goto continue end
-
-    if not teleporting_player then goto continue end
-
-    teleporting_player:set_pos( new_vector( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
-
-    teleporting_player = nil
-
-    ::continue::
-end
-local function teleport_to_aether(_, _, calls_remaining)
-    if calls_remaining > 0 then goto continue end
-
-    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
-
-    if not portal_exists then goto continue end
-    --print(teleporting_player)
-    if not teleporting_player then goto continue end
-
-    teleporting_player:set_pos( new_vector( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
-
-    teleporting_player = nil
-
-    ::continue::
-end
-
---this initializes all teleporter commands from the client
-minetest.register_on_modchannel_message(function(channel_name, sender, _)
-    local channel_decyphered = channel_name:gsub(sender,"")
-    if channel_decyphered ~= ":aether_teleporters" then goto continue end
-
-    local player = minetest.get_player_by_name(sender)
-    local pos = player:get_pos()
-
-    if pos.y < 20000 then
-        --center the location to the lava height
-        pos.y = 25000--+random(-30,30)    
-        aether_origin_pos = pos
-
-        local min = sub_vector(aether_origin_pos,30)
-        local max = add_vector(aether_origin_pos,30)
-
-        --force load the area
-        teleporting_player = player
-        emerge_area(min, max, teleport_to_aether)
-    else
-        --center the location to the water height
-        pos.y = 0--+random(-30,30)    
-        aether_origin_pos = pos
-        --prefer height for mountains
-        local min = sub_vector(aether_origin_pos,new_vector(30,30,30))
-        local max = add_vector(aether_origin_pos,new_vector(30,120,30))
-
-        --force load the area
-        teleporting_player = player
-        emerge_area(min, max, teleport_to_overworld)
-    end
-
-    ::continue::
-end)
--------------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------
 
@@ -393,3 +323,76 @@ minetest.register_globalstep(function()
     --clear the index to avoid cpu looping wasting processing power
     destroy_a_index = {}
 end)
+
+
+
+-------------------------------------------------------------------------------------------
+
+-- The teleporter functions - Stored here for now so I can differentiate this portion of the code from the other parts
+local teleporting_player = nil
+local function teleport_to_overworld(_, _, calls_remaining)
+    if calls_remaining > 0 then goto continue end
+
+    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
+
+    if not portal_exists then goto continue end
+
+    if not teleporting_player then goto continue end
+
+    teleporting_player:set_pos( new_vector( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
+
+    teleporting_player = nil
+
+    ::continue::
+end
+local function teleport_to_aether(_, _, calls_remaining)
+    if calls_remaining > 0 then goto continue end
+
+    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
+
+    if not portal_exists then goto continue end
+    --print(teleporting_player)
+    if not teleporting_player then goto continue end
+
+    teleporting_player:set_pos( new_vector( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
+
+    teleporting_player = nil
+
+    ::continue::
+end
+
+--this initializes all teleporter commands from the client
+minetest.register_on_modchannel_message(function(channel_name, sender, _)
+    local channel_decyphered = channel_name:gsub(sender,"")
+    if channel_decyphered ~= ":aether_teleporters" then goto continue end
+
+    local player = minetest.get_player_by_name(sender)
+    local pos = player:get_pos()
+
+    if pos.y < 20000 then
+        --center the location to the lava height
+        pos.y = 25000--+random(-30,30)    
+        aether_origin_pos = pos
+
+        local min = sub_vector(aether_origin_pos,30)
+        local max = add_vector(aether_origin_pos,30)
+
+        --force load the area
+        teleporting_player = player
+        emerge_area(min, max, teleport_to_aether)
+    else
+        --center the location to the water height
+        pos.y = 0--+random(-30,30)    
+        aether_origin_pos = pos
+        --prefer height for mountains
+        local min = sub_vector(aether_origin_pos,new_vector(30,30,30))
+        local max = add_vector(aether_origin_pos,new_vector(30,120,30))
+
+        --force load the area
+        teleporting_player = player
+        emerge_area(min, max, teleport_to_overworld)
+    end
+
+    ::continue::
+end)
+-------------------------------------------------------------------------------------------
