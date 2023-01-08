@@ -158,24 +158,19 @@ minetest.register_globalstep(function(dtime)
 
         old_vel = pool[name]
 
-
         if not old_vel then
             goto continue
         end
 
         new_vel = player:get_velocity().y
 
-        -- print("vel: " .. new_vel .. " oldvel: " .. old_vel)
-
         if damage_memory[name] == nil then
             damage_memory[name] = 0
-            print("memory was nil!")
             goto continue
         end
 
         if damage_memory[name] > 0 then
             damage_memory[name] = damage_memory[name] - dtime
-            print("counting down")
             goto continue
         end
 
@@ -192,10 +187,6 @@ minetest.register_globalstep(function(dtime)
 
         -- Reset the damage memory
         damage_memory[name] = 0.5
-
-        print(name)
-        
-        print("player is being damaged!")
 
         ::continue::
 
