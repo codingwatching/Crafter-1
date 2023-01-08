@@ -1,6 +1,9 @@
 local ipairs = ipairs
 local tonumber = tonumber
 local get_us_time = minetest.get_us_time
+local mod_channel_join = minetest.mod_channel_join
+local serialize = minetest.serialize
+
 
 
 -- Holds every player's channel
@@ -13,7 +16,7 @@ local temp_pool
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
 
-    state_channels[name] = minetest.mod_channel_join(name..":player_movement_state")
+    state_channels[name] = mod_channel_join(name..":player_movement_state")
     player:set_physics_override({
         jump = 1.25,
         gravity = 1.25
@@ -28,13 +31,24 @@ minetest.register_on_joinplayer(function(player)
     temp_pool.swim_bumped  = get_us_time()/1000000
 end)
 
+-- Tells the client to stop sending running/bunnyhop data
+local function local_send_running_cancellation(player,sneaking)
+    name = player:get_player_name()
+    state_channels[name]:send_all(
+        serialize({
+            stop_running = true,
+            state = sneaking
+        }
+    ))
+end
+
 -- Resets the player's state on death
 minetest.register_on_respawnplayer(function(player)
     name = player:get_player_name()
     pool[name].state = 0
     pool[name].was_in_water = false
     pool[name].swim_bumped = get_us_time()/1000000
-    send_running_cancellation(player,false)
+    local_send_running_cancellation(player,false)
     player:set_properties({
         collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3},
     })
@@ -47,16 +61,7 @@ minetest.register_on_leaveplayer(function(player)
     pool[name] = nil
 end)
 
--- Tells the client to stop sending running/bunnyhop data
-send_running_cancellation = function(player,sneaking)
-    name = player:get_player_name()
-    state_channels[name]:send_all(
-        minetest.serialize({
-            stop_running=true,
-            state=sneaking
-        }
-    ))
-end
+
 
 -- Intercept incoming data messages
 local channel_decyphered
@@ -173,17 +178,17 @@ local control_state = function(player)
             player:set_physics_override({speed=1})
 
             -- Preserve network data
-            send_running_cancellation(player,temp_pool.state==3)
+            local_send_running_cancellation(player,temp_pool.state==3)
         elseif (temp_pool.state == 1 or temp_pool.state == 2) and hunger <= 6 then
             player:set_fov(1, true,0.15)
             player:set_physics_override({speed=1})
             -- Preserve network data
-            send_running_cancellation(player,false)
+            local_send_running_cancellation(player,false)
         end
 
         --sneaking
         if temp_pool.state == 3 and in_water then
-            --send_running_cancellation(player,false)
+            --local_send_running_cancellation(player,false)
         elseif not in_water and temp_pool.state == 3 and temp_pool.old_state ~= 3 then
             player:set_eye_offset({x=0,y=-1,z=0},{x=0,y=0,z=0})
         elseif not in_water and temp_pool.old_state == 3 and temp_pool.state ~= 3 then
