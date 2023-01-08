@@ -119,7 +119,7 @@ local function local_create_aether_portal(vec_7d)
 
     -- TODO: make these a reused heap object
     local pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
-    local axis = vec_7d.axis or false
+    local axis = vec_7d.axis
     local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
     --2d virtual memory map creation (x axis)
