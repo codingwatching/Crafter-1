@@ -86,6 +86,15 @@ local steps = {
     steps_z
 }
 
+local steps_3d = {
+    vec_new(  1,  0,  0 ),
+    vec_new( -1,  0,  0 ),
+    vec_new(  0,  1,  0 ),
+    vec_new(  0, -1,  0 ),
+    vec_new(  0,  0,  1 ),
+    vec_new(  0,  0, -1 ),
+}
+
 local function axis_to_integer(axis)
     if axis then return 2 end
     return 1
