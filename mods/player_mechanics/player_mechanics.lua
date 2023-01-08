@@ -15,8 +15,8 @@ minetest.register_on_joinplayer(function(player)
 
     state_channels[name] = minetest.mod_channel_join(name..":player_movement_state")
     player:set_physics_override({
-            jump   = 1.25,
-            gravity= 1.25
+        jump   = 1.25,
+        gravity= 1.25
     })
 
     pool[name] = {}
