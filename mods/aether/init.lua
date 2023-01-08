@@ -237,16 +237,19 @@ end
 -- The teleporter functions - Stored here for now so I can differentiate this portion of the code from the other parts
 local teleporting_player = nil
 local function teleport_to_overworld(blockpos, action, calls_remaining, param)
-    if calls_remaining == 0 then
-        local portal_exists = find_node_near(aether_origin_pos, 30, {"aether:portal"})
-        if portal_exists then
-            --print(teleporting_player)
-            if teleporting_player then
-                teleporting_player:set_pos(new_vector(portal_exists.x,portal_exists.y-0.5,portal_exists.z))
-            end
-        end
-        teleporting_player = nil
-    end
+    if calls_remaining > 0 then goto continue end
+
+    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
+
+    if not portal_exists then goto continue end
+
+    if not teleporting_player then goto continue end
+
+    teleporting_player:set_pos( new_vector( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
+
+    teleporting_player = nil
+
+    ::continue::
 end
 local function teleport_to_aether(blockpos, action, calls_remaining, param)
     if calls_remaining == 0 then
