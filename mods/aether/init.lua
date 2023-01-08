@@ -137,27 +137,21 @@ create_aether_portal = local_create_aether_portal
 local aether_origin_pos = nil
 
 local function spawn_portal_into_aether_callback(_, _, calls_remaining, param)
-    if calls_remaining == 0 then
-        local portal_exists = find_node_near(aether_origin_pos, 30, {"aether:portal"})
-                
-        if not portal_exists then
-            local min = sub_vector(aether_origin_pos,30)
-            local max = add_vector(aether_origin_pos,30)
-            local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
+
+    if calls_remaining > 0 then return false end
+
+    local portal_exists = find_node_near(aether_origin_pos, 30, {"aether:portal"})
             
-            if platform and next(platform) then
-                --print("setting the platform")
-                local platform_location = platform[random(1, #platform)]
-                
-                place_schematic(platform_location, aetherportalSchematic,"0",nil,true,"place_center_x, place_center_z")
-            else
-                --print("generate a portal within aetherrack")
-                place_schematic(aether_origin_pos, aetherportalSchematic,"0",nil,true,"place_center_x, place_center_z")
-            end
-        else
-            --print("portal exists, utilizing")
-        end
-        aether_origin_pos = nil
+    if portal_exists then return false end
+
+    local min = sub_vector(aether_origin_pos,30)
+    local max = add_vector(aether_origin_pos,30)
+    local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
+    
+    if platform and next(platform) then
+        place_schematic( platform[ random( 1, #platform )] , aetherportalSchematic, "0", nil, true, "place_center_x, place_center_z" )
+    else
+        place_schematic( aether_origin_pos, aetherportalSchematic, "0", nil, true, "place_center_x, place_center_z" )
     end
 end
 --creates aether portals in the overworld
