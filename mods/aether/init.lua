@@ -12,6 +12,7 @@ local add_vector   = vector.add
 local sub_vector   = vector.subtract
 local vec_distance = vector.distance
 local vec_new   = vector.new
+local vec_copy = vector.copy
 
 local table_copy   = table.copy
 local table_insert = table.insert
@@ -33,6 +34,7 @@ end)
 
 --TODO: add biome information into the thing, or dimensions? or maybe a dimension ID?
 -- Micro 7d vector factory function
+--[[
 local function assemble_vec4d( x, y, z, axis, a, b, c )
     -- Piggyback on vec3d for new pointers in lua vm
     local initializing_vector = vec_new( x, y, z )
@@ -40,6 +42,16 @@ local function assemble_vec4d( x, y, z, axis, a, b, c )
     initializing_vector.a = a
     initializing_vector.b = b
     initializing_vector.c = c
+    return initializing_vector
+end
+]]
+local function assemble_vec4d( vec, axis, origin )
+    -- Piggyback on vec3d for new pointers in lua vm
+    local initializing_vector = vec_copy(vec)
+    initializing_vector.axis = axis
+    initializing_vector.a = origin.x
+    initializing_vector.b = origin.y
+    initializing_vector.c = origin.z
     return initializing_vector
 end
 
@@ -115,6 +127,8 @@ local function clear_deletion_queue()
 end
 
 -- TODO: make this name more generic
+-- TODO: reuse as much data as possible
+-- TODO: generic node cache, store in single value as only one portal creation exists at a time
 local function local_create_aether_portal(vec_7d)
 
     -- TODO: make these a reused heap object
@@ -122,34 +136,25 @@ local function local_create_aether_portal(vec_7d)
     local axis = vec_7d.axis
     local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
-    --2d virtual memory map creation (x axis)
+    -- 2d virtual memory map creation (x axis)
     for direction in steps[axis_to_integer(axis)] do
-        
+
         local new_position = add_vector(pos,direction)
 
         if match_full_build_queue(vec_7d) then goto continue end
 
         if get_node(new_position).name == "air" then
-            
             if vec_distance(new_position,origin) < 50 then
-
-                --add data to both maps
-                if not a_index[i.x] then a_index[i.x] = {} end
-                if not a_index[i.x][i.y] then a_index[i.x][i.y] = {} end
-
-                a_index[i.x][i.y][i.z] = {aether_portal=1}
-
-                --the data to the 3d array must be written to memory before this is executed
-                --or a stack overflow occurs!!!
-                --pass down info for activators
-
-                local_create_aether_portal(i,origin,"x")
-
+                -- Everything is going well
+                insert_new_build_item(assemble_vec4d(new_position, axis, origin))
             else
-                local_create_aether_portal(origin,origin,"z")
+                -- This means the portal failed to intialize, so try the other axis
+                clear_build_queue()
+                insert_new_build_item(assemble_vec4d(origin, not axis, origin))
             end
-        elseif get_node(i).name ~= "nether:glowstone" then
+        elseif get_node(new_position).name ~= "nether:glowstone" then
             -- This part basically means the portal exceeded the size limit and it failed completely, exits out here in the globalstep
+            -- Might have hit a wall, random node, who knows! It's not air, and it's not the portal frame
             failure = true
         end
 
