@@ -31,6 +31,19 @@ minetest.register_on_joinplayer(function(player)
     aether_channels[name] = minetest.mod_channel_join(name..":aether_teleporters")
 end)
 
+
+-- Micro factory function
+local function assemble_vec4d( x, y, z, axis )
+    local initializing_vector = vec_new( x, y, z )
+    initializing_vector.w = axis
+    return initializing_vector
+end
+
+-- Build Queue is build upon 4d vectors with the fourth axis being a boolean
+local build_queue = {}
+
+
+
 --branch out from center
 --these are assigned initially for a reason
 local a_index = {}
