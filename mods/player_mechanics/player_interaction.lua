@@ -1,16 +1,12 @@
-local 
-minetest,math,pairs,ipairs,type
-=
-minetest,math,pairs,ipairs,type
-
-local add_item   = minetest.add_item
-local random     = math.random
-local play_sound = minetest.sound_play
-local add_ps     = minetest.add_particlespawner
-local abs        = math.abs
-local ceil       = math.ceil
-local new_vec    = vector.new
-local multiply_vec = vector.multiply
+local type = type
+local add_item     = minetest.add_item
+local random       = math.random
+local play_sound   = minetest.sound_play
+local add_ps       = minetest.add_particlespawner
+local abs          = math.abs
+local ceil         = math.ceil
+local vec_new      = vector.new
+local vec_multiply = vector.multiply
 
 --hurt sound and disable fall damage group handling
 minetest.register_on_player_hpchange(function(player, hp_change, reason)
@@ -41,7 +37,7 @@ minetest.register_on_dieplayer(function(player, reason)
         if name ~= "" then
             obj = add_item(pos, stack)
             if obj then
-                obj:set_velocity(new_vec(random(-3,3),random(4,8),random(-3,3)))
+                obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
             end
             inv:set_stack("main", i, ItemStack(""))
         end
@@ -52,7 +48,7 @@ minetest.register_on_dieplayer(function(player, reason)
     if name ~= "" then
         obj = add_item(pos, stack)
         if obj then
-            obj:set_velocity(new_vec(random(-3,3),random(4,8),random(-3,3)))
+            obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
         end
         inv:set_stack("armor_head", 1, ItemStack(""))
     end
@@ -62,7 +58,7 @@ minetest.register_on_dieplayer(function(player, reason)
     if name ~= "" then
         obj = add_item(pos, stack)
         if obj then
-            obj:set_velocity(new_vec(random(-3,3),random(4,8),random(-3,3)))
+            obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
         end
         inv:set_stack("armor_torso", 1, ItemStack(""))
     end
@@ -72,7 +68,7 @@ minetest.register_on_dieplayer(function(player, reason)
     if name ~= "" then
         obj = add_item(pos, stack)
         if obj then
-            obj:set_velocity(new_vec(random(-3,3),random(4,8),random(-3,3)))
+            obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
         end
         inv:set_stack("armor_legs", 1, ItemStack(""))
     end
@@ -83,7 +79,7 @@ minetest.register_on_dieplayer(function(player, reason)
     if name ~= "" then
         obj = add_item(pos, stack)
         if obj then
-            obj:set_velocity(new_vec(random(-3,3),random(4,8),random(-3,3)))
+            obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
         end
         inv:set_stack("armor_feet", 1, ItemStack(""))
     end
@@ -105,7 +101,7 @@ dump_craft = function(player)
         if name ~= "" then
             obj = add_item(pos, stack)
             if obj then
-                obj:set_velocity(new_vec(random(-3,3),random(4,8),random(-3,3)))
+                obj:set_velocity(vec_new(random(-3,3),random(4,8),random(-3,3)))
             end
             inv:set_stack("craft", i, ItemStack(""))
         end
@@ -184,8 +180,8 @@ local do_critical_particles = function(pos)
         time = 0.001,
         minpos = pos,
         maxpos = pos,
-        minvel = new_vec(-2,-2,-2),
-        maxvel = new_vec(2,8,2),
+        minvel = vec_new(-2,-2,-2),
+        maxvel = vec_new(2,8,2),
         minacc = {x=0, y=4, z=0},
         maxacc = {x=0, y=12, z=0},
         minexptime = 1.1,
@@ -249,7 +245,7 @@ minetest.register_on_punchplayer(function(player, hitter, time_from_last_punch, 
             end
         end
 
-        dir = multiply_vec(dir,10)
+        dir = vec_multiply(dir,10)
         vel = player:get_velocity()
         dir.y = 0
         if vel.y <= 0 then
@@ -279,7 +275,7 @@ end)
 
 local inv
 minetest.register_on_respawnplayer(function(player)
-    player:add_velocity(multiply_vec(player:get_velocity(),-1))
+    player:add_velocity(vec_multiply(player:get_velocity(),-1))
     inv = player:get_inventory()
     inv:set_list("main", {})
     inv:set_list("craft", {})
