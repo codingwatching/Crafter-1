@@ -7,6 +7,8 @@
         "dump_craft",
         "player_can_be_punched",
         "is_player_swimming",
-        "get_player_state"
+        "get_player_state",
+        "VoxelArea",
+        "dump"
     ]
 }
