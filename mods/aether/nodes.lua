@@ -26,11 +26,10 @@ minetest.register_node("aether:stone", {
                 tools = tool,
                 items = {"aether:cobble"},
             },
-            },
         },
-    })
-    
-    
+    },
+})
+
 minetest.register_node("aether:cobble", {
     description = "Aether Cobblestone",
     tiles = {"cobble.png^[colorize:aqua:40"},
@@ -44,8 +43,8 @@ minetest.register_node("aether:cobble", {
                 tools = tool,
                 items = {"aether:cobble"},
             },
-            },
         },
+    },
 })
 
 
