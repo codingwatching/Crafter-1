@@ -61,23 +61,7 @@ local aether_portal_schematic = {
 
 -- The teleporter functions - Stored here for now so I can differentiate this portion of the code from the other parts
 local teleporting_player = nil
-local function teleport_to_overworld(_, _, calls_remaining)
-    if calls_remaining > 0 then goto continue end
-
-    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
-
-    if not portal_exists then goto continue end
-
-    if not teleporting_player then goto continue end
-
-    teleporting_player:set_pos( vec_new( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
-
-    teleporting_player = nil
-
-    ::continue::
-end
-
-local function teleport_to_aether(_, _, calls_remaining)
+local function teleport(_, _, calls_remaining)
     if calls_remaining > 0 then goto continue end
 
     local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
@@ -111,7 +95,7 @@ minetest.register_on_modchannel_message(function(channel_name, sender, _)
 
         --force load the area
         teleporting_player = player
-        emerge_area(min, max, teleport_to_aether)
+        emerge_area(min, max, teleport)
     else
         --center the location to the water height
         new_pos.y = 0--+random(-30,30)    
@@ -122,7 +106,7 @@ minetest.register_on_modchannel_message(function(channel_name, sender, _)
 
         --force load the area
         teleporting_player = player
-        emerge_area(min, max, teleport_to_overworld)
+        emerge_area(min, max, teleport)
     end
 
     ::continue::
