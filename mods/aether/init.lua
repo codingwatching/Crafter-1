@@ -154,19 +154,15 @@ local function local_create_aether_portal(vec_7d)
             if vec_distance(new_position,origin) < 50 then
                 -- Everything is going well
                 insert_new_build_item(assemble_vec7d(new_position, axis, origin))
-                print("trying")
             else
                 -- This means the portal failed to intialize, so try the other axis
                 clear_build_queue()
                 insert_new_build_item(assemble_vec7d(origin, not axis, origin))
-                print("trying 2")
             end
         elseif get_node(new_position).name ~= "nether:glowstone" then
-            print(get_node(new_position).name)
             -- This part basically means the portal exceeded the size limit and it failed completely, exits out here in the globalstep
             -- Might have hit a wall, random node, who knows! It's not air, and it's not the portal frame
             failure = true
-            print("failed here")
         end
 
         ::continue::
