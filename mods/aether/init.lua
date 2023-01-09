@@ -133,6 +133,76 @@ local function clear_deletion_queue()
     deletion_queue = {}
 end
 
+-- Creates an aether portal in the aether
+-- This essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal
+local aether_origin_pos = nil
+
+local function spawn_portal_into_aether_callback(_, _, calls_remaining)
+
+    if calls_remaining > 0 then goto continue end
+
+    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
+
+    if portal_exists then goto continue end
+
+    local min = sub_vector(aether_origin_pos,30)
+    local max = add_vector(aether_origin_pos,30)
+    local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
+
+    if platform and next(platform) then
+        place_schematic( platform[ random( 1, #platform )] , aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
+    else
+        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
+    end
+
+    ::continue::
+end
+
+-- Creates aether portals in the overworld
+local function spawn_portal_into_overworld_callback( _, _, calls_remaining )
+
+    if calls_remaining > 0 then goto continue end
+
+    if find_node_near( aether_origin_pos, 30, { "aether:portal" } ) then goto continue end
+
+    local min = sub_vector( aether_origin_pos, 30 )
+    local max = add_vector( aether_origin_pos, 30 )
+    local platform = find_nodes_in_area_under_air( min, max, { "main:stone", "main:water", "main:grass", "main:sand", "main:dirt" } )
+
+    if platform and next( platform ) then
+        place_schematic( platform[ random( 1, #platform ) ], aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z"  )
+    else
+        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
+    end
+
+    ::continue::
+end
+
+local function generate_return_portal(pos)
+    if pos.y < 20000 then
+        --center the location to the lava height
+        pos.y = 25000--+random(-30,30)    
+        aether_origin_pos = pos
+        
+        local min = sub_vector(aether_origin_pos,30)
+        local max = add_vector(aether_origin_pos,30)
+        
+        --force load the area
+        emerge_area(min, max, spawn_portal_into_aether_callback)
+    else
+        --center the location to the water height
+        pos.y = 0--+random(-30,30)    
+        aether_origin_pos = pos
+        --prefer height for mountains
+        local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
+        local max = add_vector(aether_origin_pos,vec_new(30,120,30))
+        
+        --force load the area
+        emerge_area(min, max, spawn_portal_into_overworld_callback)
+    end
+end
+
+
 -- TODO: make this name more generic
 -- TODO: reuse as much data as possible
 -- TODO: generic node cache, store in single value as only one portal creation exists at a time
@@ -217,6 +287,8 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
     end
 
     bulk_set_node( vec3d_cache, { name = "aether:portal" } )
+
+    generate_return_portal(position)
 end
 
 
@@ -269,75 +341,7 @@ local function destroy_portal_modify_map(destroy_n_copy)
     bulk_set_node( destroy_sorted_table, { name = "air" } )
 end
 
--- creates a aether portal in the aether
--- this essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal
-local aether_origin_pos = nil
 
-local function spawn_portal_into_aether_callback(_, _, calls_remaining)
-
-    if calls_remaining > 0 then goto continue end
-
-    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
-
-    if portal_exists then goto continue end
-
-    local min = sub_vector(aether_origin_pos,30)
-    local max = add_vector(aether_origin_pos,30)
-    local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
-
-    if platform and next(platform) then
-        place_schematic( platform[ random( 1, #platform )] , aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
-    else
-        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
-    end
-
-    ::continue::
-end
-
--- Creates aether portals in the overworld
-local function spawn_portal_into_overworld_callback( _, _, calls_remaining )
-
-    if calls_remaining > 0 then goto continue end
-
-    if find_node_near( aether_origin_pos, 30, { "aether:portal" } ) then goto continue end
-
-    local min = sub_vector( aether_origin_pos, 30 )
-    local max = add_vector( aether_origin_pos, 30 )
-    local platform = find_nodes_in_area_under_air( min, max, { "main:stone", "main:water", "main:grass", "main:sand", "main:dirt" } )
-
-    if platform and next( platform ) then
-        place_schematic( platform[ random( 1, #platform ) ], aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z"  )
-    else
-        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
-    end
-
-    ::continue::
-end
-
-
-local function generate_aether_portal_in_aether(pos)
-    if pos.y < 20000 then
-        --center the location to the lava height
-        pos.y = 25000--+random(-30,30)    
-        aether_origin_pos = pos
-        
-        local min = sub_vector(aether_origin_pos,30)
-        local max = add_vector(aether_origin_pos,30)
-        
-        --force load the area
-        emerge_area(min, max, spawn_portal_into_aether_callback)
-    else
-        --center the location to the water height
-        pos.y = 0--+random(-30,30)    
-        aether_origin_pos = pos
-        --prefer height for mountains
-        local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
-        local max = add_vector(aether_origin_pos,vec_new(30,120,30))
-        
-        --force load the area
-        emerge_area(min, max, spawn_portal_into_overworld_callback)
-    end
-end
 
 
 --modify the map with the collected data
