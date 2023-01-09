@@ -18,14 +18,14 @@ local find_nodes_in_area_under_air = minetest.find_nodes_in_area_under_air
 local place_schematic              = minetest.place_schematic
 local bulk_set_node                = minetest.bulk_set_node
 
-local aether_channels = {}
+
 local portal_node = ""
 local frame_node = ""
 local size_limit = 0
 
 
+--TODO: add biome information into this thing, or dimensions? or maybe a dimension ID?
 
---TODO: add biome information into the thing, or dimensions? or maybe a dimension ID?
 -- Micro 7d vector factory function
 local function assemble_vec7d( vec, axis, origin )
     -- Piggyback on vec3d for new pointers in lua vm

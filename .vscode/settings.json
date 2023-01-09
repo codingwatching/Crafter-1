@@ -10,9 +10,7 @@
         "get_player_state",
         "VoxelArea",
         "dump",
-        "create_aether_portal",
-        "aetherportalSchematic",
-        "aether_portal_schematic",
-        "destroy_aether_portal"
+        "create_portal",
+        "destroy_portal"
     ]
 }
