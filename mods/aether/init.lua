@@ -1,9 +1,6 @@
 local path = minetest.get_modpath("aether")
-dofile(path.."/schem.lua")
 dofile(path.."/nodes.lua")
 dofile(path.."/biomes.lua")
-
-local aether_portal_schematic = aether_portal_schematic
 
 local abs    = math.abs
 local random = math.random
@@ -34,7 +31,29 @@ minetest.register_on_joinplayer(function(player)
 end)
 
 
--------------------------------------------------------------------------------------------
+local aether_portal_schematic = {
+    size = {x = 4, y = 5, z = 3},
+    data = {
+        -- The side of the bush, with the air on top
+        {name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},
+        {name = "air"},{name = "air"},{name = "air"},{name = "air"},
+        {name = "air"},{name = "air"},{name = "air"},{name = "air"},
+        {name = "air"},{name = "air"},{name = "air"},{name = "air"},-- lower layer
+        {name = "air"},{name = "air"},{name = "air"},{name = "air"}, -- top layer
+        -- The center of the bush, with stem at the base and a pointy leave 2 nodes above
+        {name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},
+        {name = "nether:glowstone"},{name = "aether:portal"},{name = "aether:portal"},{name = "nether:glowstone"},
+        {name = "nether:glowstone"},{name = "aether:portal"},{name = "aether:portal"},{name = "nether:glowstone"},
+        {name = "nether:glowstone"},{name = "aether:portal"},{name = "aether:portal"},{name = "nether:glowstone"},-- lower layer
+        {name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"}, -- top layer
+        -- The other side of the bush, same as first side
+        {name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},
+        {name = "air"},{name = "air"},{name = "air"},{name = "air"},
+        {name = "air"},{name = "air"},{name = "air"},{name = "air"},
+        {name = "air"},{name = "air"},{name = "air"},{name = "air"},-- lower layer
+        {name = "air"},{name = "air"},{name = "air"},{name = "air"}, -- top layer
+    }
+}
 
 -- The teleporter functions - Stored here for now so I can differentiate this portion of the code from the other parts
 local teleporting_player = nil
