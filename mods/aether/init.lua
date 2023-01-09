@@ -12,9 +12,7 @@ local add_vector   = vector.add
 local sub_vector   = vector.subtract
 local vec_distance = vector.distance
 local vec_new   = vector.new
-local vec_copy = vector.copy
 
-local table_copy   = table.copy
 local table_insert = table.insert
 local ipairs = ipairs
 
@@ -27,325 +25,11 @@ local bulk_set_node                = minetest.bulk_set_node
 
 local aether_channels = {}
 local name
-local portal_node = ""
-local frame_node = ""
+
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
     aether_channels[name] = minetest.mod_channel_join(name..":aether_teleporters")
 end)
-
---TODO: add biome information into the thing, or dimensions? or maybe a dimension ID?
--- Micro 7d vector factory function
-local function assemble_vec7d( vec, axis, origin )
-    -- Piggyback on vec3d for new pointers in lua vm
-    local initializing_vector = vec_new(vec)
-    initializing_vector.axis = axis
-    initializing_vector.a = origin.x
-    initializing_vector.b = origin.y
-    initializing_vector.c = origin.z
-    return initializing_vector
-end
-
--- Queue is build upon 7d vectors with:
---[[
-    x,y,z = new position
-    axis = x or z definition (boolean) - false = x, true = z
-    a,b,c = origin position
-]]
-
--- This is single threaded, only one queue can exist at a time, it will pause the server while it builds it
-local build_queue = {}
-local deletion_queue = {}
-local failure = false
-
-local steps_x = {
-    vec_new(  1,  0,  0 ),
-    vec_new( -1,  0,  0 ),
-    vec_new(  0,  1,  0 ),
-    vec_new(  0, -1,  0 ),
-}
-
-local steps_z = {
-    vec_new(  0,  1,  0 ),
-    vec_new(  0, -1,  0 ),
-    vec_new(  0,  0,  1 ),
-    vec_new(  0,  0, -1 ),
-}
-
-local steps = {
-    steps_x,
-    steps_z
-}
-
-local steps_3d = {
-    vec_new(  1,  0,  0 ),
-    vec_new( -1,  0,  0 ),
-    vec_new(  0,  1,  0 ),
-    vec_new(  0, -1,  0 ),
-    vec_new(  0,  0,  1 ),
-    vec_new(  0,  0, -1 ),
-}
-
-local function axis_to_integer(axis)
-    if axis then return 2 end
-    return 1
-end
-
-local function match_origin( a, b, c, vec)
-    return vec.a == a and vec.b == b and vec.c == c
-end
-
-local iterator_keys = {
-    "x", "y", "z", "axis", "a", "b", "c"
-}
-local function match_full_build_queue(vec_3d)
-    for _,this in ipairs(build_queue) do
-        if this.x == vec_3d.x and this.y == vec_3d.y and this.z == vec_3d.z then return true end
-    end
-    return false
-end
-local function match_full_deletion_queue(vec_3d)
-    for _,this in ipairs(deletion_queue) do
-        if this.x == vec_3d.x and this.y == vec_3d.y and this.z == vec_3d.z then return true end
-    end
-end
-
-local function insert_new_build_item(vec_7d)
-    table_insert(build_queue, vec_7d)
-end
-local function insert_new_deletion_item(vec_7d)
-    table_insert(deletion_queue, vec_7d)
-end
-
-local function clear_build_queue()
-    build_queue = {}
-end
-local function clear_deletion_queue()
-    deletion_queue = {}
-end
-
--- Creates an aether portal in the aether
--- This essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal
-local aether_origin_pos = nil
-
-local function spawn_portal_into_aether_callback(_, _, calls_remaining)
-
-    if calls_remaining > 0 then goto continue end
-
-    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
-
-    if portal_exists then goto continue end
-
-    local min = sub_vector(aether_origin_pos,30)
-    local max = add_vector(aether_origin_pos,30)
-    local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
-
-    if platform and next(platform) then
-        place_schematic( platform[ random( 1, #platform )] , aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
-    else
-        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
-    end
-
-    ::continue::
-end
-
--- Creates aether portals in the overworld
-local function spawn_portal_into_overworld_callback( _, _, calls_remaining )
-
-    if calls_remaining > 0 then goto continue end
-
-    if find_node_near( aether_origin_pos, 30, { "aether:portal" } ) then goto continue end
-
-    local min = sub_vector( aether_origin_pos, 30 )
-    local max = add_vector( aether_origin_pos, 30 )
-    local platform = find_nodes_in_area_under_air( min, max, { "main:stone", "main:water", "main:grass", "main:sand", "main:dirt" } )
-
-    if platform and next( platform ) then
-        place_schematic( platform[ random( 1, #platform ) ], aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z"  )
-    else
-        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
-    end
-
-    ::continue::
-end
-
-local function generate_return_portal(pos)
-    if pos.y < 20000 then
-        --center the location to the lava height
-        pos.y = 25000--+random(-30,30)    
-        aether_origin_pos = pos
-        
-        local min = sub_vector(aether_origin_pos,30)
-        local max = add_vector(aether_origin_pos,30)
-        
-        --force load the area
-        emerge_area(min, max, spawn_portal_into_aether_callback)
-    else
-        --center the location to the water height
-        pos.y = 0--+random(-30,30)    
-        aether_origin_pos = pos
-        --prefer height for mountains
-        local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
-        local max = add_vector(aether_origin_pos,vec_new(30,120,30))
-        
-        --force load the area
-        emerge_area(min, max, spawn_portal_into_overworld_callback)
-    end
-end
-
-local pos = {}
-local axis = false
-local origin = {}
-local new_position = {}
-local current_index = 0
-local length = 0
-local vec3d_cache = {}
-local second_loop = false
-
-
--- TODO: make this name more generic
--- TODO: generic node cache, store in single value as only one portal creation exists at a time
-local function create_portal(vec_7d)
-
-    pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
-    axis = vec_7d.axis
-    origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
-
-    -- 2d virtual memory map creation
-    for _,direction in ipairs( steps[ axis_to_integer( axis ) ] ) do
-
-        new_position = add_vector( pos, direction )
-
-        if match_full_build_queue( new_position ) then goto continue end
-
-        if get_node( new_position ).name == "air" then
-            if vec_distance( new_position, origin ) < 50 then
-                -- Everything is going well
-                insert_new_build_item( assemble_vec7d( new_position, axis, origin ) )
-            else
-                -- This means the portal failed to intialize, so try the other axis
-                clear_build_queue()
-                insert_new_build_item( assemble_vec7d( origin, not axis, origin ) )
-            end
-        elseif get_node( new_position ).name ~= "nether:glowstone" then
-            -- This part basically means the portal exceeded the size limit and it failed completely, exits out here in the globalstep
-            -- Might have hit a wall, random node, who knows! It's not air, and it's not the portal frame
-            failure = true
-        end
-
-        ::continue::
-    end
-end
-
--- TODO: this is poop, generic this
--- This is the entry point for portal creation and logic loop
-function create_aether_portal(position --[[frame_node, portal_node, size_limit, something_else?]])
-
-    failure = false
-
-    insert_new_build_item( assemble_vec7d( position, false, position ) )
-
-    current_index = 1
-
-    second_loop = false
-
-    -- Keep the heap objects alive so the gc isn't abused
-    while not failure and current_index <= #build_queue do
-
-        create_portal(build_queue[current_index])
-        current_index = current_index + 1
-
-        if failure and not second_loop then
-            clear_build_queue()
-            insert_new_build_item( assemble_vec7d( position, true, position ) )
-            second_loop = true
-            failure = false
-            current_index = 1
-        end
-    end
-
-    -- Failed to build one, now gc clear the queue
-    if failure then
-        clear_build_queue()
-        return
-    end
-
-    -- Success! Place the precalculated indexes
-
-    vec3d_cache = {}
-
-    length = 1
-    for _,vec_7d in ipairs(build_queue) do
-        vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
-        length = length + 1
-    end
-
-    bulk_set_node( vec3d_cache, { name = "aether:portal" } )
-
-    generate_return_portal(position)
-
-    -- Clean up memory
-    clear_build_queue()
-end
-
-local function destroy_portal(vec_7d)
-
-    pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
-    axis = vec_7d.axis
-    origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
-
-    -- 3d virtual memory map creation
-    for _,position in ipairs( steps_3d ) do
-
-        new_position = add_vector( pos, position )
-
-        if match_full_deletion_queue( new_position ) then goto continue end
-        if get_node( new_position ).name ~= "aether:portal" then goto continue end
-        if vec_distance( new_position, origin ) >= 50 then goto continue end
-
-        insert_new_deletion_item( assemble_vec7d( new_position, axis, origin ) )
-
-        ::continue::
-    end
-end
-
--- The entry point for the portal deletion and logic loop
-function destroy_aether_portal( position )
-
-
-    insert_new_deletion_item( assemble_vec7d( position, false, position ) )
-
-    current_index = 1
-
-    -- Logic loop
-    while current_index <= #deletion_queue do
-        destroy_portal( deletion_queue[ current_index ] )
-        current_index = current_index + 1
-    end
-
-    -- Didn't have a portal
-    if #deletion_queue <= 1 then
-        clear_deletion_queue()
-        return
-    end
-
-    vec3d_cache = {}
-
-    length = 1
-
-    -- Convert the 7d vector into a usable 3d vector
-    for _,vec_7d in ipairs(deletion_queue) do
-        vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
-        length = length + 1
-    end
-
-    -- Apply the changes
-    bulk_set_node( vec3d_cache, { name = "air" } )
-
-    -- Clean up memory
-    clear_deletion_queue()
-end
-
 
 
 -------------------------------------------------------------------------------------------
@@ -419,4 +103,74 @@ minetest.register_on_modchannel_message(function(channel_name, sender, _)
 
     ::continue::
 end)
+
 -------------------------------------------------------------------------------------------
+
+-- Creates an aether portal in the aether
+-- This essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal
+local aether_origin_pos = nil
+
+local function spawn_portal_into_aether_callback(_, _, calls_remaining)
+
+    if calls_remaining > 0 then goto continue end
+
+    local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
+
+    if portal_exists then goto continue end
+
+    local min = sub_vector(aether_origin_pos,30)
+    local max = add_vector(aether_origin_pos,30)
+    local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
+
+    if platform and next(platform) then
+        place_schematic( platform[ random( 1, #platform )] , aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
+    else
+        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
+    end
+
+    ::continue::
+end
+
+-- Creates aether portals in the overworld
+local function spawn_portal_into_overworld_callback( _, _, calls_remaining )
+
+    if calls_remaining > 0 then goto continue end
+
+    if find_node_near( aether_origin_pos, 30, { "aether:portal" } ) then goto continue end
+
+    local min = sub_vector( aether_origin_pos, 30 )
+    local max = add_vector( aether_origin_pos, 30 )
+    local platform = find_nodes_in_area_under_air( min, max, { "main:stone", "main:water", "main:grass", "main:sand", "main:dirt" } )
+
+    if platform and next( platform ) then
+        place_schematic( platform[ random( 1, #platform ) ], aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z"  )
+    else
+        place_schematic( aether_origin_pos, aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
+    end
+
+    ::continue::
+end
+
+local function generate_return_portal(pos)
+    if pos.y < 20000 then
+        --center the location to the lava height
+        pos.y = 25000--+random(-30,30)    
+        aether_origin_pos = pos
+        
+        local min = sub_vector(aether_origin_pos,30)
+        local max = add_vector(aether_origin_pos,30)
+        
+        --force load the area
+        emerge_area(min, max, spawn_portal_into_aether_callback)
+    else
+        --center the location to the water height
+        pos.y = 0--+random(-30,30)    
+        aether_origin_pos = pos
+        --prefer height for mountains
+        local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
+        local max = add_vector(aether_origin_pos,vec_new(30,120,30))
+        
+        --force load the area
+        emerge_area(min, max, spawn_portal_into_overworld_callback)
+    end
+end
