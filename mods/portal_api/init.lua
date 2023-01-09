@@ -164,7 +164,6 @@ function create_portal(position, new_frame_node, new_portal_node, new_size_limit
     portal_node = new_portal_node
     size_limit = new_size_limit
 
-
     failure = false
 
     insert_new_build_item( assemble_vec7d( position, false, position ) )
@@ -234,8 +233,11 @@ local function delete_portal(vec_7d)
 end
 
 -- The entry point for the portal deletion and logic loop
-function destroy_portal( position )
-
+function destroy_portal( position, new_frame_node, new_portal_node, new_size_limit)
+    
+    frame_node = new_frame_node
+    portal_node = new_portal_node
+    size_limit = new_size_limit
 
     insert_new_deletion_item( assemble_vec7d( position, false, position ) )
 
