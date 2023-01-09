@@ -1,21 +1,13 @@
-local aether_portal_schematic = aether_portal_schematic
-
 local abs    = math.abs
-local random = math.random
 
 local add_vector   = vector.add
-local sub_vector   = vector.subtract
 local vec_distance = vector.distance
 local vec_new   = vector.new
 
 local table_insert = table.insert
 local ipairs = ipairs
 
-local emerge_area                  = minetest.emerge_area
 local get_node                     = minetest.get_node
-local find_node_near               = minetest.find_node_near
-local find_nodes_in_area_under_air = minetest.find_nodes_in_area_under_air
-local place_schematic              = minetest.place_schematic
 local bulk_set_node                = minetest.bulk_set_node
 
 
@@ -45,8 +37,7 @@ end
 ]]
 
 -- This is single threaded, only one queue can exist at a time, it will pause the server while it builds it
-local build_queue = {}
-local deletion_queue = {}
+local queue = {}
 local failure = false
 
 local steps_x = {
@@ -89,30 +80,19 @@ end
 local iterator_keys = {
     "x", "y", "z", "axis", "a", "b", "c"
 }
-local function match_full_build_queue(vec_3d)
-    for _,this in ipairs(build_queue) do
+local function match_full_queue(vec_3d)
+    for _,this in ipairs(queue) do
         if this.x == vec_3d.x and this.y == vec_3d.y and this.z == vec_3d.z then return true end
     end
     return false
 end
-local function match_full_deletion_queue(vec_3d)
-    for _,this in ipairs(deletion_queue) do
-        if this.x == vec_3d.x and this.y == vec_3d.y and this.z == vec_3d.z then return true end
-    end
+
+local function insert_new_queue_item(vec_7d)
+    table_insert(queue, vec_7d)
 end
 
-local function insert_new_build_item(vec_7d)
-    table_insert(build_queue, vec_7d)
-end
-local function insert_new_deletion_item(vec_7d)
-    table_insert(deletion_queue, vec_7d)
-end
-
-local function clear_build_queue()
-    build_queue = {}
-end
-local function clear_deletion_queue()
-    deletion_queue = {}
+local function clear_queue()
+    queue = {}
 end
 
 local pos = {}
@@ -135,16 +115,16 @@ local function generate_portal(vec_7d)
 
         new_position = add_vector( pos, direction )
 
-        if match_full_build_queue( new_position ) then goto continue end
+        if match_full_queue( new_position ) then goto continue end
 
         if get_node( new_position ).name == "air" then
             if vec_distance( new_position, origin ) < size_limit then
                 -- Everything is going well
-                insert_new_build_item( assemble_vec7d( new_position, axis, origin ) )
+                insert_new_queue_item( assemble_vec7d( new_position, axis, origin ) )
             else
                 -- This means the portal failed to intialize, so try the other axis
-                clear_build_queue()
-                insert_new_build_item( assemble_vec7d( origin, not axis, origin ) )
+                clear_queue()
+                insert_new_queue_item( assemble_vec7d( origin, not axis, origin ) )
             end
         elseif get_node( new_position ).name ~= frame_node then
             -- This part basically means the portal exceeded the size limit and it failed completely, exits out here in the globalstep
@@ -156,7 +136,6 @@ local function generate_portal(vec_7d)
     end
 end
 
--- TODO: this is poop, generic this
 -- This is the entry point for portal creation and logic loop
 function create_portal(position, new_frame_node, new_portal_node, new_size_limit, return_portal_callback)
 
@@ -166,21 +145,21 @@ function create_portal(position, new_frame_node, new_portal_node, new_size_limit
 
     failure = false
 
-    insert_new_build_item( assemble_vec7d( position, false, position ) )
+    insert_new_queue_item( assemble_vec7d( position, false, position ) )
 
     current_index = 1
 
     second_loop = false
 
     -- Keep the heap objects alive so the gc isn't abused
-    while not failure and current_index <= #build_queue do
+    while not failure and current_index <= #queue do
 
-        generate_portal(build_queue[current_index])
+        generate_portal(queue[current_index])
         current_index = current_index + 1
 
         if failure and not second_loop then
-            clear_build_queue()
-            insert_new_build_item( assemble_vec7d( position, true, position ) )
+            clear_queue()
+            insert_new_queue_item( assemble_vec7d( position, true, position ) )
             second_loop = true
             failure = false
             current_index = 1
@@ -189,7 +168,7 @@ function create_portal(position, new_frame_node, new_portal_node, new_size_limit
 
     -- Failed to build one, now gc clear the queue
     if failure then
-        clear_build_queue()
+        clear_queue()
         return
     end
 
@@ -198,7 +177,7 @@ function create_portal(position, new_frame_node, new_portal_node, new_size_limit
     vec3d_cache = {}
 
     length = 1
-    for _,vec_7d in ipairs(build_queue) do
+    for _,vec_7d in ipairs(queue) do
         vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
         length = length + 1
     end
@@ -208,7 +187,7 @@ function create_portal(position, new_frame_node, new_portal_node, new_size_limit
     return_portal_callback(position)
 
     -- Clean up memory
-    clear_build_queue()
+    clear_queue()
 end
 
 local function delete_portal(vec_7d)
@@ -222,11 +201,11 @@ local function delete_portal(vec_7d)
 
         new_position = add_vector( pos, position )
 
-        if match_full_deletion_queue( new_position ) then goto continue end
+        if match_full_queue( new_position ) then goto continue end
         if get_node( new_position ).name ~= portal_node then goto continue end
         if vec_distance( new_position, origin ) >= size_limit then goto continue end
 
-        insert_new_deletion_item( assemble_vec7d( new_position, axis, origin ) )
+        insert_new_queue_item( assemble_vec7d( new_position, axis, origin ) )
 
         ::continue::
     end
@@ -234,24 +213,24 @@ end
 
 -- The entry point for the portal deletion and logic loop
 function destroy_portal( position, new_frame_node, new_portal_node, new_size_limit)
-    
+
     frame_node = new_frame_node
     portal_node = new_portal_node
     size_limit = new_size_limit
 
-    insert_new_deletion_item( assemble_vec7d( position, false, position ) )
+    insert_new_queue_item( assemble_vec7d( position, false, position ) )
 
     current_index = 1
 
     -- Logic loop
-    while current_index <= #deletion_queue do
-        delete_portal( deletion_queue[ current_index ] )
+    while current_index <= #queue do
+        delete_portal( queue[ current_index ] )
         current_index = current_index + 1
     end
 
     -- Didn't have a portal
-    if #deletion_queue <= 1 then
-        clear_deletion_queue()
+    if #queue <= 1 then
+        clear_queue()
         return
     end
 
@@ -260,7 +239,7 @@ function destroy_portal( position, new_frame_node, new_portal_node, new_size_lim
     length = 1
 
     -- Convert the 7d vector into a usable 3d vector
-    for _,vec_7d in ipairs(deletion_queue) do
+    for _,vec_7d in ipairs(queue) do
         vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
         length = length + 1
     end
@@ -269,5 +248,5 @@ function destroy_portal( position, new_frame_node, new_portal_node, new_size_lim
     bulk_set_node( vec3d_cache, { name = "air" } )
 
     -- Clean up memory
-    clear_deletion_queue()
+    clear_queue()
 end
