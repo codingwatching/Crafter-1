@@ -47,7 +47,7 @@ end
 ]]
 local function assemble_vec7d( vec, axis, origin )
     -- Piggyback on vec3d for new pointers in lua vm
-    local initializing_vector = vec_copy(vec)
+    local initializing_vector = vec_new(vec)
     initializing_vector.axis = axis
     initializing_vector.a = origin.x
     initializing_vector.b = origin.y
@@ -107,26 +107,15 @@ end
 local iterator_keys = {
     "x", "y", "z", "axis", "a", "b", "c"
 }
-local function match_full_build_queue(vec)
+local function match_full_build_queue(vec_3d)
     for _,this in ipairs(build_queue) do
-        for key,value in ipairs(iterator_keys) do
-            if vec[key] ~= this[key] then goto continue end
-        end
-
-        do return true end
-
-        ::continue::
+        if this.x == vec_3d.x and this.y == vec_3d.y and this.z == vec_3d.z then return true end
     end
+    return false
 end
-local function match_full_deletion_queue(vec)
-    for _,this in ipairs(deletion_queue) do
-        for key,value in this do
-            if vec[key] ~= value then goto continue end
-        end
-
-        do return true end
-
-        ::continue::
+local function match_full_deletion_queue(vec_3d)
+    for _,this in ipairs(build_queue) do
+        if this.x == vec_3d.x and this.y == vec_3d.y and this.z == vec_3d.z then return true end
     end
 end
 
@@ -155,25 +144,29 @@ local function local_create_aether_portal(vec_7d)
     local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
     -- 2d virtual memory map creation
-    for direction in ipairs(steps[axis_to_integer(axis)]) do
+    for _,direction in ipairs(steps[axis_to_integer(axis)]) do
 
         local new_position = add_vector(pos,direction)
 
-        if match_full_build_queue(vec_7d) then goto continue end
+        if match_full_build_queue(new_position) then goto continue end
 
         if get_node(new_position).name == "air" then
             if vec_distance(new_position,origin) < 50 then
                 -- Everything is going well
                 insert_new_build_item(assemble_vec7d(new_position, axis, origin))
+                print("trying")
             else
                 -- This means the portal failed to intialize, so try the other axis
                 clear_build_queue()
                 insert_new_build_item(assemble_vec7d(origin, not axis, origin))
+                print("trying 2")
             end
         elseif get_node(new_position).name ~= "nether:glowstone" then
+            print(get_node(new_position).name)
             -- This part basically means the portal exceeded the size limit and it failed completely, exits out here in the globalstep
             -- Might have hit a wall, random node, who knows! It's not air, and it's not the portal frame
             failure = true
+            print("failed here")
         end
 
         ::continue::
@@ -190,15 +183,28 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
 
     local current_index = 1
 
+    local second_loop = false
+
     -- Keep the heap objects alive so the gc isn't abused
     while not failure and current_index <= #build_queue do
-        print(dump(build_queue[current_index]))
+        -- print(dump(build_queue[current_index]))
         local_create_aether_portal(build_queue[current_index])
         current_index = current_index + 1
+
+        if failure and not second_loop then
+            clear_build_queue()
+            insert_new_build_item( assemble_vec7d( position, true, position ) )
+            second_loop = true
+            failure = false
+            current_index = 1
+        end
     end
 
     -- Failed to build one, now gc clear the queue
-    if failure then clear_build_queue() return end
+    if failure then
+        clear_build_queue()
+        return
+    end
 
     -- Success! Place the precalculated indexes
 
@@ -206,13 +212,15 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
 
     local vec3d_cache = {}
 
+    print(dump(build_queue))
+
     local length = 1
     for _,vec_7d in ipairs(build_queue) do
         vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
         length = length + 1
     end
 
-    --bulk_set_node(vec3d_cache, {"aether:portal"})
+    bulk_set_node( vec3d_cache, { name = "aether:portal" } )
 end
 
 
