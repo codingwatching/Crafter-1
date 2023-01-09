@@ -51,6 +51,7 @@ local function teleport_to_overworld(_, _, calls_remaining)
 
     ::continue::
 end
+
 local function teleport_to_aether(_, _, calls_remaining)
     if calls_remaining > 0 then goto continue end
 
@@ -67,6 +68,7 @@ local function teleport_to_aether(_, _, calls_remaining)
     ::continue::
 end
 
+local aether_origin_pos
 local new_pos
 
 --this initializes all teleporter commands from the client
@@ -108,7 +110,6 @@ end)
 
 -- Creates an aether portal in the aether
 -- This essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal
-local aether_origin_pos = nil
 
 local function spawn_portal_into_aether_callback(_, _, calls_remaining)
 
@@ -173,4 +174,12 @@ local function generate_return_portal(pos)
         --force load the area
         emerge_area(min, max, spawn_portal_into_overworld_callback)
     end
+end
+
+function create_aether_portal(position)
+
+end
+
+function destroy_aether_portal(position)
+    
 end
