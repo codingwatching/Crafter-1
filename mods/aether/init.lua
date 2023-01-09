@@ -30,28 +30,32 @@ minetest.register_on_joinplayer(function(player)
     aether_channels[name] = minetest.mod_channel_join(name..":aether_teleporters")
 end)
 
+local glow = {name = "nether:glowstone"}
+local port = {name = "aether:portal"}
+local none = {name = "air"}
+
 
 local aether_portal_schematic = {
     size = {x = 4, y = 5, z = 3},
     data = {
         -- The side of the bush, with the air on top
-        {name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},
-        {name = "air"},{name = "air"},{name = "air"},{name = "air"},
-        {name = "air"},{name = "air"},{name = "air"},{name = "air"},
-        {name = "air"},{name = "air"},{name = "air"},{name = "air"},-- lower layer
-        {name = "air"},{name = "air"},{name = "air"},{name = "air"}, -- top layer
+        glow,glow,glow,glow,
+        none,none,none,none,
+        none,none,none,none,
+        none,none,none,none,-- lower layer
+        none,none,none,none, -- top layer
         -- The center of the bush, with stem at the base and a pointy leave 2 nodes above
-        {name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},
-        {name = "nether:glowstone"},{name = "aether:portal"},{name = "aether:portal"},{name = "nether:glowstone"},
-        {name = "nether:glowstone"},{name = "aether:portal"},{name = "aether:portal"},{name = "nether:glowstone"},
-        {name = "nether:glowstone"},{name = "aether:portal"},{name = "aether:portal"},{name = "nether:glowstone"},-- lower layer
-        {name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"}, -- top layer
+        glow,glow,glow,glow,
+        glow,port,port,glow,
+        glow,port,port,glow,
+        glow,port,port,glow,-- lower layer
+        glow,glow,glow,glow, -- top layer
         -- The other side of the bush, same as first side
-        {name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},{name = "nether:glowstone"},
-        {name = "air"},{name = "air"},{name = "air"},{name = "air"},
-        {name = "air"},{name = "air"},{name = "air"},{name = "air"},
-        {name = "air"},{name = "air"},{name = "air"},{name = "air"},-- lower layer
-        {name = "air"},{name = "air"},{name = "air"},{name = "air"}, -- top layer
+        glow,glow,glow,glow,
+        none,none,none,none,
+        none,none,none,none,
+        none,none,none,none,-- lower layer
+        none,none,none,none, -- top layer
     }
 }
 
