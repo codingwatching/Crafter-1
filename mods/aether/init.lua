@@ -104,11 +104,17 @@ local function match_origin( a, b, c, vec)
     return vec.a == a and vec.b == b and vec.c == c
 end
 
+local iterator_keys = {
+    "x", "y", "z", "axis", "a", "b", "c"
+}
 local function match_full_build_queue(vec)
     for _,this in ipairs(build_queue) do
-        for key,value in this do
-            if vec[key] ~= value then goto continue end
+        for key,value in ipairs(iterator_keys) do
+            if vec[key] ~= this[key] then goto continue end
         end
+
+        do return true end
+
         ::continue::
     end
 end
@@ -117,6 +123,9 @@ local function match_full_deletion_queue(vec)
         for key,value in this do
             if vec[key] ~= value then goto continue end
         end
+
+        do return true end
+
         ::continue::
     end
 end
@@ -173,8 +182,37 @@ end
 
 -- TODO: this is poop, generic this
 -- This is the generic entry point for the portal creation
-function create_aether_portal(position, --[[frame_node, portal_node, size_limit, something_else?]])
+function create_aether_portal(position --[[frame_node, portal_node, size_limit, something_else?]])
 
+    failure = false
+
+    insert_new_build_item( assemble_vec7d( position, false, position ) )
+
+    local current_index = 1
+
+    -- Keep the heap objects alive so the gc isn't abused
+    while not failure and current_index <= #build_queue do
+        print(dump(build_queue[current_index]))
+        local_create_aether_portal(build_queue[current_index])
+        current_index = current_index + 1
+    end
+
+    -- Failed to build one, now gc clear the queue
+    if failure then clear_build_queue() return end
+
+    -- Success! Place the precalculated indexes
+
+    -- TODO: reuse a heap object for this!
+
+    local vec3d_cache = {}
+
+    local length = 1
+    for _,vec_7d in ipairs(build_queue) do
+        vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
+        length = length + 1
+    end
+
+    --bulk_set_node(vec3d_cache, {"aether:portal"})
 end
 
 
