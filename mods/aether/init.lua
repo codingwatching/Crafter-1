@@ -24,6 +24,11 @@ local aether_channels = {}
 local name
 local aether_origin_pos
 local new_pos
+local min
+local max
+local player
+local channel_decyphered
+local platform
 
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
@@ -77,32 +82,34 @@ local function teleport(_, _, calls_remaining)
     ::continue::
 end
 
---this initializes all teleporter commands from the client
+-- Initializes all teleporter commands from the client
 minetest.register_on_modchannel_message(function(channel_name, sender, _)
-    local channel_decyphered = channel_name:gsub(sender,"")
+
+    channel_decyphered = channel_name:gsub(sender,"")
+
     if channel_decyphered ~= ":aether_teleporters" then goto continue end
 
-    local player = minetest.get_player_by_name(sender)
+    player = minetest.get_player_by_name(sender)
     new_pos = player:get_pos()
 
-    if new_pos.y < 20000 then
-        --center the location to the lava height
-        new_pos.y = 25000--+random(-30,30)    
-        aether_origin_pos = new_pos
+    aether_origin_pos = new_pos
 
-        local min = sub_vector(aether_origin_pos,30)
-        local max = add_vector(aether_origin_pos,30)
+    if new_pos.y < 20000 then
+        -- Center the location to the water height
+        new_pos.y = 25000--+random(-30,30)    
+
+        min = sub_vector(aether_origin_pos,30)
+        max = add_vector(aether_origin_pos,30)
 
         --force load the area
         teleporting_player = player
         emerge_area(min, max, teleport)
     else
-        --center the location to the water height
+        -- Center the location to the water height
         new_pos.y = 0--+random(-30,30)    
-        aether_origin_pos = new_pos
         --prefer height for mountains
-        local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
-        local max = add_vector(aether_origin_pos,vec_new(30,120,30))
+        min = sub_vector(aether_origin_pos,vec_new(30,30,30))
+        max = add_vector(aether_origin_pos,vec_new(30,120,30))
 
         --force load the area
         teleporting_player = player
@@ -111,8 +118,6 @@ minetest.register_on_modchannel_message(function(channel_name, sender, _)
 
     ::continue::
 end)
-
--------------------------------------------------------------------------------------------
 
 -- Creates an aether portal in the aether
 -- This essentially makes it so you have to move 30 away from one portal to another otherwise it will travel to an existing portal
@@ -125,9 +130,9 @@ local function spawn_portal_into_aether_callback(_, _, calls_remaining)
 
     if portal_exists then goto continue end
 
-    local min = sub_vector(aether_origin_pos,30)
-    local max = add_vector(aether_origin_pos,30)
-    local platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
+    min = sub_vector(aether_origin_pos,30)
+    max = add_vector(aether_origin_pos,30)
+    platform = find_nodes_in_area_under_air(min, max, {"aether:dirt","aether:grass"})
 
     if platform and next(platform) then
         place_schematic( platform[ random( 1, #platform )] , aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z" )
@@ -145,9 +150,9 @@ local function spawn_portal_into_overworld_callback( _, _, calls_remaining )
 
     if find_node_near( aether_origin_pos, 30, { "aether:portal" } ) then goto continue end
 
-    local min = sub_vector( aether_origin_pos, 30 )
-    local max = add_vector( aether_origin_pos, 30 )
-    local platform = find_nodes_in_area_under_air( min, max, { "main:stone", "main:water", "main:grass", "main:sand", "main:dirt" } )
+    min = sub_vector( aether_origin_pos, 30 )
+    max = add_vector( aether_origin_pos, 30 )
+    platform = find_nodes_in_area_under_air( min, max, { "main:stone", "main:water", "main:grass", "main:sand", "main:dirt" } )
 
     if platform and next( platform ) then
         place_schematic( platform[ random( 1, #platform ) ], aether_portal_schematic, "0", nil, true, "place_center_x, place_center_z"  )
@@ -160,24 +165,27 @@ end
 
 local function generate_return_portal(pos)
     if pos.y < 20000 then
-        --center the location to the lava height
-        pos.y = 25000--+random(-30,30)    
+
+        -- Center the location to the water height
+        pos.y = 25000
         aether_origin_pos = pos
 
-        local min = sub_vector(aether_origin_pos,30)
-        local max = add_vector(aether_origin_pos,30)
+        min = sub_vector(aether_origin_pos,30)
+        max = add_vector(aether_origin_pos,30)
 
-        --force load the area
+        -- Force load the area
         emerge_area(min, max, spawn_portal_into_aether_callback)
     else
-        --center the location to the water height
-        pos.y = 0--+random(-30,30)    
-        aether_origin_pos = pos
-        --prefer height for mountains
-        local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
-        local max = add_vector(aether_origin_pos,vec_new(30,120,30))
 
-        --force load the area
+        -- Center the location to the water height
+        pos.y = 0
+        aether_origin_pos = pos
+
+        -- Prefer height for mountains
+        min = sub_vector(aether_origin_pos,vec_new(30,30,30))
+        max = add_vector(aether_origin_pos,vec_new(30,120,30))
+
+        -- Force load the area
         emerge_area(min, max, spawn_portal_into_overworld_callback)
     end
 end
