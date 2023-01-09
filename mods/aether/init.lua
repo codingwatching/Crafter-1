@@ -205,7 +205,7 @@ local second_loop = false
 
 -- TODO: make this name more generic
 -- TODO: generic node cache, store in single value as only one portal creation exists at a time
-local function local_create_aether_portal(vec_7d)
+local function create_portal(vec_7d)
 
     pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
     axis = vec_7d.axis
@@ -252,7 +252,7 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
     -- Keep the heap objects alive so the gc isn't abused
     while not failure and current_index <= #build_queue do
 
-        local_create_aether_portal(build_queue[current_index])
+        create_portal(build_queue[current_index])
         current_index = current_index + 1
 
         if failure and not second_loop then
@@ -288,7 +288,7 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
     clear_build_queue()
 end
 
-local function local_destroy_aether_portal(vec_7d)
+local function destroy_portal(vec_7d)
 
     pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
     axis = vec_7d.axis
@@ -319,7 +319,7 @@ function destroy_aether_portal( position )
 
     -- Logic loop
     while current_index <= #deletion_queue do
-        local_destroy_aether_portal( deletion_queue[ current_index ] )
+        destroy_portal( deletion_queue[ current_index ] )
         current_index = current_index + 1
     end
 
