@@ -202,34 +202,41 @@ local function generate_return_portal(pos)
     end
 end
 
+local pos = {}
+local axis = false
+local origin = {}
+local new_position = {}
+local current_index = 0
+local length = 0
+local vec3d_cache = {}
+local second_loop = false
+
 
 -- TODO: make this name more generic
--- TODO: reuse as much data as possible
 -- TODO: generic node cache, store in single value as only one portal creation exists at a time
 local function local_create_aether_portal(vec_7d)
 
-    -- TODO: make these a reused heap object
-    local pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
-    local axis = vec_7d.axis
-    local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
+    pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
+    axis = vec_7d.axis
+    origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
     -- 2d virtual memory map creation
-    for _,direction in ipairs(steps[axis_to_integer(axis)]) do
+    for _,direction in ipairs( steps[ axis_to_integer( axis ) ] ) do
 
-        local new_position = add_vector(pos,direction)
+        new_position = add_vector( pos, direction )
 
-        if match_full_build_queue(new_position) then goto continue end
+        if match_full_build_queue( new_position ) then goto continue end
 
-        if get_node(new_position).name == "air" then
-            if vec_distance(new_position,origin) < 50 then
+        if get_node( new_position ).name == "air" then
+            if vec_distance( new_position, origin ) < 50 then
                 -- Everything is going well
-                insert_new_build_item(assemble_vec7d(new_position, axis, origin))
+                insert_new_build_item( assemble_vec7d( new_position, axis, origin ) )
             else
                 -- This means the portal failed to intialize, so try the other axis
                 clear_build_queue()
-                insert_new_build_item(assemble_vec7d(origin, not axis, origin))
+                insert_new_build_item( assemble_vec7d( origin, not axis, origin ) )
             end
-        elseif get_node(new_position).name ~= "nether:glowstone" then
+        elseif get_node( new_position ).name ~= "nether:glowstone" then
             -- This part basically means the portal exceeded the size limit and it failed completely, exits out here in the globalstep
             -- Might have hit a wall, random node, who knows! It's not air, and it's not the portal frame
             failure = true
@@ -247,13 +254,13 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
 
     insert_new_build_item( assemble_vec7d( position, false, position ) )
 
-    local current_index = 1
+    current_index = 1
 
-    local second_loop = false
+    second_loop = false
 
     -- Keep the heap objects alive so the gc isn't abused
     while not failure and current_index <= #build_queue do
-        -- print(dump(build_queue[current_index]))
+
         local_create_aether_portal(build_queue[current_index])
         current_index = current_index + 1
 
@@ -274,11 +281,9 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
 
     -- Success! Place the precalculated indexes
 
-    -- TODO: reuse a heap object for this!
+    vec3d_cache = {}
 
-    local vec3d_cache = {}
-
-    local length = 1
+    length = 1
     for _,vec_7d in ipairs(build_queue) do
         vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
         length = length + 1
@@ -294,27 +299,18 @@ end
 
 local function local_destroy_aether_portal(vec_7d)
 
-    -- TODO: make these a reused heap object
-    local pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
-    local axis = vec_7d.axis
-    local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
+    pos = vec_new( vec_7d.x, vec_7d.y, vec_7d.z )
+    axis = vec_7d.axis
+    origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
     -- 3d virtual memory map creation
-    for _,position in ipairs(steps_3d) do
+    for _,position in ipairs( steps_3d ) do
 
-        local new_position = add_vector(pos,position)
+        new_position = add_vector( pos, position )
 
-        if match_full_deletion_queue(new_position) then
-            goto continue
-        end
-
-        if get_node(new_position).name ~= "aether:portal" then
-            goto continue
-        end
-
-        if vec_distance(new_position,origin) >= 50 then
-            goto continue
-        end
+        if match_full_deletion_queue( new_position ) then goto continue end
+        if get_node( new_position ).name ~= "aether:portal" then goto continue end
+        if vec_distance( new_position, origin ) >= 50 then goto continue end
 
         insert_new_deletion_item( assemble_vec7d( new_position, axis, origin ) )
 
@@ -328,7 +324,7 @@ function destroy_aether_portal( position )
 
     insert_new_deletion_item( assemble_vec7d( position, false, position ) )
 
-    local current_index = 1
+    current_index = 1
 
     -- Logic loop
     while current_index <= #deletion_queue do
@@ -342,11 +338,9 @@ function destroy_aether_portal( position )
         return
     end
 
-    -- TODO: reuse a heap object for this!
+    vec3d_cache = {}
 
-    local vec3d_cache = {}
-
-    local length = 1
+    length = 1
 
     -- Convert the 7d vector into a usable 3d vector
     for _,vec_7d in ipairs(deletion_queue) do
@@ -398,18 +392,20 @@ local function teleport_to_aether(_, _, calls_remaining)
     ::continue::
 end
 
+local new_pos
+
 --this initializes all teleporter commands from the client
 minetest.register_on_modchannel_message(function(channel_name, sender, _)
     local channel_decyphered = channel_name:gsub(sender,"")
     if channel_decyphered ~= ":aether_teleporters" then goto continue end
 
     local player = minetest.get_player_by_name(sender)
-    local pos = player:get_pos()
+    new_pos = player:get_pos()
 
-    if pos.y < 20000 then
+    if new_pos.y < 20000 then
         --center the location to the lava height
-        pos.y = 25000--+random(-30,30)    
-        aether_origin_pos = pos
+        new_pos.y = 25000--+random(-30,30)    
+        aether_origin_pos = new_pos
 
         local min = sub_vector(aether_origin_pos,30)
         local max = add_vector(aether_origin_pos,30)
@@ -419,8 +415,8 @@ minetest.register_on_modchannel_message(function(channel_name, sender, _)
         emerge_area(min, max, teleport_to_aether)
     else
         --center the location to the water height
-        pos.y = 0--+random(-30,30)    
-        aether_origin_pos = pos
+        new_pos.y = 0--+random(-30,30)    
+        aether_origin_pos = new_pos
         --prefer height for mountains
         local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
         local max = add_vector(aether_origin_pos,vec_new(30,120,30))
