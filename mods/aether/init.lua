@@ -388,7 +388,7 @@ local function teleport_to_aether(_, _, calls_remaining)
     local portal_exists = find_node_near( aether_origin_pos, 30, { "aether:portal" } )
 
     if not portal_exists then goto continue end
-    --print(teleporting_player)
+
     if not teleporting_player then goto continue end
 
     teleporting_player:set_pos( vec_new( portal_exists.x, portal_exists.y - 0.5, portal_exists.z ) )
