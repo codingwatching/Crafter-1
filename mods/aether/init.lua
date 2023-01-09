@@ -114,7 +114,7 @@ local function match_full_build_queue(vec_3d)
     return false
 end
 local function match_full_deletion_queue(vec_3d)
-    for _,this in ipairs(build_queue) do
+    for _,this in ipairs(deletion_queue) do
         if this.x == vec_3d.x and this.y == vec_3d.y and this.z == vec_3d.z then return true end
     end
 end
@@ -123,7 +123,7 @@ local function insert_new_build_item(vec_7d)
     table_insert(build_queue, vec_7d)
 end
 local function insert_new_deletion_item(vec_7d)
-    table_insert(build_queue, vec_7d)
+    table_insert(deletion_queue, vec_7d)
 end
 
 local function clear_build_queue()
@@ -240,7 +240,7 @@ local function local_create_aether_portal(vec_7d)
 end
 
 -- TODO: this is poop, generic this
--- This is the generic entry point for the portal creation
+-- This is the entry point for portal creation and logic loop
 function create_aether_portal(position --[[frame_node, portal_node, size_limit, something_else?]])
 
     failure = false
@@ -278,8 +278,6 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
 
     local vec3d_cache = {}
 
-    print(dump(build_queue))
-
     local length = 1
     for _,vec_7d in ipairs(build_queue) do
         vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
@@ -289,16 +287,11 @@ function create_aether_portal(position --[[frame_node, portal_node, size_limit, 
     bulk_set_node( vec3d_cache, { name = "aether:portal" } )
 
     generate_return_portal(position)
+
+    -- Clean up memory
+    clear_build_queue()
 end
 
-
--- TODO: make this a while loop!
-
-local destroy_a_index = {}
-local destroy_aether_portal_failure = false
-local destroy_aether_portal_failed = false
-
---this can be used globally to create aether portals from obsidian
 local function local_destroy_aether_portal(vec_7d)
 
     -- TODO: make these a reused heap object
@@ -306,26 +299,67 @@ local function local_destroy_aether_portal(vec_7d)
     local axis = vec_7d.axis
     local origin = vec_new( vec_7d.a, vec_7d.b, vec_7d.c )
 
-    destroy_aether_portal_failed = true
-
-    --3d virtual memory map creation (x axis)
+    -- 3d virtual memory map creation
     for _,position in ipairs(steps_3d) do
+
         local new_position = add_vector(pos,position)
-        if match_full_deletion_queue(vec_7d) then goto continue end
-        if get_node(new_position).name ~= "aether:portal" then goto continue end
-        if vec_distance(new_position,origin) >= 50 then goto continue end
-        
-        insert_new_deletion_item(assemble_vec7d(new_position, axis, origin))
-        destroy_aether_portal_failed = false
+
+        if match_full_deletion_queue(new_position) then
+            goto continue
+        end
+
+        if get_node(new_position).name ~= "aether:portal" then
+            goto continue
+        end
+
+        if vec_distance(new_position,origin) >= 50 then
+            goto continue
+        end
+
+        insert_new_deletion_item( assemble_vec7d( new_position, axis, origin ) )
 
         ::continue::
     end
 end
 
--- Send it out into the global scope
-destroy_aether_portal = local_destroy_aether_portal
+-- The entry point for the portal deletion and logic loop
+function destroy_aether_portal( position )
 
 
+    insert_new_deletion_item( assemble_vec7d( position, false, position ) )
+
+    local current_index = 1
+
+    -- Logic loop
+    while current_index <= #deletion_queue do
+        local_destroy_aether_portal( deletion_queue[ current_index ] )
+        current_index = current_index + 1
+    end
+
+    -- Didn't have a portal
+    if #deletion_queue <= 1 then
+        clear_deletion_queue()
+        return
+    end
+
+    -- TODO: reuse a heap object for this!
+
+    local vec3d_cache = {}
+
+    local length = 1
+
+    -- Convert the 7d vector into a usable 3d vector
+    for _,vec_7d in ipairs(deletion_queue) do
+        vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
+        length = length + 1
+    end
+
+    -- Apply the changes
+    bulk_set_node( vec3d_cache, { name = "air" } )
+
+    -- Clean up memory
+    clear_deletion_queue()
+end
 
 
 
