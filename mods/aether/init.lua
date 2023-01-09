@@ -25,6 +25,8 @@ local bulk_set_node                = minetest.bulk_set_node
 
 local aether_channels = {}
 local name
+local aether_origin_pos
+local new_pos
 
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
@@ -67,9 +69,6 @@ local function teleport_to_aether(_, _, calls_remaining)
 
     ::continue::
 end
-
-local aether_origin_pos
-local new_pos
 
 --this initializes all teleporter commands from the client
 minetest.register_on_modchannel_message(function(channel_name, sender, _)
@@ -177,9 +176,9 @@ local function generate_return_portal(pos)
 end
 
 function create_aether_portal(position)
-
+    create_portal( position, "nether:glowstone", "aether:portal", 50, generate_return_portal )
 end
 
 function destroy_aether_portal(position)
-    
+    destroy_portal( position, "nether:glowstone", "aether:portal", 50 )
 end
