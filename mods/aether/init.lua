@@ -179,10 +179,10 @@ local function generate_return_portal(pos)
         --center the location to the lava height
         pos.y = 25000--+random(-30,30)    
         aether_origin_pos = pos
-        
+
         local min = sub_vector(aether_origin_pos,30)
         local max = add_vector(aether_origin_pos,30)
-        
+
         --force load the area
         emerge_area(min, max, spawn_portal_into_aether_callback)
     else
@@ -192,7 +192,7 @@ local function generate_return_portal(pos)
         --prefer height for mountains
         local min = sub_vector(aether_origin_pos,vec_new(30,30,30))
         local max = add_vector(aether_origin_pos,vec_new(30,120,30))
-        
+
         --force load the area
         emerge_area(min, max, spawn_portal_into_overworld_callback)
     end
