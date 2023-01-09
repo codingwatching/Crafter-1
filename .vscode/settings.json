@@ -11,6 +11,8 @@
         "VoxelArea",
         "dump",
         "create_portal",
-        "destroy_portal"
+        "destroy_portal",
+        "create_aether_portal",
+        "destroy_aether_portal"
     ]
 }
