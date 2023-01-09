@@ -27,6 +27,8 @@ local bulk_set_node                = minetest.bulk_set_node
 
 local aether_channels = {}
 local name
+local portal_node = ""
+local frame_node = ""
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
     aether_channels[name] = minetest.mod_channel_join(name..":aether_teleporters")
@@ -34,17 +36,6 @@ end)
 
 --TODO: add biome information into the thing, or dimensions? or maybe a dimension ID?
 -- Micro 7d vector factory function
---[[
-local function assemble_vec7d( x, y, z, axis, a, b, c )
-    -- Piggyback on vec3d for new pointers in lua vm
-    local initializing_vector = vec_new( x, y, z )
-    initializing_vector.axis = axis
-    initializing_vector.a = a
-    initializing_vector.b = b
-    initializing_vector.c = c
-    return initializing_vector
-end
-]]
 local function assemble_vec7d( vec, axis, origin )
     -- Piggyback on vec3d for new pointers in lua vm
     local initializing_vector = vec_new(vec)
