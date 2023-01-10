@@ -59,9 +59,10 @@ end
 register_on_modchannel_message( function( channel_name, sender )
     channel_decyphered = channel_name:gsub( sender, "" )
     if channel_decyphered ~= ":sleep_channel" then return end
-    for _,bed_vec in ipairs(players_in_bed) do
+    for _,bed_vec in ipairs( players_in_bed ) do
         if bed_vec.name ~= sender then goto continue end
         bed_vec.sleeping = true
+        do return end
         ::continue::
     end
 end )
@@ -79,12 +80,17 @@ local wake_up = function( player )
         y = 0,
         z = 0
     } )
-    pool[ name ] = nil
+    for _,bed_vec in ipairs( players_in_bed ) do
+        if not bed_vec.name == name then goto continue end
+        bed_vec.sleeping = false
+        do return end
+        ::continue::
+    end
     minetest.close_formspec( name, "bed" )
     csm_wake_player_up( player )
 end
 
-local function global_sleep_check()
+local function sleep_check()
     sleep_loop = true
     sleep_table = {}
 
@@ -132,7 +138,7 @@ minetest.register_globalstep(function(dtime)
     global_step_timer = global_step_timer + dtime
     if global_step_timer <= 0.25 then return end
     global_step_timer = 0
-    global_sleep_check()
+    sleep_check()
 end)
 
 -- Delete data on player leaving
