@@ -3,20 +3,21 @@ local time_night = {begin = 19000, ending = 5500}
 local sleep_channel = {}
 local pool = {}
 local sleep_loop = false
+local register_on_joinplayer = minetest.register_on_joinplayer
+local register_on_modchannel_message =  minetest.register_on_modchannel_message
 
 local name
+
 minetest.register_on_joinplayer(function(player)
 	name = player:get_player_name()
 	sleep_channel[name] = minetest.mod_channel_join(name..":sleep_channel")
 end)
 
-local name
 local function csm_send_player_to_sleep(player)
 	name = player:get_player_name()
 	sleep_channel[name]:send_all("1")
 end
 
-local name
 local function csm_wake_player_up(player)
 	name = player:get_player_name()
 	sleep_channel[name]:send_all("0")
@@ -31,7 +32,6 @@ minetest.register_on_modchannel_message(function(channel_name, sender, message)
 	end
 end)
 
-local name
 local wake_up = function(player)
 	name = player:get_player_name()
 	player_is_sleeping(player,false)
@@ -98,8 +98,7 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 
--- delete data on player leaving
-local name
+-- Delete data on player leaving
 minetest.register_on_leaveplayer(function(player)
 	name = player:get_player_name()
 	pool[name] = nil
