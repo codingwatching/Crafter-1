@@ -1,6 +1,7 @@
 local register_on_joinplayer = minetest.register_on_joinplayer
 local register_on_modchannel_message =  minetest.register_on_modchannel_message
 local get_connected_players = minetest.get_connected_players
+local ipairs = ipairs
 
 local night_begins = 19000
 local night_ends   = 5500
@@ -30,6 +31,7 @@ local function new_bed_vec( player, position )
     if not player or not position then return end
     local bed_vec = {}
     bed_vec.name = player:get_player_name()
+    bed_vec.sleeping = false
     bed_vec.x = position.x
     bed_vec.y = position.y
     bed_vec.z = position.z
@@ -57,8 +59,11 @@ end
 register_on_modchannel_message( function( channel_name, sender )
     channel_decyphered = channel_name:gsub( sender, "" )
     if channel_decyphered ~= ":sleep_channel" then return end
-    if not pool[sender] then return end
-    pool[sender].sleeping = true
+    for _,bed_vec in ipairs(players_in_bed) do
+        if bed_vec.name ~= sender then goto continue end
+        bed_vec.sleeping = true
+        ::continue::
+    end
 end )
 
 local wake_up = function( player )
