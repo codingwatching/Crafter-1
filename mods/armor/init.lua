@@ -94,33 +94,15 @@ function calculate_armor_absorbtion(player)
     inv = player:get_inventory()
     armor_absorbtion = 0
 
-    stack = inv:get_stack("armor_head",1):get_name()
-    if stack ~= "" then
+    for _,inventory_name in ipairs(armor_inventories) do
+        stack = inv:get_stack(inventory_name,1):get_name()
+        if stack == "" then goto continue end
         level = get_item_group(stack,"armor_level")
         defense = get_item_group(stack,"armor_defense")
-        armor_absorbtion = armor_absorbtion + (level*defense)
+        armor_absorbtion = armor_absorbtion + ( level * defense )
+        ::continue::
     end
 
-    stack = inv:get_stack("armor_torso",1):get_name()
-    if stack ~= "" then
-        level = get_item_group(stack,"armor_level")
-        defense = get_item_group(stack,"armor_defense")
-        armor_absorbtion = armor_absorbtion + (level*defense)
-    end
-
-    stack = inv:get_stack("armor_legs",1):get_name()
-    if stack ~= "" then
-        level = get_item_group(stack,"armor_level")
-        defense = get_item_group(stack,"armor_defense")
-        armor_absorbtion = armor_absorbtion + (level*defense)
-    end
-
-    stack = inv:get_stack("armor_feet",1):get_name()
-    if stack ~= "" then
-        level = get_item_group(stack,"armor_level")
-        defense = get_item_group(stack,"armor_defense")
-        armor_absorbtion = armor_absorbtion + (level*defense)
-    end
     if armor_absorbtion > 0 then
         armor_absorbtion = math_ceil(armor_absorbtion/4)
     end
@@ -217,8 +199,8 @@ end)
 -- Only allow players to put armor in the right slots to stop exploiting chestplates
 
 register_allow_player_inventory_action( function( _, _, inventory, inventory_info )
-    for index,armor_slot in ipairs(armor_inventories) do
-        if inventory_info.to_list ~= armor_slot then goto continue end
+    for index,inventory_name in ipairs(armor_inventories) do
+        if inventory_info.to_list ~= inventory_name then goto continue end
         stack = inventory:get_stack(inventory_info.from_list,inventory_info.from_index)
         item = stack:get_name()
         if get_item_group(item, group_check[index]) == 0 then
