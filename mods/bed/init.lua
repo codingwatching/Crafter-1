@@ -2,6 +2,8 @@ local register_on_joinplayer = minetest.register_on_joinplayer
 local register_on_modchannel_message =  minetest.register_on_modchannel_message
 local get_connected_players = minetest.get_connected_players
 local get_player_by_name = minetest.get_player_by_name
+local close_formspec = minetest.close_formspec
+local show_formspec = minetest.show_formspec
 local get_timeofday = minetest.get_timeofday()
 local set_timeofday = minetest.set_timeofday()
 local ipairs = ipairs
@@ -94,7 +96,7 @@ local wake_up = function( player )
         do return end
         ::continue::
     end
-    minetest.close_formspec( name, "bed" )
+    close_formspec( name, "bed" )
     csm_wake_player_up( player )
 end
 
@@ -156,7 +158,7 @@ local do_sleep = function( player, pos, dir )
     player:set_look_vertical( 0 )
     player:set_look_horizontal( ( dir + 1 ) * math.pi )
 
-    minetest.show_formspec( ( dir + 1) * math.pi )
+    show_formspec( ( dir + 1) * math.pi )
 
     player_is_sleeping( player, true )
     set_player_animation( player, "lay", 0, false )
