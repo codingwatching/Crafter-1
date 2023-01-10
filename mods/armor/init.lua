@@ -13,8 +13,16 @@ local random = math.random
 local inv
 local player_skin
 local armor_skin
-local stack
 local skin_element
+local armor_absorbtion
+local level
+local defense
+local recalc
+local stack
+local name
+local wear_level
+local new_stack
+
 function recalculate_armor(player)
     
     if not player or (player and not player:is_player()) then return end
@@ -50,11 +58,6 @@ function recalculate_armor(player)
     player:set_properties({textures = {player_skin,armor_skin}})
 end
 
-local inv
-local armor_absorbtion
-local level
-local defense
-local stack
 function calculate_armor_absorbtion(player)
     if not player or (player and not player:is_player()) then return end
 
@@ -105,14 +108,6 @@ function set_armor_gui(player)
         data      =  level
     })
 end
-
-
-local inv
-local recalc
-local stack
-local name
-local wear_level
-local new_stack
 
 function damage_armor(player,damage)
     if not player or (player and not player:is_player()) then return end
@@ -177,7 +172,6 @@ function damage_armor(player,damage)
     end
 end
 
-local inv
 minetest.register_on_joinplayer(function(player)
     hud_manager.add_hud(player,"armor_bg",{
         hud_elem_type = "statbar",
