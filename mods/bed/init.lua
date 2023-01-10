@@ -1,70 +1,81 @@
-local mod_storage = minetest.get_mod_storage()
-local time_night = {begin = 19000, ending = 5500}
-local sleep_channel = {}
-local pool = {}
-local sleep_loop = false
 local register_on_joinplayer = minetest.register_on_joinplayer
 local register_on_modchannel_message =  minetest.register_on_modchannel_message
 
+local time_night = { begin = 19000, ending = 5500 }
+local sleep_channel = {}
+local pool = {}
+local sleep_loop = false
 local name
+local channel_decyphered
+local bed_count = 0
+local sleep_table = {}
 
-minetest.register_on_joinplayer(function(player)
+register_on_joinplayer( function( player )
 	name = player:get_player_name()
-	sleep_channel[name] = minetest.mod_channel_join(name..":sleep_channel")
-end)
+	sleep_channel[ name ] = minetest.mod_channel_join( name .. ":sleep_channel" )
+end )
 
-local function csm_send_player_to_sleep(player)
+local function csm_send_player_to_sleep( player )
 	name = player:get_player_name()
-	sleep_channel[name]:send_all("1")
+	sleep_channel[ name ]:send_all( "1" )
 end
 
-local function csm_wake_player_up(player)
+local function csm_wake_player_up( player )
 	name = player:get_player_name()
-	sleep_channel[name]:send_all("0")
+	sleep_channel[ name ]:send_all( "0" )
 end
 
-minetest.register_on_modchannel_message(function(channel_name, sender, message)
-	local channel_decyphered = channel_name:gsub(sender,"")
-	if channel_decyphered == ":sleep_channel" then
-		if pool[sender] then
-			pool[sender].sleeping = true
-		end
-	end
-end)
+register_on_modchannel_message( function( channel_name, sender )
+	channel_decyphered = channel_name:gsub( sender, "" )
+	if channel_decyphered ~= ":sleep_channel" then return end
+    if pool[sender] then
+        pool[sender].sleeping = true
+    end
+end )
 
-local wake_up = function(player)
+-- TODO: this needs to be a function call not a loop!
+
+local wake_up = function( player )
 	name = player:get_player_name()
-	player_is_sleeping(player,false)
-	player:set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})
-	pool[name] = nil
-	minetest.close_formspec(name, "bed")
-	csm_wake_player_up(player)
+	player_is_sleeping( player, false )
+	player:set_eye_offset( {
+        x = 0,
+        y = 0,
+        z = 0
+    },
+    {
+        x = 0,
+        y = 0,
+        z = 0
+    } )
+	pool[ name ] = nil
+	minetest.close_formspec( name, "bed" )
+	csm_wake_player_up( player )
 end
 
 local function global_sleep_check()
 	sleep_loop = true
-	--minetest.chat_send_all("sleep looping"..tostring(math.random()))
-	local sleep_table = {}
+	sleep_table = {}
 
-	for _,player in ipairs(minetest.get_connected_players()) do
-		local name = player:get_player_name()
+	for _,player in ipairs( minetest.get_connected_players() ) do
+		name = player:get_player_name()
 		sleep_table[name] = true
 	end
 
-	local bed_count = 0
+	bed_count = 0
 
-	for name,data in pairs(pool) do
-		local player = minetest.get_player_by_name(name)
+	for player_name,data in pairs( pool ) do
+		local player = minetest.get_player_by_name( player_name )
 		if player then
 			bed_count = bed_count + 1
 			if data.sleeping then
-				sleep_table[name] = nil
+				sleep_table[player_name] = nil
 			end
 			if data.pos then
 				player:move_to(data.pos)
 			end
 		else
-			pool[name] = nil
+			pool[player_name] = nil
 		end
 	end
 
