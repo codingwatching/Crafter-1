@@ -162,16 +162,7 @@ local do_sleep = function( player, pos, dir )
 
     player_is_sleeping( player, true )
     set_player_animation( player, "lay", 0, false )
-    player:set_eye_offset( {
-        x = 0,
-        y = -12,
-        z = -7
-    },
-    {
-        x = 0,
-        y = 0,
-        z = 0
-    } )
+    player:set_eye_offset( { x = 0, y = -12, z = -7 }, { x = 0, y = 0, z = 0 } )
 
     pool[ name ] = {
         pos = new_pos,
