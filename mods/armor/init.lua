@@ -133,6 +133,7 @@ function damage_armor(player,damage)
         name = stack:get_name()
 
         -- 9 is the base armor level, 5 is the level of protection it gives, then subtracted from it's level and type
+        -- 9 is the max level + 1 so that the calculation does not multiply into 0
         wear_level = ( ( 9 - get_item_group( name, "armor_level" ) ) * calculation_list[index] ) * ( 5 - get_item_group( name, "armor_type" ) ) * damage
         stack:add_wear(wear_level)
         inv:set_stack(inventory_name, 1, stack)
@@ -208,7 +209,16 @@ register_allow_player_inventory_action( function( _, _, inventory, inventory_inf
     end
 end)
 
-local materials = {["coal"]=1,["lapis"]=2,["iron"]=3,["chain"]=4,["gold"]=2,["diamond"]=5,["emerald"]=6,["sapphire"]=7,["ruby"]=8} --max 8
+local materials = {
+    ["coal"] = 1,
+    ["lapis"] = 2,
+    ["iron"] = 3,
+    ["chain"] = 4,
+    ["gold"] = 2,
+    ["diamond"] = 5,
+    ["emerald"] = 6,
+    ["sapphire"] = 7,
+    ["ruby"] = 8} --max 8
 local armor_type = {["helmet"]=2,["chestplate"]=4,["leggings"]=3,["boots"]=1} --max 4
 
 local function bool_int(state)
