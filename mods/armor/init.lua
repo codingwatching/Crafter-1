@@ -207,7 +207,7 @@ local acceptable = {
     ["armor_feet"]  = true,
 }
 register_on_player_inventory_action(function(player, _, _, inventory_info)
-    if not (acceptable[inventory_info.from_list] or acceptable[inventory_info.to_list]) then return end
+    if not ( acceptable[ inventory_info.from_list ] or acceptable[ inventory_info.to_list ] ) then return end
     after(0,function()
         recalculate_armor(player)
         set_armor_gui(player)
@@ -216,31 +216,15 @@ end)
 
 -- Only allow players to put armor in the right slots to stop exploiting chestplates
 
-register_allow_player_inventory_action(function(player, action, inventory, inventory_info)
-    if inventory_info.to_list == "armor_head" then
+register_allow_player_inventory_action( function( _, _, inventory, inventory_info )
+    for index,armor_slot in ipairs(armor_inventories) do
+        if inventory_info.to_list ~= armor_slot then goto continue end
         stack = inventory:get_stack(inventory_info.from_list,inventory_info.from_index)
         item = stack:get_name()
-        if get_item_group(item, "helmet") == 0 then
+        if get_item_group(item, group_check[index]) == 0 then
             return(0)
         end
-    elseif inventory_info.to_list == "armor_torso" then
-        stack = inventory:get_stack(inventory_info.from_list,inventory_info.from_index)
-        item = stack:get_name()
-        if get_item_group(item, "chestplate") == 0 then
-            return(0)
-        end
-    elseif inventory_info.to_list == "armor_legs" then
-        stack = inventory:get_stack(inventory_info.from_list,inventory_info.from_index)
-        item = stack:get_name()
-        if get_item_group(item, "leggings") == 0 then
-            return(0)
-        end
-    elseif inventory_info.to_list == "armor_feet" then
-        stack = inventory:get_stack(inventory_info.from_list,inventory_info.from_index)
-        item = stack:get_name()
-        if get_item_group(item, "boots") == 0 then
-            return(0)
-        end
+        ::continue::
     end
 end)
 
