@@ -1,5 +1,6 @@
 local register_on_joinplayer = minetest.register_on_joinplayer
 local register_on_modchannel_message =  minetest.register_on_modchannel_message
+local get_connected_players = minetest.get_connected_players
 
 local time_night = { begin = 19000, ending = 5500 }
 local sleep_channel = {}
@@ -9,6 +10,8 @@ local name
 local channel_decyphered
 local bed_count = 0
 local sleep_table = {}
+
+--TODO: run a check on a simpler data table because this is a mess
 
 register_on_joinplayer( function( player )
 	name = player:get_player_name()
@@ -28,12 +31,9 @@ end
 register_on_modchannel_message( function( channel_name, sender )
 	channel_decyphered = channel_name:gsub( sender, "" )
 	if channel_decyphered ~= ":sleep_channel" then return end
-    if pool[sender] then
-        pool[sender].sleeping = true
-    end
+    if not pool[sender] then return end
+    pool[sender].sleeping = true
 end )
-
--- TODO: this needs to be a function call not a loop!
 
 local wake_up = function( player )
 	name = player:get_player_name()
