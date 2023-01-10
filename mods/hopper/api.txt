@@ -25,27 +25,27 @@ hopper:add_container({ {"where_from", "node_name", "inventory_name"} })
 e.g.
 
 hopper:add_container({
-	{"top", "default:furnace", "dst"}, -- take cooked items from above into hopper below
-	{"bottom", "default:furnace", "src"}, -- insert items below to be cooked from hopper above
-	{"side", "default:furnace", "fuel"}, -- replenish furnace fuel from hopper at side
+    {"top", "default:furnace", "dst"}, -- take cooked items from above into hopper below
+    {"bottom", "default:furnace", "src"}, -- insert items below to be cooked from hopper above
+    {"side", "default:furnace", "fuel"}, -- replenish furnace fuel from hopper at side
 })
 
 You can also register hopper interaction targets by group, or by a group and a specific group
 value. For example:
 
 hopper:add_container({
-	{"top", "group:loot_chest", "loot"},
-	{"bottom", "group:loot_chest", "loot"},
-	{"side", "group:loot_chest", "loot"},
+    {"top", "group:loot_chest", "loot"},
+    {"bottom", "group:loot_chest", "loot"},
+    {"side", "group:loot_chest", "loot"},
 })
 
 Would cause hoppers to interact with the "loot" inventory of all nodes belonging to the group
 "loot_chest", and
 
 hopper:add_container({
-	{"top", "group:protected_container=1", "main"},
-	{"bottom", "group:protected_container=1", "main"},
-	{"side", "group:protected_container=1", "main"},
+    {"top", "group:protected_container=1", "main"},
+    {"bottom", "group:protected_container=1", "main"},
+    {"side", "group:protected_container=1", "main"},
 })
 
 Would cause hoppers to interact with the "main" inventory of nodes belonging to the group

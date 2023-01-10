@@ -6,4 +6,4 @@ minetest.register_node("void:stone", {
     groups = {stone = 1, hand = 1,pathable = 1},
     sounds = main.stoneSound(),
     drop = "",
-	})
+    })
