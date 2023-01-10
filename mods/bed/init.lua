@@ -4,6 +4,7 @@ local get_connected_players = minetest.get_connected_players
 local get_player_by_name = minetest.get_player_by_name
 local ipairs = ipairs
 local vec_new = vector.new
+local table_remove = table.remove
 
 local night_begins = 19000
 local night_ends   = 5500
@@ -46,7 +47,8 @@ local function remove_player_from_beds( player )
     if not name then return end
     for index,bed_vec in ipairs( players_in_bed ) do
         if name ~= bed_vec.name then goto continue end
-        
+        table_remove(players_in_bed, index)
+        do return end
         ::continue::
     end
 end
