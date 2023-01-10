@@ -63,7 +63,7 @@ local new_stack
 local item
 
 
-function recalculate_armor(player)
+function update_armor_visual(player)
     if not player or (player and not player:is_player()) then return end
     inv = player:get_inventory()
 
@@ -120,6 +120,8 @@ function set_armor_gui(player)
     })
 end
 
+local update_the_armor_visual = update_armor_visual
+
 function damage_armor(player,damage)
 
     if not player or (player and not player:is_player()) then return end
@@ -149,7 +151,7 @@ function damage_armor(player,damage)
         gain = 1,
         pitch = math_random( 80, 100 ) / 100 
     })
-    recalculate_armor(player)
+    update_the_armor_visual(player)
     set_armor_gui(player)
 end
 
@@ -192,7 +194,7 @@ local acceptable = {
 register_on_player_inventory_action(function(player, _, _, inventory_info)
     if not ( acceptable[ inventory_info.from_list ] or acceptable[ inventory_info.to_list ] ) then return end
     after(0,function()
-        recalculate_armor(player)
+        update_the_armor_visual(player)
         set_armor_gui(player)
     end)
 end)
