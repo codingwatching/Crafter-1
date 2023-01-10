@@ -6,6 +6,16 @@ minetest,math,io,vector,table,pairs
 local http = minetest.request_http_api()
 local id = "Lua Skins Updater"
 
+local pool = {}
+local temppath = minetest.get_worldpath()
+
+-- This needs to load to allow armor to work
+local name
+function get_skin(player)
+    name = player:get_player_name()
+    return(pool[name] or "player.png")
+end
+
 -- binary downloads are required
 if not minetest.features.httpfetch_binary_data then
     minetest.log("error","Outdated Minetest Engine detected. Skins mod will not load. This crashes armor.")
@@ -21,15 +31,7 @@ if not http then
     return(nil)
 end
 
--- only create classes if requirements are met
-local pool = {}
-local temppath = minetest.get_worldpath()
 
-local name
-function get_skin(player)
-    name = player:get_player_name()
-    return(pool[name] or "player.png")
-end
 
 -- Fancy debug wrapper to download an URL
 local function fetch_url(url, callback)
