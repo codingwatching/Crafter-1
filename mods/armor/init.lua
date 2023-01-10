@@ -6,6 +6,8 @@ local math_random = math.random
 local ipairs = ipairs
 local change_hud = hud_manager.change_hud
 local add_hud = hud_manager.add_hud
+local register_on_player_inventory_action = minetest.register_on_player_inventory_action
+local after = minetest.after
 
 local inv
 local player_skin
@@ -209,13 +211,12 @@ local acceptable = {
     ["armor_legs"]  = true,
     ["armor_feet"]  = true,
 }
-minetest.register_on_player_inventory_action(function(player, action, inventory, inventory_info)
-    if acceptable[inventory_info.from_list] or acceptable[inventory_info.to_list] then
-        minetest.after(0,function()
-            recalculate_armor(player)
-            set_armor_gui(player)
-        end)
-    end
+register_on_player_inventory_action(function(player, _, _, inventory_info)
+    if not (acceptable[inventory_info.from_list] or acceptable[inventory_info.to_list]) then return end
+    after(0,function()
+        recalculate_armor(player)
+        set_armor_gui(player)
+    end)
 end)
 
 --only allow players to put armor in the right slots to stop exploiting chestplates
