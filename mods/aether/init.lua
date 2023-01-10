@@ -2,26 +2,17 @@ local path = minetest.get_modpath("aether")
 dofile(path.."/nodes.lua")
 dofile(path.."/biomes.lua")
 
-local abs    = math.abs
 local random = math.random
 
 local add_vector   = vector.add
 local sub_vector   = vector.subtract
-local vec_distance = vector.distance
 local vec_new   = vector.new
 
-local table_insert = table.insert
-local ipairs = ipairs
-
 local emerge_area                  = minetest.emerge_area
-local get_node                     = minetest.get_node
 local find_node_near               = minetest.find_node_near
 local find_nodes_in_area_under_air = minetest.find_nodes_in_area_under_air
 local place_schematic              = minetest.place_schematic
-local bulk_set_node                = minetest.bulk_set_node
 
-local aether_channels = {}
-local name
 local aether_origin_pos
 local new_pos
 local min
@@ -29,11 +20,6 @@ local max
 local player
 local channel_decyphered
 local platform
-
-minetest.register_on_joinplayer(function(player)
-    name = player:get_player_name()
-    aether_channels[name] = minetest.mod_channel_join(name..":aether_teleporters")
-end)
 
 local glow = {name = "nether:glowstone"}
 local port = {name = "aether:portal"}
@@ -96,12 +82,12 @@ minetest.register_on_modchannel_message(function(channel_name, sender, _)
 
     if new_pos.y < 20000 then
         -- Center the location to the water height
-        new_pos.y = 25000--+random(-30,30)    
+        new_pos.y = 25000
 
         min = sub_vector(aether_origin_pos,30)
         max = add_vector(aether_origin_pos,30)
 
-        --force load the area
+        -- Force load the area
         teleporting_player = player
         emerge_area(min, max, teleport)
     else
@@ -111,7 +97,7 @@ minetest.register_on_modchannel_message(function(channel_name, sender, _)
         min = sub_vector(aether_origin_pos,vec_new(30,30,30))
         max = add_vector(aether_origin_pos,vec_new(30,120,30))
 
-        --force load the area
+        -- Force load the area
         teleporting_player = player
         emerge_area(min, max, teleport)
     end
