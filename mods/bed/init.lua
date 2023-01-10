@@ -1,7 +1,9 @@
 local register_on_joinplayer = minetest.register_on_joinplayer
 local register_on_modchannel_message =  minetest.register_on_modchannel_message
 local get_connected_players = minetest.get_connected_players
+local get_player_by_name = minetest.get_player_by_name
 local ipairs = ipairs
+local vec_new = vector.new
 
 local night_begins = 19000
 local night_ends   = 5500
@@ -36,6 +38,17 @@ local function new_bed_vec( player, position )
     bed_vec.y = position.y
     bed_vec.z = position.z
     return bed_vec
+end
+
+local function remove_player_from_beds( player )
+    if not player then return end
+    name = player:get_player_name()
+    if not name then return end
+    for index,bed_vec in ipairs( players_in_bed ) do
+        if name ~= bed_vec.name then goto continue end
+        
+        ::continue::
+    end
 end
 
 
@@ -92,45 +105,22 @@ end
 
 local function sleep_check()
 
-    -- Not everyone is in bed, don't continue
-    if #players_in_bed ~= #get_connected_players() then return end
+    -- No one is in bed, don't continue
+    if #players_in_bed == 0 then return end
 
-    sleep_loop = true
-
-    sleep_table = {}
-
-    for _,player in ipairs( get_connected_players() ) do
-        name = player:get_player_name()
-        sleep_table[name] = true
-    end
-
-    bed_count = 0
-
-    for player_name,data in pairs( pool ) do
-        local player = minetest.get_player_by_name( player_name )
-
-        if not player then
-            pool[player_name] = nil
-            goto continue
-        end
-
-        bed_count = bed_count + 1
-        if data.sleeping then
-            sleep_table[player_name] = nil
-        end
-        if data.pos then
-            player:move_to(data.pos)
-        end
-
+    -- Locks the players in bed until they get up or the night skips
+    for _,bed_vec in ipairs( players_in_bed ) do
+        local player = get_player_by_name( bed_vec.name )
+        if not player then goto continue end
+        player:move_to( vec_new( bed_vec.x, bed_vec.y, bed_vec.z ) )
         ::continue::
     end
 
-    if #sleep_table ~= 0 then
-        sleep_loop = bed_count > 0
-        return
-    end
+    -- Not everyone is in bed, don't continue
+    if #players_in_bed ~= #get_connected_players() then return end
 
     minetest.set_timeofday(night_ends/24000)
+
     for _,player in ipairs(get_connected_players()) do
         wake_up(player)
     end
@@ -144,12 +134,10 @@ minetest.register_globalstep(function(dtime)
 
     if sleep_check_timer < 1 then return end
 
-    -- No one is in bed, don't continue
-    if #players_in_bed == 0 then return end
-
     sleep_check_timer = 0
 
     sleep_check()
+
 end)
 
 -- Delete data on player leaving
