@@ -7,7 +7,7 @@ local http = minetest.request_http_api()
 local id = "Lua Skins Updater"
 
 -- binary downloads are required
-if not core.features.httpfetch_binary_data then    
+if not minetest.features.httpfetch_binary_data then
     minetest.log("error","Outdated Minetest Engine detected. Skins mod will not load. This crashes armor.")
     return(nil)
 end
