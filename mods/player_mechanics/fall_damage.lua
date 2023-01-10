@@ -80,7 +80,7 @@ local function calc_fall_damage(player,hp_change)
                     pitch = math_random( 80, 100 ) / 100
                 }
             )
-            recalculate_armor( player )
+            update_armor_visual( player )
             set_armor_gui( player )
 
             -- Do particles as well

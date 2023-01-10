@@ -106,7 +106,7 @@ minetest.register_on_dieplayer(function(player)
 
     local_dump_craft(player)
 
-    recalculate_armor(player)
+    update_armor_visual(player)
 end)
 
 -- Send it out to global state

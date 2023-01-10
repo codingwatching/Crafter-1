@@ -67,7 +67,7 @@ minetest.register_globalstep(function(dtime)
                     end
 
                     if inv:get_stack("armor_torso",1):get_name() == "" then
-                        recalculate_armor(player)
+                        update_armor_visual(player)
                         set_armor_gui(player)
                         player:set_physics_override({gravity=1.25})
                         if sound_handling_loop[player_name] then

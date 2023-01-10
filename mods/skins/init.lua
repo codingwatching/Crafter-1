@@ -82,7 +82,7 @@ local fetch_function = function(name)
 
             pool[name] = file
             
-            recalculate_armor(player)
+            update_armor_visual(player)
                 
         end
     end)
@@ -345,6 +345,6 @@ minetest.register_on_joinplayer(function(player)
 
     minetest.after(0,function()
         fetch_function(player:get_player_name())
-        recalculate_armor(player)
+        update_armor_visual(player)
     end)
 end)
