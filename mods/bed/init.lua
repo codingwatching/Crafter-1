@@ -158,8 +158,7 @@ local do_sleep = function( player, pos, dir )
     time = get_timeofday()
     name = player:get_player_name()
 
-    print(time .. " begin: " .. night_begins .. " ends: " .. night_ends)
-    if time < night_begins or time > night_ends then
+    if time > night_ends and time < night_begins then
         chat_send_player( name, "You can only sleep at night" )
         return
     end
