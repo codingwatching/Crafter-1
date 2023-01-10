@@ -80,25 +80,25 @@ Note that the duplicate sign model you created can also be used directly as a "f
 
 Use the following export settings (I strongly advise saving them as an Operator Preset; applies to all models and modes):
 
-	Forward: [_Z_Forward_]
-	Up:      [_Y_Up______]
-	🆇 Selection Only
-	🞎 Animation
-	🆇 Apply Modifiers
-	🞎 Use Modifiers Render Settings
-	🞎 Include Edges
-	🞎 Smooth Groups
-	🞎 Bitflag Smooth Groups
-	🆇 Write Normals
-	🆇 Include UVs
-	🞎 Write Materials
-	🞎 Triangulate Faces
-	🞎 Write Nurbs
-	🞎 Polygroups
-	🆇 Objects as OBJ Objects
-	🞎 Objects as OBJ Groups
-	🆇 Material Groups
-	🞎 Keep Vertex Order
-	(_Scale:________1.00_)
-	Path Mode: [_Auto____]
+    Forward: [_Z_Forward_]
+    Up:      [_Y_Up______]
+    🆇 Selection Only
+    🞎 Animation
+    🆇 Apply Modifiers
+    🞎 Use Modifiers Render Settings
+    🞎 Include Edges
+    🞎 Smooth Groups
+    🞎 Bitflag Smooth Groups
+    🆇 Write Normals
+    🆇 Include UVs
+    🞎 Write Materials
+    🞎 Triangulate Faces
+    🞎 Write Nurbs
+    🞎 Polygroups
+    🆇 Objects as OBJ Objects
+    🞎 Objects as OBJ Groups
+    🆇 Material Groups
+    🞎 Keep Vertex Order
+    (_Scale:________1.00_)
+    Path Mode: [_Auto____]
 

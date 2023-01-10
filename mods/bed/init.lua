@@ -14,31 +14,31 @@ local sleep_table = {}
 --TODO: run a check on a simpler data table because this is a mess
 
 register_on_joinplayer( function( player )
-	name = player:get_player_name()
-	sleep_channel[ name ] = minetest.mod_channel_join( name .. ":sleep_channel" )
+    name = player:get_player_name()
+    sleep_channel[ name ] = minetest.mod_channel_join( name .. ":sleep_channel" )
 end )
 
 local function csm_send_player_to_sleep( player )
-	name = player:get_player_name()
-	sleep_channel[ name ]:send_all( "1" )
+    name = player:get_player_name()
+    sleep_channel[ name ]:send_all( "1" )
 end
 
 local function csm_wake_player_up( player )
-	name = player:get_player_name()
-	sleep_channel[ name ]:send_all( "0" )
+    name = player:get_player_name()
+    sleep_channel[ name ]:send_all( "0" )
 end
 
 register_on_modchannel_message( function( channel_name, sender )
-	channel_decyphered = channel_name:gsub( sender, "" )
-	if channel_decyphered ~= ":sleep_channel" then return end
+    channel_decyphered = channel_name:gsub( sender, "" )
+    if channel_decyphered ~= ":sleep_channel" then return end
     if not pool[sender] then return end
     pool[sender].sleeping = true
 end )
 
 local wake_up = function( player )
-	name = player:get_player_name()
-	player_is_sleeping( player, false )
-	player:set_eye_offset( {
+    name = player:get_player_name()
+    player_is_sleeping( player, false )
+    player:set_eye_offset( {
         x = 0,
         y = 0,
         z = 0
@@ -48,24 +48,24 @@ local wake_up = function( player )
         y = 0,
         z = 0
     } )
-	pool[ name ] = nil
-	minetest.close_formspec( name, "bed" )
-	csm_wake_player_up( player )
+    pool[ name ] = nil
+    minetest.close_formspec( name, "bed" )
+    csm_wake_player_up( player )
 end
 
 local function global_sleep_check()
-	sleep_loop = true
-	sleep_table = {}
+    sleep_loop = true
+    sleep_table = {}
 
-	for _,player in ipairs( minetest.get_connected_players() ) do
-		name = player:get_player_name()
-		sleep_table[name] = true
-	end
+    for _,player in ipairs( minetest.get_connected_players() ) do
+        name = player:get_player_name()
+        sleep_table[name] = true
+    end
 
-	bed_count = 0
+    bed_count = 0
 
-	for player_name,data in pairs( pool ) do
-		local player = minetest.get_player_by_name( player_name )
+    for player_name,data in pairs( pool ) do
+        local player = minetest.get_player_by_name( player_name )
 
         if not player then
             pool[player_name] = nil
@@ -81,9 +81,9 @@ local function global_sleep_check()
         end
 
         ::continue::
-	end
+    end
 
-	if #sleep_table ~= 0 then
+    if #sleep_table ~= 0 then
         sleep_loop = bed_count > 0
         return
     end
@@ -106,8 +106,8 @@ end)
 
 -- Delete data on player leaving
 minetest.register_on_leaveplayer(function(player)
-	name = player:get_player_name()
-	pool[name] = nil
+    name = player:get_player_name()
+    pool[name] = nil
 end)
 
 
@@ -120,10 +120,10 @@ local name
 local time
 local do_sleep = function( player, pos, dir )
 
-	time = minetest.get_timeofday() * 24000
-	name = player:get_player_name()
+    time = minetest.get_timeofday() * 24000
+    name = player:get_player_name()
 
-	if time < time_night.begin or time > time_night.ending then
+    if time < time_night.begin or time > time_night.ending then
         minetest.chat_send_player( name, "You can only sleep at night" )
     end
 
@@ -160,14 +160,14 @@ local do_sleep = function( player, pos, dir )
 end
 
 minetest.register_on_player_receive_fields( function( player, formname )
-	if formname and formname == "bed" then
-		wake_up( player )
-	end
+    if formname and formname == "bed" then
+        wake_up( player )
+    end
 end)
 
 
 minetest.register_on_respawnplayer( function( player )
-	wake_up( player )
+    wake_up( player )
 end )
 
 --these are beds
@@ -180,36 +180,36 @@ minetest.register_node("bed:bed", {
     groups = {wood = 1, hard = 1, axe = 1, hand = 3, instant=1},
     sounds = main.woodSound({placing=""}),
     drawtype = "nodebox",
-	node_placement_prediction = "",
-	on_place = function(itemstack, placer, pointed_thing)
-		if pointed_thing.type ~= "node" then return end
-		local sneak = placer:get_player_control().sneak
-		local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
-		if not sneak and noddef.on_rightclick then
-			minetest.item_place(itemstack, placer, pointed_thing)
-			return
-		end
-		local _,pos = minetest.item_place_node(ItemStack("bed:bed_front"), placer, pointed_thing)
-		if pos then
-			local param2 = minetest.get_node(pos).param2
-			local pos2 = vector.add(pos, vector.multiply(minetest.facedir_to_dir(param2),-1))
-			
-			local buildable = minetest.registered_nodes[minetest.get_node(pos2).name].buildable_to
+    node_placement_prediction = "",
+    on_place = function(itemstack, placer, pointed_thing)
+        if pointed_thing.type ~= "node" then return end
+        local sneak = placer:get_player_control().sneak
+        local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+        if not sneak and noddef.on_rightclick then
+            minetest.item_place(itemstack, placer, pointed_thing)
+            return
+        end
+        local _,pos = minetest.item_place_node(ItemStack("bed:bed_front"), placer, pointed_thing)
+        if pos then
+            local param2 = minetest.get_node(pos).param2
+            local pos2 = vector.add(pos, vector.multiply(minetest.facedir_to_dir(param2),-1))
+            
+            local buildable = minetest.registered_nodes[minetest.get_node(pos2).name].buildable_to
 
-			if not buildable then
-				minetest.remove_node(pos)
-				return(itemstack)
-			else
-				minetest.add_node(pos2,{name="bed:bed_back", param2=param2})
-				itemstack:take_item()
-				minetest.sound_play("wood", {
-					  pos = pos,
-				})
-				return(itemstack)
-			end
-		end
-		return(itemstack)
-	end,
+            if not buildable then
+                minetest.remove_node(pos)
+                return(itemstack)
+            else
+                minetest.add_node(pos2,{name="bed:bed_back", param2=param2})
+                itemstack:take_item()
+                minetest.sound_play("wood", {
+                      pos = pos,
+                })
+                return(itemstack)
+            end
+        end
+        return(itemstack)
+    end,
 })
 
 minetest.register_node("bed:bed_front", {
@@ -221,34 +221,34 @@ minetest.register_node("bed:bed_front", {
     sounds = main.woodSound({placing=""}),
     drawtype = "nodebox",
     node_box = {
-		type = "fixed",
-		fixed = {
-				{-0.5, -5/16, -0.5, 0.5, 0.06, 0.5},
-				{-0.5, -0.5, 0.5, -5/16, -5/16, 5/16},
-				{0.5, -0.5, 0.5, 5/16, -5/16, 5/16},
-			},
-		},
-	node_placement_prediction = "",
-	drop = "bed:bed",
-	on_dig = function(pos, node, digger)
-		local param2 = minetest.get_node(pos).param2
-		local facedir = minetest.facedir_to_dir(param2)	
-		facedir = vector.multiply(facedir,-1)
-		local obj = minetest.add_item(pos, "bed:bed")
-		minetest.remove_node(pos)
-		minetest.remove_node(vector.add(pos,facedir))
-		minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
-	end,
-	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-		if pos.y <= -10033 then
-			tnt(pos,10)
-			return
-		end
+        type = "fixed",
+        fixed = {
+                {-0.5, -5/16, -0.5, 0.5, 0.06, 0.5},
+                {-0.5, -0.5, 0.5, -5/16, -5/16, 5/16},
+                {0.5, -0.5, 0.5, 5/16, -5/16, 5/16},
+            },
+        },
+    node_placement_prediction = "",
+    drop = "bed:bed",
+    on_dig = function(pos, node, digger)
+        local param2 = minetest.get_node(pos).param2
+        local facedir = minetest.facedir_to_dir(param2)    
+        facedir = vector.multiply(facedir,-1)
+        local obj = minetest.add_item(pos, "bed:bed")
+        minetest.remove_node(pos)
+        minetest.remove_node(vector.add(pos,facedir))
+        minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
+    end,
+    on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+        if pos.y <= -10033 then
+            tnt(pos,10)
+            return
+        end
 
-		local param2 = minetest.get_node(pos).param2
-		
-		do_sleep(clicker,pos,param2)
-	end,
+        local param2 = minetest.get_node(pos).param2
+        
+        do_sleep(clicker,pos,param2)
+    end,
 })
 
 minetest.register_node("bed:bed_back", {
@@ -261,44 +261,44 @@ minetest.register_node("bed:bed_back", {
     drawtype = "nodebox",
     node_placement_prediction = "",
     node_box = {
-		type = "fixed",
-		fixed = {
-				{-0.5, -5/16, -0.5, 0.5, 0.06, 0.5},
-				{-0.5, -0.5, -0.5, -5/16, -5/16, -5/16},
-				{0.5, -0.5, -0.5, 5/16, -5/16, -5/16},
-			},
-		},
-	drop = "",
-	on_dig = function(pos, node, digger)
-		local param2 = minetest.get_node(pos).param2
-		local facedir = minetest.facedir_to_dir(param2)	
-		local obj = minetest.add_item(pos, "bed:bed")
-		minetest.remove_node(pos)
-		minetest.remove_node(vector.add(pos,facedir))
-		--remove_spawnpoint(pos,digger)
-		--remove_spawnpoint(vector.add(pos,facedir),digger)
-		minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
-	end,
-	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-		if pos.y <= -10033 then
-			tnt(pos,10)
-			return
-		end
+        type = "fixed",
+        fixed = {
+                {-0.5, -5/16, -0.5, 0.5, 0.06, 0.5},
+                {-0.5, -0.5, -0.5, -5/16, -5/16, -5/16},
+                {0.5, -0.5, -0.5, 5/16, -5/16, -5/16},
+            },
+        },
+    drop = "",
+    on_dig = function(pos, node, digger)
+        local param2 = minetest.get_node(pos).param2
+        local facedir = minetest.facedir_to_dir(param2)    
+        local obj = minetest.add_item(pos, "bed:bed")
+        minetest.remove_node(pos)
+        minetest.remove_node(vector.add(pos,facedir))
+        --remove_spawnpoint(pos,digger)
+        --remove_spawnpoint(vector.add(pos,facedir),digger)
+        minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
+    end,
+    on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+        if pos.y <= -10033 then
+            tnt(pos,10)
+            return
+        end
 
-		local param2 = minetest.get_node(pos).param2
-		local dir = minetest.facedir_to_dir(param2)	
+        local param2 = minetest.get_node(pos).param2
+        local dir = minetest.facedir_to_dir(param2)    
 
-		do_sleep(clicker,vector.add(pos,dir),param2)
-	end,
+        do_sleep(clicker,vector.add(pos,dir),param2)
+    end,
 })
 
 
 
 
 minetest.register_craft({
-	output = "bed:bed",
-	recipe = {
-		{"main:dropped_leaves", "main:dropped_leaves", "main:dropped_leaves"},
-		{"main:wood"          , "main:wood"          , "main:wood"          },
-	},
+    output = "bed:bed",
+    recipe = {
+        {"main:dropped_leaves", "main:dropped_leaves", "main:dropped_leaves"},
+        {"main:wood"          , "main:wood"          , "main:wood"          },
+    },
 })

@@ -9,29 +9,29 @@ local r_max = redstone.max_state
 for i = 0,r_max  do
 
 minetest.register_node("redstone:player_detector_"..i, {
-	description = "Redstone Player Detector",
-	drawtype = "normal",
-	tiles = {"player_detector.png"},
-	paramtype = "light",
-	paramtype2 = "none",
-	drop = "redstone:player_detector_0",
-	groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4, torch=1,redstone=1,redstone_torch=1,redstone_power=i, redstone_player_detection = 1},
-	legacy_wallmounted = true,
-	
-	on_construct = function(pos)
-		redstone.inject(pos,{
+    description = "Redstone Player Detector",
+    drawtype = "normal",
+    tiles = {"player_detector.png"},
+    paramtype = "light",
+    paramtype2 = "none",
+    drop = "redstone:player_detector_0",
+    groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4, torch=1,redstone=1,redstone_torch=1,redstone_power=i, redstone_player_detection = 1},
+    legacy_wallmounted = true,
+    
+    on_construct = function(pos)
+        redstone.inject(pos,{
             name = "redstone:player_detector_"..i,
             torch = i,
-		})
-		redstone.player_detector_add(pos)
-		redstone.update(pos)
-	end,
-	on_destruct = function(pos, oldnode)
-		redstone.player_detector_remove(pos)
-		redstone.inject(pos,nil)
-		redstone.update(pos)
-	end,
-	sounds = main.stoneSound(),
+        })
+        redstone.player_detector_add(pos)
+        redstone.update(pos)
+    end,
+    on_destruct = function(pos, oldnode)
+        redstone.player_detector_remove(pos)
+        redstone.inject(pos,nil)
+        redstone.update(pos)
+    end,
+    sounds = main.stoneSound(),
 })
 
 minetest.register_lbm({
@@ -42,8 +42,8 @@ minetest.register_lbm({
         redstone.inject(pos,{
             name = "redstone:player_detector_"..i,
             torch = i,
-		})
-		redstone.player_detector_add(pos)
+        })
+        redstone.player_detector_add(pos)
     end,
 })
 

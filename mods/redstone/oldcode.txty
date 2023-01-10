@@ -1,91 +1,91 @@
 --this is the internal check for getting the max_power 
 function redstone.add(pos,torch)
-	local max = 0
-	local current = 0
-	
-	--chargup
-	for x = -1,1 do
-	for y = -1,1 do
-	for z = -1,1 do
-		if not vector.equals(vector.new(0,0,0),vector.new(x,y,z)) then
-			local pos2 = vector.add(pos,vector.new(x,y,z))
-			local power = minetest.registered_nodes[minetest.get_node(pos2).name].power
-			if power then
-				if power > max then
-					max = power
-					current = max - 1
-				end
-			end
-		end
-	end
-	end
-	end
-	if torch == true then
-		current = 9
-	else
-		if minetest.get_node_group(minetest.get_node(pos).name, "redstone_dust") > 0 then
-			minetest.set_node(pos,{name="redstone:dust_"..current})	
-		end
-	end
-	--transfer
-	for x = -1,1 do
-	for y = -1,1 do
-	for z = -1,1 do
-		local pos2 = vector.add(pos,vector.new(x,y,z))
-		local power = minetest.registered_nodes[minetest.get_node(pos2).name].power
-		if power then
-			if power < current then
-				minetest.after(0,function(pos2)
-					redstone.add(pos2)
-				end,pos2)
-			end
-		end
-	end
-	end
-	end
+    local max = 0
+    local current = 0
+    
+    --chargup
+    for x = -1,1 do
+    for y = -1,1 do
+    for z = -1,1 do
+        if not vector.equals(vector.new(0,0,0),vector.new(x,y,z)) then
+            local pos2 = vector.add(pos,vector.new(x,y,z))
+            local power = minetest.registered_nodes[minetest.get_node(pos2).name].power
+            if power then
+                if power > max then
+                    max = power
+                    current = max - 1
+                end
+            end
+        end
+    end
+    end
+    end
+    if torch == true then
+        current = 9
+    else
+        if minetest.get_node_group(minetest.get_node(pos).name, "redstone_dust") > 0 then
+            minetest.set_node(pos,{name="redstone:dust_"..current})    
+        end
+    end
+    --transfer
+    for x = -1,1 do
+    for y = -1,1 do
+    for z = -1,1 do
+        local pos2 = vector.add(pos,vector.new(x,y,z))
+        local power = minetest.registered_nodes[minetest.get_node(pos2).name].power
+        if power then
+            if power < current then
+                minetest.after(0,function(pos2)
+                    redstone.add(pos2)
+                end,pos2)
+            end
+        end
+    end
+    end
+    end
 end
 
 function redstone.remove(pos,oldpower,torch)
-	local max = 0
-	
-	--chargup
-	for x = -1,1 do
-	for y = -1,1 do
-	for z = -1,1 do
-		if not vector.equals(vector.new(0,0,0),vector.new(x,y,z)) then
-			local pos2 = vector.add(pos,vector.new(x,y,z))
-			local power = minetest.registered_nodes[minetest.get_node(pos2).name].power
-			if power and power ~= 9 then
-				--print(power)
-				if power > max then
-					max = power
-				end
-			end
-		end
-	end
-	end
-	end
-	for x = -1,1 do
-	for y = -1,1 do
-	for z = -1,1 do
-		if not vector.equals(vector.new(0,0,0),vector.new(x,y,z)) then
-			local pos2 = vector.add(pos,vector.new(x,y,z))
-			local power = minetest.registered_nodes[minetest.get_node(pos2).name].power
-			if power then
-				if power < oldpower then
-					if not torch == true then
-						if minetest.get_node_group(minetest.get_node(pos).name, "redstone_dust") > 0 then
-							minetest.set_node(pos,{name="redstone:dust_0"})
-						end
-					end
-					
-					minetest.after(0,function(pos2)
-						redstone.remove(pos2,power)
-					end,pos2)
-				end
-			end
-		end
-	end
-	end
-	end
+    local max = 0
+    
+    --chargup
+    for x = -1,1 do
+    for y = -1,1 do
+    for z = -1,1 do
+        if not vector.equals(vector.new(0,0,0),vector.new(x,y,z)) then
+            local pos2 = vector.add(pos,vector.new(x,y,z))
+            local power = minetest.registered_nodes[minetest.get_node(pos2).name].power
+            if power and power ~= 9 then
+                --print(power)
+                if power > max then
+                    max = power
+                end
+            end
+        end
+    end
+    end
+    end
+    for x = -1,1 do
+    for y = -1,1 do
+    for z = -1,1 do
+        if not vector.equals(vector.new(0,0,0),vector.new(x,y,z)) then
+            local pos2 = vector.add(pos,vector.new(x,y,z))
+            local power = minetest.registered_nodes[minetest.get_node(pos2).name].power
+            if power then
+                if power < oldpower then
+                    if not torch == true then
+                        if minetest.get_node_group(minetest.get_node(pos).name, "redstone_dust") > 0 then
+                            minetest.set_node(pos,{name="redstone:dust_0"})
+                        end
+                    end
+                    
+                    minetest.after(0,function(pos2)
+                        redstone.remove(pos2,power)
+                    end,pos2)
+                end
+            end
+        end
+    end
+    end
+    end
 end

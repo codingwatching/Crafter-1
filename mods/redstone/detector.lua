@@ -28,7 +28,7 @@ minetest.register_node("redstone:detector_off", {
                 torch = r_max,
             })
             minetest.after(0,function()
-            	redstone.update(pos)
+                redstone.update(pos)
             end)
         end
 
@@ -38,48 +38,48 @@ minetest.register_node("redstone:detector_off", {
         end
     end,
     
-	--reverse the direction to face the player
-	on_construct = function(pos)
-		redstone.inject(pos,{
-			name = "redstone:detector_off",
+    --reverse the direction to face the player
+    on_construct = function(pos)
+        redstone.inject(pos,{
+            name = "redstone:detector_off",
         })
         local timer = minetest.get_node_timer(pos)
-		if not timer:is_started() then
-			timer:start(1)
-		end
-	end,
-	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-		local look = clicker:get_look_dir()
-		look = vector.multiply(look,-1)
-		local dir = minetest.dir_to_facedir(look, true)
-		minetest.swap_node(pos,{name="redstone:detector_off",param2=dir})
-	end,
+        if not timer:is_started() then
+            timer:start(1)
+        end
+    end,
+    on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+        local look = clicker:get_look_dir()
+        look = vector.multiply(look,-1)
+        local dir = minetest.dir_to_facedir(look, true)
+        minetest.swap_node(pos,{name="redstone:detector_off",param2=dir})
+    end,
     after_place_node = function(pos, placer, itemstack, pointed_thing)
-		local look = placer:get_look_dir()
-		look = vector.multiply(look,-1)
-		local dir = minetest.dir_to_facedir(look, true)
-		minetest.swap_node(pos,{name="redstone:detector_off",param2=dir})
-	end,
-	on_destruct = function(pos, oldnode)
-		redstone.inject(pos,nil)
+        local look = placer:get_look_dir()
+        look = vector.multiply(look,-1)
+        local dir = minetest.dir_to_facedir(look, true)
+        minetest.swap_node(pos,{name="redstone:detector_off",param2=dir})
+    end,
+    on_destruct = function(pos, oldnode)
+        redstone.inject(pos,nil)
     end,
 })
 
 
 minetest.register_lbm({
-	name = "redstone:detector_off",
-	nodenames = {"redstone:detector_off"},
-	run_at_every_load = true,
-	action = function(pos)
-		redstone.inject(pos,{
-			name = "redstone:detector_off",
+    name = "redstone:detector_off",
+    nodenames = {"redstone:detector_off"},
+    run_at_every_load = true,
+    action = function(pos)
+        redstone.inject(pos,{
+            name = "redstone:detector_off",
         })
 
         local timer = minetest.get_node_timer(pos)
-		if not timer:is_started() then
-			timer:start(1)
-		end
-	end,
+        if not timer:is_started() then
+            timer:start(1)
+        end
+    end,
 })
 
 
@@ -107,7 +107,7 @@ minetest.register_node("redstone:detector_on", {
                 name = "redstone:detector_off",
             })
             minetest.after(0,function()
-            	redstone.update(pos)
+                redstone.update(pos)
             end)
         end
 
@@ -116,42 +116,42 @@ minetest.register_node("redstone:detector_on", {
             timer:start(1)
         end
     end,
-	--reverse the direction to face the player
-	on_construct = function(pos)
-		redstone.inject(pos,{
+    --reverse the direction to face the player
+    on_construct = function(pos)
+        redstone.inject(pos,{
             name = "redstone:detector_on",
             torch = r_max,
         })
         local timer = minetest.get_node_timer(pos)
-		if not timer:is_started() then
-			timer:start(1)
-		end
-		redstone.update(pos)
-	end,
-	on_destruct = function(pos)
-		redstone.inject(pos,nil)
+        if not timer:is_started() then
+            timer:start(1)
+        end
+        redstone.update(pos)
+    end,
+    on_destruct = function(pos)
+        redstone.inject(pos,nil)
     end,
 })
 
 
 
 minetest.register_lbm({
-	name = "redstone:detector_on",
-	nodenames = {"redstone:detector_on"},
-	run_at_every_load = true,
-	action = function(pos)
-		redstone.inject(pos,{
-			name = "redstone:detector_on",
-			torch = r_max,
+    name = "redstone:detector_on",
+    nodenames = {"redstone:detector_on"},
+    run_at_every_load = true,
+    action = function(pos)
+        redstone.inject(pos,{
+            name = "redstone:detector_on",
+            torch = r_max,
         })
         
         local timer = minetest.get_node_timer(pos)
-		if not timer:is_started() then
-			timer:start(1)
-		end
+        if not timer:is_started() then
+            timer:start(1)
+        end
 
-		minetest.after(0,function()
+        minetest.after(0,function()
             redstone.update(pos)
         end)
-	end,
+    end,
 })

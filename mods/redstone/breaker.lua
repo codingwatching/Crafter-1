@@ -11,35 +11,35 @@ minetest.register_node("redstone:breaker_off", {
     sounds = main.stoneSound(),
     drop = "redstone:breaker_off",
     paramtype = "light",
-	sunlight_propagates = true,
-	--reverse the direction to face the player
-	on_construct = function(pos)
-		redstone.inject(pos,{
-			name = "redstone:breaker_off",
-			activator = true,
-		})
-		redstone.update(pos)
-	end,
-	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-		local look = clicker:get_look_dir()
-		look = vector.multiply(look,-1)
-		local dir = minetest.dir_to_facedir(look, true)
-		minetest.swap_node(pos,{name="redstone:breaker_off",param2=dir})
-		redstone.update(pos)
-	end,
+    sunlight_propagates = true,
+    --reverse the direction to face the player
+    on_construct = function(pos)
+        redstone.inject(pos,{
+            name = "redstone:breaker_off",
+            activator = true,
+        })
+        redstone.update(pos)
+    end,
+    on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+        local look = clicker:get_look_dir()
+        look = vector.multiply(look,-1)
+        local dir = minetest.dir_to_facedir(look, true)
+        minetest.swap_node(pos,{name="redstone:breaker_off",param2=dir})
+        redstone.update(pos)
+    end,
     after_place_node = function(pos, placer, itemstack, pointed_thing)
-		local look = placer:get_look_dir()
-		look = vector.multiply(look,-1)
-		local dir = minetest.dir_to_facedir(look, true)
-		minetest.swap_node(pos,{name="redstone:breaker_off",param2=dir})
-	end,
-	on_destruct = function(pos, oldnode)
-		redstone.inject(pos,nil)
+        local look = placer:get_look_dir()
+        look = vector.multiply(look,-1)
+        local dir = minetest.dir_to_facedir(look, true)
+        minetest.swap_node(pos,{name="redstone:breaker_off",param2=dir})
+    end,
+    on_destruct = function(pos, oldnode)
+        redstone.inject(pos,nil)
     end,
 })
 
 redstone.register_activator({
-	name = "redstone:breaker_off",
+    name = "redstone:breaker_off",
     activate = function(pos)
        
         local node = minetest.get_node(pos)
@@ -49,9 +49,9 @@ redstone.register_activator({
         local dir = minetest.facedir_to_dir(node.param2)
 
         redstone.inject(pos,{
-			name = "redstone:breaker_on",
-			activator = true,
-		})
+            name = "redstone:breaker_on",
+            activator = true,
+        })
 
         pos = vector.add(pos,dir)
 
@@ -69,20 +69,20 @@ redstone.register_activator({
         minetest.remove_node(pos)
 
         redstone.update(pos)
-	end
+    end
 })
 
 minetest.register_lbm({
-	name = "redstone:breaker_off",
-	nodenames = {"redstone:breaker_off"},
-	run_at_every_load = true,
-	action = function(pos)
-		redstone.inject(pos,{
-			name = "redstone:breaker_off",
-			activator = true,
+    name = "redstone:breaker_off",
+    nodenames = {"redstone:breaker_off"},
+    run_at_every_load = true,
+    action = function(pos)
+        redstone.inject(pos,{
+            name = "redstone:breaker_off",
+            activator = true,
         })
         redstone.update(pos)
-	end,
+    end,
 })
 
 
@@ -99,44 +99,44 @@ minetest.register_node("redstone:breaker_on", {
     sounds = main.stoneSound(),
     drop = "redstone:breaker_off",
     paramtype = "light",
-	sunlight_propagates = true,
-	--reverse the direction to face the player
-	on_construct = function(pos)
-		redstone.inject(pos,{
-			name = "redstone:breaker_on",
-			activator = true,
-		})
-		redstone.update(pos)
-	end,
-	on_destruct = function(pos)
-		redstone.inject(pos,nil)
+    sunlight_propagates = true,
+    --reverse the direction to face the player
+    on_construct = function(pos)
+        redstone.inject(pos,{
+            name = "redstone:breaker_on",
+            activator = true,
+        })
+        redstone.update(pos)
+    end,
+    on_destruct = function(pos)
+        redstone.inject(pos,nil)
     end,
 })
 
 
 redstone.register_activator({
-	name = "redstone:breaker_on",
+    name = "redstone:breaker_on",
     deactivate = function(pos)
         local node = minetest.get_node(pos)
 
         minetest.swap_node(pos,{name="redstone:breaker_off",param2=node.param2})
         redstone.inject(pos,{
-			name = "redstone:breaker_off",
-			activator = true,
+            name = "redstone:breaker_off",
+            activator = true,
         })
         redstone.update(pos)
     end,
 })
 
 minetest.register_lbm({
-	name = "redstone:breaker_on",
-	nodenames = {"redstone:breaker_on"},
-	run_at_every_load = true,
-	action = function(pos)
-		redstone.inject(pos,{
-			name = "redstone:breaker_on",
-			activator = true,
-		})
-		redstone.update(pos)
-	end,
+    name = "redstone:breaker_on",
+    nodenames = {"redstone:breaker_on"},
+    run_at_every_load = true,
+    action = function(pos)
+        redstone.inject(pos,{
+            name = "redstone:breaker_on",
+            activator = true,
+        })
+        redstone.update(pos)
+    end,
 })

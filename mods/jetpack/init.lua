@@ -38,8 +38,8 @@ minetest.register_globalstep(function(dtime)
                     elseif player:get_player_control().sneak then
                         local currentvel = player:get_velocity()
                         local goal = 0
-			            local acceleration = vector.new(0,goal-currentvel.y,0)
-			            acceleration = vector.multiply(acceleration, 0.05)
+                        local acceleration = vector.new(0,goal-currentvel.y,0)
+                        acceleration = vector.multiply(acceleration, 0.05)
                         player:add_velocity(acceleration)
                         player:set_physics_override({gravity=0})
                     end
@@ -52,13 +52,13 @@ minetest.register_globalstep(function(dtime)
 
 
                     minetest.add_particle({
-						pos = particle_pos,
-						velocity = {x=0, y=-20+player:get_velocity().y , z=0},
-						acceleration = {x=math.random(-1,1), y=0, z=math.random(-1,1)},
-						expirationtime = 1+math.random(),
-						size = 1+math.random(),
-						texture = "smoke.png",
-					})
+                        pos = particle_pos,
+                        velocity = {x=0, y=-20+player:get_velocity().y , z=0},
+                        acceleration = {x=math.random(-1,1), y=0, z=math.random(-1,1)},
+                        expirationtime = 1+math.random(),
+                        size = 1+math.random(),
+                        texture = "smoke.png",
+                    })
                     stack:add_wear(5)
                     inv:set_stack("armor_torso", 1, stack)
 
