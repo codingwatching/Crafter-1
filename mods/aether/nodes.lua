@@ -1,4 +1,4 @@
-local minetest = minetest
+local register_node = minetest.register_node
 
 local tool = {
     "main:coalpick",
@@ -13,7 +13,7 @@ local tool = {
     "main:rubypick",
 }
 
-minetest.register_node("aether:stone", {
+register_node("aether:stone", {
     description = "Aether Stone",
     tiles = {"stone.png^[colorize:aqua:40"},
     groups = {stone = 1, hand = 1,pathable = 1},
@@ -30,7 +30,7 @@ minetest.register_node("aether:stone", {
     },
 })
 
-minetest.register_node("aether:cobble", {
+register_node("aether:cobble", {
     description = "Aether Cobblestone",
     tiles = {"cobble.png^[colorize:aqua:40"},
     groups = {stone = 1, pathable = 1},
@@ -48,7 +48,7 @@ minetest.register_node("aether:cobble", {
 })
 
 
-minetest.register_node("aether:dirt", {
+register_node("aether:dirt", {
     description = "Aether Dirt",
     tiles = {"dirt.png^[colorize:aqua:40"},
     groups = {dirt = 1, soil=1,pathable = 1, farm_tillable=1},
@@ -56,7 +56,7 @@ minetest.register_node("aether:dirt", {
     paramtype = "light",
 })
 
-minetest.register_node("aether:grass", {
+register_node("aether:grass", {
     description = "Aether Grass",
     tiles = {"grass.png^[colorize:aqua:40"},
     groups = {grass = 1, soil=1,pathable = 1, farm_tillable=1},
@@ -64,7 +64,7 @@ minetest.register_node("aether:grass", {
     drop="aether:dirt",
 })
 
-minetest.register_node("aether:portal", {
+register_node("aether:portal", {
     description = "Aether Portal",
 
     tiles = {

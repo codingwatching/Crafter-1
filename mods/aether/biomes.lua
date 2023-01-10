@@ -1,10 +1,14 @@
-local VoxelArea         = VoxelArea
-local get_content_id    = minetest.get_content_id
-local get_perlin_map    = minetest.get_perlin_map
-local get_mapgen_object = minetest.get_mapgen_object
-local vec_new           = vector.new
+local VoxelArea               = VoxelArea
+local get_content_id          = minetest.get_content_id
+local get_perlin_map          = minetest.get_perlin_map
+local get_mapgen_object       = minetest.get_mapgen_object
+local vec_new                 = vector.new
+local register_biome          = minetest.register_biome
+local register_on_mods_loaded = minetest.register_on_mods_loaded
+local after                   = minetest.after
+local register_on_generated   = minetest.register_on_generated
 
-minetest.register_biome({
+register_biome({
     name = "aether",
     node_top = "air",
     depth_top = 1,
@@ -57,13 +61,13 @@ local constant_area = {x = 80, y = 80, z = 80}
 local constant_perlin
 
 -- This grabs the perlin generator on the start of the server, exactly on the first tick
-minetest.register_on_mods_loaded(function()
-    minetest.after(0,function()
+register_on_mods_loaded(function()
+    after(0,function()
         constant_perlin = get_perlin_map(noise_parameters, constant_area)
     end)
 end)
 
-minetest.register_on_generated(function(minp, maxp)
+register_on_generated(function(minp, maxp)
 
     --aether starts at 21000
     if minp.y < 21000 then
