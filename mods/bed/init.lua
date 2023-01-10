@@ -9,8 +9,6 @@ local table_remove = table.remove
 local night_begins = 19000
 local night_ends   = 5500
 
-local sleep_channel = {}
-local sleep_loop = false
 
 --[[
     So we gotta get the players that are in bed
@@ -23,6 +21,8 @@ local players_in_bed = {}
 local name
 local channel_decyphered
 local time
+local sleep_channel = {}
+local sleep_check_timer = 0
 
 local bed_gui = "size[16,12]"..
                 "position[0.5,0.5]"..
@@ -85,19 +85,10 @@ end )
 local wake_up = function( player )
     name = player:get_player_name()
     player_is_sleeping( player, false )
-    player:set_eye_offset( {
-        x = 0,
-        y = 0,
-        z = 0
-    },
-    {
-        x = 0,
-        y = 0,
-        z = 0
-    } )
-    for _,bed_vec in ipairs( players_in_bed ) do
-        if not bed_vec.name == name then goto continue end
-        bed_vec.sleeping = false
+    player:set_eye_offset( { x = 0, y = 0, z = 0 }, { x = 0, y = 0, z = 0 } )
+    for index,bed_vec in ipairs( players_in_bed ) do
+        if bed_vec.name ~= name then goto continue end
+        table_remove(players_in_bed, index)
         do return end
         ::continue::
     end
@@ -126,10 +117,8 @@ local function sleep_check()
     for _,player in ipairs(get_connected_players()) do
         wake_up(player)
     end
-    sleep_loop = false
 end
 
-local sleep_check_timer = 0
 minetest.register_globalstep(function(dtime)
 
     sleep_check_timer = sleep_check_timer + dtime
