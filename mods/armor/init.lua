@@ -25,9 +25,6 @@ register_on_mods_loaded(function()
     end)
 end)
 
-
-
-
 -- These three lists are synchronized to use ipairs
 local armor_inventories = {
     "armor_head",
@@ -174,10 +171,9 @@ register_on_joinplayer(function(player)
     })
 
     inv = player:get_inventory()
-    inv:set_size("armor_head" ,1)
-    inv:set_size("armor_torso",1)
-    inv:set_size("armor_legs" ,1)
-    inv:set_size("armor_feet" ,1)
+    for _,inventory_name in ipairs(armor_inventories) do
+        inv:set_size(inventory_name,1)
+    end
 end)
 
 register_on_dieplayer(function(player)
