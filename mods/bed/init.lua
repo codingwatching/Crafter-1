@@ -10,13 +10,17 @@ local sleep_loop = false
 
 local bed_count = 0
 
-local pool = {}
-local sleep_table = {}
+--[[
+    So we gotta get the players that are in bed
+    the player's bed position
 
+    if a player leaves when they are in bed somehow then remove them from the thing
+    disable the player's controls when they are in bed
+]]
+local players_in_bed = {}
 local name
 local channel_decyphered
 local time
-
 
 local bed_gui = "size[16,12]"..
                 "position[0.5,0.5]"..
