@@ -4,8 +4,8 @@ local get_itemdef    = minetest.get_itemdef
 local math_ceil  = math.ceil
 local math_random = math.random
 local ipairs = ipairs
-local change_hud = hud_manager.change_hud
-local add_hud = hud_manager.add_hud
+local change_hud
+local add_hud
 local register_on_player_inventory_action = minetest.register_on_player_inventory_action
 local register_allow_player_inventory_action = minetest.register_allow_player_inventory_action
 local after = minetest.after
@@ -16,6 +16,16 @@ local register_node = minetest.register_node
 local remove_node = minetest.remove_node
 local register_craft = minetest.register_craft
 local register_tool = minetest.register_tool
+local register_on_mods_loaded = minetest.register_on_mods_loaded
+
+register_on_mods_loaded(function()
+    after(0,function()
+        change_hud = hud_manager.change_hud
+        add_hud = hud_manager.add_hud
+    end)
+end)
+
+
 
 
 -- These three lists are synchronized to use ipairs
@@ -52,38 +62,28 @@ local wear_level
 local new_stack
 local item
 
+
 function recalculate_armor(player)
-
     if not player or (player and not player:is_player()) then return end
-
     inv = player:get_inventory()
 
     player_skin = get_skin(player)
     armor_skin = "blank_skin.png"
 
-    stack = inv:get_stack("armor_head",1):get_name()
-    if stack ~= "" and get_item_group(stack,"helmet") > 0 then
+    for index,inventory_name in ipairs(armor_inventories) do
+        stack = inv:get_stack( inventory_name, 1 ):get_name()
+        if stack == "" or get_item_group( stack, group_check[ index ] ) <= 0 then goto continue end
         skin_element = get_itemdef(stack, "wearing_texture")
-        player_skin = player_skin.."^"..skin_element
+        -- This is a workaround due to the fact that applying a helmet to the player's armor is broken for some reason
+        if inventory_name == "armor_head" then
+            player_skin = player_skin .. "^" .. skin_element
+        else
+            armor_skin = armor_skin .. "^" .. skin_element
+        end
+
+        ::continue::
     end
 
-    stack = inv:get_stack("armor_torso",1):get_name()
-    if stack ~= "" and get_item_group(stack,"chestplate") > 0 then
-        skin_element = get_itemdef(stack, "wearing_texture")
-        armor_skin = armor_skin.."^"..skin_element
-    end
-
-    stack = inv:get_stack("armor_legs",1):get_name()
-    if stack ~= "" and get_item_group(stack,"leggings") > 0 then
-        skin_element = get_itemdef(stack, "wearing_texture")
-        armor_skin = armor_skin.."^"..skin_element
-    end
-
-    stack = inv:get_stack("armor_feet",1):get_name()
-    if stack ~= "" and get_item_group(stack,"boots") > 0 then
-        skin_element = get_itemdef(stack, "wearing_texture")
-        armor_skin = armor_skin.."^"..skin_element
-    end
     player:set_properties({textures = {player_skin,armor_skin}})
 end
 
@@ -198,7 +198,6 @@ register_on_player_inventory_action(function(player, _, _, inventory_info)
 end)
 
 -- Only allow players to put armor in the right slots to stop exploiting chestplates
-
 register_allow_player_inventory_action( function( _, _, inventory, inventory_info )
     for index,inventory_name in ipairs(armor_inventories) do
         if inventory_info.to_list ~= inventory_name then goto continue end
