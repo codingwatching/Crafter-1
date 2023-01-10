@@ -6,8 +6,15 @@ local close_formspec = minetest.close_formspec
 local show_formspec = minetest.show_formspec
 local get_timeofday = minetest.get_timeofday
 local set_timeofday = minetest.set_timeofday
+local register_on_player_receive_fields = minetest.register_on_player_receive_fields
+local register_on_respawnplayer = minetest.register_on_respawnplayer
+local register_on_leaveplayer = minetest.register_on_leaveplayer
+local register_globalstep = minetest.register_globalstep
+local mod_channel_join = minetest.mod_channel_join
+local chat_send_player = minetest.chat_send_player
 local ipairs = ipairs
 local vec_new = vector.new
+local table_insert = table.insert
 local table_remove = table.remove
 
 local night_begins = 19000 / 24000
@@ -27,6 +34,7 @@ local channel_decyphered
 local time
 local sleep_channel = {}
 local sleep_check_timer = 0
+local new_pos = {}
 
 local bed_gui = "size[16,12]"..
                 "position[0.5,0.5]"..
@@ -57,12 +65,16 @@ local function remove_player_from_beds( player )
     end
 end
 
+local function insert_player_into_bed(player, position)
+    table_insert( players_in_bed, new_bed_vec( player, position ) )
+end
+
 
 --TODO: run a check on a simpler data table because this is a mess
 
 register_on_joinplayer( function( player )
     name = player:get_player_name()
-    sleep_channel[ name ] = minetest.mod_channel_join( name .. ":sleep_channel" )
+    sleep_channel[ name ] = mod_channel_join( name .. ":sleep_channel" )
 end )
 
 local function csm_send_player_to_sleep( player )
@@ -123,7 +135,7 @@ local function sleep_check()
     end
 end
 
-minetest.register_globalstep(function(dtime)
+register_globalstep(function(dtime)
 
     sleep_check_timer = sleep_check_timer + dtime
 
@@ -136,9 +148,8 @@ minetest.register_globalstep(function(dtime)
 end)
 
 -- Delete data on player leaving
-minetest.register_on_leaveplayer(function(player)
-    name = player:get_player_name()
-    pool[name] = nil
+register_on_leaveplayer(function(player)
+    remove_player_from_beds(player)
 end)
 
 
@@ -147,13 +158,18 @@ local do_sleep = function( player, pos, dir )
     time = get_timeofday()
     name = player:get_player_name()
 
+    print(time .. " begin: " .. night_begins .. " ends: " .. night_ends)
     if time < night_begins or time > night_ends then
-        minetest.chat_send_player( name, "You can only sleep at night" )
+        chat_send_player( name, "You can only sleep at night" )
+        return
     end
 
     local real_dir = minetest.facedir_to_dir( dir )
+
     player:add_velocity( vector.multiply( player:get_velocity(), -1 ) )
-    local new_pos = vector.subtract( pos, vector.divide( real_dir, 2 ) )
+
+    new_pos = vector.subtract( pos, vector.divide( real_dir, 2 ) )
+
     player:move_to( new_pos )
     player:set_look_vertical( 0 )
     player:set_look_horizontal( ( dir + 1 ) * math.pi )
@@ -164,28 +180,24 @@ local do_sleep = function( player, pos, dir )
     set_player_animation( player, "lay", 0, false )
     player:set_eye_offset( { x = 0, y = -12, z = -7 }, { x = 0, y = 0, z = 0 } )
 
-    pool[ name ] = {
-        pos = new_pos,
-        sleeping = false
-    }
+    insert_player_into_bed(player, new_pos)
 
     csm_send_player_to_sleep( player )
-
-    sleep_loop = true
 end
 
-minetest.register_on_player_receive_fields( function( player, formname )
+register_on_player_receive_fields( function( player, formname )
     if formname and formname == "bed" then
         wake_up( player )
     end
 end)
 
 
-minetest.register_on_respawnplayer( function( player )
+register_on_respawnplayer( function( player )
     wake_up( player )
 end )
 
---these are beds
+
+-- The bed node definition
 minetest.register_node("bed:bed", {
     description = "Bed",
     inventory_image = "bed.png",
