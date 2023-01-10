@@ -124,39 +124,51 @@ local do_sleep = function( player, pos, dir )
 	name = player:get_player_name()
 
 	if time < time_night.begin or time > time_night.ending then
-        minetest.chat_send_player(name, "You can only sleep at night")
+        minetest.chat_send_player( name, "You can only sleep at night" )
     end
 
-    local real_dir = minetest.facedir_to_dir(dir)
-    player:add_velocity(vector.multiply(player:get_velocity(),-1))
-    local new_pos = vector.subtract(pos,vector.divide(real_dir,2))
-    player:move_to(new_pos)
-    player:set_look_vertical(0)
-    player:set_look_horizontal((dir + 1) * math.pi )
+    local real_dir = minetest.facedir_to_dir( dir )
+    player:add_velocity( vector.multiply( player:get_velocity(), -1 ) )
+    local new_pos = vector.subtract( pos, vector.divide( real_dir, 2 ) )
+    player:move_to( new_pos )
+    player:set_look_vertical( 0 )
+    player:set_look_horizontal( ( dir + 1 ) * math.pi )
 
-    minetest.show_formspec((dir + 1) * math.pi )
+    minetest.show_formspec( ( dir + 1) * math.pi )
 
-    player_is_sleeping(player,true)
-    set_player_animation(player,"lay",0,false)
-    player:set_eye_offset({x=0,y=-12,z=-7},{x=0,y=0,z=0})
+    player_is_sleeping( player, true )
+    set_player_animation( player, "lay", 0, false )
+    player:set_eye_offset( {
+        x = 0,
+        y = -12,
+        z = -7
+    },
+    {
+        x = 0,
+        y = 0,
+        z = 0
+    } )
 
-    pool[name] = {pos=new_pos,sleeping=false}
+    pool[ name ] = {
+        pos = new_pos,
+        sleeping = false
+    }
 
-    csm_send_player_to_sleep(player)
+    csm_send_player_to_sleep( player )
 
     sleep_loop = true
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+minetest.register_on_player_receive_fields( function( player, formname )
 	if formname and formname == "bed" then
-		wake_up(player)
+		wake_up( player )
 	end
 end)
 
 
-minetest.register_on_respawnplayer(function(player)
-	wake_up(player)
-end)
+minetest.register_on_respawnplayer( function( player )
+	wake_up( player )
+end )
 
 --these are beds
 minetest.register_node("bed:bed", {
@@ -170,9 +182,7 @@ minetest.register_node("bed:bed", {
     drawtype = "nodebox",
 	node_placement_prediction = "",
 	on_place = function(itemstack, placer, pointed_thing)
-		if not pointed_thing.type == "node" then
-			return
-		end
+		if pointed_thing.type ~= "node" then return end
 		local sneak = placer:get_player_control().sneak
 		local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 		if not sneak and noddef.on_rightclick then
@@ -185,7 +195,7 @@ minetest.register_node("bed:bed", {
 			local pos2 = vector.add(pos, vector.multiply(minetest.facedir_to_dir(param2),-1))
 			
 			local buildable = minetest.registered_nodes[minetest.get_node(pos2).name].buildable_to
-			
+
 			if not buildable then
 				minetest.remove_node(pos)
 				return(itemstack)
@@ -197,7 +207,7 @@ minetest.register_node("bed:bed", {
 				})
 				return(itemstack)
 			end
-		end		
+		end
 		return(itemstack)
 	end,
 })
