@@ -2,12 +2,14 @@ local register_on_joinplayer = minetest.register_on_joinplayer
 local register_on_modchannel_message =  minetest.register_on_modchannel_message
 local get_connected_players = minetest.get_connected_players
 local get_player_by_name = minetest.get_player_by_name
+local get_timeofday = minetest.get_timeofday()
+local set_timeofday = minetest.set_timeofday(val)
 local ipairs = ipairs
 local vec_new = vector.new
 local table_remove = table.remove
 
-local night_begins = 19000
-local night_ends   = 5500
+local night_begins = 19000 / 24000
+local night_ends   = 5500  / 24000
 
 
 --[[
@@ -112,7 +114,7 @@ local function sleep_check()
     -- Not everyone is in bed, don't continue
     if #players_in_bed ~= #get_connected_players() then return end
 
-    minetest.set_timeofday(night_ends/24000)
+    set_timeofday( night_ends )
 
     for _,player in ipairs(get_connected_players()) do
         wake_up(player)
@@ -140,7 +142,7 @@ end)
 
 local do_sleep = function( player, pos, dir )
 
-    time = minetest.get_timeofday() * 24000
+    time = get_timeofday()
     name = player:get_player_name()
 
     if time < night_begins or time > night_ends then
