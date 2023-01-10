@@ -3,7 +3,7 @@ local get_itemdef    = minetest.get_itemdef
 
 local math_ceil  = math.ceil
 local math_random = math.random
-local pairs = pairs
+local ipairs = ipairs
 local change_hud = hud_manager.change_hud
 local add_hud = hud_manager.add_hud
 local register_on_player_inventory_action = minetest.register_on_player_inventory_action
@@ -18,7 +18,7 @@ local register_craft = minetest.register_craft
 local register_tool = minetest.register_tool
 
 
--- These two lists are synchronized to use ipairs
+-- These three lists are synchronized to use ipairs
 local armor_inventories = {
     "armor_head",
     "armor_torso",
@@ -30,6 +30,12 @@ local calculation_list = {
     4,
     6,
     8
+}
+local group_check = {
+    "helmet",
+    "chestplate",
+    "leggings",
+    "boots"
 }
 
 local inv
@@ -140,6 +146,7 @@ function damage_armor(player,damage)
 
     recalc = false
 
+    -- Scan all armor slots
     for index,inventory_name in ipairs(armor_inventories) do
         stack = inv:get_stack(inventory_name,1)
         name = stack:get_name()
@@ -153,16 +160,16 @@ function damage_armor(player,damage)
         recalc = recalc or new_stack == ""
     end
 
-    if recalc == true then
-        sound_play( "armor_break", {
-            to_player = player:get_player_name(),
-            gain = 1,
-            pitch = math_random( 80, 100 ) / 100 
-        })
-        recalculate_armor(player)
-        set_armor_gui(player)
-        --do particles too
-    end
+    if not recalc then return end
+
+    sound_play( "armor_break", {
+        to_player = player:get_player_name(),
+        gain = 1,
+        pitch = math_random( 80, 100 ) / 100 
+    })
+    recalculate_armor(player)
+    set_armor_gui(player)
+    --do particles too
 end
 
 register_on_joinplayer(function(player)
