@@ -15,6 +15,14 @@ local sleep_table = {}
 
 local name
 local channel_decyphered
+local time
+
+
+local bed_gui = "size[16,12]"..
+                "position[0.5,0.5]"..
+                "bgcolor[#00000000]"..
+                "button[5.5,8.5;5,2;button;leave bed]"
+
 
 --TODO: run a check on a simpler data table because this is a mess
 
@@ -116,13 +124,6 @@ minetest.register_on_leaveplayer(function(player)
 end)
 
 
-local bed_gui = "size[16,12]"..
-"position[0.5,0.5]"..
-"bgcolor[#00000000]"..
-"button[5.5,8.5;5,2;button;leave bed]"
-
-local name
-local time
 local do_sleep = function( player, pos, dir )
 
     time = minetest.get_timeofday() * 24000
@@ -198,7 +199,7 @@ minetest.register_node("bed:bed", {
         if pos then
             local param2 = minetest.get_node(pos).param2
             local pos2 = vector.add(pos, vector.multiply(minetest.facedir_to_dir(param2),-1))
-            
+
             local buildable = minetest.registered_nodes[minetest.get_node(pos2).name].buildable_to
 
             if not buildable then
