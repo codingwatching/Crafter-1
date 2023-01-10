@@ -91,7 +91,12 @@ local wake_up = function( player )
 end
 
 local function sleep_check()
+
+    -- Not everyone is in bed, don't continue
+    if #players_in_bed ~= #get_connected_players() then return end
+
     sleep_loop = true
+
     sleep_table = {}
 
     for _,player in ipairs( get_connected_players() ) do
@@ -132,12 +137,18 @@ local function sleep_check()
     sleep_loop = false
 end
 
-local global_step_timer = 0
+local sleep_check_timer = 0
 minetest.register_globalstep(function(dtime)
-    if not sleep_loop then return end
-    global_step_timer = global_step_timer + dtime
-    if global_step_timer <= 0.25 then return end
-    global_step_timer = 0
+
+    sleep_check_timer = sleep_check_timer + dtime
+
+    if sleep_check_timer < 1 then return end
+
+    -- No one is in bed, don't continue
+    if #players_in_bed == 0 then return end
+
+    sleep_check_timer = 0
+
     sleep_check()
 end)
 
