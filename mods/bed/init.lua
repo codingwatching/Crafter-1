@@ -2,14 +2,19 @@ local register_on_joinplayer = minetest.register_on_joinplayer
 local register_on_modchannel_message =  minetest.register_on_modchannel_message
 local get_connected_players = minetest.get_connected_players
 
-local time_night = { begin = 19000, ending = 5500 }
+local night_begins = 19000
+local night_ends   = 5500
+
 local sleep_channel = {}
-local pool = {}
 local sleep_loop = false
+
+local bed_count = 0
+
+local pool = {}
+local sleep_table = {}
+
 local name
 local channel_decyphered
-local bed_count = 0
-local sleep_table = {}
 
 --TODO: run a check on a simpler data table because this is a mess
 
@@ -88,7 +93,7 @@ local function global_sleep_check()
         return
     end
 
-    minetest.set_timeofday(time_night.ending/24000)
+    minetest.set_timeofday(night_ends/24000)
     for _,player in ipairs(minetest.get_connected_players()) do
         wake_up(player)
     end
@@ -123,7 +128,7 @@ local do_sleep = function( player, pos, dir )
     time = minetest.get_timeofday() * 24000
     name = player:get_player_name()
 
-    if time < time_night.begin or time > time_night.ending then
+    if time < night_begins or time > night_ends then
         minetest.chat_send_player( name, "You can only sleep at night" )
     end
 
