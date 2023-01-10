@@ -133,9 +133,7 @@ function damage_armor(player,damage)
         stack:add_wear(wear_level)
         inv:set_stack("armor_head", 1, stack)
         new_stack = inv:get_stack("armor_head",1):get_name()
-        if new_stack == "" then
-            recalc = true
-        end
+        recalc = recalc or new_stack == ""
     end
 
     stack = inv:get_stack("armor_torso",1)
@@ -146,9 +144,7 @@ function damage_armor(player,damage)
         stack:add_wear(wear_level)
         inv:set_stack("armor_torso", 1, stack)
         new_stack = inv:get_stack("armor_torso",1):get_name()
-        if new_stack == "" then
-            recalc = true
-        end
+        recalc = recalc or new_stack == ""
     end
 
     stack = inv:get_stack("armor_legs",1)
@@ -159,9 +155,7 @@ function damage_armor(player,damage)
         stack:add_wear(wear_level)
         inv:set_stack("armor_legs", 1, stack)
         new_stack = inv:get_stack("armor_legs",1):get_name()
-        if new_stack == "" then
-            recalc = true
-        end
+        recalc = recalc or new_stack == ""
     end
 
     stack = inv:get_stack("armor_feet",1)
@@ -172,9 +166,7 @@ function damage_armor(player,damage)
         stack:add_wear(wear_level)
         inv:set_stack("armor_feet", 1, stack)
         new_stack = inv:get_stack("armor_feet",1):get_name()
-        if new_stack == "" then
-            recalc = true
-        end
+        recalc = recalc or new_stack == ""
     end
 
     if recalc == true then
