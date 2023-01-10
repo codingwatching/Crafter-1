@@ -105,32 +105,43 @@ local wake_up = function( player )
     for index,bed_vec in ipairs( players_in_bed ) do
         if bed_vec.name ~= name then goto continue end
         table_remove(players_in_bed, index)
-        do return end
         ::continue::
     end
     close_formspec( name, "bed" )
     csm_wake_player_up( player )
 end
 
+local sleeping_counter = 0
 local function sleep_check()
 
     -- No one is in bed, don't continue
-    if #players_in_bed == 0 then return end
+    if #players_in_bed == 0 then
+        print("no one is in bed")
+        return
+    end
+
+    sleeping_counter = 0
 
     -- Locks the players in bed until they get up or the night skips
     for _,bed_vec in ipairs( players_in_bed ) do
         local player = get_player_by_name( bed_vec.name )
         if not player then goto continue end
         player:move_to( vec_new( bed_vec.x, bed_vec.y, bed_vec.z ) )
+        -- Group in a check of the players sleeping state
+        if not bed_vec.sleeping then goto continue end
+        sleeping_counter = sleeping_counter + 1
         ::continue::
     end
 
     -- Not everyone is in bed, don't continue
-    if #players_in_bed ~= #get_connected_players() then return end
+    if #players_in_bed ~= sleeping_counter then return end
+
+    print("everyone is in bed")
 
     set_timeofday( night_ends )
 
     for _,player in ipairs(get_connected_players()) do
+        print("waking up " .. player:get_player_name())
         wake_up(player)
     end
 end
