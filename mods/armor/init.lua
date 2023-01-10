@@ -169,7 +169,6 @@ function damage_armor(player,damage)
     })
     recalculate_armor(player)
     set_armor_gui(player)
-    --do particles too
 end
 
 register_on_joinplayer(function(player)
