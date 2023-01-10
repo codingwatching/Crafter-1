@@ -79,12 +79,7 @@ local function global_sleep_check()
 		end
 	end
 
-	local count = 0
-	for name,val in pairs(sleep_table) do
-		count = count + 1
-	end
-	
-	if count == 0 then
+	if #sleep_table == 0 then
 		minetest.set_timeofday(time_night.ending/24000)
 		for _,player in ipairs(minetest.get_connected_players()) do
 			wake_up(player)
