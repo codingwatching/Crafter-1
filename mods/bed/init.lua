@@ -8,8 +8,6 @@ local night_ends   = 5500
 local sleep_channel = {}
 local sleep_loop = false
 
-local bed_count = 0
-
 --[[
     So we gotta get the players that are in bed
     the player's bed position
@@ -26,6 +24,17 @@ local bed_gui = "size[16,12]"..
                 "position[0.5,0.5]"..
                 "bgcolor[#00000000]"..
                 "button[5.5,8.5;5,2;button;leave bed]"
+
+-- Bed vector is a table that holds the data of the player's bed state, dispatches a new object
+local function new_bed_vec( player, position )
+    if not player or not position then return end
+    local bed_vec = {}
+    bed_vec.name = player:get_player_name()
+    bed_vec.x = position.x
+    bed_vec.y = position.y
+    bed_vec.z = position.z
+    return bed_vec
+end
 
 
 --TODO: run a check on a simpler data table because this is a mess
