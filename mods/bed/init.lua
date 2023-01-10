@@ -79,16 +79,17 @@ local function global_sleep_check()
 		end
 	end
 
-	if #sleep_table == 0 then
-		minetest.set_timeofday(time_night.ending/24000)
-		for _,player in ipairs(minetest.get_connected_players()) do
-			wake_up(player)
-		end
-		sleep_loop = false
-		return
-	end
+    -- TODO: Rewrite this so it's not a BASIC jump table
+	if #sleep_table ~= 0 then
+        sleep_loop = bed_count > 0
+        return
+    end
 
-    sleep_loop = bed_count > 0
+    minetest.set_timeofday(time_night.ending/24000)
+    for _,player in ipairs(minetest.get_connected_players()) do
+        wake_up(player)
+    end
+    sleep_loop = false
 end
 
 local global_step_timer = 0
