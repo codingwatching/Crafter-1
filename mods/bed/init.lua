@@ -88,9 +88,7 @@ local function global_sleep_check()
 		return
 	end
 
-	if bed_count == 0 then
-		sleep_loop = false
-	end
+    sleep_loop = bed_count > 0
 end
 
 local global_step_timer = 0
