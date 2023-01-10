@@ -182,6 +182,7 @@ register_on_dieplayer(function(player)
     set_armor_gui(player)
 end)
 
+-- Acceptable list is basically disallowing you to move random items into your armor slots
 local acceptable = {
     ["armor_head"]  = true,
     ["armor_torso"] = true,
