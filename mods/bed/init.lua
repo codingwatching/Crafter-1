@@ -82,11 +82,13 @@ end )
 local function csm_send_player_to_sleep( player )
     name = player:get_player_name()
     sleep_channel[ name ]:send_all( "1" )
+    print("sending player sleep state")
 end
 
 local function csm_wake_player_up( player )
     name = player:get_player_name()
     sleep_channel[ name ]:send_all( "0" )
+    print("sending player wake state")
 end
 
 register_on_modchannel_message( function( channel_name, sender )
@@ -95,6 +97,7 @@ register_on_modchannel_message( function( channel_name, sender )
     for _,bed_vec in ipairs( players_in_bed ) do
         if bed_vec.name ~= sender then goto continue end
         bed_vec.sleeping = true
+        print("player is now sleeping")
         do return end
         ::continue::
     end
