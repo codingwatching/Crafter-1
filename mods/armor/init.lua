@@ -1,22 +1,21 @@
-local get_item_group = minetest.get_item_group
-local get_itemdef    = minetest.get_itemdef
-
-local math_ceil  = math.ceil
-local math_random = math.random
-local ipairs = ipairs
+local math_ceil                              = math.ceil
+local math_random                            = math.random
+local ipairs                                 = ipairs
+local get_item_group                         = minetest.get_item_group
+local get_itemdef                            = minetest.get_itemdef
+local register_on_player_inventory_action    = minetest.register_on_player_inventory_action
+local register_allow_player_inventory_action = minetest.register_allow_player_inventory_action
+local after                                  = minetest.after
+local sound_play                             = minetest.sound_play
+local register_on_joinplayer                 = minetest.register_on_joinplayer
+local register_on_dieplayer                  = minetest.register_on_dieplayer
+local register_node                          = minetest.register_node
+local remove_node                            = minetest.remove_node
+local register_craft                         = minetest.register_craft
+local register_tool                          = minetest.register_tool
+local register_on_mods_loaded                = minetest.register_on_mods_loaded
 local change_hud
 local add_hud
-local register_on_player_inventory_action = minetest.register_on_player_inventory_action
-local register_allow_player_inventory_action = minetest.register_allow_player_inventory_action
-local after = minetest.after
-local sound_play = minetest.sound_play
-local register_on_joinplayer = minetest.register_on_joinplayer
-local register_on_dieplayer = minetest.register_on_dieplayer
-local register_node = minetest.register_node
-local remove_node = minetest.remove_node
-local register_craft = minetest.register_craft
-local register_tool = minetest.register_tool
-local register_on_mods_loaded = minetest.register_on_mods_loaded
 
 register_on_mods_loaded(function()
     after(0,function()
