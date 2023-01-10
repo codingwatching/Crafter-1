@@ -1,14 +1,11 @@
-local
-minetest,math,pairs
-=
-minetest,math,pairs
-
 local get_item_group = minetest.get_item_group
 local get_itemdef    = minetest.get_itemdef
 
-
-local ceil  = math.ceil
-local random = math.random
+local math_ceil  = math.ceil
+local math_random = math.random
+local ipairs = ipairs
+local change_hud = hud_manager.change_hud
+local add_hud = hud_manager.add_hud
 
 local inv
 local player_skin
@@ -24,7 +21,7 @@ local wear_level
 local new_stack
 
 function recalculate_armor(player)
-    
+
     if not player or (player and not player:is_player()) then return end
 
     inv = player:get_inventory()
@@ -59,6 +56,7 @@ function recalculate_armor(player)
 end
 
 function calculate_armor_absorbtion(player)
+
     if not player or (player and not player:is_player()) then return end
 
     inv = player:get_inventory()
@@ -97,11 +95,10 @@ function calculate_armor_absorbtion(player)
     return(armor_absorbtion)
 end
 
-local level
 function set_armor_gui(player)
     if not player or (player and not player:is_player()) then return end
     level = calculate_armor_absorbtion(player)
-    hud_manager.change_hud({
+    change_hud({
         player    =  player ,
         hud_name  = "armor_fg",
         element   = "number",
@@ -110,14 +107,16 @@ function set_armor_gui(player)
 end
 
 function damage_armor(player,damage)
+
     if not player or (player and not player:is_player()) then return end
 
     inv = player:get_inventory()
-    
+
     recalc = false
 
     stack = inv:get_stack("armor_head",1)
     name = stack:get_name()
+
     if name ~= "" then
         wear_level = ((9-get_item_group(name,"armor_level"))*8)*(5-get_item_group(name,"armor_type"))*damage
         stack:add_wear(wear_level)
@@ -130,6 +129,7 @@ function damage_armor(player,damage)
 
     stack = inv:get_stack("armor_torso",1)
     name = stack:get_name()
+
     if name ~= "" then
         wear_level = ((9-get_item_group(name,"armor_level"))*4)*(5-get_item_group(name,"armor_type"))*damage
         stack:add_wear(wear_level)
@@ -142,6 +142,7 @@ function damage_armor(player,damage)
 
     stack = inv:get_stack("armor_legs",1)
     name = stack:get_name()
+
     if name ~= "" then
         wear_level = ((9-get_item_group(name,"armor_level"))*6)*(5-get_item_group(name,"armor_type"))*damage
         stack:add_wear(wear_level)
@@ -154,6 +155,7 @@ function damage_armor(player,damage)
 
     stack = inv:get_stack("armor_feet",1)
     name = stack:get_name()
+
     if name ~= "" then
         wear_level = ((9-get_item_group(name,"armor_level"))*10)*(5-get_item_group(name,"armor_type"))*damage
         stack:add_wear(wear_level)
@@ -173,7 +175,7 @@ function damage_armor(player,damage)
 end
 
 minetest.register_on_joinplayer(function(player)
-    hud_manager.add_hud(player,"armor_bg",{
+    add_hud(player,"armor_bg",{
         hud_elem_type = "statbar",
         position = {x = 0.5, y = 1},
         text = "armor_icon_bg.png",
@@ -181,7 +183,7 @@ minetest.register_on_joinplayer(function(player)
         size = {x = 24, y = 24},
         offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
     })
-    hud_manager.add_hud(player,"armor_fg",{
+    add_hud(player,"armor_fg",{
         hud_elem_type = "statbar",
         position = {x = 0.5, y = 1},
         text = "armor_icon.png",
@@ -189,7 +191,7 @@ minetest.register_on_joinplayer(function(player)
         size = {x = 24, y = 24},
         offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
     })
-    
+
     inv = player:get_inventory()
     inv:set_size("armor_head" ,1)
     inv:set_size("armor_torso",1)
