@@ -260,6 +260,7 @@ for material_id,material_level in pairs(materials) do
             }
         })
 
+        -- TODO: Ooooh I got a plan for this garbage
         if armor_id == "helmet" then
             register_craft({
                 output = "armor:"..material_id.."_"..armor_id,
