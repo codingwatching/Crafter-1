@@ -232,6 +232,13 @@ local function bool_int(state)
     if state then return 1 end
     return 0
 end
+-- 3d to 1d data pack, width is 3
+local craft_templates = {
+    helmet     = {1,1,1,1,0,1},
+    chestplate = {1,0,1,1,1,1,1,1,1 },
+    leggings   = {1,1,1,1,0,1,1,0,1},
+    boots      = {1,0,1,1,0,1}
+}
 
 for material_id,material_level in pairs(materials) do
     for armor_id,armor in pairs(armor_type) do
@@ -261,43 +268,27 @@ for material_id,material_level in pairs(materials) do
             }
         })
 
-        -- TODO: Ooooh I got a plan for this garbage
-        if armor_id == "helmet" then
-            register_craft({
-                output = "armor:"..material_id.."_"..armor_id,
-                recipe = {
-                    {"main:"..material_id, "main:"..material_id, "main:"..material_id},
-                    {"main:"..material_id, ""                  , "main:"..material_id},
-                    {""                  , ""                  , ""                  }
-                }
-            })
-        elseif armor_id == "chestplate" then
-            register_craft({
-                output = "armor:"..material_id.."_"..armor_id,
-                recipe = {
-                    {"main:"..material_id, ""                  , "main:"..material_id},
-                    {"main:"..material_id, "main:"..material_id, "main:"..material_id},
-                    {"main:"..material_id, "main:"..material_id, "main:"..material_id}
-                }
-            })
-        elseif armor_id == "leggings" then
-            register_craft({
-                output = "armor:"..material_id.."_"..armor_id,
-                recipe = {
-                    {"main:"..material_id, "main:"..material_id, "main:"..material_id},
-                    {"main:"..material_id, ""                  , "main:"..material_id},
-                    {"main:"..material_id, ""                  , "main:"..material_id}
-                }
-            })
-        elseif armor_id == "boots" then
-            register_craft({
-                output = "armor:"..material_id.."_"..armor_id,
-                recipe = {
-                    {""                  , "", ""                  },
-                    {"main:"..material_id, "", "main:"..material_id},
-                    {"main:"..material_id, "", "main:"..material_id}
-                }
-            })
+        local recipe = {}
+        local template = craft_templates[ armor_id ]
+        local rows = math_ceil( #template / 3 )
+        for i = 1,rows do
+            recipe[i] = {}
+        end
+        for index,value in ipairs(template) do
+            local current_row = (( index - 1 ) % 3) + 1
+            local current_column = math_ceil( index / 3 )
+            if value == 0 then
+                recipe[current_column][current_row] = ""
+            else
+                recipe[current_column][current_row] = "main:" .. material_id
+            end
+            ::continue::
+        end
+        register_craft({
+            output = "armor:"..material_id.."_"..armor_id,
+            recipe = recipe
+        })
+        if armor_id == "boots" then
             register_node("armor:"..material_id.."_"..armor_id.."particletexture", {
                 description = "NIL",
                 tiles = {material_id.."_"..armor_id.."_item.png"},
@@ -309,6 +300,5 @@ for material_id,material_level in pairs(materials) do
                 end,
             })
         end
-        
     end
 end
