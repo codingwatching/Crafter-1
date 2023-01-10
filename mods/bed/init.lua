@@ -70,7 +70,7 @@ local function global_sleep_check()
     sleep_loop = true
     sleep_table = {}
 
-    for _,player in ipairs( minetest.get_connected_players() ) do
+    for _,player in ipairs( get_connected_players() ) do
         name = player:get_player_name()
         sleep_table[name] = true
     end
@@ -102,7 +102,7 @@ local function global_sleep_check()
     end
 
     minetest.set_timeofday(night_ends/24000)
-    for _,player in ipairs(minetest.get_connected_players()) do
+    for _,player in ipairs(get_connected_players()) do
         wake_up(player)
     end
     sleep_loop = false
