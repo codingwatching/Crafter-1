@@ -97,13 +97,11 @@ end
 
 local global_step_timer = 0
 minetest.register_globalstep(function(dtime)
-	if sleep_loop then
-		global_step_timer = global_step_timer + dtime
-		if global_step_timer > 0.25 then
-			global_step_timer = 0
-			global_sleep_check()
-		end
-	end
+    if not sleep_loop then return end
+    global_step_timer = global_step_timer + dtime
+    if global_step_timer <= 0.25 then return end
+    global_step_timer = 0
+    global_sleep_check()
 end)
 
 -- Delete data on player leaving
