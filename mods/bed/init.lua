@@ -27,6 +27,8 @@ local night_ends   = 5500  / 24000
 
     if a player leaves when they are in bed somehow then remove them from the thing
     disable the player's controls when they are in bed
+
+    store the player's old position and look direction
 ]]
 local players_in_bed = {}
 local name
@@ -104,11 +106,14 @@ local wake_up = function( player )
     player:set_eye_offset( { x = 0, y = 0, z = 0 }, { x = 0, y = 0, z = 0 } )
     for index,bed_vec in ipairs( players_in_bed ) do
         if bed_vec.name ~= name then goto continue end
+
         table_remove(players_in_bed, index)
+        close_formspec( name, "bed" )
+        csm_wake_player_up( player )
+        do return end
+
         ::continue::
     end
-    close_formspec( name, "bed" )
-    csm_wake_player_up( player )
 end
 
 local sleeping_counter = 0
