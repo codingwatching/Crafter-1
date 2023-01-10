@@ -66,20 +66,23 @@ local function global_sleep_check()
 
 	for player_name,data in pairs( pool ) do
 		local player = minetest.get_player_by_name( player_name )
-		if player then
-			bed_count = bed_count + 1
-			if data.sleeping then
-				sleep_table[player_name] = nil
-			end
-			if data.pos then
-				player:move_to(data.pos)
-			end
-		else
-			pool[player_name] = nil
-		end
+
+        if not player then
+            pool[player_name] = nil
+            goto continue
+        end
+
+        bed_count = bed_count + 1
+        if data.sleeping then
+            sleep_table[player_name] = nil
+        end
+        if data.pos then
+            player:move_to(data.pos)
+        end
+
+        ::continue::
 	end
 
-    -- TODO: Rewrite this so it's not a BASIC jump table
 	if #sleep_table ~= 0 then
         sleep_loop = bed_count > 0
         return
