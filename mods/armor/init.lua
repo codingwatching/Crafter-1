@@ -3,11 +3,19 @@ local get_itemdef    = minetest.get_itemdef
 
 local math_ceil  = math.ceil
 local math_random = math.random
-local ipairs = ipairs
+local pairs = pairs
 local change_hud = hud_manager.change_hud
 local add_hud = hud_manager.add_hud
 local register_on_player_inventory_action = minetest.register_on_player_inventory_action
+local register_allow_player_inventory_action = minetest.register_allow_player_inventory_action
 local after = minetest.after
+local sound_play = minetest.sound_play
+local register_on_joinplayer = minetest.register_on_joinplayer
+local register_on_dieplayer = minetest.register_on_dieplayer
+local register_node = minetest.register_node
+local remove_node = minetest.remove_node
+local register_craft = minetest.register_craft
+local register_tool = minetest.register_tool
 
 local inv
 local player_skin
@@ -21,6 +29,7 @@ local stack
 local name
 local wear_level
 local new_stack
+local item
 
 function recalculate_armor(player)
 
@@ -92,7 +101,7 @@ function calculate_armor_absorbtion(player)
         armor_absorbtion = armor_absorbtion + (level*defense)
     end
     if armor_absorbtion > 0 then
-        armor_absorbtion = ceil(armor_absorbtion/4)
+        armor_absorbtion = math_ceil(armor_absorbtion/4)
     end
     return(armor_absorbtion)
 end
@@ -169,14 +178,14 @@ function damage_armor(player,damage)
     end
 
     if recalc == true then
-        minetest.sound_play("armor_break",{to_player=player:get_player_name(),gain=1,pitch=random(80,100)/100})
+        sound_play("armor_break",{to_player=player:get_player_name(),gain=1,pitch=math_random(80,100)/100})
         recalculate_armor(player)
         set_armor_gui(player)
         --do particles too
     end
 end
 
-minetest.register_on_joinplayer(function(player)
+register_on_joinplayer(function(player)
     add_hud(player,"armor_bg",{
         hud_elem_type = "statbar",
         position = {x = 0.5, y = 1},
@@ -201,7 +210,7 @@ minetest.register_on_joinplayer(function(player)
     inv:set_size("armor_feet" ,1)
 end)
 
-minetest.register_on_dieplayer(function(player)
+register_on_dieplayer(function(player)
     set_armor_gui(player)
 end)
 
@@ -219,10 +228,9 @@ register_on_player_inventory_action(function(player, _, _, inventory_info)
     end)
 end)
 
---only allow players to put armor in the right slots to stop exploiting chestplates
-local stack
-local item
-minetest.register_allow_player_inventory_action(function(player, action, inventory, inventory_info)
+-- Only allow players to put armor in the right slots to stop exploiting chestplates
+
+register_allow_player_inventory_action(function(player, action, inventory, inventory_info)
     if inventory_info.to_list == "armor_head" then
         stack = inventory:get_stack(inventory_info.from_list,inventory_info.from_index)
         item = stack:get_name()
@@ -254,16 +262,14 @@ local materials = {["coal"]=1,["lapis"]=2,["iron"]=3,["chain"]=4,["gold"]=2,["di
 local armor_type = {["helmet"]=2,["chestplate"]=4,["leggings"]=3,["boots"]=1} --max 4
 
 local function bool_int(state)
-    if state == true then return(1) end
-    if state == false or not state then return(0) end
+    if state == true then return 1 end
+    return 0
 end
 
 for material_id,material in pairs(materials) do
     for armor_id,armor in pairs(armor_type) do
-        --print(material_id,material,"|",armor_id,armor)
-        minetest.register_tool("armor:"..material_id.."_"..armor_id,{
+        register_tool("armor:"..material_id.."_"..armor_id,{
             description = material_id:gsub("^%l", string.upper).." "..armor_id:gsub("^%l", string.upper),
-    
             groups = {
                 armor         = 1,
                 armor_level   = material,
@@ -289,7 +295,7 @@ for material_id,material in pairs(materials) do
         })
 
         if armor_id == "helmet" then
-            minetest.register_craft({
+            register_craft({
                 output = "armor:"..material_id.."_"..armor_id,
                 recipe = {
                     {"main:"..material_id, "main:"..material_id, "main:"..material_id},
@@ -298,7 +304,7 @@ for material_id,material in pairs(materials) do
                 }
             })
         elseif armor_id == "chestplate" then
-            minetest.register_craft({
+            register_craft({
                 output = "armor:"..material_id.."_"..armor_id,
                 recipe = {
                     {"main:"..material_id, ""                  , "main:"..material_id},
@@ -307,7 +313,7 @@ for material_id,material in pairs(materials) do
                 }
             })
         elseif armor_id == "leggings" then
-            minetest.register_craft({
+            register_craft({
                 output = "armor:"..material_id.."_"..armor_id,
                 recipe = {
                     {"main:"..material_id, "main:"..material_id, "main:"..material_id},
@@ -316,7 +322,7 @@ for material_id,material in pairs(materials) do
                 }
             })
         elseif armor_id == "boots" then
-            minetest.register_craft({
+            register_craft({
                 output = "armor:"..material_id.."_"..armor_id,
                 recipe = {
                     {""                  , "", ""                  },
@@ -324,14 +330,14 @@ for material_id,material in pairs(materials) do
                     {"main:"..material_id, "", "main:"..material_id}
                 }
             })
-            minetest.register_node("armor:"..material_id.."_"..armor_id.."particletexture", {
+            register_node("armor:"..material_id.."_"..armor_id.."particletexture", {
                 description = "NIL",
                 tiles = {material_id.."_"..armor_id.."_item.png"},
                 groups = {},
                 drop = "",
                 drawtype = "allfaces",
                 on_construct = function(pos)
-                    minetest.remove_node(pos)
+                    remove_node(pos)
                 end,
             })
         end
