@@ -158,7 +158,7 @@ local do_sleep = function( player, pos, dir )
     player:set_look_vertical( 0 )
     player:set_look_horizontal( ( dir + 1 ) * math.pi )
 
-    show_formspec( ( dir + 1) * math.pi )
+    show_formspec( name, "bed", bed_gui )
 
     player_is_sleeping( player, true )
     set_player_animation( player, "lay", 0, false )
