@@ -211,24 +211,25 @@ register_allow_player_inventory_action( function( _, _, inventory, inventory_inf
 end)
 
 local materials = {
-    ["coal"] = 1,
-    ["lapis"] = 2,
-    ["iron"] = 3,
-    ["chain"] = 4,
-    ["gold"] = 2,
-    ["diamond"] = 5,
-    ["emerald"] = 6,
+    ["coal"]     = 1,
+    ["lapis"]    = 2,
+    ["iron"]     = 3,
+    ["chain"]    = 4,
+    ["gold"]     = 2,
+    ["diamond"]  = 5,
+    ["emerald"]  = 6,
     ["sapphire"] = 7,
-    ["ruby"] = 8} --max 8
+    ["ruby"]     = 8
+} --max 8
 local armor_type = {
-    ["helmet"]=2,
-    ["chestplate"]=4,
-    ["leggings"]=3,
-    ["boots"]=1
+    ["boots"]      = 1,
+    ["helmet"]     = 2,
+    ["leggings"]   = 3,
+    ["chestplate"] = 4
 } --max 4
 
 local function bool_int(state)
-    if state == true then return 1 end
+    if state then return 1 end
     return 0
 end
 
