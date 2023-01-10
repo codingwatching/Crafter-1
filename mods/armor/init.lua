@@ -134,6 +134,7 @@ function damage_armor(player,damage)
 
         -- 9 is the base armor level, 5 is the level of protection it gives, then subtracted from it's level and type
         -- 9 is the max level + 1 so that the calculation does not multiply into 0
+        -- 5 is the max level for different types of armor + 1 so the calculation does not multiply into 0
         wear_level = ( ( 9 - get_item_group( name, "armor_level" ) ) * calculation_list[index] ) * ( 5 - get_item_group( name, "armor_type" ) ) * damage
         stack:add_wear(wear_level)
         inv:set_stack(inventory_name, 1, stack)
@@ -219,20 +220,25 @@ local materials = {
     ["emerald"] = 6,
     ["sapphire"] = 7,
     ["ruby"] = 8} --max 8
-local armor_type = {["helmet"]=2,["chestplate"]=4,["leggings"]=3,["boots"]=1} --max 4
+local armor_type = {
+    ["helmet"]=2,
+    ["chestplate"]=4,
+    ["leggings"]=3,
+    ["boots"]=1
+} --max 4
 
 local function bool_int(state)
     if state == true then return 1 end
     return 0
 end
 
-for material_id,material in pairs(materials) do
+for material_id,material_level in pairs(materials) do
     for armor_id,armor in pairs(armor_type) do
         register_tool("armor:"..material_id.."_"..armor_id,{
             description = material_id:gsub("^%l", string.upper).." "..armor_id:gsub("^%l", string.upper),
             groups = {
                 armor         = 1,
-                armor_level   = material,
+                armor_level   = material_level,
                 armor_defense = armor,
                 helmet        = bool_int(armor_id == "helmet"),
                 chestplate    = bool_int(armor_id == "chestplate"),
