@@ -116,41 +116,35 @@ local bed_gui = "size[16,12]"..
 "bgcolor[#00000000]"..
 "button[5.5,8.5;5,2;button;leave bed]"
 
-local yaw_translation = {
-	[0] = math.pi,
-	[1] = math.pi/2,
-	[2] = 0,
-	[3] = math.pi*1.5,
-}
-
 local name
 local time
-local do_sleep = function(player,pos,dir)
+local do_sleep = function( player, pos, dir )
+
 	time = minetest.get_timeofday() * 24000
 	name = player:get_player_name()
-	if time > time_night.begin or time < time_night.ending then
-		local real_dir = minetest.facedir_to_dir(dir)
-		player:add_velocity(vector.multiply(player:get_velocity(),-1))
-		local new_pos = vector.subtract(pos,vector.divide(real_dir,2))
-		player:move_to(new_pos)
-		player:set_look_vertical(0)
-		player:set_look_horizontal(yaw_translation[dir])
-		
-		minetest.show_formspec(name, "bed", bed_gui)
 
-		player_is_sleeping(player,true)
-		set_player_animation(player,"lay",0,false)
-		player:set_eye_offset({x=0,y=-12,z=-7},{x=0,y=0,z=0})
+	if time < time_night.begin or time > time_night.ending then
+        minetest.chat_send_player(name, "You can only sleep at night")
+    end
 
-		pool[name] = {pos=new_pos,sleeping=false}
+    local real_dir = minetest.facedir_to_dir(dir)
+    player:add_velocity(vector.multiply(player:get_velocity(),-1))
+    local new_pos = vector.subtract(pos,vector.divide(real_dir,2))
+    player:move_to(new_pos)
+    player:set_look_vertical(0)
+    player:set_look_horizontal((dir + 1) * math.pi )
 
-		csm_send_player_to_sleep(player)
+    minetest.show_formspec((dir + 1) * math.pi )
 
-		sleep_loop = true
-	else
-		minetest.chat_send_player(name, "You can only sleep at night")
-	end
+    player_is_sleeping(player,true)
+    set_player_animation(player,"lay",0,false)
+    player:set_eye_offset({x=0,y=-12,z=-7},{x=0,y=0,z=0})
 
+    pool[name] = {pos=new_pos,sleeping=false}
+
+    csm_send_player_to_sleep(player)
+
+    sleep_loop = true
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
@@ -233,8 +227,6 @@ minetest.register_node("bed:bed_front", {
 		local obj = minetest.add_item(pos, "bed:bed")
 		minetest.remove_node(pos)
 		minetest.remove_node(vector.add(pos,facedir))
-		--remove_spawnpoint(pos,digger)
-		--remove_spawnpoint(vector.add(pos,facedir),digger)
 		minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
 	end,
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
