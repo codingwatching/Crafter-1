@@ -1,14 +1,10 @@
-local abs    = math.abs
-
-local add_vector   = vector.add
-local vec_distance = vector.distance
-local vec_new   = vector.new
-
-local table_insert = table.insert
-local ipairs = ipairs
-
-local get_node                     = minetest.get_node
-local bulk_set_node                = minetest.bulk_set_node
+local add_vector      = vector.add
+local vec_distance    = vector.distance
+local vec_new         = vector.new
+local table_insert    = table.insert
+local ipairs          = ipairs
+local get_node        = minetest.get_node
+local bulk_set_node   = minetest.bulk_set_node
 
 
 local portal_node = ""
@@ -239,8 +235,8 @@ function destroy_portal( position, new_frame_node, new_portal_node, new_size_lim
     length = 1
 
     -- Convert the 7d vector into a usable 3d vector
-    for _,vec_7d in ipairs(queue) do
-        vec3d_cache[length] = vec_new(vec_7d.x, vec_7d.y,vec_7d.z)
+    for _,vec_7d in ipairs( queue ) do
+        vec3d_cache[ length ] = vec_new( vec_7d.x, vec_7d.y,vec_7d.z )
         length = length + 1
     end
 
