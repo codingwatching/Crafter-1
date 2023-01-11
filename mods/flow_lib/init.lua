@@ -147,6 +147,7 @@ local flowing_downwards = vector.new(0, -1, 0)
 --> surface direction as `modlib.vector` else
 function get_liquid_flow_direction(pos)
 
+    -- This returns a predefined linear array {1=data,2=data,3=data,4=data}
     local corner_levels = get_liquid_corner_levels(pos)
 
     local max_level = corner_levels[1][2]
@@ -192,7 +193,7 @@ function get_liquid_flow_direction(pos)
             dir = dir + diff
 
             count = count + 1
-            
+
             ::skip::
         end
 
