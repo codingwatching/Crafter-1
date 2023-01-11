@@ -24,7 +24,7 @@ local function combinator(f)
 		return apply(v, f, ...)
 	end
 end
-
+local subtract, subtract_scalar = combinator(function(v, w) return v - w end)
 local divide, divide_scalar = combinator(function(v, w) return v / w end)
 
 
