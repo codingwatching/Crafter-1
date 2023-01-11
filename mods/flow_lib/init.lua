@@ -2,28 +2,9 @@
 
 local ipairs = ipairs
 
-
--- Preallocate
-local flow_data = {{},{}}
-
 local tab
 local index
-local function get_nodes(pos)
-    tab = {}
-    index = 1
-    for i = -1,1,2 do
-        flow_data = {
-            {x = pos.x + i, y = pos.y, z = pos.z    },
-            {x = pos.x,     y = pos.y, z = pos.z + i}
-        }
-        for _,p in ipairs(flow_data) do
-            tab[n] = {p, minetest.get_node(p)}
-            index = index + 1
-        end
-    end
-    return tab
-end
-
+local new_pos
 local data
 local param2
 local nd
@@ -31,6 +12,28 @@ local par2
 local name
 local tmp
 local c_node
+
+-- Position instructions to step through
+local position_instructions = {
+    vector.new(-1, 0, 0 ),
+    vector.new( 1, 0, 0 ),
+    vector.new( 0, 0,-1 ),
+    vector.new( 0, 0, 1 )
+}
+
+
+local function get_nodes(pos)
+    tab = {}
+    index = 1
+    for _,checking_position in ipairs(position_instructions) do
+        new_pos = vector.add(pos, checking_position)
+        tab[index] = {new_pos, minetest.get_node(new_pos)}
+        index = index + 1
+    end
+    return tab
+end
+
+
 local function get_flowing_dir(pos)
     c_node = minetest.get_node(pos).name
     if c_node ~= "main:waterflow" and c_node ~= "main:water" then
