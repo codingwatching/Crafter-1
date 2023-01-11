@@ -25,35 +25,21 @@ minetest.register_globalstep(function()
         -- Buffer continuation
         if not pool[name] then
             flow_dir = vec_multiply( flow_dir, 10 )
-            acceleration = nil
-            if flow_dir.x ~= 0 then
-                acceleration = vec_new( flow_dir.x, 0, 0 )
-            elseif flow_dir.z ~= 0 then
-                acceleration = vec_new( 0, 0, flow_dir.z )
-            end
-            acceleration = vec_multiply( acceleration, 0.0355 )
+            acceleration = vec_multiply( flow_dir, 0.0355 )
             player:add_velocity(acceleration)
             pool[name] = flow_dir
             goto continue
         end
 
         c_flow = pool[name]
-        acceleration = nil
-        if c_flow.x ~= 0 then
-            acceleration = vec_new( c_flow.x, 0, 0 )
-        elseif c_flow.z ~= 0 then
-            acceleration = vec_new( 0, 0, c_flow.z )
-        end
-        acceleration = vec_multiply( acceleration, 0.0355 )
+        acceleration = vec_multiply( c_flow, 0.0355 )
         player:add_velocity( acceleration )
 
         newvel = player:get_velocity()
 
-        if newvel.x ~= 0 or newvel.z ~= 0 then
-            return
-        else
-            pool[name] = nil
-        end
+        if newvel.x ~= 0 or newvel.z ~= 0 then goto continue end
+
+        pool[name] = nil
 
         ::continue::
     end
