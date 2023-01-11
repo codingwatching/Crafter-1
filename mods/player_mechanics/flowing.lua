@@ -9,6 +9,8 @@ local acceleration
 local newvel
 local flow_dir
 local name
+
+-- TODO: try to force the player smoothly to move in the direction
 minetest.register_globalstep(function()
 
     for _,player in ipairs( get_connected_players() ) do
@@ -24,15 +26,14 @@ minetest.register_globalstep(function()
 
         -- Buffer continuation
         if not pool[name] then
-            flow_dir = vec_multiply( flow_dir, 10 )
-            acceleration = vec_multiply( flow_dir, 0.0355 )
+            acceleration = vec_multiply( flow_dir, 0.2 )
             player:add_velocity(acceleration)
             pool[name] = flow_dir
             goto continue
         end
 
         c_flow = pool[name]
-        acceleration = vec_multiply( c_flow, 0.0355 )
+        acceleration = vec_multiply( c_flow, 0.2 )
         player:add_velocity( acceleration )
 
         newvel = player:get_velocity()
