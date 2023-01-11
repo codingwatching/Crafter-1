@@ -47,9 +47,8 @@ local function get_corner_level(neighbors, x, z)
 
         if not level then goto skip end
 
-        if level == 1 then
-            return 1
-        end
+        if level == 1 then return 1 end
+        
         levels = levels + level
         neighbor_count = neighbor_count + 1
 
