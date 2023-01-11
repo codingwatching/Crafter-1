@@ -41,21 +41,21 @@ local function get_corner_level(neighbors, x, z)
 
         local neighbor = neighbors[nx][nz]
 
-        if neighbor.above_is_same_liquid then
-            return 1
-        end
+        if neighbor.above_is_same_liquid then return 1 end
 
         local level = neighbor.level
 
-        if level then
+        if not level then goto skip end
 
-            if level == 1 then
-                return 1
-            end
-            levels = levels + level
-            neighbor_count = neighbor_count + 1
+        if level == 1 then
+            return 1
+        end
+        levels = levels + level
+        neighbor_count = neighbor_count + 1
 
-        elseif neighbor.air then
+        ::skip::
+
+        if neighbor.air then
 
             if air_neighbor then
                 return 0.02
