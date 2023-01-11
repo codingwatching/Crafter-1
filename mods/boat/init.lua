@@ -159,28 +159,20 @@ end
 
 -- Method that allows players to control the boat
 function boat:drive()
-
     rider = self.rider
-
     if not rider or self.beached then
         self.being_rowed = false
         return
     end
-
     rider = minetest.get_player_by_name( rider )
-
     move = rider:get_player_control().up
-
     if not move then
         self.being_rowed = false
         return
     end
-
     currentvel = self.object:get_velocity()
     -- 10 is the speed goal in nodes per second
     goal = vector.multiply( vector.normalize( minetest.yaw_to_dir( rider:get_look_horizontal() ) ), 10 )
-
-    print(dump(goal))
 
     acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
     acceleration = vector.multiply( acceleration, 0.01 )
