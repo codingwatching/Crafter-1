@@ -73,6 +73,8 @@ local function lavaflow(object)
     end
 end
 
+
+-- Boat class
 local boat = {}
 
 -- Class fields
@@ -275,18 +277,15 @@ end
 function boat:lag_correction(dtime)
     pos = self.object:get_pos()
     velocity = self.object:get_velocity()
-    if self.lag_check then
-        chugent = minetest.get_us_time()/1000000 - self.lag_check
+    -- If the server step took more than 1 second to complete then we will put the boat back to the last known position
+    -- This stops the boat from flying away as it's extremely dynamic
+    if dtime < 1 then goto continue end
+    self.object:move_to(self.old_pos)
+    self.object:set_velocity(self.old_velocity)
 
-        --print("lag = "..chugent.." ms")
-        if chugent > 1 and  self.old_pos and self.old_velocity then
-            self.object:move_to(self.old_pos)
-            self.object:set_velocity(self.old_velocity)
-        end
-    end
+    ::continue::
     self.old_pos = pos
     self.old_velocity = velocity
-    self.lag_check = minetest.get_us_time()/1000000
 end
 
 function boat:flow()
