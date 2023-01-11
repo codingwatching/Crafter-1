@@ -15,6 +15,8 @@ local vec_add = vector.add
 local vec_subtract = vector.subtract
 local vec_multiply = vector.multiply
 local vec_normalize = vector.normalize
+local vec_distance = vector.distance
+local vec_length = vector.length
 minetest.register_on_mods_loaded(function()
     registered_nodes = minetest.registered_nodes
 end)
@@ -44,7 +46,6 @@ local function register_boat( boat_definition )
 local boat = {}
 
 -- Class fields
-
 boat.initial_properties = {
     hp_max = 1,
     physical = true,
@@ -139,7 +140,7 @@ function boat:drive()
     end
     currentvel = self.object:get_velocity()
     -- 10 is the speed goal in nodes per second
-    goal = vec_multiply( vector.normalize( yaw_to_dir( rider:get_look_horizontal() ) ), 10 )
+    goal = vec_multiply( vec_normalize( yaw_to_dir( rider:get_look_horizontal() ) ), 10 )
 
     acceleration = vec_new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
     acceleration = vec_multiply( acceleration, 0.01 )
@@ -165,13 +166,13 @@ function boat:push()
         player_pos.y = 0
 
         currentvel = self.object:get_velocity()
-        distance = ( 1 - vector.distance( pos, player_pos ) ) * 10
-        vel = vec_multiply( vector.normalize( vec_subtract( pos, player_pos ) ), distance )
+        distance = ( 1 - vec_distance( pos, player_pos ) ) * 10
+        vel = vec_multiply( vec_normalize( vec_subtract( pos, player_pos ) ), distance )
         velocity_force = vec_new( vel.x - currentvel.x, 0, vel.z - currentvel.z )
 
         -- Clamp the velocity
-        if vector.length(velocity_force) > 0.3 then
-            velocity_force = vec_multiply(vector.normalize(velocity_force), 0.3)
+        if vec_length(velocity_force) > 0.3 then
+            velocity_force = vec_multiply(vec_normalize(velocity_force), 0.3)
         end
 
         self.object:add_velocity( velocity_force )
@@ -266,9 +267,7 @@ register_craftitem(boat_definition.name, {
     liquids_pointable = true,
     on_place = function(itemstack, placer, pointed_thing)
         -- TODO: take the bucket's raycast and turn it into an api
-        if not pointed_thing.type == "node" then
-            return
-        end
+        if not pointed_thing.type == "node" then return end
         sneak = placer:get_player_control().sneak
         nodedef = registered_nodes[get_node(pointed_thing.under).name]
         if not sneak and nodedef.on_rightclick then
