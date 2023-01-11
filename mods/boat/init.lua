@@ -104,18 +104,18 @@ end
 
 function boat:on_activate( staticdata, dtime_s )
 
+    --[[ TODO: Make the boat remember whatever it needs to and if it doesn't need to remember anything then remove this
     if string.sub(staticdata, 1, string.len("return")) == "return" then
         data = minetest.deserialize(staticdata)
         if data and type(data) == "table" then
             --self.itemstring = data.itemstring
         end
-    else
-        --self.itemstring = staticdata
     end
+    ]]
 
     self.object:set_armor_groups({immortal = 1})
-    self.object:set_velocity({x = 0, y = 0, z = 0})
-    self.object:set_acceleration({x = 0, y = 0, z = 0})
+    -- self.object:set_velocity({x = 0, y = 0, z = 0})
+    -- self.object:set_acceleration({x = 0, y = 0, z = 0})
 
 end
 
@@ -127,27 +127,29 @@ end
 
 function boat:on_rightclick( clicker )
 
-    if not clicker or not clicker:is_player() then
-        return
-    end
+    if not clicker or not clicker:is_player() then return end
 
     player_name = clicker:get_player_name()
-    
-    if self.rider and player_name == self.rider then
+
+    rider = self.rider
+
+    if rider and player_name == rider then
+
         clicker:set_detach()
-        pos = self.object:get_pos()
-        pos.y = pos.y + 1
+        pos = vector.add(self.object:get_pos(), vector.new(0,1,0))
         clicker:move_to(pos)
-        clicker:add_velocity(vector.new(0,11,0))
+        clicker:add_velocity(vector.new(0,2,0))
+
         self.rider = nil
-        
+
         player_is_attached(clicker,false)
         force_update_animation(clicker)
 
-    elseif not self.rider then
+    elseif not rider then
+
         self.rider = player_name
+
         clicker:set_attach(self.object, "", {x=0, y=2, z=0}, {x=0, y=0, z=0})
-        
         set_player_animation(clicker,"sit",0)
         player_is_attached(clicker,true)
     end
@@ -155,9 +157,13 @@ end
 
 -- Boat checks if it's stuck on land
 function boat:check_if_on_land()
+
     pos = self.object:get_pos()
+
     pos.y = pos.y - 0.37
+
     bottom_node = minetest.get_node(pos).name
+
     if (bottom_node == "main:water" or bottom_node == "main:waterflow" or bottom_node == "air") then
         self.on_land = false
     else
@@ -167,12 +173,12 @@ end
 
 -- Method that allows players to control the boat
 function boat:drive()
+    
     if self.rider then
         rider = minetest.get_player_by_name(self.rider)
         move = rider:get_player_control().up
         self.moving = nil
         if move then
-            
             currentvel = self.object:get_velocity()
             goal = rider:get_look_dir()
             if self.on_land == true then
@@ -197,7 +203,6 @@ function boat:push()
             player_pos = object:get_pos()
             pos.y = 0
             player_pos.y = 0
-            
             currentvel = self.object:get_velocity()
             vel = vector.subtract(pos, player_pos)
             vel = vector.normalize(vel)
