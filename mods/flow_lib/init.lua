@@ -142,32 +142,47 @@ function get_liquid_flow_direction(pos)
     end
 
     local dir = vector.new(0, 0, 0)
+
     local count = 0
+
     for max_level_index, corner_level in pairs(corner_levels) do
+        
         if corner_level[2] == max_level then
             for offset = 1, 3 do
+
                 local index = (max_level_index + offset - 1) % 4 + 1
+
                 local diff = corner_level - corner_levels[index]
+
                 if diff[2] ~= 0 then
+
                     diff[1] = diff[1] * diff[2]
+
                     diff[3] = diff[3] * diff[2]
+
                     if offset == 3 then
                         diff = divide_scalar(diff, math.sqrt(2))
                     end
+
                     dir = dir + diff
+
                     count = count + 1
+
                 end
             end
         end
     end
+    
     if count ~= 0 then
         dir = divide_scalar(dir, count)
     end
+
     if dir == vector.new(0, 0, 0) then
         if minetest.get_node(pos).param2 % 32 > 7 then
             return flowing_downwards
         end
     end
+    
     return dir
 end
 
