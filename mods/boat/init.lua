@@ -210,18 +210,22 @@ function boat:push()
         if object:get_player_name() == self.rider then goto continue end
 
         player_pos = object:get_pos()
+
+        -- Turn it 2d
         pos.y = 0
         player_pos.y = 0
+
         currentvel = self.object:get_velocity()
-        vel = vector.subtract(pos, player_pos)
-        vel = vector.normalize(vel)
-        distance = vector.distance(pos,player_pos)
-        distance = (1-distance)*10
-        vel = vector.multiply(vel,distance)
-        acceleration = vector.new(vel.x-currentvel.x,0,vel.z-currentvel.z)
-        self.object:add_velocity(acceleration)
-        acceleration = vector.multiply(acceleration, -1)
-        object:add_velocity(acceleration)
+        
+        distance = ( 1 - vector.distance( pos, player_pos ) ) * 10
+
+        vel = vector.multiply( vector.normalize( vector.subtract( pos, player_pos ) ), distance )
+
+        acceleration = vector.new( vel.x - currentvel.x, 0, vel.z - currentvel.z )
+
+        self.object:add_velocity( acceleration )
+
+        object:add_velocity( vector.multiply( acceleration, -1 ) )
 
         ::continue::
     end
@@ -230,8 +234,11 @@ end
 
 -- Makes the boat float in water
 function boat:float()
+
     pos = self.object:get_pos()
+
     node = minetest.get_node(pos).name
+    
     self.swimming = false
     
     --flow normally if floating else don't
