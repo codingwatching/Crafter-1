@@ -39,6 +39,7 @@ boat.initial_properties = {
     automatic_face_movement_dir = -90.0,
     automatic_face_movement_max_rotation_per_sec = 600,
 }
+
 boat.rider = nil
 boat.boat = true
 boat.beached = false
@@ -239,10 +240,10 @@ end
 
 minetest.register_entity(boat_definition.name, boat)
 
-minetest.register_craftitem("boat:boat", {
-    description = "Boat",
-    inventory_image = "boatitem.png",
-    wield_image = "boatitem.png",
+minetest.register_craftitem(boat_definition.name, {
+    description = boat_definition.description,
+    inventory_image = boat_definition.image,
+    wield_image = boat_definition.image,
     liquids_pointable = true,
     on_place = function(itemstack, placer, pointed_thing)
         -- TODO: take the bucket's raycast and turn it into an api
@@ -272,6 +273,8 @@ end
 
 register_boat({
     name = "boat:boat",
+    description = "Boat",
+    image = "boatitem.png",
     liquid_source_node = "main:water",
     liquid_flow_node = "main:waterflow",
     flow_function = flow_in_water,
@@ -283,6 +286,8 @@ register_boat({
 
 register_boat({
     name = "boat:iron_boat",
+    description = "Nether Iron Boat",
+    image = "iron_boatitem.png",
     liquid_source_node = "nether:lava",
     liquid_flow_node = "nether:lavaflow",
     flow_function = flow_in_lava,
