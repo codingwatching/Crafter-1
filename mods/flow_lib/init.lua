@@ -13,6 +13,7 @@ local name
 local tmp
 local c_node
 
+
 -- Position instructions to step through
 local position_instructions = {
     vector.new(-1, 0, 0 ),
@@ -39,11 +40,11 @@ local function get_flowing_dir(pos)
     if c_node ~= "main:waterflow" and c_node ~= "main:water" then
         return nil
     end
-    data = get_nodes(pos)
     param2 = minetest.get_node(pos).param2
     if param2 > 7 then
         return nil
     end
+    data = get_nodes(pos)
     if c_node == "main:water" then
         for _,i in pairs(data) do
             nd = i[2]
