@@ -43,7 +43,7 @@ local function get_local_nodes(pos)
 end
 
 
-local function get_flowing_dir(pos)
+local function get_water_flowing_dir(pos)
 
     gotten_node = minetest.get_node(pos)
 
@@ -81,6 +81,6 @@ local function get_flowing_dir(pos)
     return nil
 end
 
-function flow(pos)
-    return(get_flowing_dir(pos))
+function flow_in_water(pos)
+    return(get_water_flowing_dir(pos))
 end
