@@ -62,20 +62,19 @@ local function get_water_flowing_dir(pos)
 
     for _,data_vector in ipairs(data) do
         -- TODO: get the flattened data instead
-        this_node   = data_vector.node_data
         this_name   = this_node.name
         this_param2 = this_node.param2
         if node_name == "main:water" and this_name == "main:waterflow" and this_param2 == 7 then
-            return(vector.subtract(data_vector.position,pos))
+            return( vector.subtract( vector.new(data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name == "main:waterflow" and this_param2 < param2 then
-            return(vector.subtract(data_vector.position,pos))
+            return( vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name == "main:waterflow" and this_param2 >= 11 then
-            return(vector.subtract(data_vector.position,pos))
+            return( vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name ~= "main:waterflow" and name ~= "main:water" then
             -- This is a special one, this goes into the huge array of nodes so only check if it hit this logic gate
             cached_node = minetest.registered_nodes[name]
             if cached_node and not cached_node.walkable then
-                return(vector.subtract(data_vector.position,pos))
+                return(vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z),pos))
             end
         end
     end
