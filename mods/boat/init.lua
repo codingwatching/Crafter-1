@@ -11,7 +11,6 @@ local nodename
 local acceleration
 local found
 local player_name
-local data
 local bottom_node
 local rider
 local move
@@ -23,6 +22,8 @@ local deceleration
 local velocity
 local flow_dir
 local velocity_force
+local sneak
+local nodedef
 
 -- This is the flow function for iron boats
 local function lavaflow(object)
@@ -269,7 +270,7 @@ end
 
 function boat:flow()
 
-    flow_dir = flow_in_water(self.object:get_pos())
+    flow_dir = flow_in_water( self.object:get_pos() )
 
     if not flow_dir then return end
 
@@ -295,7 +296,7 @@ minetest.register_entity("boat:boat", boat)
 
 
 
---[[
+
 -- TODO: library this and pack these things together
 
 minetest.register_craftitem("boat:boat", {
@@ -330,7 +331,7 @@ minetest.register_craft({
         {"main:wood", "main:wood", "main:wood"},
     },
 })
-
+--[[
 ----------------------------------
 
 
