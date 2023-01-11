@@ -24,6 +24,13 @@ local function divide_scalar(vec, scalar)
     new_vec.z = new_vec.z / scalar
     return new_vec
 end
+-- Indexing 1,9 this gives you x,z in a 1 node square area. Comparable to x = -1,1 and z = -1,1
+local function index_to_2d_position(index)
+    local x = ( ( index - 1 ) % 3 ) - 1
+    -- Minus two because 1,2,3
+    local z = math.ceil(index / 3) - 2
+    return x,z
+end
 
 
 -- https://github.com/appgurueu/modlib/blob/master/minetest/liquid.lua
