@@ -2,14 +2,8 @@ local ipairs = ipairs
 
 local pos
 local node
-local goalx
-local goalz
 local currentvel
-local level
-local level2
-local nodename
 local acceleration
-local found
 local player_name
 local bottom_node
 local rider
@@ -24,6 +18,8 @@ local flow_dir
 local velocity_force
 local sneak
 local nodedef
+
+local function register_boat( boat_definition )
 
 -- Boat class
 local boat = {}
@@ -56,7 +52,7 @@ end
 
 function boat:on_punch()
     pos = self.object:get_pos()
-    minetest.add_item(pos, "boat:boat")
+    minetest.add_item(pos, boat_definition.boat_name)
     self.object:remove()
 end
 
@@ -97,7 +93,7 @@ function boat:check_if_beached()
     pos.y = pos.y + 0.35
     bottom_node = minetest.get_node(pos).name
 
-    self.beached = (bottom_node ~= "main:water" and bottom_node ~= "main:waterflow")
+    self.beached = (bottom_node ~= boat_definition.liquid_source_node and bottom_node ~= boat_definition.liquid_flow_node)
 
     if self.beached then goto double_check end
     do return end
@@ -105,7 +101,7 @@ function boat:check_if_beached()
     ::double_check::
     pos.y = pos.y - 0.7
     bottom_node = minetest.get_node(pos).name
-    self.beached = (bottom_node ~= "main:water" and bottom_node ~= "main:waterflow" and bottom_node ~= "air")
+    self.beached = (bottom_node ~= boat_definition.liquid_source_node and bottom_node ~= boat_definition.liquid_flow_node and bottom_node ~= "air")
 end
 
 -- Method that allows players to control the boat
@@ -175,7 +171,7 @@ function boat:float()
     node = minetest.get_node(pos).name
 
     -- Not in water, sink like a stone
-    if node ~= "main:water" and node ~= "main:waterflow" then
+    if node ~= boat_definition.liquid_source_node and node ~= boat_definition.liquid_flow_node then
         self.swimming = false
         self.object:set_acceleration(vector.new(0,-10,0))
         return
@@ -220,7 +216,7 @@ end
 
 function boat:flow()
 
-    flow_dir = flow_in_water( self.object:get_pos() )
+    flow_dir = boat_definition.flow_function( self.object:get_pos() )
 
     if not flow_dir then return end
 
@@ -241,13 +237,7 @@ function boat:on_step(dtime)
     self:lag_correction(dtime)
 end
 
-minetest.register_entity("boat:boat", boat)
-
-
-
-
-
--- TODO: library this and pack these things together
+minetest.register_entity(boat_definition.boat_name, boat)
 
 minetest.register_craftitem("boat:boat", {
     description = "Boat",
@@ -255,32 +245,43 @@ minetest.register_craftitem("boat:boat", {
     wield_image = "boatitem.png",
     liquids_pointable = true,
     on_place = function(itemstack, placer, pointed_thing)
+        -- TODO: take the bucket's raycast and turn it into an api
         if not pointed_thing.type == "node" then
             return
         end
-        
         sneak = placer:get_player_control().sneak
         nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
         if not sneak and nodedef.on_rightclick then
             minetest.item_place(itemstack, placer, pointed_thing)
             return
         end
-        
-        minetest.add_entity(pointed_thing.above, "boat:boat")
-
+        minetest.add_entity(pointed_thing.above, boat_definition.boat_name)
         itemstack:take_item()
-
         return itemstack
     end,
 })
 
 minetest.register_craft({
-    output = "boat:boat",
+    output = boat_definition.boat_name,
+    recipe = boat_definition.recipe,
+})
+
+end
+
+-- End API
+
+register_boat({
+    boat_name = "boat:boat",
+    liquid_source_node = "main:water",
+    liquid_flow_node = "main:waterflow",
+    flow_function = flow_in_water,
     recipe = {
         {"main:wood", "", "main:wood"},
         {"main:wood", "main:wood", "main:wood"},
     },
 })
+
+
 --[[
 ----------------------------------
 
