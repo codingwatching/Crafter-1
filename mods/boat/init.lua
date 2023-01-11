@@ -152,7 +152,7 @@ function boat:drive()
 
     rider = self.rider
 
-    if not rider then
+    if not rider or self.on_land then
         self.being_rowed = false
         return
     end
@@ -167,14 +167,8 @@ function boat:drive()
     end
 
     currentvel = self.object:get_velocity()
-
-    goal = rider:get_look_dir()
-
-    if self.on_land then
-        goal = vector.multiply(goal,1)
-    else
-        goal = vector.multiply(goal,20)
-    end
+    -- TODO: check if this is normalized
+    goal = vector.multiply(rider:get_look_dir(),20)
 
     acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
     acceleration = vector.multiply( acceleration, 0.01 )
