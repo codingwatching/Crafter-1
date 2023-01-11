@@ -91,10 +91,10 @@ local function get_liquid_corner_levels(pos)
 		end
 	end
     local corner_levels = {
-        {0, nil, 0},
-        {1, nil, 0},
-        {1, nil, 1},
-        {0, nil, 1}
+        vector.new(0, 0, 0),
+        vector.new(1, 0, 0),
+        vector.new(1, 0, 1),
+        vector.new(0, 0, 1)
     }
 	for index, corner_level in pairs(corner_levels) do
 		corner_level[2] = get_corner_level(neighbors, corner_level[1], corner_level[3])
@@ -117,7 +117,7 @@ function get_liquid_flow_direction(pos)
 			max_level = level
 		end
 	end
-	local dir = vector.new{0, 0, 0}
+	local dir = vector.new(0, 0, 0)
 	local count = 0
 	for max_level_index, corner_level in pairs(corner_levels) do
 		if corner_level[2] == max_level then
@@ -139,7 +139,7 @@ function get_liquid_flow_direction(pos)
 	if count ~= 0 then
 		dir = divide_scalar(dir, count)
 	end
-	if dir == vector.new{0, 0, 0} then
+	if dir == vector.new(0, 0, 0) then
 		if minetest.get_node(pos).param2 % 32 > 7 then
 			return flowing_downwards
 		end
