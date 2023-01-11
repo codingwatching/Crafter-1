@@ -76,3 +76,36 @@ end
 function flow_in_water(pos)
     return(get_water_flowing_dir(pos))
 end
+
+-- This only works in the nether
+local function get_lava_flowing_dir(pos)
+    gotten_node = minetest.get_node(pos)
+    node_name = gotten_node.name
+    if node_name ~= "nether:lavaflow" and node_name ~= "nether:lava" then return nil end
+    param2 = gotten_node.param2
+    if param2 > 7 then return nil end
+    -- This getter stores the data within the scoped "data" variable
+    get_local_nodes(pos)
+    for _,data_vector in ipairs(data) do
+        this_name   = this_node.name
+        this_param2 = this_node.param2
+        if node_name == "nether:lava" and this_name == "nether:lavaflow" and this_param2 == 7 then
+            return( vector.subtract( vector.new(data_vector.x, data_vector.y, data_vector.z), pos ) )
+        elseif name == "nether:lavaflow" and this_param2 < param2 then
+            return( vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z), pos ) )
+        elseif name == "nether:lavaflow" and this_param2 >= 11 then
+            return( vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z), pos ) )
+        elseif name ~= "nether:lavaflow" and name ~= "nether:lava" then
+            -- This is a special one, this goes into the huge array of nodes so only check if it hit this logic gate
+            cached_node = minetest.registered_nodes[name]
+            if cached_node and not cached_node.walkable then
+                return(vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z),pos))
+            end
+        end
+    end
+    return nil
+end
+
+function flow_in_lava(pos)
+    return(get_lava_flowing_dir(pos))
+end
