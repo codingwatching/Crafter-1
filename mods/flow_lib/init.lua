@@ -52,6 +52,7 @@ local function get_corner_level(neighbors, x, z)
         if level == 1 then return 1 end
 
         levels = levels + level
+
         neighbor_count = neighbor_count + 1
 
         ::skip::
@@ -67,9 +68,9 @@ local function get_corner_level(neighbors, x, z)
 
     end
     end
-    if neighbor_count == 0 then
-        return 0
-    end
+
+    if neighbor_count == 0 then return 0 end
+
     return levels / neighbor_count
 end
 
@@ -166,11 +167,10 @@ function get_liquid_flow_direction(pos)
     local dir = vector.new(0, 0, 0)
 
     local count = 0
-    print("new")
 
     -- Always indexed 1,2,3,4
     for max_level_index, corner_level in ipairs(corner_levels) do
-        
+
         if corner_level[2] == max_level then goto continue end
 
         -- 1,2,3
