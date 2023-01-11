@@ -14,6 +14,7 @@
         "destroy_portal",
         "create_aether_portal",
         "destroy_aether_portal",
-        "get_skin"
+        "get_skin",
+        "flow_in_water"
     ]
 }
