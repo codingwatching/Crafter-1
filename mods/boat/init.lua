@@ -25,54 +25,6 @@ local velocity_force
 local sneak
 local nodedef
 
--- This is the flow function for iron boats
-local function lavaflow(object)
-
-    pos = object:get_pos()
-    pos.y = pos.y + object:get_properties().collisionbox[2]
-    pos = vector.round(pos)
-    node = minetest.get_node(pos).name
-    --node_above = minetest.get_node(vector.new(pos.x,pos.y+1,pos.z)).name
-    goalx = 0
-    goalz = 0
-    found = false
-
-    if node ~= "main:lavaflow" then return end
-
-    currentvel = object:get_velocity()
-
-    level = minetest.get_node_level(pos)
-
-    -- Skip 0
-    for x = -1,1,2 do
-    for z = -1,1,2 do
-
-        if found then goto continue end
-
-        nodename = minetest.get_node(vector.new(pos.x+x,pos.y,pos.z+z)).name
-        level2 = minetest.get_node_level(vector.new(pos.x+x,pos.y,pos.z+z))
-
-        if level2 < level or nodename ~= "main:lavaflow" or nodename ~= "main:lava" then goto continue end
-
-        goalx = -x
-        goalz = -z
-        found = true
-
-        ::continue::
-    end
-    end
-
-    -- Only add velocity if there is one, else this stops the player
-    if goalx ~= 0 and goalz ~= 0 then
-        acceleration = vector.new(goalx-currentvel.x,0,goalz-currentvel.z)
-        object:add_velocity(acceleration)
-    elseif goalx ~= 0 or goalz ~= 0 then
-        acceleration = vector.new(goalx-currentvel.x,0,goalz-currentvel.z)
-        object:add_velocity(acceleration)
-    end
-end
-
-
 -- Boat class
 local boat = {}
 
@@ -137,8 +89,6 @@ function boat:on_rightclick( clicker )
         player_is_attached(clicker,true)
     end
 end
-
-
 
 -- Boat checks if it's stuck on land
 function boat:check_if_beached()
