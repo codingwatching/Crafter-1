@@ -93,6 +93,7 @@ boat.initial_properties = {
 boat.rider = nil
 boat.boat = true
 boat.in_water = false
+boat.being_rowed = false
 
 -- Class methods
 
@@ -170,7 +171,7 @@ function boat:drive()
     rider = self.rider
 
     if not rider then
-        self.moving = false
+        self.being_rowed = false
         return
     end
 
@@ -179,7 +180,7 @@ function boat:drive()
     move = rider:get_player_control().up
 
     if not move then
-        self.moving = false
+        self.being_rowed = false
         return
     end
 
@@ -197,7 +198,7 @@ function boat:drive()
     acceleration = vector.multiply( acceleration, 0.01 )
     self.object:add_velocity( acceleration )
 
-    self.moving = true
+    self.being_rowed = true
 end
 
 function boat:push()
@@ -262,13 +263,13 @@ end
 -- Method that tells the boat to slow down
 function boat:slowdown()
 
-    if self.moving then return end
+    if self.being_rowed then return end
 
     vel = self.object:get_velocity()
     acceleration = vector.new(-vel.x,0,-vel.z)
     deceleration = vector.multiply(acceleration, 0.01)
     self.object:add_velocity(deceleration)
-    
+
 end
 
 function boat:lag_correction(dtime)
@@ -441,7 +442,7 @@ minetest.register_entity("boat:iron_boat", {
         if self.rider and not self.on_land == true then
             rider = minetest.get_player_by_name(self.rider)
             move = rider:get_player_control().up
-            self.moving = false
+            self.being_rowed = false
             if move then
                 currentvel = self.object:get_velocity()
                 goal = rider:get_look_dir()
@@ -449,10 +450,10 @@ minetest.register_entity("boat:iron_boat", {
                 acceleration = vector.new(goal.x-currentvel.x,0,goal.z-currentvel.z)
                 acceleration = vector.multiply(acceleration, 0.01)
                 self.object:add_velocity(acceleration)
-                self.moving = true
+                self.being_rowed = true
             end
         else
-            self.moving = false
+            self.being_rowed = false
         end
     end,
     
@@ -506,7 +507,7 @@ minetest.register_entity("boat:iron_boat", {
     
     --slows the boat down
     slowdown = function(self)
-        if not self.moving == true then
+        if not self.being_rowed == true then
             vel = self.object:get_velocity()
             acceleration = vector.new(-vel.x,0,-vel.z)
             deceleration = vector.multiply(acceleration, 0.01)
