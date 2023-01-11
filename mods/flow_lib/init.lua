@@ -7,9 +7,10 @@ local ipairs = ipairs
 local flow_data = {{},{}}
 
 local tab
-local n
+local index
 local function get_nodes(pos)
-    tab,n = {},1
+    tab = {}
+    index = 1
     for i = -1,1,2 do
         flow_data = {
             {x = pos.x + i, y = pos.y, z = pos.z    },
@@ -17,7 +18,7 @@ local function get_nodes(pos)
         }
         for _,p in ipairs(flow_data) do
             tab[n] = {p, minetest.get_node(p)}
-            n = n+1
+            index = index + 1
         end
     end
     return tab
