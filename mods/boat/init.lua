@@ -1,4 +1,23 @@
 local ipairs = ipairs
+local add_item = minetest.add_item
+local get_node = minetest.get_node
+local item_place = minetest.item_place
+local add_entity = minetest.add_entity
+local get_player_by_name = minetest.get_player_by_name
+local get_objects_inside_radius = minetest.get_objects_inside_radius
+local register_craftitem = minetest.register_craftitem
+local register_entity = minetest.register_entity
+local yaw_to_dir = minetest.yaw_to_dir
+local register_craft = minetest.register_craft
+local registered_nodes
+local vec_new = vector.new
+local vec_add = vector.add
+local vec_subtract = vector.subtract
+local vec_multiply = vector.multiply
+local vec_normalize = vector.normalize
+minetest.register_on_mods_loaded(function()
+    registered_nodes = minetest.registered_nodes
+end)
 
 local pos
 local node
@@ -53,7 +72,7 @@ end
 
 function boat:on_punch()
     pos = self.object:get_pos()
-    minetest.add_item(pos, boat_definition.name)
+    add_item(pos, boat_definition.name)
     self.object:remove()
 end
 
@@ -68,9 +87,9 @@ function boat:on_rightclick( clicker )
     if rider and player_name == rider then
 
         clicker:set_detach()
-        pos = vector.add(self.object:get_pos(), vector.new(0,1,0))
+        pos = vec_add(self.object:get_pos(), vec_new(0,1,0))
         clicker:move_to(pos)
-        clicker:add_velocity(vector.new(0,2,0))
+        clicker:add_velocity(vec_new(0,2,0))
 
         self.rider = nil
 
@@ -92,7 +111,7 @@ function boat:check_if_beached()
 
     pos = self.object:get_pos()
     pos.y = pos.y + 0.35
-    bottom_node = minetest.get_node(pos).name
+    bottom_node = get_node(pos).name
 
     self.beached = (bottom_node ~= boat_definition.liquid_source_node and bottom_node ~= boat_definition.liquid_flow_node)
 
@@ -101,7 +120,7 @@ function boat:check_if_beached()
 
     ::double_check::
     pos.y = pos.y - 0.7
-    bottom_node = minetest.get_node(pos).name
+    bottom_node = get_node(pos).name
     self.beached = (bottom_node ~= boat_definition.liquid_source_node and bottom_node ~= boat_definition.liquid_flow_node and bottom_node ~= "air")
 end
 
@@ -112,7 +131,7 @@ function boat:drive()
         self.being_rowed = false
         return
     end
-    rider = minetest.get_player_by_name( rider )
+    rider = get_player_by_name( rider )
     move = rider:get_player_control().up
     if not move then
         self.being_rowed = false
@@ -120,10 +139,10 @@ function boat:drive()
     end
     currentvel = self.object:get_velocity()
     -- 10 is the speed goal in nodes per second
-    goal = vector.multiply( vector.normalize( minetest.yaw_to_dir( rider:get_look_horizontal() ) ), 10 )
+    goal = vec_multiply( vector.normalize( yaw_to_dir( rider:get_look_horizontal() ) ), 10 )
 
-    acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
-    acceleration = vector.multiply( acceleration, 0.01 )
+    acceleration = vec_new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
+    acceleration = vec_multiply( acceleration, 0.01 )
     self.object:add_velocity( acceleration )
 
     self.being_rowed = true
@@ -133,7 +152,7 @@ function boat:push()
 
     pos = self.object:get_pos()
 
-    for _,object in ipairs( minetest.get_objects_inside_radius( pos, 1 ) ) do
+    for _,object in ipairs( get_objects_inside_radius( pos, 1 ) ) do
 
         if not object then goto continue end
         if not object:is_player() then goto continue end
@@ -147,17 +166,17 @@ function boat:push()
 
         currentvel = self.object:get_velocity()
         distance = ( 1 - vector.distance( pos, player_pos ) ) * 10
-        vel = vector.multiply( vector.normalize( vector.subtract( pos, player_pos ) ), distance )
-        velocity_force = vector.new( vel.x - currentvel.x, 0, vel.z - currentvel.z )
+        vel = vec_multiply( vector.normalize( vec_subtract( pos, player_pos ) ), distance )
+        velocity_force = vec_new( vel.x - currentvel.x, 0, vel.z - currentvel.z )
 
         -- Clamp the velocity
         if vector.length(velocity_force) > 0.3 then
-            velocity_force = vector.multiply(vector.normalize(velocity_force), 0.3)
+            velocity_force = vec_multiply(vector.normalize(velocity_force), 0.3)
         end
 
         self.object:add_velocity( velocity_force )
 
-        object:add_velocity( vector.multiply( velocity_force, -1 ) )
+        object:add_velocity( vec_multiply( velocity_force, -1 ) )
 
         ::continue::
     end
@@ -169,23 +188,23 @@ function boat:float()
 
     pos = self.object:get_pos()
 
-    node = minetest.get_node(pos).name
+    node = get_node(pos).name
 
     -- Not in water, sink like a stone
     if node ~= boat_definition.liquid_source_node and node ~= boat_definition.liquid_flow_node then
         self.swimming = false
-        self.object:set_acceleration(vector.new(0,-10,0))
+        self.object:set_acceleration(vec_new(0,-10,0))
         return
     end
     -- Floating, go up
-    self.object:set_acceleration( vector.new( 0, 0, 0 ) )
+    self.object:set_acceleration( vec_new( 0, 0, 0 ) )
     self.swimming = true
     vel = self.object:get_velocity()
 
     -- Goal upward velocity is 9 nodes per second apparently
     goal = 9
-    acceleration = vector.new( 0, goal-vel.y, 0 )
-    acceleration = vector.multiply( acceleration, 0.01 )
+    acceleration = vec_new( 0, goal-vel.y, 0 )
+    acceleration = vec_multiply( acceleration, 0.01 )
     self.object:add_velocity( acceleration )
 end
 
@@ -195,8 +214,8 @@ function boat:slowdown()
     if self.being_rowed then return end
 
     vel = self.object:get_velocity()
-    acceleration = vector.new(-vel.x,0,-vel.z)
-    deceleration = vector.multiply(acceleration, 0.01)
+    acceleration = vec_new(-vel.x,0,-vel.z)
+    deceleration = vec_multiply(acceleration, 0.01)
     self.object:add_velocity(deceleration)
 
 end
@@ -221,10 +240,10 @@ function boat:flow()
 
     if not flow_dir then return end
 
-    flow_dir = vector.multiply( flow_dir,10 )
+    flow_dir = vec_multiply( flow_dir,10 )
     vel = self.object:get_velocity()
-    acceleration = vector.new( flow_dir.x - vel.x, flow_dir.y - vel.y, flow_dir.z - vel.z )
-    acceleration = vector.multiply( acceleration, 0.01 )
+    acceleration = vec_new( flow_dir.x - vel.x, flow_dir.y - vel.y, flow_dir.z - vel.z )
+    acceleration = vec_multiply( acceleration, 0.01 )
     self.object:add_velocity( acceleration )
 end
 
@@ -238,9 +257,9 @@ function boat:on_step(dtime)
     self:lag_correction(dtime)
 end
 
-minetest.register_entity(boat_definition.name, boat)
+register_entity(boat_definition.name, boat)
 
-minetest.register_craftitem(boat_definition.name, {
+register_craftitem(boat_definition.name, {
     description = boat_definition.description,
     inventory_image = boat_definition.image,
     wield_image = boat_definition.image,
@@ -251,18 +270,18 @@ minetest.register_craftitem(boat_definition.name, {
             return
         end
         sneak = placer:get_player_control().sneak
-        nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+        nodedef = registered_nodes[get_node(pointed_thing.under).name]
         if not sneak and nodedef.on_rightclick then
-            minetest.item_place(itemstack, placer, pointed_thing)
+            item_place(itemstack, placer, pointed_thing)
             return
         end
-        minetest.add_entity(pointed_thing.above, boat_definition.name)
+        add_entity(pointed_thing.above, boat_definition.name)
         itemstack:take_item()
         return itemstack
     end,
 })
 
-minetest.register_craft({
+register_craft({
     output = boat_definition.name,
     recipe = boat_definition.recipe,
 })
