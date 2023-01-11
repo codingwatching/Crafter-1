@@ -1,8 +1,4 @@
-
-local
-minetest,vector,math,pairs
-=
-minetest,vector,math,pairs
+local ipairs = ipairs
 
 local name
 local pos
@@ -16,7 +12,7 @@ local level2
 local nodename
 local acceleration
 
-local function lavaflow(self)    
+local function lavaflow(self)
     pos = self.object:get_pos()
     pos.y = pos.y + self.object:get_properties().collisionbox[2]
     pos = vector.round(pos)
