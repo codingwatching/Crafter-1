@@ -170,31 +170,33 @@ function get_liquid_flow_direction(pos)
     -- Always indexed 1,2,3,4
     for max_level_index, corner_level in ipairs(corner_levels) do
         
-        if corner_level[2] == max_level then
+        if corner_level[2] == max_level then goto continue end
 
-            for offset = 1, 3 do
+        -- 1,2,3
+        for offset = 1,3 do
 
-                local index = (max_level_index + offset - 1) % 4 + 1
+            local index = (max_level_index + offset - 1) % 4 + 1
 
-                local diff = corner_level - corner_levels[index]
+            local diff = corner_level - corner_levels[index]
 
-                if diff[2] ~= 0 then
+            if diff[2] == 0 then goto skip end
 
-                    diff[1] = diff[1] * diff[2]
+            diff[1] = diff[1] * diff[2]
 
-                    diff[3] = diff[3] * diff[2]
+            diff[3] = diff[3] * diff[2]
 
-                    if offset == 3 then
-                        diff = divide_scalar(diff, math.sqrt(2))
-                    end
-
-                    dir = dir + diff
-
-                    count = count + 1
-
-                end
+            if offset == 3 then
+                diff = divide_scalar(diff, math.sqrt(2))
             end
+
+            dir = dir + diff
+
+            count = count + 1
+            
+            ::skip::
         end
+
+        ::continue::
     end
 
     if count ~= 0 then
