@@ -52,7 +52,7 @@ local function get_flowing_dir(pos)
 
     if node_name ~= "main:water" then goto skip end
 
-    for _,i in pairs(data) do
+    for _,i in ipairs(data) do
         nd = i[2]
         name = nd.name
         par2 = nd.param2
@@ -80,7 +80,7 @@ local function get_flowing_dir(pos)
             return(vector.subtract(i[1],pos))
         end
     end
-    
+
     for _,i in ipairs(data) do
         nd = i[2]
         name = nd.name
