@@ -206,14 +206,14 @@ function boat:push()
         player_pos.y = 0
 
         currentvel = self.object:get_velocity()
-
         distance = ( 1 - vector.distance( pos, player_pos ) ) * 10
-
         vel = vector.multiply( vector.normalize( vector.subtract( pos, player_pos ) ), distance )
-
         velocity_force = vector.new( vel.x - currentvel.x, 0, vel.z - currentvel.z )
 
         -- Clamp the velocity
+        if vector.length(velocity_force) > 0.3 then
+            velocity_force = vector.multiply(vector.normalize(velocity_force), 0.3)
+        end
 
         self.object:add_velocity( velocity_force )
 
