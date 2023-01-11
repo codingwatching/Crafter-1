@@ -92,6 +92,7 @@ boat.initial_properties = {
 }
 boat.rider = nil
 boat.boat = true
+boat.in_water = false
 
 -- Class methods
 
@@ -216,7 +217,7 @@ function boat:push()
         player_pos.y = 0
 
         currentvel = self.object:get_velocity()
-        
+
         distance = ( 1 - vector.distance( pos, player_pos ) ) * 10
 
         vel = vector.multiply( vector.normalize( vector.subtract( pos, player_pos ) ), distance )
@@ -238,7 +239,7 @@ function boat:float()
     pos = self.object:get_pos()
 
     node = minetest.get_node(pos).name
-    
+
     self.swimming = false
     
     --flow normally if floating else don't
