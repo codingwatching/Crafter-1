@@ -141,28 +141,20 @@ end
 
 -- Boat checks if it's stuck on land
 function boat:check_if_beached()
+
     pos = self.object:get_pos()
-
-    pos = vector.new(pos)
     pos.y = pos.y + 0.35
-
     bottom_node = minetest.get_node(pos).name
 
-    self.beached = (bottom_node ~= "main:water" or bottom_node ~= "main:waterflow")
+    self.beached = (bottom_node ~= "main:water" and bottom_node ~= "main:waterflow")
 
-    
     if self.beached then goto double_check end
-
-    print("got top")
-
     do return end
 
     ::double_check::
-    pos.y = pos.y - 7
+    pos.y = pos.y - 0.7
     bottom_node = minetest.get_node(pos).name
-    self.beached = (bottom_node ~= "main:water" or bottom_node == "main:waterflow" or bottom_node ~= "air")
-
-    print("got to bottom. beached: " .. tostring(self.beached))
+    self.beached = (bottom_node ~= "main:water" and bottom_node ~= "main:waterflow" and bottom_node ~= "air")
 end
 
 -- Method that allows players to control the boat
