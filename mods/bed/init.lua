@@ -70,7 +70,7 @@ local bed_gui =
 "button[5.5,8.5;5,2;button;leave bed]"
 
 -- Bed vector is a table that holds the data of the player's bed state, dispatches a new object
-local function new_bed_vec( player, position )
+local function new_bed_vec( player, position, old_position, old_yaw, old_pitch )
     if not player or not position then return end
     local bed_vec = {}
     bed_vec.name = player:get_player_name()
@@ -78,6 +78,11 @@ local function new_bed_vec( player, position )
     bed_vec.x = position.x
     bed_vec.y = position.y
     bed_vec.z = position.z
+    bed_vec.old_x = old_position.x
+    bed_vec.old_y = old_position.y
+    bed_vec.old_z = old_position.z
+    bed_vec.old_yaw = old_yaw
+    bed_vec.old_pitch = old_pitch
     return bed_vec
 end
 
@@ -93,8 +98,8 @@ local function remove_player_from_beds( player )
     end
 end
 
-local function insert_player_into_bed(player, position)
-    table_insert( players_in_bed, new_bed_vec( player, position ) )
+local function insert_player_into_bed(player, position, old_position, old_yaw, old_pitch )
+    table_insert( players_in_bed, new_bed_vec( player, position, old_position, old_yaw, old_pitch ) )
 end
 
 register_on_joinplayer( function( player )
@@ -129,6 +134,11 @@ local wake_up = function( player )
     player:set_eye_offset( { x = 0, y = 0, z = 0 }, { x = 0, y = 0, z = 0 } )
     for index,bed_vec in ipairs( players_in_bed ) do
         if bed_vec.name ~= name then goto continue end
+
+        -- Restore the player's old position and look direction
+        player:set_look_horizontal(bed_vec.old_yaw)
+        player:set_look_vertical(bed_vec.old_pitch)
+        player:move_to( vec_new( bed_vec.old_x, bed_vec.old_y, bed_vec.old_z ) )
 
         table_remove(players_in_bed, index)
         close_formspec( name, "bed" )
@@ -167,7 +177,7 @@ local function sleep_check()
 
     set_timeofday( night_ends )
 
-    for _,player in ipairs(get_connected_players()) do
+    for _,player in ipairs( get_connected_players() ) do
         wake_up(player)
     end
 end
@@ -200,6 +210,11 @@ local do_sleep = function( player, pos, direction )
         return
     end
 
+    -- These needs to be a new items in the stack
+    local old_yaw = player:get_look_horizontal()
+    local old_pitch = player:get_look_vertical()
+    local old_pos = player:get_pos()
+
     yaw = dir_to_yaw( facedir_to_dir( direction ) )
     adjusted_dir = yaw_to_dir( yaw )
 
@@ -217,7 +232,7 @@ local do_sleep = function( player, pos, direction )
     set_player_animation( player, "lay", 0, false )
     player:set_eye_offset( { x = 0, y = -12, z = -7 }, { x = 0, y = 0, z = 0 } )
 
-    insert_player_into_bed(player, new_pos)
+    insert_player_into_bed( player, new_pos, old_pos, old_yaw, old_pitch )
 
     csm_send_player_to_sleep( player )
 end
@@ -232,7 +247,6 @@ end)
 register_on_respawnplayer( function( player )
     wake_up( player )
 end )
-
 
 
 -- The bed node definition
