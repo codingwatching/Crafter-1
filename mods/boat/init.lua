@@ -240,31 +240,35 @@ function boat:float()
 
     node = minetest.get_node(pos).name
 
-    self.swimming = false
-    
-    --flow normally if floating else don't
-    if node == "main:water" or node =="main:waterflow" then
-        self.object:set_acceleration(vector.new(0,0,0))
-        self.swimming = true
-        vel = self.object:get_velocity()
-        goal = 9
-        acceleration = vector.new(0,goal-vel.y,0)
-        acceleration = vector.multiply(acceleration, 0.01)
-        self.object:add_velocity(acceleration)
-        --self.object:set_acceleration(vector.new(0,0,0))
-    else
+    -- Not in water, sink like a stone
+    if node ~= "main:water" and node ~= "main:waterflow" then
+        self.swimming = false
         self.object:set_acceleration(vector.new(0,-10,0))
+        return
     end
+    
+    -- Floating, go up
+    self.object:set_acceleration( vector.new( 0, 0, 0 ) )
+    self.swimming = true
+    vel = self.object:get_velocity()
+
+    -- Goal upward velocity is 9 nodes per second apparently
+    goal = 9
+    acceleration = vector.new( 0, goal-vel.y, 0 )
+    acceleration = vector.multiply( acceleration, 0.01 )
+    self.object:add_velocity( acceleration )
 end
 
 -- Method that tells the boat to slow down
 function boat:slowdown()
-    if not self.moving == true then
-        vel = self.object:get_velocity()
-        acceleration = vector.new(-vel.x,0,-vel.z)
-        deceleration = vector.multiply(acceleration, 0.01)
-        self.object:add_velocity(deceleration)
-    end
+
+    if self.moving then return end
+
+    vel = self.object:get_velocity()
+    acceleration = vector.new(-vel.x,0,-vel.z)
+    deceleration = vector.multiply(acceleration, 0.01)
+    self.object:add_velocity(deceleration)
+    
 end
 
 function boat:lag_correction(dtime)
