@@ -167,8 +167,9 @@ function boat:drive()
     end
 
     currentvel = self.object:get_velocity()
-    -- TODO: check if this is normalized
-    goal = vector.multiply(rider:get_look_dir(),20)
+    goal = vector.multiply( vector.normalize( minetest.yaw_to_dir( rider:get_look_horizontal() ) ), 20 )
+
+    print(dump(goal))
 
     acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
     acceleration = vector.multiply( acceleration, 0.01 )
