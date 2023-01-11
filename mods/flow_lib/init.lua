@@ -15,10 +15,8 @@ local index
 local new_pos
 local data
 local param2
-local name
 local node_name
 local gotten_node
-local this_node
 local this_name
 local this_param2
 local cached_node
