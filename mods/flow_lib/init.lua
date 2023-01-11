@@ -48,21 +48,19 @@ local function get_corner_level(neighbors, x, z)
         if not level then goto skip end
 
         if level == 1 then return 1 end
-        
+
         levels = levels + level
         neighbor_count = neighbor_count + 1
 
         ::skip::
 
-        if neighbor.air then
+        if not neighbor.air then goto continue end
 
-            if air_neighbor then
-                return 0.02
-            end
+        if air_neighbor then return 0.02 end
 
-            air_neighbor = true
+        air_neighbor = true
 
-        end
+        ::continue::
 
     end
     end
