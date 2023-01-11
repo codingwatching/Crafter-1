@@ -276,8 +276,19 @@ register_boat({
     liquid_flow_node = "main:waterflow",
     flow_function = flow_in_water,
     recipe = {
-        {"main:wood", "", "main:wood"},
-        {"main:wood", "main:wood", "main:wood"},
+        { "main:wood", "",          "main:wood" },
+        { "main:wood", "main:wood", "main:wood" },
+    },
+})
+
+register_boat({
+    boat_name = "boat:iron_boat",
+    liquid_source_node = "nether:lava",
+    liquid_flow_node = "nether:lavaflow",
+    flow_function = flow_in_lava,
+    recipe = {
+        { "main:iron", "",          "main:iron" },
+        { "main:iron", "main:iron", "main:iron" },
     },
 })
 
