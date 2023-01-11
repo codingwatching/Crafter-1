@@ -144,7 +144,7 @@ function boat:check_if_on_land()
     pos = self.object:get_pos()
     pos.y = pos.y - 0.37
     bottom_node = minetest.get_node(pos).name
-    self.on_land = bottom_node ~= "main:water" and bottom_node ~= "main:waterflow" and bottom_node == "air"
+    self.on_land = (bottom_node ~= "main:water" and bottom_node ~= "main:waterflow" and bottom_node ~= "air")
 end
 
 -- Method that allows players to control the boat
@@ -187,7 +187,7 @@ function boat:push()
 
     pos = self.object:get_pos()
 
-    for _,object in ipairs(minetest.get_objects_inside_radius(pos, 1)) do
+    for _,object in ipairs( minetest.get_objects_inside_radius( pos, 1 ) ) do
 
         if not object then goto continue end
         if not object:is_player() then goto continue end
