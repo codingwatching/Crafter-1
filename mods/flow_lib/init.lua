@@ -2,18 +2,17 @@
 
 local ipairs = ipairs
 
---[[
 local index
 local new_pos
 local data
 local param2
-local nd
-local par2
 local name
-local tmp
 local node_name
 local gotten_node
-]]
+local this_node
+local this_name
+local this_param2
+local cached_node
 
 
 -- Position instructions to step through
