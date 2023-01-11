@@ -15,7 +15,6 @@
         "create_aether_portal",
         "destroy_aether_portal",
         "get_skin",
-        "flow_in_water",
-        "flow_in_lava"
+        "get_liquid_flow_direction"
     ]
 }
