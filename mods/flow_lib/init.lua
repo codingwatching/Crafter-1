@@ -30,11 +30,15 @@ end
 
 local liquid_level_max = 8
 
+--! NOTE: this is step 3
+
 local function get_corner_level(neighbors, x, z)
 
     local air_neighbor
     local levels = 0
     local neighbor_count = 0
+
+    print(x .. " " .. z)
 
     for nx = x - 1, x do
     for nz = z - 1, z do
@@ -70,6 +74,8 @@ local function get_corner_level(neighbors, x, z)
     end
     return levels / neighbor_count
 end
+
+--! NOTE: this is step 2
 
 --+ Calculates the corner levels of a flowingliquid node
 --> 4 corner levels from -0.5 to 0.5 as list of `modlib.vector`
@@ -130,6 +136,9 @@ local function get_liquid_corner_levels(pos)
 
     return corner_levels
 end
+
+
+--! NOTE: this is step 1
 
 local flowing_downwards = vector.new(0, -1, 0)
 --+ Calculates the flow direction of a flowingliquid node
