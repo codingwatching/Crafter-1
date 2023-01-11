@@ -63,7 +63,7 @@ local function get_flowing_dir(pos)
 
     ::skip::
 
-    for _,i in pairs(data) do
+    for _,i in ipairs(data) do
         nd = i[2]
         name = nd.name
         par2 = nd.param2
@@ -71,7 +71,8 @@ local function get_flowing_dir(pos)
             return(vector.subtract(i[1],pos))
         end
     end
-    for _,i in pairs(data) do
+
+    for _,i in ipairs(data) do
         nd = i[2]
         name = nd.name
         par2 = nd.param2
@@ -79,7 +80,8 @@ local function get_flowing_dir(pos)
             return(vector.subtract(i[1],pos))
         end
     end
-    for _,i in pairs(data) do
+    
+    for _,i in ipairs(data) do
         nd = i[2]
         name = nd.name
         par2 = nd.param2
