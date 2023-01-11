@@ -9,41 +9,25 @@ This has been heavily modified by jordan4ibanez
 
 -- https://github.com/appgurueu/modlib/blob/master/vector.lua
 
-local function apply(v, f, ...)
-	local new_vector = {}
-	for key, value in pairs(v) do
-		new_vector[key] = f(value, ...)
-	end
-	return vector.new(new_vector)
+-- Returns new heap objects
+local function subtract_scalar(vec, scalar)
+    local new_vec = vector.new(vec.x, vec.y, vec.z)
+    new_vec.x = new_vec.x - scalar
+    new_vec.y = new_vec.y - scalar
+    new_vec.z = new_vec.z - scalar
+    return new_vec
 end
-
-local function combinator(f)
-	return function(v, w)
-		return combine(v, w, f)
-	end, function(v, ...)
-		return apply(v, f, ...)
-	end
+local function divide_scalar(vec, scalar)
+    local new_vec = vector.new(vec.x, vec.y, vec.z)
+    new_vec.x = new_vec.x / scalar
+    new_vec.y = new_vec.y / scalar
+    new_vec.z = new_vec.z / scalar
+    return new_vec
 end
--- NOTE: These return tuples
-local subtract, subtract_scalar = combinator(
-    function(v, w)
-        return v - w
-    end
-)
-local divide, divide_scalar = combinator(
-    function(v, w)
-        return v / w
-    end
-)
 
 
 -- https://github.com/appgurueu/modlib/blob/master/minetest/liquid.lua
-local corner_levels = {
-    {0, nil, 0},
-    {1, nil, 0},
-    {1, nil, 1},
-    {0, nil, 1}
-}
+
 local liquid_level_max = 8
 
 local function get_corner_level(neighbors, x, z)
@@ -106,6 +90,12 @@ local function get_liquid_corner_levels(pos)
 			}
 		end
 	end
+    local corner_levels = {
+        {0, nil, 0},
+        {1, nil, 0},
+        {1, nil, 1},
+        {0, nil, 1}
+    }
 	for index, corner_level in pairs(corner_levels) do
 		corner_level[2] = get_corner_level(neighbors, corner_level[1], corner_level[3])
 		corner_levels[index] = subtract_scalar(vector.new(corner_level), 0.5)
@@ -118,6 +108,7 @@ local flowing_downwards = vector.new{0, -1, 0}
 --> `modlib.minetest.flowing_downwards = modlib.vector.new{0, -1, 0}` if only flowing downwards
 --> surface direction as `modlib.vector` else
 function get_liquid_flow_direction(pos)
+
 	local corner_levels = get_liquid_corner_levels(pos)
 	local max_level = corner_levels[1][2]
 	for index = 2, 4 do
