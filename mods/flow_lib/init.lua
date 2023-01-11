@@ -103,7 +103,7 @@ local function get_liquid_corner_levels(pos)
 	return corner_levels
 end
 
-local flowing_downwards = vector.new{0, -1, 0}
+local flowing_downwards = vector.new(0, -1, 0)
 --+ Calculates the flow direction of a flowingliquid node
 --> `modlib.minetest.flowing_downwards = modlib.vector.new{0, -1, 0}` if only flowing downwards
 --> surface direction as `modlib.vector` else
