@@ -15,7 +15,7 @@ minetest.register_globalstep(function()
 
     for _,player in ipairs( get_connected_players() ) do
 
-        flow_dir = flow_in_water( player:get_pos() )
+        flow_dir = get_liquid_flow_direction( player:get_pos() )
 
         name = player:get_player_name()
 

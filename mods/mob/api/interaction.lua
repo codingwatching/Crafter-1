@@ -47,7 +47,7 @@ local fire_it_up
 mobs.create_interaction_functions = function(def,mob_register)
 
     mob_register.flow = function(self)
-        local flow_dir = flow_in_water(self.object:get_pos())
+        local flow_dir = get_liquid_flow_direction(self.object:get_pos())
         if flow_dir then
             flow_dir = vector.multiply(flow_dir,10)
             local vel = self.object:get_velocity()
