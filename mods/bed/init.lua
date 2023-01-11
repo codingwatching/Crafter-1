@@ -63,10 +63,11 @@ local nodedef
 local facedir
 local dir
 
-local bed_gui = "size[16,12]"..
-                "position[0.5,0.5]"..
-                "bgcolor[#00000000]"..
-                "button[5.5,8.5;5,2;button;leave bed]"
+local bed_gui =
+"size[16,12]"..
+"position[0.5,0.5]"..
+"bgcolor[#00000000]"..
+"button[5.5,8.5;5,2;button;leave bed]"
 
 -- Bed vector is a table that holds the data of the player's bed state, dispatches a new object
 local function new_bed_vec( player, position )
@@ -95,9 +96,6 @@ end
 local function insert_player_into_bed(player, position)
     table_insert( players_in_bed, new_bed_vec( player, position ) )
 end
-
-
---TODO: run a check on a simpler data table because this is a mess
 
 register_on_joinplayer( function( player )
     name = player:get_player_name()
