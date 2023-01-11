@@ -26,6 +26,13 @@ local cached_node
 
 -- Position instructions to step through
 local position_instructions = {
+    -- First get corners
+    vec_new(-1, 0, -1 ),
+    vec_new(-1, 0,  1 ),
+    vec_new( 1, 0, -1 ),
+    vec_new( 1, 0,  1 ),
+
+    -- Then adjacent
     vec_new(-1, 0, 0 ),
     vec_new( 1, 0, 0 ),
     vec_new( 0, 0,-1 ),
@@ -66,16 +73,12 @@ local function get_water_flowing_dir(pos)
         this_name   = data_vector.name
         this_param2 = data_vector.param2
         if node_name == "main:water" and this_name == "main:waterflow" and this_param2 == 7 then
-            print("1")
             return( vec_subtract( vec_new(data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif this_name == "main:waterflow" and this_param2 < param2 then
-            print("2")
             return( vec_subtract( vec_new( data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif this_name == "main:waterflow" and this_param2 >= 11 then
-            print("3")
             return( vec_subtract( vec_new( data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif this_name ~= "main:waterflow" and this_name ~= "main:water" then
-            print("4")
             -- This is a special one, this goes into the huge array of nodes so only check if it hit this logic gate
             cached_node = registered_nodes[this_name]
             if cached_node and not cached_node.walkable then
