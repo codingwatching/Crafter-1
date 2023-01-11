@@ -22,9 +22,7 @@ local distance
 local deceleration
 local velocity
 local flow_dir
-local chugent
-local nodedef
-local sneak
+local velocity_force
 
 -- This is the flow function for iron boats
 local function lavaflow(object)
@@ -94,7 +92,7 @@ boat.initial_properties = {
 }
 boat.rider = nil
 boat.boat = true
-boat.in_water = false
+boat.beached = false
 boat.being_rowed = false
 
 -- Class methods
@@ -139,12 +137,32 @@ function boat:on_rightclick( clicker )
     end
 end
 
+
+
 -- Boat checks if it's stuck on land
-function boat:check_if_on_land()
+function boat:check_if_beached()
     pos = self.object:get_pos()
-    pos.y = pos.y - 0.37
+
+    pos = vector.new(pos)
+    pos.y = pos.y + 0.35
+
     bottom_node = minetest.get_node(pos).name
-    self.on_land = (bottom_node ~= "main:water" and bottom_node ~= "main:waterflow" and bottom_node ~= "air")
+
+    self.beached = (bottom_node ~= "main:water" or bottom_node ~= "main:waterflow")
+
+    
+    if self.beached then goto double_check end
+
+    print("got top")
+
+    do return end
+
+    ::double_check::
+    pos.y = pos.y - 7
+    bottom_node = minetest.get_node(pos).name
+    self.beached = (bottom_node ~= "main:water" or bottom_node == "main:waterflow" or bottom_node ~= "air")
+
+    print("got to bottom. beached: " .. tostring(self.beached))
 end
 
 -- Method that allows players to control the boat
@@ -152,7 +170,7 @@ function boat:drive()
 
     rider = self.rider
 
-    if not rider or self.on_land then
+    if not rider or self.beached then
         self.being_rowed = false
         return
     end
@@ -167,7 +185,8 @@ function boat:drive()
     end
 
     currentvel = self.object:get_velocity()
-    goal = vector.multiply( vector.normalize( minetest.yaw_to_dir( rider:get_look_horizontal() ) ), 20 )
+    -- 10 is the speed goal in nodes per second
+    goal = vector.multiply( vector.normalize( minetest.yaw_to_dir( rider:get_look_horizontal() ) ), 10 )
 
     print(dump(goal))
 
@@ -200,11 +219,13 @@ function boat:push()
 
         vel = vector.multiply( vector.normalize( vector.subtract( pos, player_pos ) ), distance )
 
-        acceleration = vector.new( vel.x - currentvel.x, 0, vel.z - currentvel.z )
+        velocity_force = vector.new( vel.x - currentvel.x, 0, vel.z - currentvel.z )
 
-        self.object:add_velocity( acceleration )
+        -- Clamp the velocity
 
-        object:add_velocity( vector.multiply( acceleration, -1 ) )
+        self.object:add_velocity( velocity_force )
+
+        object:add_velocity( vector.multiply( velocity_force, -1 ) )
 
         ::continue::
     end
@@ -277,7 +298,7 @@ function boat:flow()
 end
 
 function boat:on_step(dtime)
-    self:check_if_on_land()
+    self:check_if_beached()
     self:push()
     self:drive()
     self:float()
@@ -291,7 +312,7 @@ minetest.register_entity("boat:boat", boat)
 
 
 
-
+--[[
 -- TODO: library this and pack these things together
 
 minetest.register_craftitem("boat:boat", {
@@ -551,3 +572,4 @@ minetest.register_craft({
         {"main:iron", "main:iron", "main:iron"},
     },
 })
+]]
