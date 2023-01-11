@@ -15,6 +15,17 @@ local chat_send_player = minetest.chat_send_player
 local facedir_to_dir = minetest.facedir_to_dir
 local dir_to_yaw = minetest.dir_to_yaw
 local yaw_to_dir = minetest.yaw_to_dir
+local add_node = minetest.add_node
+local remove_node = minetest.remove_node
+local get_node = minetest.get_node
+local register_node = minetest.register_node
+local registered_nodes = minetest.registered_nodes
+local item_place = minetest.item_place
+local item_place_node = minetest.item_place_node
+local sound_play = minetest.sound_play
+local add_item = minetest.add_item
+local punch_node = minetest.punch_node
+local register_craft = minetest.register_craft
 local ipairs = ipairs
 local vec_new = vector.new
 local vec_equals = vector.equals
@@ -227,7 +238,7 @@ end )
 
 
 -- The bed node definition
-minetest.register_node("bed:bed", {
+register_node("bed:bed", {
     description = "Bed",
     inventory_image = "bed.png",
     wield_image = "bed.png",
@@ -240,25 +251,25 @@ minetest.register_node("bed:bed", {
     on_place = function(itemstack, placer, pointed_thing)
         if pointed_thing.type ~= "node" then return end
         sneak = placer:get_player_control().sneak
-        nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+        nodedef = registered_nodes[get_node(pointed_thing.under).name]
         if not sneak and nodedef.on_rightclick then
-            minetest.item_place(itemstack, placer, pointed_thing)
+            item_place(itemstack, placer, pointed_thing)
             return
         end
-        local _,pos = minetest.item_place_node(ItemStack("bed:bed_front"), placer, pointed_thing)
+        local _,pos = item_place_node(ItemStack("bed:bed_front"), placer, pointed_thing)
         if pos then
-            param2 = minetest.get_node(pos).param2
-            pos2 = vec_add(pos, vec_multiply(minetest.facedir_to_dir(param2),-1))
+            param2 = get_node(pos).param2
+            pos2 = vec_add(pos, vec_multiply(facedir_to_dir(param2),-1))
 
-            local buildable = minetest.registered_nodes[minetest.get_node(pos2).name].buildable_to
+            local buildable = registered_nodes[get_node(pos2).name].buildable_to
 
             if not buildable then
-                minetest.remove_node(pos)
+                remove_node(pos)
                 return(itemstack)
             else
-                minetest.add_node(pos2,{name="bed:bed_back", param2=param2})
+                add_node(pos2,{name="bed:bed_back", param2=param2})
                 itemstack:take_item()
-                minetest.sound_play("wood", {
+                sound_play("wood", {
                       pos = pos,
                 })
                 return(itemstack)
@@ -268,7 +279,7 @@ minetest.register_node("bed:bed", {
     end,
 })
 
-minetest.register_node("bed:bed_front", {
+register_node("bed:bed_front", {
     description = "Bed",
     paramtype = "light",
     paramtype2 = "facedir",
@@ -287,13 +298,13 @@ minetest.register_node("bed:bed_front", {
     node_placement_prediction = "",
     drop = "bed:bed",
     on_dig = function(pos, node, digger)
-        param2 = minetest.get_node(pos).param2
-        facedir = minetest.facedir_to_dir(param2)    
+        param2 = get_node(pos).param2
+        facedir = facedir_to_dir(param2)
         facedir = vec_multiply(facedir,-1)
-        minetest.add_item(pos, "bed:bed")
-        minetest.remove_node(pos)
-        minetest.remove_node(vec_add(pos,facedir))
-        minetest.punch_node(vec_new(pos.x,pos.y+1,pos.z))
+        add_item(pos, "bed:bed")
+        remove_node(pos)
+        remove_node(vec_add(pos,facedir))
+        punch_node(vec_new(pos.x,pos.y+1,pos.z))
     end,
     on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
         if pos.y <= -10033 then
@@ -301,12 +312,12 @@ minetest.register_node("bed:bed_front", {
             return
         end
 
-        param2 = minetest.get_node(pos).param2
+        param2 = get_node(pos).param2
         do_sleep(clicker,pos,param2)
     end,
 })
 
-minetest.register_node("bed:bed_back", {
+register_node("bed:bed_back", {
     description = "Bed",
     paramtype = "light",
     paramtype2 = "facedir",
@@ -325,14 +336,14 @@ minetest.register_node("bed:bed_back", {
         },
     drop = "",
     on_dig = function(pos)
-        param2 = minetest.get_node(pos).param2
-        facedir = minetest.facedir_to_dir(param2)    
-        minetest.add_item(pos, "bed:bed")
-        minetest.remove_node(pos)
-        minetest.remove_node(vec_add(pos,facedir))
+        param2 = get_node(pos).param2
+        facedir = facedir_to_dir(param2)
+        add_item(pos, "bed:bed")
+        remove_node(pos)
+        remove_node(vec_add(pos,facedir))
         --remove_spawnpoint(pos,digger)
         --remove_spawnpoint(vec_add(pos,facedir),digger)
-        minetest.punch_node(vec_new(pos.x,pos.y+1,pos.z))
+        punch_node(vec_new(pos.x,pos.y+1,pos.z))
     end,
     on_rightclick = function(pos,_,clicker)
         if pos.y <= -10033 then
@@ -340,14 +351,14 @@ minetest.register_node("bed:bed_back", {
             return
         end
 
-        param2 = minetest.get_node(pos).param2
-        dir = minetest.facedir_to_dir(param2)
+        param2 = get_node(pos).param2
+        dir = facedir_to_dir(param2)
         pos = vec_add(pos,dir)
         do_sleep(clicker,pos,param2)
     end,
 })
 
-minetest.register_craft({
+register_craft({
     output = "bed:bed",
     recipe = {
         {"main:dropped_leaves", "main:dropped_leaves", "main:dropped_leaves"},
