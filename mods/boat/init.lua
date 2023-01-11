@@ -269,14 +269,16 @@ function boat:lag_correction(dtime)
 end
 
 function boat:flow()
+
     flow_dir = flow(self.object:get_pos())
-    if flow_dir then
-        flow_dir = vector.multiply(flow_dir,10)
-        vel = self.object:get_velocity()
-        acceleration = vector.new(flow_dir.x-vel.x,flow_dir.y-vel.y,flow_dir.z-vel.z)
-        acceleration = vector.multiply(acceleration, 0.01)
-        self.object:add_velocity(acceleration)
-    end
+
+    if not flow_dir then return end
+
+    flow_dir = vector.multiply( flow_dir,10 )
+    vel = self.object:get_velocity()
+    acceleration = vector.new( flow_dir.x - vel.x, flow_dir.y - vel.y, flow_dir.z - vel.z )
+    acceleration = vector.multiply( acceleration, 0.01 )
+    self.object:add_velocity( acceleration )
 end
 
 function boat:on_step(dtime)
