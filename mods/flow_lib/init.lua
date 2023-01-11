@@ -46,20 +46,13 @@ end
 
 
 local function get_water_flowing_dir(pos)
-
     gotten_node = minetest.get_node(pos)
-
     node_name = gotten_node.name
-
     if node_name ~= "main:waterflow" and node_name ~= "main:water" then return nil end
-
     param2 = gotten_node.param2
-
     if param2 > 7 then return nil end
-
     -- This getter stores the data within the scoped "data" variable
     get_local_nodes(pos)
-
     for _,data_vector in ipairs(data) do
         this_name   = this_node.name
         this_param2 = this_node.param2
@@ -77,7 +70,6 @@ local function get_water_flowing_dir(pos)
             end
         end
     end
-
     return nil
 end
 
