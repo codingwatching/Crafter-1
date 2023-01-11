@@ -2,6 +2,7 @@
 
 local ipairs = ipairs
 
+--[[
 local index
 local new_pos
 local data
@@ -12,6 +13,7 @@ local name
 local tmp
 local node_name
 local gotten_node
+]]
 
 
 -- Position instructions to step through
@@ -22,13 +24,21 @@ local position_instructions = {
     vector.new( 0, 0, 1 )
 }
 
+-- A data vector factory
+local function create_data_vector( position, node_data )
+    local new_data_vector = {}
+    -- TODO: flatten this array into only the needed data
+    new_data_vector.position = position
+    new_data_vector.node_data = node_data
+    return new_data_vector
+end
 
-local function get_nodes(pos)
+local function get_local_nodes(pos)
     data = {}
     index = 1
     for _,checking_position in ipairs(position_instructions) do
         new_pos = vector.add(pos, checking_position)
-        data[index] = {new_pos, minetest.get_node(new_pos)}
+        data[index] = create_data_vector( new_pos, minetest.get_node( new_pos ) )
         index = index + 1
     end
 end
@@ -48,46 +58,26 @@ local function get_flowing_dir(pos)
         return nil
     end
 
-    get_nodes(pos)
+    -- This getter stores the data within the scoped "data" variable
+    get_local_nodes(pos)
 
-    if node_name ~= "main:water" then goto skip end
-
-    for _,i in ipairs(data) do
-        nd = i[2]
-        name = nd.name
-        par2 = nd.param2
-        if name == "main:waterflow" and par2 == 7 then
-            return(vector.subtract(i[1],pos))
-        end
-    end
-
-    ::skip::
-
-    for _,i in ipairs(data) do
-        nd = i[2]
-        name = nd.name
-        par2 = nd.param2
-        if name == "main:waterflow" and par2 < param2 then
-            return(vector.subtract(i[1],pos))
-        end
-    end
-
-    for _,i in ipairs(data) do
-        nd = i[2]
-        name = nd.name
-        par2 = nd.param2
-        if name == "main:waterflow" and par2 >= 11 then
-            return(vector.subtract(i[1],pos))
-        end
-    end
-
-    for _,i in ipairs(data) do
-        nd = i[2]
-        name = nd.name
-        par2 = nd.param2
-        tmp = minetest.registered_nodes[name]
-        if tmp and not tmp.walkable and name ~= "main:waterflow" and name ~= "main:water" then
-            return(vector.subtract(i[1],pos))
+    for _,data_vector in ipairs(data) do
+        -- TODO: get the flattened data instead
+        this_node   = data_vector.node_data
+        this_name   = this_node.name
+        this_param2 = this_node.param2
+        if node_name == "main:water" and this_name == "main:waterflow" and this_param2 == 7 then
+            return(vector.subtract(data_vector.position,pos))
+        elseif name == "main:waterflow" and this_param2 < param2 then
+            return(vector.subtract(data_vector.position,pos))
+        elseif name == "main:waterflow" and this_param2 >= 11 then
+            return(vector.subtract(data_vector.position,pos))
+        elseif name ~= "main:waterflow" and name ~= "main:water" then
+            -- This is a special one, this goes into the huge array of nodes so only check if it hit this logic gate
+            cached_node = minetest.registered_nodes[name]
+            if cached_node and not cached_node.walkable then
+                return(vector.subtract(data_vector.position,pos))
+            end
         end
     end
 
