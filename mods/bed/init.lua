@@ -12,9 +12,16 @@ local register_on_leaveplayer = minetest.register_on_leaveplayer
 local register_globalstep = minetest.register_globalstep
 local mod_channel_join = minetest.mod_channel_join
 local chat_send_player = minetest.chat_send_player
+local facedir_to_dir = minetest.facedir_to_dir
+local dir_to_yaw = minetest.dir_to_yaw
+local yaw_to_dir = minetest.yaw_to_dir
 local ipairs = ipairs
 local vec_new = vector.new
 local vec_equals = vector.equals
+local vec_add = vector.add
+local vec_subtract = vector.subtract
+local vec_divide = vector.divide
+local vec_multiply = vector.multiply
 local table_insert = table.insert
 local table_remove = table.remove
 
@@ -23,6 +30,7 @@ local night_ends   = 5500  / 24000
 
 
 --[[
+
     So we gotta get the players that are in bed
     the player's bed position
 
@@ -186,13 +194,13 @@ local do_sleep = function( player, pos, dir )
         return
     end
 
-    local yaw = minetest.dir_to_yaw( minetest.facedir_to_dir( dir ) )
-    local adjusted_dir = minetest.yaw_to_dir( yaw )
+    local yaw = dir_to_yaw( facedir_to_dir( dir ) )
+    local adjusted_dir = yaw_to_dir( yaw )
 
 
-    player:add_velocity( vector.multiply( player:get_velocity(), -1 ) )
+    player:add_velocity( vec_multiply( player:get_velocity(), -1 ) )
 
-    new_pos = vector.subtract( pos, vector.divide( adjusted_dir, 2 ) )
+    new_pos = vec_subtract( pos, vec_divide( adjusted_dir, 2 ) )
 
     player:move_to( new_pos )
     player:set_look_vertical( 0 )
@@ -243,7 +251,7 @@ minetest.register_node("bed:bed", {
         local _,pos = minetest.item_place_node(ItemStack("bed:bed_front"), placer, pointed_thing)
         if pos then
             local param2 = minetest.get_node(pos).param2
-            local pos2 = vector.add(pos, vector.multiply(minetest.facedir_to_dir(param2),-1))
+            local pos2 = vec_add(pos, vec_multiply(minetest.facedir_to_dir(param2),-1))
 
             local buildable = minetest.registered_nodes[minetest.get_node(pos2).name].buildable_to
 
@@ -284,11 +292,11 @@ minetest.register_node("bed:bed_front", {
     on_dig = function(pos, node, digger)
         local param2 = minetest.get_node(pos).param2
         local facedir = minetest.facedir_to_dir(param2)    
-        facedir = vector.multiply(facedir,-1)
+        facedir = vec_multiply(facedir,-1)
         local obj = minetest.add_item(pos, "bed:bed")
         minetest.remove_node(pos)
-        minetest.remove_node(vector.add(pos,facedir))
-        minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
+        minetest.remove_node(vec_add(pos,facedir))
+        minetest.punch_node(vec_new(pos.x,pos.y+1,pos.z))
     end,
     on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
         if pos.y <= -10033 then
@@ -324,10 +332,10 @@ minetest.register_node("bed:bed_back", {
         local facedir = minetest.facedir_to_dir(param2)    
         local obj = minetest.add_item(pos, "bed:bed")
         minetest.remove_node(pos)
-        minetest.remove_node(vector.add(pos,facedir))
+        minetest.remove_node(vec_add(pos,facedir))
         --remove_spawnpoint(pos,digger)
-        --remove_spawnpoint(vector.add(pos,facedir),digger)
-        minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
+        --remove_spawnpoint(vec_add(pos,facedir),digger)
+        minetest.punch_node(vec_new(pos.x,pos.y+1,pos.z))
     end,
     on_rightclick = function(pos,_,clicker)
         if pos.y <= -10033 then
@@ -337,7 +345,7 @@ minetest.register_node("bed:bed_back", {
 
         local param2 = minetest.get_node(pos).param2
         local dir = minetest.facedir_to_dir(param2)
-        pos = vector.add(pos,dir)
+        pos = vec_add(pos,dir)
         do_sleep(clicker,pos,param2)
     end,
 })
