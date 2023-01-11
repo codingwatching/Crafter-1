@@ -157,18 +157,10 @@ end
 
 -- Boat checks if it's stuck on land
 function boat:check_if_on_land()
-
     pos = self.object:get_pos()
-
     pos.y = pos.y - 0.37
-
     bottom_node = minetest.get_node(pos).name
-
-    if (bottom_node == "main:water" or bottom_node == "main:waterflow" or bottom_node == "air") then
-        self.on_land = false
-    else
-        self.on_land = true
-    end
+    self.on_land = bottom_node ~= "main:water" and bottom_node ~= "main:waterflow" and bottom_node == "air"
 end
 
 -- Method that allows players to control the boat
