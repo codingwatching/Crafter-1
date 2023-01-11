@@ -1,6 +1,15 @@
 --this is from https://github.com/HybridDog/builtin_item/blob/e6dfd9dce86503b3cbd1474257eca5f6f6ca71c2/init.lua#L50
 
 local ipairs = ipairs
+local get_node = minetest.get_node
+local vec_new = vector.new
+local vec_subtract = vector.subtract
+local vec_add = vector.add
+local registered_nodes
+
+minetest.register_on_mods_loaded(function()
+    registered_nodes = minetest.registered_nodes
+end)
 
 local index
 local new_pos
@@ -17,10 +26,10 @@ local cached_node
 
 -- Position instructions to step through
 local position_instructions = {
-    vector.new(-1, 0, 0 ),
-    vector.new( 1, 0, 0 ),
-    vector.new( 0, 0,-1 ),
-    vector.new( 0, 0, 1 )
+    vec_new(-1, 0, 0 ),
+    vec_new( 1, 0, 0 ),
+    vec_new( 0, 0,-1 ),
+    vec_new( 0, 0, 1 )
 }
 
 -- A data vector factory
@@ -37,16 +46,16 @@ end
 local function get_local_nodes(pos)
     data = {}
     index = 1
-    for _,checking_position in ipairs(position_instructions) do
-        new_pos = vector.add(pos, checking_position)
-        data[index] = create_data_vector( new_pos, minetest.get_node( new_pos ) )
+    for _,checking_position in ipairs( position_instructions ) do
+        new_pos = vec_add( pos, checking_position )
+        data[index] = create_data_vector( new_pos, get_node( new_pos ) )
         index = index + 1
     end
 end
 
 
 local function get_water_flowing_dir(pos)
-    gotten_node = minetest.get_node(pos)
+    gotten_node = get_node(pos)
     node_name = gotten_node.name
     if node_name ~= "main:waterflow" and node_name ~= "main:water" then return nil end
     param2 = gotten_node.param2
@@ -57,29 +66,29 @@ local function get_water_flowing_dir(pos)
         this_name   = this_node.name
         this_param2 = this_node.param2
         if node_name == "main:water" and this_name == "main:waterflow" and this_param2 == 7 then
-            return( vector.subtract( vector.new(data_vector.x, data_vector.y, data_vector.z), pos ) )
+            return( vec_subtract( vec_new(data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name == "main:waterflow" and this_param2 < param2 then
-            return( vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z), pos ) )
+            return( vec_subtract( vec_new( data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name == "main:waterflow" and this_param2 >= 11 then
-            return( vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z), pos ) )
+            return( vec_subtract( vec_new( data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name ~= "main:waterflow" and name ~= "main:water" then
             -- This is a special one, this goes into the huge array of nodes so only check if it hit this logic gate
-            cached_node = minetest.registered_nodes[name]
+            cached_node = registered_nodes[name]
             if cached_node and not cached_node.walkable then
-                return(vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z),pos))
+                return( vec_subtract( vec_new( data_vector.x, data_vector.y, data_vector.z ), pos ) )
             end
         end
     end
     return nil
 end
 
-function flow_in_water(pos)
-    return(get_water_flowing_dir(pos))
+function flow_in_water( pos )
+    return( get_water_flowing_dir( pos ) )
 end
 
 -- This only works in the nether
 local function get_lava_flowing_dir(pos)
-    gotten_node = minetest.get_node(pos)
+    gotten_node = get_node(pos)
     node_name = gotten_node.name
     if node_name ~= "nether:lavaflow" and node_name ~= "nether:lava" then return nil end
     param2 = gotten_node.param2
@@ -90,22 +99,22 @@ local function get_lava_flowing_dir(pos)
         this_name   = this_node.name
         this_param2 = this_node.param2
         if node_name == "nether:lava" and this_name == "nether:lavaflow" and this_param2 == 7 then
-            return( vector.subtract( vector.new(data_vector.x, data_vector.y, data_vector.z), pos ) )
+            return( vec_subtract( vec_new(data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name == "nether:lavaflow" and this_param2 < param2 then
-            return( vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z), pos ) )
+            return( vec_subtract( vec_new( data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name == "nether:lavaflow" and this_param2 >= 11 then
-            return( vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z), pos ) )
+            return( vec_subtract( vec_new( data_vector.x, data_vector.y, data_vector.z), pos ) )
         elseif name ~= "nether:lavaflow" and name ~= "nether:lava" then
             -- This is a special one, this goes into the huge array of nodes so only check if it hit this logic gate
-            cached_node = minetest.registered_nodes[name]
+            cached_node = registered_nodes[name]
             if cached_node and not cached_node.walkable then
-                return(vector.subtract( vector.new( data_vector.x, data_vector.y, data_vector.z),pos))
+                return( vec_subtract( vec_new( data_vector.x, data_vector.y, data_vector.z ), pos ) )
             end
         end
     end
     return nil
 end
 
-function flow_in_lava(pos)
-    return(get_lava_flowing_dir(pos))
+function flow_in_lava( pos )
+    return( get_lava_flowing_dir( pos ) )
 end
