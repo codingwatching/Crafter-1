@@ -30,14 +30,9 @@ local night_ends   = 5500  / 24000
 
 
 --[[
-
-    So we gotta get the players that are in bed
-    the player's bed position
-
-    if a player leaves when they are in bed somehow then remove them from the thing
-    disable the player's controls when they are in bed
-
     store the player's old position and look direction
+
+    TODO: store the player's bed position in mod storage! I don't know why this was removed >:(
 ]]
 local players_in_bed = {}
 local name
@@ -46,6 +41,16 @@ local time
 local sleep_channel = {}
 local sleep_check_timer = 0
 local new_pos = {}
+local sleeping_counter = 0
+local yaw
+local adjusted_dir
+local this_player
+local pos2
+local param2
+local sneak
+local nodedef
+local facedir
+local dir
 
 local bed_gui = "size[16,12]"..
                 "position[0.5,0.5]"..
@@ -91,13 +96,11 @@ end )
 local function csm_send_player_to_sleep( player )
     name = player:get_player_name()
     sleep_channel[ name ]:send_all( "1" )
-    print("sending player sleep state")
 end
 
 local function csm_wake_player_up( player )
     name = player:get_player_name()
     sleep_channel[ name ]:send_all( "0" )
-    print("sending player wake state")
 end
 
 register_on_modchannel_message( function( channel_name, sender )
@@ -106,7 +109,6 @@ register_on_modchannel_message( function( channel_name, sender )
     for _,bed_vec in ipairs( players_in_bed ) do
         if bed_vec.name ~= sender then goto continue end
         bed_vec.sleeping = true
-        print("player is now sleeping")
         do return end
         ::continue::
     end
@@ -128,12 +130,10 @@ local wake_up = function( player )
     end
 end
 
-local sleeping_counter = 0
 local function sleep_check()
 
     -- No one is in bed, don't continue
     if #players_in_bed == 0 then
-        print("no one is in bed")
         return
     end
 
@@ -141,11 +141,11 @@ local function sleep_check()
 
     -- Locks the players in bed until they get up or the night skips
     for _,bed_vec in ipairs( players_in_bed ) do
-        local player = get_player_by_name( bed_vec.name )
-        if not player then goto continue end
+        this_player = get_player_by_name( bed_vec.name )
+        if not this_player then goto continue end
         local check_vec = vec_new( bed_vec.x, bed_vec.y, bed_vec.z )
-        if vec_equals( check_vec, player:get_pos() ) then
-            player:set_pos(check_vec)
+        if vec_equals( check_vec, this_player:get_pos() ) then
+            this_player:set_pos(check_vec)
         end
         -- Group in a check of the players sleeping state
         if not bed_vec.sleeping then goto continue end
@@ -156,12 +156,9 @@ local function sleep_check()
     -- Not everyone is in bed, don't continue
     if #players_in_bed ~= sleeping_counter then return end
 
-    print("everyone is in bed")
-
     set_timeofday( night_ends )
 
     for _,player in ipairs(get_connected_players()) do
-        print("waking up " .. player:get_player_name())
         wake_up(player)
     end
 end
@@ -184,7 +181,7 @@ register_on_leaveplayer(function(player)
 end)
 
 
-local do_sleep = function( player, pos, dir )
+local do_sleep = function( player, pos, direction )
 
     time = get_timeofday()
     name = player:get_player_name()
@@ -194,9 +191,8 @@ local do_sleep = function( player, pos, dir )
         return
     end
 
-    local yaw = dir_to_yaw( facedir_to_dir( dir ) )
-    local adjusted_dir = yaw_to_dir( yaw )
-
+    yaw = dir_to_yaw( facedir_to_dir( direction ) )
+    adjusted_dir = yaw_to_dir( yaw )
 
     player:add_velocity( vec_multiply( player:get_velocity(), -1 ) )
 
@@ -229,6 +225,7 @@ register_on_respawnplayer( function( player )
 end )
 
 
+
 -- The bed node definition
 minetest.register_node("bed:bed", {
     description = "Bed",
@@ -242,16 +239,16 @@ minetest.register_node("bed:bed", {
     node_placement_prediction = "",
     on_place = function(itemstack, placer, pointed_thing)
         if pointed_thing.type ~= "node" then return end
-        local sneak = placer:get_player_control().sneak
-        local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
-        if not sneak and noddef.on_rightclick then
+        sneak = placer:get_player_control().sneak
+        nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+        if not sneak and nodedef.on_rightclick then
             minetest.item_place(itemstack, placer, pointed_thing)
             return
         end
         local _,pos = minetest.item_place_node(ItemStack("bed:bed_front"), placer, pointed_thing)
         if pos then
-            local param2 = minetest.get_node(pos).param2
-            local pos2 = vec_add(pos, vec_multiply(minetest.facedir_to_dir(param2),-1))
+            param2 = minetest.get_node(pos).param2
+            pos2 = vec_add(pos, vec_multiply(minetest.facedir_to_dir(param2),-1))
 
             local buildable = minetest.registered_nodes[minetest.get_node(pos2).name].buildable_to
 
@@ -290,10 +287,10 @@ minetest.register_node("bed:bed_front", {
     node_placement_prediction = "",
     drop = "bed:bed",
     on_dig = function(pos, node, digger)
-        local param2 = minetest.get_node(pos).param2
-        local facedir = minetest.facedir_to_dir(param2)    
+        param2 = minetest.get_node(pos).param2
+        facedir = minetest.facedir_to_dir(param2)    
         facedir = vec_multiply(facedir,-1)
-        local obj = minetest.add_item(pos, "bed:bed")
+        minetest.add_item(pos, "bed:bed")
         minetest.remove_node(pos)
         minetest.remove_node(vec_add(pos,facedir))
         minetest.punch_node(vec_new(pos.x,pos.y+1,pos.z))
@@ -304,7 +301,7 @@ minetest.register_node("bed:bed_front", {
             return
         end
 
-        local param2 = minetest.get_node(pos).param2
+        param2 = minetest.get_node(pos).param2
         do_sleep(clicker,pos,param2)
     end,
 })
@@ -328,9 +325,9 @@ minetest.register_node("bed:bed_back", {
         },
     drop = "",
     on_dig = function(pos)
-        local param2 = minetest.get_node(pos).param2
-        local facedir = minetest.facedir_to_dir(param2)    
-        local obj = minetest.add_item(pos, "bed:bed")
+        param2 = minetest.get_node(pos).param2
+        facedir = minetest.facedir_to_dir(param2)    
+        minetest.add_item(pos, "bed:bed")
         minetest.remove_node(pos)
         minetest.remove_node(vec_add(pos,facedir))
         --remove_spawnpoint(pos,digger)
@@ -343,15 +340,12 @@ minetest.register_node("bed:bed_back", {
             return
         end
 
-        local param2 = minetest.get_node(pos).param2
-        local dir = minetest.facedir_to_dir(param2)
+        param2 = minetest.get_node(pos).param2
+        dir = minetest.facedir_to_dir(param2)
         pos = vec_add(pos,dir)
         do_sleep(clicker,pos,param2)
     end,
 })
-
-
-
 
 minetest.register_craft({
     output = "bed:bed",
