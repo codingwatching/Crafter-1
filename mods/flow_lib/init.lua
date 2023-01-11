@@ -88,6 +88,7 @@ local function get_liquid_corner_levels(pos)
     neighbors[x] = {}
 
     for z = -1, 1 do
+
         local neighbor_pos = {x = pos.x + x, y = pos.y, z = pos.z + z}
         local neighbor_node = minetest.get_node(neighbor_pos)
         local level
@@ -99,23 +100,28 @@ local function get_liquid_corner_levels(pos)
         end
         neighbor_pos.y = neighbor_pos.y + 1
         local node_above = minetest.get_node(neighbor_pos)
+
         neighbors[x][z] = {
             air = neighbor_node.name == "air",
             level = level,
             above_is_same_liquid = node_above.name == flowing or node_above.name == source
         }
+
     end
     end
+
     local corner_levels = {
         vector.new(0, 0, 0),
         vector.new(1, 0, 0),
         vector.new(1, 0, 1),
         vector.new(0, 0, 1)
     }
-    for index, corner_level in pairs(corner_levels) do
+
+    for index, corner_level in ipairs(corner_levels) do
         corner_level[2] = get_corner_level(neighbors, corner_level[1], corner_level[3])
         corner_levels[index] = subtract_scalar(vector.new(corner_level), 0.5)
     end
+
     return corner_levels
 end
 
@@ -127,12 +133,14 @@ function get_liquid_flow_direction(pos)
 
     local corner_levels = get_liquid_corner_levels(pos)
     local max_level = corner_levels[1][2]
+
     for index = 2, 4 do
         local level = corner_levels[index][2]
         if level > max_level then
             max_level = level
         end
     end
+
     local dir = vector.new(0, 0, 0)
     local count = 0
     for max_level_index, corner_level in pairs(corner_levels) do
