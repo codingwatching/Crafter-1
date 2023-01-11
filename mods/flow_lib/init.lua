@@ -26,9 +26,11 @@ local position_instructions = {
 -- A data vector factory
 local function create_data_vector( position, node_data )
     local new_data_vector = {}
-    -- TODO: flatten this array into only the needed data
-    new_data_vector.position = position
-    new_data_vector.node_data = node_data
+    new_data_vector.x = position.x
+    new_data_vector.y = position.y
+    new_data_vector.z = position.z
+    new_data_vector.name = node_data.name
+    new_data_vector.param2 = node_data.param2
     return new_data_vector
 end
 
