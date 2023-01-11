@@ -200,24 +200,32 @@ function boat:drive()
 end
 
 function boat:push()
+
     pos = self.object:get_pos()
+
     for _,object in ipairs(minetest.get_objects_inside_radius(pos, 1)) do
-        if object:is_player() and object:get_player_name() ~= self.rider then
-            player_pos = object:get_pos()
-            pos.y = 0
-            player_pos.y = 0
-            currentvel = self.object:get_velocity()
-            vel = vector.subtract(pos, player_pos)
-            vel = vector.normalize(vel)
-            distance = vector.distance(pos,player_pos)
-            distance = (1-distance)*10
-            vel = vector.multiply(vel,distance)
-            acceleration = vector.new(vel.x-currentvel.x,0,vel.z-currentvel.z)
-            self.object:add_velocity(acceleration)
-            acceleration = vector.multiply(acceleration, -1)
-            object:add_velocity(acceleration)
-        end
+
+        if not object then goto continue end
+        if not object:is_player() then goto continue end
+        if object:get_player_name() == self.rider then goto continue end
+
+        player_pos = object:get_pos()
+        pos.y = 0
+        player_pos.y = 0
+        currentvel = self.object:get_velocity()
+        vel = vector.subtract(pos, player_pos)
+        vel = vector.normalize(vel)
+        distance = vector.distance(pos,player_pos)
+        distance = (1-distance)*10
+        vel = vector.multiply(vel,distance)
+        acceleration = vector.new(vel.x-currentvel.x,0,vel.z-currentvel.z)
+        self.object:add_velocity(acceleration)
+        acceleration = vector.multiply(acceleration, -1)
+        object:add_velocity(acceleration)
+
+        ::continue::
     end
+
 end
 
 -- Makes the boat float in water
