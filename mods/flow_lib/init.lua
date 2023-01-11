@@ -30,6 +30,37 @@ local divide, divide_scalar = combinator(function(v, w) return v / w end)
 
 -- https://github.com/appgurueu/modlib/blob/master/minetest/liquid.lua
 local liquid_level_max = 8
+local function get_corner_level(neighbors, x, z)
+    local air_neighbor
+    local levels = 0
+    local neighbor_count = 0
+    for nx = x - 1, x do
+        for nz = z - 1, z do
+            local neighbor = neighbors[nx][nz]
+            if neighbor.above_is_same_liquid then
+                return 1
+            end
+            local level = neighbor.level
+            if level then
+                if level == 1 then
+                    return 1
+                end
+                levels = levels + level
+                neighbor_count = neighbor_count + 1
+            elseif neighbor.air then
+                if air_neighbor then
+                    return 0.02
+                end
+                air_neighbor = true
+            end
+        end
+    end
+    if neighbor_count == 0 then
+        return 0
+    end
+    return levels / neighbor_count
+end
+
 --+ Calculates the corner levels of a flowingliquid node
 --> 4 corner levels from -0.5 to 0.5 as list of `modlib.vector`
 local function get_liquid_corner_levels(pos)
@@ -59,36 +90,6 @@ local function get_liquid_corner_levels(pos)
 			}
 		end
 	end
-	local function get_corner_level(x, z)
-		local air_neighbor
-		local levels = 0
-		local neighbor_count = 0
-		for nx = x - 1, x do
-			for nz = z - 1, z do
-				local neighbor = neighbors[nx][nz]
-				if neighbor.above_is_same_liquid then
-					return 1
-				end
-				local level = neighbor.level
-				if level then
-					if level == 1 then
-						return 1
-					end
-					levels = levels + level
-					neighbor_count = neighbor_count + 1
-				elseif neighbor.air then
-					if air_neighbor then
-						return 0.02
-					end
-					air_neighbor = true
-				end
-			end
-		end
-		if neighbor_count == 0 then
-			return 0
-		end
-		return levels / neighbor_count
-	end
 	local corner_levels = {
 		{0, nil, 0},
 		{1, nil, 0},
@@ -96,7 +97,7 @@ local function get_liquid_corner_levels(pos)
 		{0, nil, 1}
 	}
 	for index, corner_level in pairs(corner_levels) do
-		corner_level[2] = get_corner_level(corner_level[1], corner_level[3])
+		corner_level[2] = get_corner_level(neighbors, corner_level[1], corner_level[3])
 		corner_levels[index] = subtract_scalar(vector.new(corner_level), 0.5)
 	end
 	return corner_levels
