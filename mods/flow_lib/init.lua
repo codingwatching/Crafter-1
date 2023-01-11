@@ -1,25 +1,27 @@
 --this is from https://github.com/HybridDog/builtin_item/blob/e6dfd9dce86503b3cbd1474257eca5f6f6ca71c2/init.lua#L50
-local
-minetest,vector,math,pairs
-=
-minetest,vector,math,pairs
+
+local ipairs = ipairs
+
+
+-- Preallocate
+local flow_data = {{},{}}
 
 local tab
 local n
 local function get_nodes(pos)
     tab,n = {},1
     for i = -1,1,2 do
-        for _,p in pairs({
-            {x=pos.x+i, y=pos.y, z=pos.z},
-            {x=pos.x, y=pos.y, z=pos.z+i}
-        }) do
+        flow_data = {
+            {x = pos.x + i, y = pos.y, z = pos.z    },
+            {x = pos.x,     y = pos.y, z = pos.z + i}
+        }
+        for _,p in ipairs(flow_data) do
             tab[n] = {p, minetest.get_node(p)}
             n = n+1
         end
     end
     return tab
 end
-
 
 local data
 local param2
