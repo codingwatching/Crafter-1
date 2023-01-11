@@ -2,7 +2,6 @@
 
 local ipairs = ipairs
 
-local tab
 local index
 local new_pos
 local data
@@ -25,14 +24,13 @@ local position_instructions = {
 
 
 local function get_nodes(pos)
-    tab = {}
+    data = {}
     index = 1
     for _,checking_position in ipairs(position_instructions) do
         new_pos = vector.add(pos, checking_position)
-        tab[index] = {new_pos, minetest.get_node(new_pos)}
+        data[index] = {new_pos, minetest.get_node(new_pos)}
         index = index + 1
     end
-    return tab
 end
 
 
@@ -49,17 +47,22 @@ local function get_flowing_dir(pos)
     if param2 > 7 then
         return nil
     end
-    data = get_nodes(pos)
-    if node_name == "main:water" then
-        for _,i in pairs(data) do
-            nd = i[2]
-            name = nd.name
-            par2 = nd.param2
-            if name == "main:waterflow" and par2 == 7 then
-                return(vector.subtract(i[1],pos))
-            end
+
+    get_nodes(pos)
+
+    if node_name ~= "main:water" then goto skip end
+
+    for _,i in pairs(data) do
+        nd = i[2]
+        name = nd.name
+        par2 = nd.param2
+        if name == "main:waterflow" and par2 == 7 then
+            return(vector.subtract(i[1],pos))
         end
     end
+
+    ::skip::
+
     for _,i in pairs(data) do
         nd = i[2]
         name = nd.name
