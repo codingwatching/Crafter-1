@@ -56,6 +56,7 @@ local function get_corner_level(neighbors, x, z)
 
         if not neighbor.air then goto continue end
 
+        -- TODO: Figure out why the heck this is 0.02
         if air_neighbor then return 0.02 end
 
         air_neighbor = true
