@@ -103,7 +103,7 @@ local function get_liquid_corner_levels(pos)
             level = 1
         elseif neighbor_node.name == flowing then
             local neighbor_level = neighbor_node.param2 % 8
-            level = (math.max(0, neighbor_level - liquid_level_max + range) + 0.5) / range
+            level = ( math.max( 0, neighbor_level - liquid_level_max + range ) + 0.5 ) / range
         end
 
         neighbor_pos.y = neighbor_pos.y + 1
@@ -121,6 +121,7 @@ local function get_liquid_corner_levels(pos)
 
     local corner_levels = {
         vector.new(0, 0, 0),
+        -- index 2 is being used as a baseline comparison
         vector.new(1, 0, 0),
         vector.new(1, 0, 1),
         vector.new(0, 0, 1)
@@ -164,8 +165,10 @@ function get_liquid_flow_direction(pos)
     local dir = vector.new(0, 0, 0)
 
     local count = 0
+    print("new")
 
-    for max_level_index, corner_level in pairs(corner_levels) do
+    -- Always indexed 1,2,3,4
+    for max_level_index, corner_level in ipairs(corner_levels) do
         
         if corner_level[2] == max_level then
 
