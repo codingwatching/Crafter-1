@@ -237,7 +237,6 @@ function boat:float()
         self.object:set_acceleration(vector.new(0,-10,0))
         return
     end
-    
     -- Floating, go up
     self.object:set_acceleration( vector.new( 0, 0, 0 ) )
     self.swimming = true
