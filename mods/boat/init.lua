@@ -52,7 +52,7 @@ end
 
 function boat:on_punch()
     pos = self.object:get_pos()
-    minetest.add_item(pos, boat_definition.boat_name)
+    minetest.add_item(pos, boat_definition.name)
     self.object:remove()
 end
 
@@ -237,7 +237,7 @@ function boat:on_step(dtime)
     self:lag_correction(dtime)
 end
 
-minetest.register_entity(boat_definition.boat_name, boat)
+minetest.register_entity(boat_definition.name, boat)
 
 minetest.register_craftitem("boat:boat", {
     description = "Boat",
@@ -255,14 +255,14 @@ minetest.register_craftitem("boat:boat", {
             minetest.item_place(itemstack, placer, pointed_thing)
             return
         end
-        minetest.add_entity(pointed_thing.above, boat_definition.boat_name)
+        minetest.add_entity(pointed_thing.above, boat_definition.name)
         itemstack:take_item()
         return itemstack
     end,
 })
 
 minetest.register_craft({
-    output = boat_definition.boat_name,
+    output = boat_definition.name,
     recipe = boat_definition.recipe,
 })
 
@@ -271,7 +271,7 @@ end
 -- End API
 
 register_boat({
-    boat_name = "boat:boat",
+    name = "boat:boat",
     liquid_source_node = "main:water",
     liquid_flow_node = "main:waterflow",
     flow_function = flow_in_water,
@@ -282,7 +282,7 @@ register_boat({
 })
 
 register_boat({
-    boat_name = "boat:iron_boat",
+    name = "boat:iron_boat",
     liquid_source_node = "nether:lava",
     liquid_flow_node = "nether:lavaflow",
     flow_function = flow_in_lava,
