@@ -29,7 +29,14 @@ local divide, divide_scalar = combinator(function(v, w) return v / w end)
 
 
 -- https://github.com/appgurueu/modlib/blob/master/minetest/liquid.lua
+local corner_levels = {
+    {0, nil, 0},
+    {1, nil, 0},
+    {1, nil, 1},
+    {0, nil, 1}
+}
 local liquid_level_max = 8
+
 local function get_corner_level(neighbors, x, z)
     local air_neighbor
     local levels = 0
@@ -90,12 +97,6 @@ local function get_liquid_corner_levels(pos)
 			}
 		end
 	end
-	local corner_levels = {
-		{0, nil, 0},
-		{1, nil, 0},
-		{1, nil, 1},
-		{0, nil, 1}
-	}
 	for index, corner_level in pairs(corner_levels) do
 		corner_level[2] = get_corner_level(neighbors, corner_level[1], corner_level[3])
 		corner_levels[index] = subtract_scalar(vector.new(corner_level), 0.5)
