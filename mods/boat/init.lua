@@ -11,44 +11,50 @@ local level
 local level2
 local nodename
 local acceleration
+local found
 
-local function lavaflow(self)
-    pos = self.object:get_pos()
-    pos.y = pos.y + self.object:get_properties().collisionbox[2]
+local function lavaflow(object)
+    pos = object:get_pos()
+    pos.y = pos.y + object:get_properties().collisionbox[2]
     pos = vector.round(pos)
     node = minetest.get_node(pos).name
-    node_above = minetest.get_node(vector.new(pos.x,pos.y+1,pos.z)).name
+    --node_above = minetest.get_node(vector.new(pos.x,pos.y+1,pos.z)).name
     goalx = 0
     goalz = 0
     found = false
-    if node == "main:lavaflow" then
-        currentvel = self.object:get_velocity()
-        level = minetest.get_node_level(pos)
-        for x = -1,1 do
-            for z = -1,1 do
-                if found == false then
-                    nodename = minetest.get_node(vector.new(pos.x+x,pos.y,pos.z+z)).name
-                    level2 = minetest.get_node_level(vector.new(pos.x+x,pos.y,pos.z+z))
-                    if level2 > level and nodename == "main:lavaflow" or nodename == "main:lava" then
-                        goalx = -x
-                        goalz = -z
-                        --diagonal flow
-                        if goalx ~= 0 and goalz ~= 0 then
-                            found = true
-                        end
-                    end
-                end
-            end
-        end
-        --only add velocity if there is one
-        --else this stops the player
-        if goalx ~= 0 and goalz ~= 0 then
-            acceleration = vector.new(goalx-currentvel.x,0,goalz-currentvel.z)
-            self.object:add_velocity(acceleration)
-        elseif goalx ~= 0 or goalz ~= 0 then
-            acceleration = vector.new(goalx-currentvel.x,0,goalz-currentvel.z)
-            self.object:add_velocity(acceleration)
-        end
+
+    if node ~= "main:lavaflow" then return end
+
+    currentvel = object:get_velocity()
+
+    level = minetest.get_node_level(pos)
+
+    -- Skip 0
+    for x = -1,1,2 do
+    for z = -1,1,2 do
+
+        if found then goto continue end
+
+        nodename = minetest.get_node(vector.new(pos.x+x,pos.y,pos.z+z)).name
+        level2 = minetest.get_node_level(vector.new(pos.x+x,pos.y,pos.z+z))
+
+        if level2 < level or nodename ~= "main:lavaflow" or nodename ~= "main:lava" then goto continue end
+
+        goalx = -x
+        goalz = -z
+        found = true
+
+        ::continue::
+    end
+    end
+
+    -- Only add velocity if there is one, else this stops the player
+    if goalx ~= 0 and goalz ~= 0 then
+        acceleration = vector.new(goalx-currentvel.x,0,goalz-currentvel.z)
+        object:add_velocity(acceleration)
+    elseif goalx ~= 0 or goalz ~= 0 then
+        acceleration = vector.new(goalx-currentvel.x,0,goalz-currentvel.z)
+        object:add_velocity(acceleration)
     end
 end
 
