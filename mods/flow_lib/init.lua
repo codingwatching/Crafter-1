@@ -172,17 +172,15 @@ function get_liquid_flow_direction(pos)
             end
         end
     end
-    
+
     if count ~= 0 then
         dir = divide_scalar(dir, count)
     end
 
-    if dir == vector.new(0, 0, 0) then
-        if minetest.get_node(pos).param2 % 32 > 7 then
-            return flowing_downwards
-        end
+    if dir == vector.new(0, 0, 0) and minetest.get_node(pos).param2 % 32 > 7 then
+        return flowing_downwards
     end
-    
+
     return dir
 end
 
