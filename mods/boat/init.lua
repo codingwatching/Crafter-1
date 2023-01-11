@@ -277,7 +277,7 @@ end
 
 function boat:flow()
 
-    flow_dir = flow(self.object:get_pos())
+    flow_dir = flow_in_water(self.object:get_pos())
 
     if not flow_dir then return end
 

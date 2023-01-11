@@ -420,7 +420,7 @@ local item_step = function(self, dtime, moveresult)
     end
 
 
-    flow_dir = flow(pos)
+    flow_dir = flow_in_water(pos)
     
     if flow_dir then
         flow_dir = vector.multiply(flow_dir,10)
