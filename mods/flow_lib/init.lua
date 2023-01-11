@@ -75,7 +75,7 @@ local function get_corner_level(neighbors, x, z)
     return levels / neighbor_count
 end
 
---! NOTE: this is step 1
+--! NOTE: this is step 1 - BUT, this is not the entry point
 
 --+ Calculates the corner levels of a flowingliquid node
 --> 4 corner levels from -0.5 to 0.5 as list of `modlib.vector`
