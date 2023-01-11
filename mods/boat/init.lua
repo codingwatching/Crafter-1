@@ -1,9 +1,7 @@
 local ipairs = ipairs
 
-local name
 local pos
 local node
-local node_above
 local goalx
 local goalz
 local currentvel
@@ -12,6 +10,21 @@ local level2
 local nodename
 local acceleration
 local found
+local player_name
+local data
+local bottom_node
+local rider
+local move
+local goal
+local player_pos
+local vel
+local distance
+local deceleration
+local velocity
+local flow_dir
+local chugent
+local nodedef
+local sneak
 
 local function lavaflow(object)
     pos = object:get_pos()
@@ -272,8 +285,8 @@ minetest.register_craftitem("boat:boat", {
         end
         
         sneak = placer:get_player_control().sneak
-        noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
-        if not sneak and noddef.on_rightclick then
+        nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+        if not sneak and nodedef.on_rightclick then
             minetest.item_place(itemstack, placer, pointed_thing)
             return
         end
@@ -497,8 +510,8 @@ minetest.register_craftitem("boat:iron_boat", {
         end
         
         sneak = placer:get_player_control().sneak
-        noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
-        if not sneak and noddef.on_rightclick then
+        nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+        if not sneak and nodedef.on_rightclick then
             minetest.item_place(itemstack, placer, pointed_thing)
             return
         end
