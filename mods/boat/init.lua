@@ -99,28 +99,8 @@ boat.being_rowed = false
 
 -- Class methods
 
-function boat:get_staticdata()
-    -- TODO: Figure out what I was doing forcing a function to call without any data
-    --[[return minetest.serialize({
-        itemstring = self.itemstring,
-    })]]
-end
-
-function boat:on_activate( staticdata, dtime_s )
-
-    --[[ TODO: Make the boat remember whatever it needs to and if it doesn't need to remember anything then remove this
-    if string.sub(staticdata, 1, string.len("return")) == "return" then
-        data = minetest.deserialize(staticdata)
-        if data and type(data) == "table" then
-            --self.itemstring = data.itemstring
-        end
-    end
-    ]]
-
+function boat:on_activate()
     self.object:set_armor_groups({immortal = 1})
-    -- self.object:set_velocity({x = 0, y = 0, z = 0})
-    -- self.object:set_acceleration({x = 0, y = 0, z = 0})
-
 end
 
 function boat:on_punch()
