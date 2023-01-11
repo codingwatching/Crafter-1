@@ -61,7 +61,6 @@ local function get_water_flowing_dir(pos)
     get_local_nodes(pos)
 
     for _,data_vector in ipairs(data) do
-        -- TODO: get the flattened data instead
         this_name   = this_node.name
         this_param2 = this_node.param2
         if node_name == "main:water" and this_name == "main:waterflow" and this_param2 == 7 then
