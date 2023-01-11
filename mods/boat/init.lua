@@ -26,7 +26,9 @@ local chugent
 local nodedef
 local sneak
 
+-- This is the flow function for iron boats
 local function lavaflow(object)
+
     pos = object:get_pos()
     pos.y = pos.y + object:get_properties().collisionbox[2]
     pos = vector.round(pos)
@@ -71,208 +73,221 @@ local function lavaflow(object)
     end
 end
 
---minetest.get_node_level(pos)
-minetest.register_entity("boat:boat", {
-    initial_properties = {
-        hp_max = 1,
-        physical = true,
-        collide_with_objects = false,
-        collisionbox = {-0.4, 0, -0.4, 0.4, 0.5, 0.4},
-        visual = "mesh",
-        mesh = "boat.x",
-        textures = {"boat.png"},
-        visual_size = {x=1,y=1,z=1},
-        is_visible = true,
-        automatic_face_movement_dir = -90.0,
-        automatic_face_movement_max_rotation_per_sec = 600,
-    },
-    
-    rider = nil,
-    boat = true,
+local boat = {}
 
-    get_staticdata = function(self)
-        return minetest.serialize({
-            --itemstring = self.itemstring,
-        })
-    end,
+-- Class fields
 
-    on_activate = function(self, staticdata, dtime_s)
+boat.initial_properties = {
+    hp_max = 1,
+    physical = true,
+    collide_with_objects = false,
+    collisionbox = {-0.4, 0, -0.4, 0.4, 0.5, 0.4},
+    visual = "mesh",
+    mesh = "boat.x",
+    textures = {"boat.png"},
+    visual_size = {x=1,y=1,z=1},
+    is_visible = true,
+    automatic_face_movement_dir = -90.0,
+    automatic_face_movement_max_rotation_per_sec = 600,
+}
+boat.rider = nil
+boat.boat = true
 
-        if string.sub(staticdata, 1, string.len("return")) == "return" then
-            data = minetest.deserialize(staticdata)
-            if data and type(data) == "table" then
-                --self.itemstring = data.itemstring
-            end
-        else
-            --self.itemstring = staticdata
+-- Class methods
+
+function boat:get_staticdata()
+    -- TODO: Figure out what I was doing forcing a function to call without any data
+    --[[return minetest.serialize({
+        itemstring = self.itemstring,
+    })]]
+end
+
+function boat:on_activate( staticdata, dtime_s )
+
+    if string.sub(staticdata, 1, string.len("return")) == "return" then
+        data = minetest.deserialize(staticdata)
+        if data and type(data) == "table" then
+            --self.itemstring = data.itemstring
         end
-        self.object:set_armor_groups({immortal = 1})
-        self.object:set_velocity({x = 0, y = 0, z = 0})
-        self.object:set_acceleration({x = 0, y = 0, z = 0})
-    end,
-    on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
+    else
+        --self.itemstring = staticdata
+    end
+
+    self.object:set_armor_groups({immortal = 1})
+    self.object:set_velocity({x = 0, y = 0, z = 0})
+    self.object:set_acceleration({x = 0, y = 0, z = 0})
+
+end
+
+function boat:on_punch()
+    pos = self.object:get_pos()
+    minetest.add_item(pos, "boat:boat")
+    self.object:remove()
+end
+
+function boat:on_rightclick( clicker )
+
+    if not clicker or not clicker:is_player() then
+        return
+    end
+
+    player_name = clicker:get_player_name()
+    
+    if self.rider and player_name == self.rider then
+        clicker:set_detach()
         pos = self.object:get_pos()
-        minetest.add_item(pos, "boat:boat")
-        self.object:remove()
-    end,
-    
-    
-    on_rightclick = function(self,clicker)
-        if not clicker or not clicker:is_player() then
-            return
-        end
-        player_name = clicker:get_player_name()
+        pos.y = pos.y + 1
+        clicker:move_to(pos)
+        clicker:add_velocity(vector.new(0,11,0))
+        self.rider = nil
         
-        if self.rider and player_name == self.rider then
-            clicker:set_detach()
-            pos = self.object:get_pos()
-            pos.y = pos.y + 1
-            clicker:move_to(pos)
-            clicker:add_velocity(vector.new(0,11,0))
-            self.rider = nil
-            
-            player_is_attached(clicker,false)
-            force_update_animation(clicker)
+        player_is_attached(clicker,false)
+        force_update_animation(clicker)
 
-        elseif not self.rider then
-            self.rider = player_name
-            clicker:set_attach(self.object, "", {x=0, y=2, z=0}, {x=0, y=0, z=0})
-            
-            set_player_animation(clicker,"sit",0)
-            player_is_attached(clicker,true)
-        end
-    end,
-    --check if the boat is stuck on land
-    check_if_on_land = function(self)
-        pos = self.object:get_pos()
-        pos.y = pos.y - 0.37
-        bottom_node = minetest.get_node(pos).name
-        if (bottom_node == "main:water" or bottom_node == "main:waterflow" or bottom_node == "air") then
-            self.on_land = false
-        else
-            self.on_land = true
-        end
-    
-    end,
-    
-    --players drive the baot
-    drive = function(self)
-        if self.rider then
-            rider = minetest.get_player_by_name(self.rider)
-            move = rider:get_player_control().up
-            self.moving = nil
-            if move then
-                
-                currentvel = self.object:get_velocity()
-                goal = rider:get_look_dir()
-                if self.on_land == true then
-                    goal = vector.multiply(goal,1)
-                else
-                    goal = vector.multiply(goal,20)
-                end
-                acceleration = vector.new(goal.x-currentvel.x,0,goal.z-currentvel.z)
-                acceleration = vector.multiply(acceleration, 0.01)
-                self.object:add_velocity(acceleration)
-                self.moving = true
-            end
-        else
-            self.moving = nil
-        end
-    end,
-    
-    --players push boat
-    push = function(self)
-        pos = self.object:get_pos()
-        for _,object in ipairs(minetest.get_objects_inside_radius(pos, 1)) do
-            if object:is_player() and object:get_player_name() ~= self.rider then
-                player_pos = object:get_pos()
-                pos.y = 0
-                player_pos.y = 0
-                
-                currentvel = self.object:get_velocity()
-                vel = vector.subtract(pos, player_pos)
-                vel = vector.normalize(vel)
-                distance = vector.distance(pos,player_pos)
-                distance = (1-distance)*10
-                vel = vector.multiply(vel,distance)
-                acceleration = vector.new(vel.x-currentvel.x,0,vel.z-currentvel.z)
-                self.object:add_velocity(acceleration)
-                acceleration = vector.multiply(acceleration, -1)
-                object:add_velocity(acceleration)
-            end
-        end
-    end,
-    
-    --makes the boat float
-    float = function(self)
-        pos = self.object:get_pos()
-        node = minetest.get_node(pos).name
-        self.swimming = false
+    elseif not self.rider then
+        self.rider = player_name
+        clicker:set_attach(self.object, "", {x=0, y=2, z=0}, {x=0, y=0, z=0})
         
-        --flow normally if floating else don't
-        if node == "main:water" or node =="main:waterflow" then
-            self.object:set_acceleration(vector.new(0,0,0))
-            self.swimming = true
-            vel = self.object:get_velocity()
-            goal = 9
-            acceleration = vector.new(0,goal-vel.y,0)
+        set_player_animation(clicker,"sit",0)
+        player_is_attached(clicker,true)
+    end
+end
+
+-- Boat checks if it's stuck on land
+function boat:check_if_on_land()
+    pos = self.object:get_pos()
+    pos.y = pos.y - 0.37
+    bottom_node = minetest.get_node(pos).name
+    if (bottom_node == "main:water" or bottom_node == "main:waterflow" or bottom_node == "air") then
+        self.on_land = false
+    else
+        self.on_land = true
+    end
+end
+
+-- Method that allows players to control the boat
+function boat:drive()
+    if self.rider then
+        rider = minetest.get_player_by_name(self.rider)
+        move = rider:get_player_control().up
+        self.moving = nil
+        if move then
+            
+            currentvel = self.object:get_velocity()
+            goal = rider:get_look_dir()
+            if self.on_land == true then
+                goal = vector.multiply(goal,1)
+            else
+                goal = vector.multiply(goal,20)
+            end
+            acceleration = vector.new(goal.x-currentvel.x,0,goal.z-currentvel.z)
             acceleration = vector.multiply(acceleration, 0.01)
             self.object:add_velocity(acceleration)
-            --self.object:set_acceleration(vector.new(0,0,0))
-        else
-            self.object:set_acceleration(vector.new(0,-10,0))
+            self.moving = true
         end
-    end,
-    
-    
-    --slows the boat down
-    slowdown = function(self)
-        if not self.moving == true then
-            vel = self.object:get_velocity()
-            acceleration = vector.new(-vel.x,0,-vel.z)
-            deceleration = vector.multiply(acceleration, 0.01)
-            self.object:add_velocity(deceleration)
-        end
-    end,
+    else
+        self.moving = nil
+    end
+end
 
-    lag_correction = function(self,dtime)
-        pos = self.object:get_pos()
-        velocity = self.object:get_velocity()
-        if self.lag_check then
-            chugent = minetest.get_us_time()/1000000 - self.lag_check
-
-            --print("lag = "..chugent.." ms")
-            if chugent > 1 and  self.old_pos and self.old_velocity then
-                self.object:move_to(self.old_pos)
-                self.object:set_velocity(self.old_velocity)
-            end
-        end
-        self.old_pos = pos
-        self.old_velocity = velocity
-        self.lag_check = minetest.get_us_time()/1000000
-    end,
-
-    flow = function(self)
-        flow_dir = flow(self.object:get_pos())
-        if flow_dir then
-            flow_dir = vector.multiply(flow_dir,10)
-            vel = self.object:get_velocity()
-            acceleration = vector.new(flow_dir.x-vel.x,flow_dir.y-vel.y,flow_dir.z-vel.z)
-            acceleration = vector.multiply(acceleration, 0.01)
+function boat:push()
+    pos = self.object:get_pos()
+    for _,object in ipairs(minetest.get_objects_inside_radius(pos, 1)) do
+        if object:is_player() and object:get_player_name() ~= self.rider then
+            player_pos = object:get_pos()
+            pos.y = 0
+            player_pos.y = 0
+            
+            currentvel = self.object:get_velocity()
+            vel = vector.subtract(pos, player_pos)
+            vel = vector.normalize(vel)
+            distance = vector.distance(pos,player_pos)
+            distance = (1-distance)*10
+            vel = vector.multiply(vel,distance)
+            acceleration = vector.new(vel.x-currentvel.x,0,vel.z-currentvel.z)
             self.object:add_velocity(acceleration)
+            acceleration = vector.multiply(acceleration, -1)
+            object:add_velocity(acceleration)
         end
-    end,
+    end
+end
 
-    on_step = function(self, dtime)
-        self.check_if_on_land(self)
-        self.push(self)
-        self.drive(self)
-        self.float(self)
-        self.flow(self)
-        self.slowdown(self)
-        self.lag_correction(self,dtime)
-    end,
-})
+-- Makes the boat float in water
+function boat:float()
+    pos = self.object:get_pos()
+    node = minetest.get_node(pos).name
+    self.swimming = false
+    
+    --flow normally if floating else don't
+    if node == "main:water" or node =="main:waterflow" then
+        self.object:set_acceleration(vector.new(0,0,0))
+        self.swimming = true
+        vel = self.object:get_velocity()
+        goal = 9
+        acceleration = vector.new(0,goal-vel.y,0)
+        acceleration = vector.multiply(acceleration, 0.01)
+        self.object:add_velocity(acceleration)
+        --self.object:set_acceleration(vector.new(0,0,0))
+    else
+        self.object:set_acceleration(vector.new(0,-10,0))
+    end
+end
+
+-- Method that tells the boat to slow down
+function boat:slowdown()
+    if not self.moving == true then
+        vel = self.object:get_velocity()
+        acceleration = vector.new(-vel.x,0,-vel.z)
+        deceleration = vector.multiply(acceleration, 0.01)
+        self.object:add_velocity(deceleration)
+    end
+end
+
+function boat:lag_correction(dtime)
+    pos = self.object:get_pos()
+    velocity = self.object:get_velocity()
+    if self.lag_check then
+        chugent = minetest.get_us_time()/1000000 - self.lag_check
+
+        --print("lag = "..chugent.." ms")
+        if chugent > 1 and  self.old_pos and self.old_velocity then
+            self.object:move_to(self.old_pos)
+            self.object:set_velocity(self.old_velocity)
+        end
+    end
+    self.old_pos = pos
+    self.old_velocity = velocity
+    self.lag_check = minetest.get_us_time()/1000000
+end
+
+function boat:flow()
+    flow_dir = flow(self.object:get_pos())
+    if flow_dir then
+        flow_dir = vector.multiply(flow_dir,10)
+        vel = self.object:get_velocity()
+        acceleration = vector.new(flow_dir.x-vel.x,flow_dir.y-vel.y,flow_dir.z-vel.z)
+        acceleration = vector.multiply(acceleration, 0.01)
+        self.object:add_velocity(acceleration)
+    end
+end
+
+function boat:on_step(dtime)
+    self:check_if_on_land()
+    self:push()
+    self:drive()
+    self:float()
+    self:flow()
+    self:slowdown()
+    self:lag_correction(dtime)
+end
+
+minetest.register_entity("boat:boat", boat)
+
+
+
+
+
+-- TODO: library this and pack these things together
 
 minetest.register_craftitem("boat:boat", {
     description = "Boat",
