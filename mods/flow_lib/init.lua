@@ -38,8 +38,6 @@ local function get_corner_level(neighbors, x, z)
     local levels = 0
     local neighbor_count = 0
 
-    print(dump(neighbors))
-
     for nx = x - 1, x do
     for nz = z - 1, z do
 
@@ -83,10 +81,12 @@ local function get_liquid_corner_levels(pos)
 
     local node = minetest.get_node(pos)
     local def = minetest.registered_nodes[node.name]
-    local source, flowing = def.liquid_alternative_source, node.name
+    local source = def.liquid_alternative_source
+    local flowing = node.name
     local range = def.liquid_range or liquid_level_max
     local neighbors = {}
 
+    -- TODO: pack this as a 1d array
     for x = -1, 1 do
 
     neighbors[x] = {}
