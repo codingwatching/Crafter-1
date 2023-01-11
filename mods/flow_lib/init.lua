@@ -53,9 +53,7 @@ local function get_flowing_dir(pos)
 
     param2 = gotten_node.param2
 
-    if param2 > 7 then
-        return nil
-    end
+    if param2 > 7 then return nil end
 
     -- This getter stores the data within the scoped "data" variable
     get_local_nodes(pos)
