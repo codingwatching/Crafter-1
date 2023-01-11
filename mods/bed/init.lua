@@ -14,6 +14,7 @@ local mod_channel_join = minetest.mod_channel_join
 local chat_send_player = minetest.chat_send_player
 local ipairs = ipairs
 local vec_new = vector.new
+local vec_equals = vector.equals
 local table_insert = table.insert
 local table_remove = table.remove
 
@@ -134,7 +135,10 @@ local function sleep_check()
     for _,bed_vec in ipairs( players_in_bed ) do
         local player = get_player_by_name( bed_vec.name )
         if not player then goto continue end
-        player:move_to( vec_new( bed_vec.x, bed_vec.y, bed_vec.z ) )
+        local check_vec = vec_new( bed_vec.x, bed_vec.y, bed_vec.z )
+        if vec_equals( check_vec, player:get_pos() ) then
+            player:set_pos(check_vec)
+        end
         -- Group in a check of the players sleeping state
         if not bed_vec.sleeping then goto continue end
         sleeping_counter = sleeping_counter + 1
@@ -184,9 +188,12 @@ local do_sleep = function( player, pos, dir )
 
     local real_dir = minetest.facedir_to_dir( dir )
 
+    local adjusted_dir = minetest.yaw_to_dir( minetest.dir_to_yaw( real_dir ) - (math.pi / 4) )
+
+
     player:add_velocity( vector.multiply( player:get_velocity(), -1 ) )
 
-    new_pos = vector.subtract( pos, vector.divide( real_dir, 2 ) )
+    new_pos = vector.subtract( pos, vector.divide( adjusted_dir, 2 ) )
 
     player:move_to( new_pos )
     player:set_look_vertical( 0 )
@@ -292,7 +299,14 @@ minetest.register_node("bed:bed_front", {
 
         local param2 = minetest.get_node(pos).param2
         
-        do_sleep(clicker,pos,param2)
+        -- do_sleep(clicker,pos,param2)
+
+        minetest.add_particle({
+            pos = pos,
+            velocity = {x=0, y=0, z=0},
+            acceleration = {x=0, y=0, z=0},
+            texture = "dirt.png"
+        })
     end,
 })
 
@@ -314,7 +328,7 @@ minetest.register_node("bed:bed_back", {
             },
         },
     drop = "",
-    on_dig = function(pos, node, digger)
+    on_dig = function(pos)
         local param2 = minetest.get_node(pos).param2
         local facedir = minetest.facedir_to_dir(param2)    
         local obj = minetest.add_item(pos, "bed:bed")
@@ -324,16 +338,25 @@ minetest.register_node("bed:bed_back", {
         --remove_spawnpoint(vector.add(pos,facedir),digger)
         minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
     end,
-    on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+    on_rightclick = function(pos)
         if pos.y <= -10033 then
             tnt(pos,10)
             return
         end
 
         local param2 = minetest.get_node(pos).param2
-        local dir = minetest.facedir_to_dir(param2)    
+        local dir = minetest.facedir_to_dir(param2)
+        pos = vector.add(pos,dir)
+        pos.y = pos.y + 1
 
-        do_sleep(clicker,vector.add(pos,dir),param2)
+        minetest.add_particle({
+            pos = pos,
+            velocity = {x=0, y=0, z=0},
+            acceleration = {x=0, y=0, z=0},
+            texture = "dirt.png"
+        })
+
+        -- do_sleep(clicker,pos,param2)
     end,
 })
 
