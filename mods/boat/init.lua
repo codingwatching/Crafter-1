@@ -173,11 +173,11 @@ end
 
 -- Method that allows players to control the boat
 function boat:drive()
-    
+
     if self.rider then
         rider = minetest.get_player_by_name(self.rider)
         move = rider:get_player_control().up
-        self.moving = nil
+        self.moving = false
         if move then
             currentvel = self.object:get_velocity()
             goal = rider:get_look_dir()
@@ -192,7 +192,7 @@ function boat:drive()
             self.moving = true
         end
     else
-        self.moving = nil
+        self.moving = false
     end
 end
 
@@ -418,7 +418,7 @@ minetest.register_entity("boat:iron_boat", {
         if self.rider and not self.on_land == true then
             rider = minetest.get_player_by_name(self.rider)
             move = rider:get_player_control().up
-            self.moving = nil
+            self.moving = false
             if move then
                 currentvel = self.object:get_velocity()
                 goal = rider:get_look_dir()
@@ -429,7 +429,7 @@ minetest.register_entity("boat:iron_boat", {
                 self.moving = true
             end
         else
-            self.moving = nil
+            self.moving = false
         end
     end,
     
