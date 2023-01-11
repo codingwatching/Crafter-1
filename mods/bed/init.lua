@@ -186,9 +186,8 @@ local do_sleep = function( player, pos, dir )
         return
     end
 
-    local real_dir = minetest.facedir_to_dir( dir )
-
-    local adjusted_dir = minetest.yaw_to_dir( minetest.dir_to_yaw( real_dir ) - (math.pi / 4) )
+    local yaw = minetest.dir_to_yaw( minetest.facedir_to_dir( dir ) )
+    local adjusted_dir = minetest.yaw_to_dir( yaw )
 
 
     player:add_velocity( vector.multiply( player:get_velocity(), -1 ) )
@@ -197,7 +196,7 @@ local do_sleep = function( player, pos, dir )
 
     player:move_to( new_pos )
     player:set_look_vertical( 0 )
-    player:set_look_horizontal( ( dir + 1 ) * math.pi )
+    player:set_look_horizontal( yaw * -1  )
 
     show_formspec( name, "bed", bed_gui )
 
@@ -298,15 +297,7 @@ minetest.register_node("bed:bed_front", {
         end
 
         local param2 = minetest.get_node(pos).param2
-        
-        -- do_sleep(clicker,pos,param2)
-
-        minetest.add_particle({
-            pos = pos,
-            velocity = {x=0, y=0, z=0},
-            acceleration = {x=0, y=0, z=0},
-            texture = "dirt.png"
-        })
+        do_sleep(clicker,pos,param2)
     end,
 })
 
@@ -338,7 +329,7 @@ minetest.register_node("bed:bed_back", {
         --remove_spawnpoint(vector.add(pos,facedir),digger)
         minetest.punch_node(vector.new(pos.x,pos.y+1,pos.z))
     end,
-    on_rightclick = function(pos)
+    on_rightclick = function(pos,_,clicker)
         if pos.y <= -10033 then
             tnt(pos,10)
             return
@@ -347,16 +338,7 @@ minetest.register_node("bed:bed_back", {
         local param2 = minetest.get_node(pos).param2
         local dir = minetest.facedir_to_dir(param2)
         pos = vector.add(pos,dir)
-        pos.y = pos.y + 1
-
-        minetest.add_particle({
-            pos = pos,
-            velocity = {x=0, y=0, z=0},
-            acceleration = {x=0, y=0, z=0},
-            texture = "dirt.png"
-        })
-
-        -- do_sleep(clicker,pos,param2)
+        do_sleep(clicker,pos,param2)
     end,
 })
 
