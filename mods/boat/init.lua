@@ -295,7 +295,7 @@ register_boat({
     image = "boatitem.png",
     liquid_source_node = "main:water",
     liquid_flow_node = "main:waterflow",
-    flow_function = flow_in_water,
+    flow_function = get_liquid_flow_direction,
     recipe = {
         { "main:wood", "",          "main:wood" },
         { "main:wood", "main:wood", "main:wood" },
@@ -308,7 +308,7 @@ register_boat({
     image = "iron_boatitem.png",
     liquid_source_node = "nether:lava",
     liquid_flow_node = "nether:lavaflow",
-    flow_function = flow_in_lava,
+    flow_function = get_liquid_flow_direction,
     recipe = {
         { "main:iron", "",          "main:iron" },
         { "main:iron", "main:iron", "main:iron" },
