@@ -166,26 +166,37 @@ end
 -- Method that allows players to control the boat
 function boat:drive()
 
-    if self.rider then
-        rider = minetest.get_player_by_name(self.rider)
-        move = rider:get_player_control().up
+    rider = self.rider
+
+    if not rider then
         self.moving = false
-        if move then
-            currentvel = self.object:get_velocity()
-            goal = rider:get_look_dir()
-            if self.on_land == true then
-                goal = vector.multiply(goal,1)
-            else
-                goal = vector.multiply(goal,20)
-            end
-            acceleration = vector.new(goal.x-currentvel.x,0,goal.z-currentvel.z)
-            acceleration = vector.multiply(acceleration, 0.01)
-            self.object:add_velocity(acceleration)
-            self.moving = true
-        end
-    else
-        self.moving = false
+        return
     end
+
+    rider = minetest.get_player_by_name( rider )
+
+    move = rider:get_player_control().up
+
+    if not move then
+        self.moving = false
+        return
+    end
+
+    currentvel = self.object:get_velocity()
+
+    goal = rider:get_look_dir()
+
+    if self.on_land then
+        goal = vector.multiply(goal,1)
+    else
+        goal = vector.multiply(goal,20)
+    end
+
+    acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
+    acceleration = vector.multiply( acceleration, 0.01 )
+    self.object:add_velocity( acceleration )
+
+    self.moving = true
 end
 
 function boat:push()
