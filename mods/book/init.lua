@@ -12,7 +12,7 @@ local open_book_gui = function(itemstack, user)
         book_title = "Title here"
     end
     
-    book_writing_formspec = "size[9,8.75]"..
+    local book_writing_formspec = "size[9,8.75]"..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"..
         "style[book.book_text,book.book_title;textcolor=black;border=false;noclip=false]"..
         "textarea[0.3,0;9,0.5;book.book_title;;"..book_title.."]"..
@@ -31,7 +31,7 @@ local open_book_inked_gui = function(itemstack, user)
     
     local book_title = meta:get_string("book.book_title")
     
-    book_writing_formspec = "size[9,8.75]"..
+    local book_writing_formspec = "size[9,8.75]"..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"..
         "style_type[textarea;textcolor=black;border=false;noclip=false]"..
         "textarea[0.3,0;9,0.5;;;"..book_title.."]"..
