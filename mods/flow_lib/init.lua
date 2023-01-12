@@ -9,6 +9,7 @@ This has been heavily modified by jordan4ibanez
 
 local get_node = minetest.get_node
 local registered_nodes = minetest.registered_nodes
+local vec_new = vector.new
 
 local corner_levels =  {}
 local neighbors = {{},{},{},{},{},{},{},{},{},}
@@ -17,7 +18,7 @@ local level
 local levels
 local neighbor
 local neighbor_count
-local neighbor_pos = vector.new(0,0,0)
+local neighbor_pos = vec_new(0,0,0)
 local neighbor_level
 local neighbor_node
 local node_above
@@ -31,16 +32,16 @@ local source
 local flowing
 local range
 local max_level
-local dir = vector.new(0,0,0)
+local dir = vec_new(0,0,0)
 local count
 local index
 local diff
 
 local corner_levels_to_be_modified = {
-    vector.new(0, 0, 0),
-    vector.new(1, 0, 0),
-    vector.new(1, 0, 1),
-    vector.new(0, 0, 1)
+    vec_new(0, 0, 0),
+    vec_new(1, 0, 0),
+    vec_new(1, 0, 1),
+    vec_new(0, 0, 1)
 }
 
 
@@ -69,21 +70,21 @@ end
 
 -- Returns new heap objects
 local function subtract_scalar(vec, scalar)
-    local new_vec = vector.new(vec.x, vec.y, vec.z)
+    local new_vec = vec_new(vec.x, vec.y, vec.z)
     new_vec.x = new_vec.x - scalar
     new_vec.y = new_vec.y - scalar
     new_vec.z = new_vec.z - scalar
     return new_vec
 end
 local function divide_scalar(vec, scalar)
-    local new_vec = vector.new(vec.x, vec.y, vec.z)
+    local new_vec = vec_new(vec.x, vec.y, vec.z)
     new_vec.x = new_vec.x / scalar
     new_vec.y = new_vec.y / scalar
     new_vec.z = new_vec.z / scalar
     return new_vec
 end
 local function multiply_scalar(vec, scalar)
-    local new_vec = vector.new(vec.x, vec.y, vec.z)
+    local new_vec = vec_new(vec.x, vec.y, vec.z)
     new_vec.x = new_vec.x * scalar
     new_vec.y = new_vec.y * scalar
     new_vec.z = new_vec.z * scalar
@@ -218,9 +219,9 @@ end
 
 --! NOTE: this is step 2 - BUT, it is the entry point
 
-local flowing_downwards = vector.new(0, -1, 0)
+local flowing_downwards = vec_new(0, -1, 0)
 --+ Calculates the flow direction of a flowingliquid node
---> `modlib.minetest.flowing_downwards = modlib.vector.new{0, -1, 0}` if only flowing downwards
+--> `modlib.minetest.flowing_downwards = modlib.vec_new{0, -1, 0}` if only flowing downwards
 --> surface direction as `modlib.vector` else
 function get_liquid_flow_direction(pos)
 
