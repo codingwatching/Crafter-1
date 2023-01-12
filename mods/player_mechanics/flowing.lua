@@ -1,5 +1,4 @@
 local ipairs                = ipairs
-local vec_new               = vector.new
 local vec_multiply          = vector.multiply
 local get_connected_players = minetest.get_connected_players
 
