@@ -144,20 +144,20 @@ local function get_liquid_corner_levels(pos)
 
     end
 
-    local corner_levels = {
+    local corner_levels_to_be_modified = {
         vector.new(0, 0, 0),
         vector.new(1, 0, 0),
         vector.new(1, 0, 1),
         vector.new(0, 0, 1)
     }
 
-    -- Corner_level will pull out one of the data tables above { x = 0, y = 0, z = 0 }
-    for index, corner_level in ipairs(corner_levels) do
+    -- corner_levels_to_be_modified will pull out one of the data tables above { x = 0, y = 0, z = 0 }
+    for index, corner_level in ipairs(corner_levels_to_be_modified) do
         corner_level.y = get_corner_level(neighbors, corner_level.x, corner_level.z)
-        corner_levels[index] = subtract_scalar( corner_level, 0.5)
+        corner_levels_to_be_modified[index] = subtract_scalar( corner_level, 0.5)
     end
 
-    return corner_levels
+    return corner_levels_to_be_modified
 end
 
 
