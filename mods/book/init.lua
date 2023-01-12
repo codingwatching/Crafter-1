@@ -131,4 +131,3 @@ minetest.register_craft({
         {"main:wood","main:wood","main:wood"},
     }
 })
---book book book
