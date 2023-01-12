@@ -27,6 +27,11 @@ local def
 local source
 local flowing
 local range
+local max_level
+local dir = vector.new(0,0,0)
+local count
+local index
+local diff
 
 local corner_levels_to_be_modified = {
     vector.new(0, 0, 0),
@@ -234,8 +239,9 @@ function get_liquid_flow_direction(pos)
         end
     end
 
-    dir = vector.new(0, 0, 0)
-
+    dir.x = 0
+    dir.y = 0
+    dir.z = 0
     count = 0
 
     -- Always indexed 1,2,3,4
