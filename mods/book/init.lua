@@ -6,8 +6,19 @@
     2.a make a nice looking node that represents a book
 ]]
 
+-- These are functions to clarify the state of the function's procedure
 local function play_book_open_sound_to_player( author )
     minetest.sound_play( "book_open", {
+        to_player = author:get_player_name()
+    })
+end
+local function play_book_closed_to_player( author )
+    minetest.sound_play( "book_close", {
+        to_player = author:get_player_name()
+    })
+end
+local function play_book_write_to_player( author )
+    minetest.sound_play( "book_write", {
         to_player = author:get_player_name()
     })
 end
@@ -75,11 +86,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local meta = itemstack:get_meta()
         meta:set_string("book.book_text", fields["book.book_text"])
         meta:set_string("book.book_title", fields["book.book_title"])    
-        meta:set_string("description", fields["book.book_title"])
+        meta:set_string("description", fields["book.book_title"])minetest.sound_play("book_write", {to_player=player:get_player_name()})
         
         player:set_wielded_item(itemstack)
         minetest.close_formspec(player:get_player_name(), "book.book_gui")
-        minetest.sound_play("book_write", {to_player=player:get_player_name()})
+        play_book_write_to_player(player)
     elseif fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_text"] then
         local itemstack = ItemStack("book:book_written")
         local meta = itemstack:get_meta()
@@ -88,9 +99,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         meta:set_string("description", fields["book.book_title"])
         player:set_wielded_item(itemstack)
         minetest.close_formspec(player:get_player_name(), "book.book_gui")
-        minetest.sound_play("book_close", {to_player=player:get_player_name()})
+
+        play_book_closed_to_player( player )
+
     elseif fields["book.book_close"] then
-        minetest.sound_play("book_close", {to_player=player:get_player_name()})
+
+        play_book_closed_to_player( player )
+
     end
 end)
 
