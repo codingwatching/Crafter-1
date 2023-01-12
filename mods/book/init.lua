@@ -15,7 +15,7 @@ end
 --this is the gui for un-inked books
 
 -- TODO: replace user with author as a variable name
-local function open_book_gui(itemstack, user)
+local function open_book_item_gui(itemstack, user)
 
     play_book_open_sound_to_player( user )
 
@@ -116,11 +116,11 @@ minetest.register_craftitem("book:book",{
             return
         end
         --print("make books placable on the ground")
-        open_book_gui(itemstack, user)
+        open_book_item_gui(itemstack, user)
     end,
 
     on_secondary_use = function(itemstack, user, pointed_thing)
-        open_book_gui(itemstack, user)
+        open_book_item_gui(itemstack, user)
     end,
 })
 
