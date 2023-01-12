@@ -58,7 +58,7 @@ local function get_corner_level(neighbors, x, z)
 
         local nx,nz = convert_to_2d( i )
 
-        if nx > x or nz > z then goto continue end
+        if (nx ~= x - 1 and nx ~= x) or (nz ~= z - 1 and nz ~= z) then goto continue end
 
         local neighbor = neighbors[i]
 
