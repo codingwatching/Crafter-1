@@ -7,6 +7,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 This has been heavily modified by jordan4ibanez
 ]]
 
+local get_node = minetest.get_node
+
 local corner_levels =  {}
 local neighbors = {{},{},{},{},{},{},{},{},{},}
 local air_neighbor
@@ -159,7 +161,7 @@ end
 --> 4 corner levels from -0.5 to 0.5 as list of `modlib.vector`
 local function get_liquid_corner_levels(pos)
 
-    node = minetest.get_node(pos)
+    node = get_node(pos)
     def = minetest.registered_nodes[node.name]
     source = def.liquid_alternative_source
     flowing = node.name
@@ -179,7 +181,7 @@ local function get_liquid_corner_levels(pos)
         neighbor_pos.y = pos.y
         neighbor_pos.z = pos.z + z
 
-        neighbor_node = minetest.get_node(neighbor_pos)
+        neighbor_node = get_node(neighbor_pos)
 
         level = nil
 
@@ -192,7 +194,7 @@ local function get_liquid_corner_levels(pos)
 
         neighbor_pos.y = neighbor_pos.y + 1
 
-        node_above = minetest.get_node(neighbor_pos)
+        node_above = get_node(neighbor_pos)
 
         neighbors[i] = {
             air = neighbor_node.name == "air",
@@ -223,7 +225,7 @@ function get_liquid_flow_direction(pos)
 
     -- This returns a predefined linear array {1=data,2=data,3=data,4=data}
     get_liquid_corner_levels(pos)
-    
+
     corner_levels = corner_levels_to_be_modified
 
     max_level = corner_levels[1].y
@@ -282,7 +284,7 @@ function get_liquid_flow_direction(pos)
         dir = multiply_scalar(dir, -1)
     end
 
-    if dir.x == 0 and dir.y == 0 and dir.z == 0 and minetest.get_node(pos).param2 % 32 > 7 then
+    if dir.x == 0 and dir.y == 0 and dir.z == 0 and get_node(pos).param2 % 32 > 7 then
         return nil
     end
 
