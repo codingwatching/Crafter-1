@@ -7,6 +7,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 This has been heavily modified by jordan4ibanez
 ]]
 
+local corner_levels =  {}
+local neighbors = {{},{},{},{},{},{},{},{},{},}
+
+-- Keep heap position allocated
+local function clear_neighbors()
+    for i = 1,9 do
+        neighbors[i] = {}
+    end
+end
+
 -- https://github.com/appgurueu/modlib/blob/master/vector.lua
 
 -- Returns new heap objects
@@ -57,21 +67,21 @@ local liquid_level_max = 8
 
 local function get_corner_level(neighbors, x, z)
 
-    local air_neighbor
-    local levels = 0
-    local neighbor_count = 0
+    air_neighbor = nil
+    levels = 0
+    neighbor_count = 0
 
     for i = 1,9 do
 
-        local nx,nz = convert_to_2d( i )
+        nx,nz = convert_to_2d( i )
 
         if (nx ~= x - 1 and nx ~= x) or (nz ~= z - 1 and nz ~= z) then goto continue end
 
-        local neighbor = neighbors[i]
+        neighbor = neighbors[i]
 
         if neighbor.above_is_same_liquid then return 1 end
 
-        local level = neighbor.level
+        level = neighbor.level
 
         if not level then goto skip end
 
@@ -104,45 +114,38 @@ end
 --> 4 corner levels from -0.5 to 0.5 as list of `modlib.vector`
 local function get_liquid_corner_levels(pos)
 
-    local node = minetest.get_node(pos)
-    local def = minetest.registered_nodes[node.name]
-    local source = def.liquid_alternative_source
-    local flowing = node.name
-    local range = def.liquid_range or liquid_level_max
-    local neighbors = {{},{},{},{},{},{},{},{},{},}
-
-    -- Keep heap position allocated
-    local function clear_neighbors()
-        for i = 1,9 do
-            neighbors[i] = nil
-        end
-    end
+    node = minetest.get_node(pos)
+    def = minetest.registered_nodes[node.name]
+    source = def.liquid_alternative_source
+    flowing = node.name
+    range = def.liquid_range or liquid_level_max
+    clear_neighbors()
 
     -- TODO: preallocate outside scope and reuse this
-    local neighbor_pos = vector.new( 0, 0, 0 )
+    neighbor_pos = vector.new( 0, 0, 0 )
 
     for i = 1,9 do
 
-        local x,z = convert_to_2d( i )
+        x,z = convert_to_2d( i )
 
         neighbor_pos.x = pos.x + x
         neighbor_pos.y = pos.y
         neighbor_pos.z = pos.z + z
 
-        local neighbor_node = minetest.get_node(neighbor_pos)
+        neighbor_node = minetest.get_node(neighbor_pos)
 
-        local level
+        level
 
         if neighbor_node.name == source then
             level = 1
         elseif neighbor_node.name == flowing then
-            local neighbor_level = neighbor_node.param2 % 8
+            neighbor_level = neighbor_node.param2 % 8
             level = ( math.max( 0, neighbor_level - liquid_level_max + range ) + 0.5 ) / range
         end
 
         neighbor_pos.y = neighbor_pos.y + 1
 
-        local node_above = minetest.get_node(neighbor_pos)
+        node_above = minetest.get_node(neighbor_pos)
 
         neighbors[i] = {
             air = neighbor_node.name == "air",
@@ -152,7 +155,8 @@ local function get_liquid_corner_levels(pos)
 
     end
 
-    local corner_levels_to_be_modified = {
+    -- TODO: rebuild this into a function that dispatches a reset version of it and reuses a localized variable
+    corner_levels_to_be_modified = {
         vector.new(0, 0, 0),
         vector.new(1, 0, 0),
         vector.new(1, 0, 1),
@@ -178,13 +182,13 @@ local flowing_downwards = vector.new(0, -1, 0)
 function get_liquid_flow_direction(pos)
 
     -- This returns a predefined linear array {1=data,2=data,3=data,4=data}
-    local corner_levels = get_liquid_corner_levels(pos)
+    corner_levels = get_liquid_corner_levels(pos)
 
-    local max_level = corner_levels[1].y
+    max_level = corner_levels[1].y
 
     for index = 2, 4 do
 
-        local level = corner_levels[index].y
+        level = corner_levels[index].y
 
         if level > max_level then
 
@@ -193,9 +197,9 @@ function get_liquid_flow_direction(pos)
         end
     end
 
-    local dir = vector.new(0, 0, 0)
+    dir = vector.new(0, 0, 0)
 
-    local count = 0
+    count = 0
 
     -- Always indexed 1,2,3,4
     for max_level_index, corner_level in ipairs(corner_levels) do
@@ -205,9 +209,9 @@ function get_liquid_flow_direction(pos)
         -- 1,2,3
         for offset = 1,3 do
 
-            local index = (max_level_index + offset - 1) % 4 + 1
+            index = (max_level_index + offset - 1) % 4 + 1
 
-            local diff = corner_level - corner_levels[index]
+            diff = corner_level - corner_levels[index]
 
             if diff.y == 0 then goto skip end
 
