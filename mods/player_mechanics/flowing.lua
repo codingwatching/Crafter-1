@@ -26,14 +26,14 @@ minetest.register_globalstep(function()
 
         -- Buffer continuation
         if not pool[name] then
-            acceleration = vec_multiply( flow_dir, 0.2 )
+            acceleration = vec_multiply( flow_dir, 2 )
             player:add_velocity(acceleration)
             pool[name] = flow_dir
             goto continue
         end
 
         c_flow = pool[name]
-        acceleration = vec_multiply( c_flow, 0.2 )
+        acceleration = vec_multiply( c_flow, 2 )
         player:add_velocity( acceleration )
 
         newvel = player:get_velocity()
