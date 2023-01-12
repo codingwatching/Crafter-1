@@ -8,6 +8,7 @@ This has been heavily modified by jordan4ibanez
 ]]
 
 local get_node = minetest.get_node
+local registered_nodes = minetest.registered_nodes
 
 local corner_levels =  {}
 local neighbors = {{},{},{},{},{},{},{},{},{},}
@@ -162,7 +163,7 @@ end
 local function get_liquid_corner_levels(pos)
 
     node = get_node(pos)
-    def = minetest.registered_nodes[node.name]
+    def = registered_nodes[node.name]
     source = def.liquid_alternative_source
     flowing = node.name
     range = def.liquid_range or liquid_level_max
