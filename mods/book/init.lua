@@ -7,7 +7,7 @@
 ]]
 
 --this is the gui for un-inked books
-local open_book_gui = function(itemstack, user)
+local function open_book_gui(itemstack, user)
 
     minetest.sound_play( "book_open", {
         to_player = user:get_player_name()
@@ -41,7 +41,7 @@ end
 
 
 -- The gui for permenantly written books
-local open_book_inked_gui = function(itemstack, user)
+local function open_book_inked_gui(itemstack, user)
     minetest.sound_play("book_open", {to_player=user:get_player_name()})
     local meta = itemstack:get_meta()
     local book_text = meta:get_string("book.book_text")
