@@ -92,14 +92,18 @@ local function get_liquid_corner_levels(pos)
     local source = def.liquid_alternative_source
     local flowing = node.name
     local range = def.liquid_range or liquid_level_max
-    local neighbors = {}
+    local neighbors = {{},{},{},{},{},{},{},{},{},}
 
-    -- TODO: pack this as a 1d array
-    for x = -1, 1 do
+    -- Keep heap position allocated
+    local function clear_neighbors()
+        for i = 1,9 do
+            neighbors[i] = nil
+        end
+    end
 
-    neighbors[x] = {}
+    for i = 1,9 do
 
-    for z = -1, 1 do
+        local x,z = index_to_2d_position(i)
 
         local neighbor_pos = vector.new( pos.x + x, pos.y, pos.z + z )
 
@@ -118,13 +122,12 @@ local function get_liquid_corner_levels(pos)
 
         local node_above = minetest.get_node(neighbor_pos)
 
-        neighbors[x][z] = {
+        neighbors[i] = {
             air = neighbor_node.name == "air",
             level = level,
             above_is_same_liquid = node_above.name == flowing or node_above.name == source
         }
 
-    end
     end
 
     local corner_levels = {
@@ -134,7 +137,7 @@ local function get_liquid_corner_levels(pos)
         vector.new(0, 0, 1)
     }
 
-    -- corner_level will pull out one of the data tables above { x = 0, y = 0, z = 0 }
+    -- Corner_level will pull out one of the data tables above { x = 0, y = 0, z = 0 }
     for index, corner_level in ipairs(corner_levels) do
         corner_level.y = get_corner_level(neighbors, corner_level.x, corner_level.z)
         corner_levels[index] = subtract_scalar( corner_level, 0.5)
