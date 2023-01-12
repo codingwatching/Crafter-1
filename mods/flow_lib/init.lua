@@ -24,6 +24,13 @@ local function divide_scalar(vec, scalar)
     new_vec.z = new_vec.z / scalar
     return new_vec
 end
+local function multiply_scalar(vec, scalar)
+    local new_vec = vector.new(vec.x, vec.y, vec.z)
+    new_vec.x = new_vec.x * scalar
+    new_vec.y = new_vec.y * scalar
+    new_vec.z = new_vec.z * scalar
+    return new_vec
+end
 -- Indexing 1,9 this gives you x,z in a 1 node square area. Comparable to x = -1,1 and z = -1,1
 local function convert_to_2d( index )
     -- Get carriage shift
@@ -223,11 +230,13 @@ function get_liquid_flow_direction(pos)
     end
 
     if count ~= 0 then
-        dir = divide_scalar(dir, count)
+        dir.y = 0
+        dir = vector.normalize(dir)
+        dir = multiply_scalar(dir, -1)
     end
 
     if dir == vector.new(0, 0, 0) and minetest.get_node(pos).param2 % 32 > 7 then
-        return flowing_downwards
+        return nil
     end
 
     return dir
