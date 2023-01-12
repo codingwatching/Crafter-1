@@ -7,6 +7,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 This has been heavily modified by jordan4ibanez
 ]]
 
+local ipairs = ipairs
 local get_node = minetest.get_node
 local registered_nodes = minetest.registered_nodes
 local vec_new = vector.new
@@ -215,9 +216,9 @@ local function get_liquid_corner_levels(pos)
     reset_corner_levels()
 
     -- corner_levels_to_be_modified will pull out one of the data tables above { x = 0, y = 0, z = 0 }
-    for index, corner_level in ipairs(corner_levels_to_be_modified) do
+    for i, corner_level in ipairs(corner_levels_to_be_modified) do
         corner_level.y = get_corner_level(neighbors, corner_level.x, corner_level.z)
-        corner_levels_to_be_modified[index] = subtract_scalar( corner_level, 0.5)
+        corner_levels_to_be_modified[i] = subtract_scalar( corner_level, 0.5)
     end
 
 end
