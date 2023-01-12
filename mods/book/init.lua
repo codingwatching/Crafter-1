@@ -1,3 +1,4 @@
+
 --this is the gui for un-inked books
 local open_book_gui = function(itemstack, user)
     minetest.sound_play("book_open", {to_player=user:get_player_name()})
