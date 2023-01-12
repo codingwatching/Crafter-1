@@ -11,6 +11,11 @@ local get_node = minetest.get_node
 local registered_nodes = minetest.registered_nodes
 local vec_new = vector.new
 local vec_normalize = vector.normalize
+local math_ceil = math.ceil
+local math_sqrt = math.sqrt
+local math_max = math.max
+
+local SQRT_OF_2 = math_sqrt(2)
 
 local corner_levels =  {}
 local neighbors = {{},{},{},{},{},{},{},{},{},}
@@ -94,7 +99,7 @@ end
 -- Indexing 1,9 this gives you x,z in a 1 node square area. Comparable to x = -1,1 and z = -1,1
 local function convert_to_2d( indexer )
     -- Get carriage shift
-    local xer = math.ceil( indexer / 3 ) - 2
+    local xer = math_ceil( indexer / 3 ) - 2
     -- Get carriage count
     local zer = ( ( indexer - 1 ) % 3 ) - 1
     return xer,zer
@@ -192,7 +197,7 @@ local function get_liquid_corner_levels(pos)
             level = 1
         elseif neighbor_node.name == flowing then
             neighbor_level = neighbor_node.param2 % 8
-            level = ( math.max( 0, neighbor_level - liquid_level_max + range ) + 0.5 ) / range
+            level = ( math_max( 0, neighbor_level - liquid_level_max + range ) + 0.5 ) / range
         end
 
         neighbor_pos.y = neighbor_pos.y + 1
@@ -268,7 +273,7 @@ function get_liquid_flow_direction(pos)
             diff.z = diff.z * diff.y
 
             if offset == 3 then
-                diff = divide_scalar(diff, math.sqrt(2))
+                diff = divide_scalar(diff, SQRT_OF_2)
             end
 
             dir = dir + diff
