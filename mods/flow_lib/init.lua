@@ -53,10 +53,12 @@ local function get_corner_level(neighbors, x, z)
     local air_neighbor
     local levels = 0
     local neighbor_count = 0
-    
-    -- How to make this 1d hmmmmmmm
-    for nx = x - 1, x do
-    for nz = z - 1, z do
+
+    for i = 1,9 do
+
+        local nx,nz = convert_to_2d( i )
+
+        if nx > x or nz > z then goto continue end
 
         local neighbor = neighbors[nx][nz]
 
@@ -82,8 +84,6 @@ local function get_corner_level(neighbors, x, z)
         air_neighbor = true
 
         ::continue::
-
-    end
     end
 
     if neighbor_count == 0 then return 0 end
@@ -116,7 +116,7 @@ local function get_liquid_corner_levels(pos)
 
     for i = 1,9 do
 
-        local x,z = index_to_2d_position(i)
+        local x,z = convert_to_2d( i )
 
         neighbor_pos.x = pos.x + x
         neighbor_pos.z = pos.z + z
