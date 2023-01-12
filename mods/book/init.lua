@@ -22,6 +22,16 @@ local function play_book_write_to_player( author )
         to_player = author:get_player_name()
     })
 end
+-- Checks the fields of a formspec easily
+local function field_check(intake, ...)
+    local gotten_arguments = {...}
+    local check_length = #gotten_arguments
+    for _,key in ipairs(gotten_arguments) do
+        if not intake[key] then return false end
+        check_length = check_length - 1
+    end
+    return check_length <= 0
+end
 
 --this is the gui for un-inked books
 
@@ -91,7 +101,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         player:set_wielded_item(itemstack)
         minetest.close_formspec(player:get_player_name(), "book.book_gui")
         play_book_write_to_player(player)
+
     elseif fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_text"] then
+
         local itemstack = ItemStack("book:book_written")
         local meta = itemstack:get_meta()
         meta:set_string("book.book_text", fields["book.book_text"])
