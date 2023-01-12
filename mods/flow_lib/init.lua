@@ -128,15 +128,21 @@ local function get_liquid_corner_levels(pos)
     end
 
     local corner_levels = {
+        -- This one is a comparitor
         vector.new(0, 0, 0),
         -- index 2 is being used as a baseline comparison
         vector.new(1, 0, 0),
+        -- This one is a comparitor
         vector.new(1, 0, 1),
+
+        -- TODO: find out what this is being used for
         vector.new(0, 0, 1)
     }
 
+    -- corner_level will pull out one of the data tables above { x = 0, y = 0, z = 0 }
     for index, corner_level in ipairs(corner_levels) do
 
+                                        -- { x = 0, y = 0, z = 0 }  and { x = 0, y = 0, z = 0 }
         corner_level[2] = get_corner_level(neighbors, corner_level[1], corner_level[3])
 
         corner_levels[index] = subtract_scalar(vector.new(corner_level), 0.5)
