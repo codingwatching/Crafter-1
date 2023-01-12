@@ -121,7 +121,7 @@ local liquid_level_max = 8
 
 --! NOTE: this is step 3
 
-local function get_corner_level(neighbors, x, z)
+local function get_corner_level(neighbors, xer, zer)
 
     air_neighbor = nil
     levels = 0
@@ -131,7 +131,7 @@ local function get_corner_level(neighbors, x, z)
 
         nx,nz = convert_to_2d( i )
 
-        if (nx ~= x - 1 and nx ~= x) or (nz ~= z - 1 and nz ~= z) then goto continue end
+        if (nx ~= xer - 1 and nx ~= xer) or (nz ~= zer - 1 and nz ~= zer) then goto continue end
 
         neighbor = neighbors[i]
 
