@@ -108,7 +108,6 @@ local function get_liquid_corner_levels(pos)
         local x,z = index_to_2d_position(i)
 
         neighbor_pos.x = pos.x + x
-        neighbor_pos.y = pos.y + y
         neighbor_pos.z = pos.z + z
 
         local neighbor_node = minetest.get_node(neighbor_pos)
