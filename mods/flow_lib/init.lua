@@ -9,12 +9,52 @@ This has been heavily modified by jordan4ibanez
 
 local corner_levels =  {}
 local neighbors = {{},{},{},{},{},{},{},{},{},}
+local air_neighbor
+local level
+local levels
+local neighbor
+local neighbor_count
+local neighbor_pos = vector.new(0,0,0)
+local neighbor_level
+local neighbor_node
+local node_above
+local nx
+local nz
+local x
+local z
+local node
+local def
+local source
+local flowing
+local range
+
+local corner_levels_to_be_modified = {
+    vector.new(0, 0, 0),
+    vector.new(1, 0, 0),
+    vector.new(1, 0, 1),
+    vector.new(0, 0, 1)
+}
+
 
 -- Keep heap position allocated
 local function clear_neighbors()
     for i = 1,9 do
         neighbors[i] = {}
     end
+end
+local function reset_corner_levels()
+    corner_levels[1].x = 0
+    corner_levels[1].y = 0
+    corner_levels[1].z = 0
+    corner_levels[2].x = 1
+    corner_levels[2].y = 0
+    corner_levels[2].z = 0
+    corner_levels[3].x = 1
+    corner_levels[3].y = 0
+    corner_levels[3].z = 1
+    corner_levels[4].x = 0
+    corner_levels[4].y = 0
+    corner_levels[4].z = 1
 end
 
 -- https://github.com/appgurueu/modlib/blob/master/vector.lua
@@ -119,10 +159,12 @@ local function get_liquid_corner_levels(pos)
     source = def.liquid_alternative_source
     flowing = node.name
     range = def.liquid_range or liquid_level_max
+
     clear_neighbors()
 
-    -- TODO: preallocate outside scope and reuse this
-    neighbor_pos = vector.new( 0, 0, 0 )
+    neighbor_pos.x = 0
+    neighbor_pos.y = 0
+    neighbor_pos.z = 0
 
     for i = 1,9 do
 
@@ -134,7 +176,7 @@ local function get_liquid_corner_levels(pos)
 
         neighbor_node = minetest.get_node(neighbor_pos)
 
-        level
+        level = nil
 
         if neighbor_node.name == source then
             level = 1
@@ -155,13 +197,7 @@ local function get_liquid_corner_levels(pos)
 
     end
 
-    -- TODO: rebuild this into a function that dispatches a reset version of it and reuses a localized variable
-    corner_levels_to_be_modified = {
-        vector.new(0, 0, 0),
-        vector.new(1, 0, 0),
-        vector.new(1, 0, 1),
-        vector.new(0, 0, 1)
-    }
+    reset_corner_levels()
 
     -- corner_levels_to_be_modified will pull out one of the data tables above { x = 0, y = 0, z = 0 }
     for index, corner_level in ipairs(corner_levels_to_be_modified) do
