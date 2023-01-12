@@ -101,11 +101,15 @@ local function get_liquid_corner_levels(pos)
         end
     end
 
+    local neighbor_pos = vector.new( 0, 0, 0 )
+
     for i = 1,9 do
 
         local x,z = index_to_2d_position(i)
 
-        local neighbor_pos = vector.new( pos.x + x, pos.y, pos.z + z )
+        neighbor_pos.x = pos.x + x
+        neighbor_pos.y = pos.y + y
+        neighbor_pos.z = pos.z + z
 
         local neighbor_node = minetest.get_node(neighbor_pos)
 
