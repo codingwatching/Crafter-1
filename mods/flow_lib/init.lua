@@ -205,7 +205,6 @@ local function get_liquid_corner_levels(pos)
         corner_levels_to_be_modified[index] = subtract_scalar( corner_level, 0.5)
     end
 
-    return corner_levels_to_be_modified
 end
 
 
@@ -218,7 +217,9 @@ local flowing_downwards = vector.new(0, -1, 0)
 function get_liquid_flow_direction(pos)
 
     -- This returns a predefined linear array {1=data,2=data,3=data,4=data}
-    corner_levels = get_liquid_corner_levels(pos)
+    get_liquid_corner_levels(pos)
+    
+    corner_levels = corner_levels_to_be_modified
 
     max_level = corner_levels[1].y
 
