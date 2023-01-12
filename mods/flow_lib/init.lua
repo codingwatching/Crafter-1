@@ -60,7 +60,7 @@ local function get_corner_level(neighbors, x, z)
 
         if nx > x or nz > z then goto continue end
 
-        local neighbor = neighbors[nx][nz]
+        local neighbor = neighbors[i]
 
         if neighbor.above_is_same_liquid then return 1 end
 
