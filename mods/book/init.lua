@@ -1,4 +1,11 @@
 
+--[[
+    TODO:
+    1. give books multiple pages
+    2. make books placable on the ground
+    2.a make a nice looking node that represents a book
+]]
+
 --this is the gui for un-inked books
 local open_book_gui = function(itemstack, user)
 
