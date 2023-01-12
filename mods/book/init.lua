@@ -1,17 +1,27 @@
 
 --this is the gui for un-inked books
 local open_book_gui = function(itemstack, user)
-    minetest.sound_play("book_open", {to_player=user:get_player_name()})
+
+    minetest.sound_play( "book_open", {
+        to_player = user:get_player_name()
+    })
+
     local meta = itemstack:get_meta()
+
     local book_text = meta:get_string("book.book_text")
+
     if book_text == "" then
+
         book_text = "Text here"
+
     end
+
     local book_title = meta:get_string("book.book_title")
+
     if book_title == "" then
         book_title = "Title here"
     end
-    
+
     local book_writing_formspec = "size[9,8.75]"..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"..
         "style[book.book_text,book.book_title;textcolor=black;border=false;noclip=false]"..
@@ -23,7 +33,7 @@ local open_book_gui = function(itemstack, user)
 end
 
 
---this is the gui for permenantly written books
+-- The gui for permenantly written books
 local open_book_inked_gui = function(itemstack, user)
     minetest.sound_play("book_open", {to_player=user:get_player_name()})
     local meta = itemstack:get_meta()
@@ -41,7 +51,7 @@ local open_book_inked_gui = function(itemstack, user)
 end
 
 
---handle the book gui
+-- Handes the book gui
 minetest.register_on_player_receive_fields(function(player, formname, fields)
     if not formname == "book.book_gui" then return end
     
@@ -81,8 +91,11 @@ minetest.register_craftitem("book:book",{
         if not pointed_thing.type == "node" then
             return
         end
+
         local sneak = user:get_player_control().sneak
+
         local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+
         if not sneak and noddef.on_rightclick then
             minetest.item_place(itemstack, user, pointed_thing)
             return
@@ -104,16 +117,25 @@ minetest.register_craftitem("book:book_written",{
     inventory_image = "book_written.png",
     
     on_place = function(itemstack, user, pointed_thing)
+
         if not pointed_thing.type == "node" then
             return
         end
+
         local sneak = user:get_player_control().sneak
+
         local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
-        if not sneak and noddef.on_rightclick then
-            minetest.item_place(itemstack, user, pointed_thing)
+
+        -- Ignore for rightclicking things
+        if noddef.on_rightclick then return end
+
+        -- If a player is sneaking then they can place the book on the ground
+        if sneak then
+            print("placing a thing on the ground")
+            minetest.item_place(itemstack, user, pointed_thing.above)
             return
         end
-        --print("make books placable on the ground")
+
         open_book_inked_gui(itemstack, user)
     end,
 
