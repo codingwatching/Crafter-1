@@ -230,9 +230,9 @@ function get_liquid_flow_direction(pos)
 
     max_level = corner_levels[1].y
 
-    for index = 2, 4 do
+    for i = 2, 4 do
 
-        level = corner_levels[index].y
+        level = corner_levels[i].y
 
         if level > max_level then
 
