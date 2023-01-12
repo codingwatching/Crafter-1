@@ -282,7 +282,7 @@ function get_liquid_flow_direction(pos)
         dir = multiply_scalar(dir, -1)
     end
 
-    if dir == vector.new(0, 0, 0) and minetest.get_node(pos).param2 % 32 > 7 then
+    if dir.x == 0 and dir.y == 0 and dir.z == 0 and minetest.get_node(pos).param2 % 32 > 7 then
         return nil
     end
 
