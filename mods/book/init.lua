@@ -4,6 +4,8 @@
     1. give books multiple pages
     2. make books placable on the ground
     2.a make a nice looking node that represents a book
+    3.Maybe make a book animation for when it's opening?
+    4.Maybe dye books?
 ]]
 
 -- These are functions to clarify the state of the function's procedure
