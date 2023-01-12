@@ -25,12 +25,21 @@ local function divide_scalar(vec, scalar)
     return new_vec
 end
 -- Indexing 1,9 this gives you x,z in a 1 node square area. Comparable to x = -1,1 and z = -1,1
-local function index_to_2d_position(index)
-    local x = ( ( index - 1 ) % 3 ) - 1
-    -- Minus two because 1,2,3
-    local z = math.ceil(index / 3) - 2
+local function convert_to_2d( index )
+    -- Get carriage shift
+    local x = math.ceil( index / 3 ) - 2
+    -- Get carriage count
+    local z = ( ( index - 1 ) % 3 ) - 1
     return x,z
 end
+local function convert_to_1d( x, z )
+    -- Shift carriage to the right (jumps over values not in it's column)
+    local m = x + 1
+    -- Shift carriage to count
+    local w = z + 2
+    return (m * 3) + w
+end
+
 
 
 -- https://github.com/appgurueu/modlib/blob/master/minetest/liquid.lua
@@ -44,7 +53,8 @@ local function get_corner_level(neighbors, x, z)
     local air_neighbor
     local levels = 0
     local neighbor_count = 0
-
+    
+    -- How to make this 1d hmmmmmmm
     for nx = x - 1, x do
     for nz = z - 1, z do
 
@@ -101,6 +111,7 @@ local function get_liquid_corner_levels(pos)
         end
     end
 
+    -- TODO: preallocate outside scope and reuse this
     local neighbor_pos = vector.new( 0, 0, 0 )
 
     for i = 1,9 do
