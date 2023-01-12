@@ -19,7 +19,7 @@ local math_max = math.max
 local SQRT_OF_2 = math_sqrt(2)
 
 local corner_levels =  {}
-local neighbors = {{},{},{},{},{},{},{},{},{},}
+local neighbors = {{},{},{},{},{},{},{},{},{}}
 local air_neighbor
 local level
 local levels
@@ -59,18 +59,18 @@ local function clear_neighbors()
     end
 end
 local function reset_corner_levels()
-    corner_levels[1].x = 0
-    corner_levels[1].y = 0
-    corner_levels[1].z = 0
-    corner_levels[2].x = 1
-    corner_levels[2].y = 0
-    corner_levels[2].z = 0
-    corner_levels[3].x = 1
-    corner_levels[3].y = 0
-    corner_levels[3].z = 1
-    corner_levels[4].x = 0
-    corner_levels[4].y = 0
-    corner_levels[4].z = 1
+    corner_levels_to_be_modified[1].x = 0
+    corner_levels_to_be_modified[1].y = 0
+    corner_levels_to_be_modified[1].z = 0
+    corner_levels_to_be_modified[2].x = 1
+    corner_levels_to_be_modified[2].y = 0
+    corner_levels_to_be_modified[2].z = 0
+    corner_levels_to_be_modified[3].x = 1
+    corner_levels_to_be_modified[3].y = 0
+    corner_levels_to_be_modified[3].z = 1
+    corner_levels_to_be_modified[4].x = 0
+    corner_levels_to_be_modified[4].y = 0
+    corner_levels_to_be_modified[4].z = 1
 end
 
 -- https://github.com/appgurueu/modlib/blob/master/vector.lua
