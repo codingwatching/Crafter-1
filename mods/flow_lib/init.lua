@@ -173,11 +173,11 @@ function get_liquid_flow_direction(pos)
     -- This returns a predefined linear array {1=data,2=data,3=data,4=data}
     local corner_levels = get_liquid_corner_levels(pos)
 
-    local max_level = corner_levels[1][2]
+    local max_level = corner_levels[1].y
 
     for index = 2, 4 do
 
-        local level = corner_levels[index][2]
+        local level = corner_levels[index].y
 
         if level > max_level then
 
@@ -193,7 +193,7 @@ function get_liquid_flow_direction(pos)
     -- Always indexed 1,2,3,4
     for max_level_index, corner_level in ipairs(corner_levels) do
 
-        if corner_level[2] == max_level then goto continue end
+        if corner_level.y ~= max_level then goto continue end
 
         -- 1,2,3
         for offset = 1,3 do
@@ -202,11 +202,11 @@ function get_liquid_flow_direction(pos)
 
             local diff = corner_level - corner_levels[index]
 
-            if diff[2] == 0 then goto skip end
+            if diff.y == 0 then goto skip end
 
-            diff[1] = diff[1] * diff[2]
+            diff.x = diff.x * diff.y
 
-            diff[3] = diff[3] * diff[2]
+            diff.z = diff.z * diff.y
 
             if offset == 3 then
                 diff = divide_scalar(diff, math.sqrt(2))
