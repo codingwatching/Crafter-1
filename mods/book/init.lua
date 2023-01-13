@@ -91,6 +91,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     if editable and setting_max_page then
         meta:set_string("max_pages", page)
         max_page = page
+        print("REMEMBER TO REMOVE THE METADATA AFTER THIS!")
     end
 
     local book_text = meta:get_string("book_text_" .. page)
@@ -113,7 +114,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         close_button_width = 2
         close_button_offset = 0
         close_button_id = "book_write"
-        page_offset = 3.5
+        page_offset = 2.3
     end
 
     local book_formspec = "size[9,8.75]" ..
@@ -127,7 +128,11 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         "button[" .. page_offset .. ",8.25;2,1;current_page;Page: " .. page .. "/" .. max_page .. "]"
 
     if editable then
-        book_formspec = book_formspec .. "button[7,8.25;2,1;book_ink;ink]"
+        book_formspec = book_formspec ..
+        "button[7,8.25;2,1;book_ink;Ink]" ..
+        "button[4.7,8.25;2,1;book_max_page;Set Max Page]"
+
+
     else
         -- Invisible helper label
         book_formspec = book_formspec .. "field[0,0;0,0;book_locked;book_locked;]"
@@ -164,13 +169,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- TODO: fix this logic gate mess
     -- This is the save text logic gate
-    if not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and not fields["book_ink"] and fields["book_text"] and fields["book_title"] then
+    if not fields["book_locked"] and fields["book_write"] then
+        
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_write_to_player(player)
         save_current_page(player, fields)
 
     -- This is the lock book (ink it permenantly) logic gate
-    elseif not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and fields["book_ink"] and fields["book_text"] and fields["book_title"] then
+    elseif not fields["book_locked"] and fields["book_ink"] then
 
         -- TODO: Make a custom transfer here or figure out how it works in the api
 
@@ -204,6 +210,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local book_name = fields["book_title"] or ""
 
         open_book_item_gui(player, true, -1, old_data, book_name)
+        
+    elseif fields["book_max_page"] then
+        print("SETTING THE MAX PAGE!")
 
         -- This is the fallthrough locked book closing and players hitting escape or close and the gui is now closed in an editable book
     elseif fields["book_locked"]  or fields["quit"] then
