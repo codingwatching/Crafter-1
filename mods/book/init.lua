@@ -61,7 +61,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         -- Save the old page's data
         meta:set_string("book_text_" .. page, previous_data)
     end
-    
+
     -- Auto generate new pages makes it create a new page when you click to the right
     local auto_page = meta:get_int("auto_page")
 
@@ -73,7 +73,6 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         end
         meta:set_int("auto_page", auto_page)
     end
-    
 
     local book_title = book_name or meta:get_string("book_title")
     if book_title then
@@ -158,7 +157,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         -- Invisible helper label
         book_formspec = book_formspec .. "field[0,0;0,0;book_locked;book_locked;]"
     end
- 
+
     minetest.show_formspec( user:get_player_name(), "book_gui", book_formspec )
 
     user:set_wielded_item(itemstack)
@@ -308,7 +307,7 @@ minetest.register_craftitem("book:book_written",{
     groups = {book = 1, written = 1},
     stack_max = 1,
     inventory_image = "book_written.png",
-    
+
     on_place = function(itemstack, user, pointed_thing)
 
         if not pointed_thing.type == "node" then
