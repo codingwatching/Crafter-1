@@ -141,8 +141,18 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     user:set_wielded_item(itemstack)
 end
 
-local function save_current_page(player)
+local function save_current_page(player, fields)
 
+    print("saving book")
+
+    local itemstack = player:get_wielded_item()
+    local meta = itemstack:get_meta()
+    local current_page = meta:get_int("page")
+
+    meta:set_string("book_title", fields["book_title"])
+    meta:set_string("book_text_" .. current_page, fields["book_text"])
+
+    player:set_wielded_item(itemstack)
 end
 
 -- Handes the book gui
@@ -153,22 +163,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- Player accidentally clicked the page button
     if fields["current_page"] then return end
 
+    -- TODO: fix this logic gate mess
     -- This is the save text logic gate
     if not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and not fields["book_ink"] and fields["book_text"] and fields["book_title"] then
-        
-        local itemstack = player:get_wielded_item()
-        local meta = itemstack:get_meta()
-        local current_page = meta:get_int("page")
-
-        meta:set_string( "book_title", fields[ "book_title" ] )
-        meta:set_string( "description", fields[ "book_title" ] )
-        meta:set_string( "book_text_" .. current_page, fields[ "book_text" ] )
-
-        player:set_wielded_item(itemstack)
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_write_to_player(player)
-
-        print("save here")
+        save_current_page(player, fields)
 
     -- This is the lock book (ink it permenantly) logic gate
     elseif not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and fields["book_ink"] and fields["book_text"] and fields["book_title"] then
@@ -206,19 +206,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
         open_book_item_gui(player, true, -1, old_data, book_name)
 
-        -- This is the fallthrough locked book closing
-    elseif fields["book_locked"] then
-        print("closing formspec")
+        -- This is the fallthrough locked book closing and players hitting escape or close and the gui is now closed in an editable book
+    elseif fields["book_locked"]  or fields["quit"] then
+
+        -- If editable book, then all changes to the current page are lost :(
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_closed_to_player( player )
-
-        -- Player hit escape or close and the gui is now closed
-    elseif fields["quit"] then
-        print("the player quit")
-        play_book_closed_to_player( player )
-
-        print("save here")
-        
     end
 end)
 
