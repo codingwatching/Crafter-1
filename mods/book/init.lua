@@ -73,7 +73,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
 
     page = page + page_modification
 
-    -- Page underflow catch
+    -- Page underflow & overflow catches
     if page == 0 then
         page = max_page
         -- Player has reached the max number of pages allowed
@@ -93,7 +93,6 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         max_page = page
     end
 
-    
     local book_text = meta:get_string("book_text_" .. page)
 
     -- TODO: REMOVE THIS WORKAROUND FOR THE NOT UPDATING GLITCH WHEN IT IS FIXED
