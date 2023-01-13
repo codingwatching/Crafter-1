@@ -142,26 +142,20 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
 end
 
 local function save_current_page(player)
-    
+
 end
 
 -- Handes the book gui
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 
-    if formname ~= "book_gui" then
-        return
-    end
+    if formname ~= "book_gui" then return end
 
     -- Player accidentally clicked the page button
-    if fields["current_page"] then
-        print("oop")
-        return
-    end
+    if fields["current_page"] then return end
 
     -- This is the save text logic gate
     if not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and not fields["book_ink"] and fields["book_text"] and fields["book_title"] then
         
-        print("ERROR 1")
         local itemstack = player:get_wielded_item()
         local meta = itemstack:get_meta()
         local current_page = meta:get_int("page")
@@ -174,9 +168,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_write_to_player(player)
 
+        print("save here")
+
     -- This is the lock book (ink it permenantly) logic gate
     elseif not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and fields["book_ink"] and fields["book_text"] and fields["book_title"] then
-        print("ERROR 2")
+        -- TODO: Make a custom transfer here or figure out how it works in the api
         
         local itemstack = ItemStack( "book:book_written" )
         local old_stack = player:get_wielded_item()
@@ -214,11 +210,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields["book_locked"] then
         print("closing formspec")
         minetest.close_formspec( player:get_player_name(), "book_gui" )
-        -- Player hit escape or close and the gui is now closed
         play_book_closed_to_player( player )
+
+        -- Player hit escape or close and the gui is now closed
     elseif fields["quit"] then
         print("the player quit")
         play_book_closed_to_player( player )
+
+        print("save here")
         
     end
 end)
