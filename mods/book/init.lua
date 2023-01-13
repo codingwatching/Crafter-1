@@ -37,18 +37,7 @@ local function play_book_write_to_player( author )
     })
 end
 
--- Checks the fields of a formspec easily
-local function field_check(intake, ...)
-    local gotten_arguments = {...}
-    local check_length = #gotten_arguments
-    for _,key in ipairs(gotten_arguments) do
-        if not intake[key] then return false end
-        check_length = check_length - 1
-    end
-    return check_length <= 0
-end
 
---this is the gui for un-inked books
 
 -- TODO: replace user with author as a variable name
 local function open_book_item_gui( user, editable, page_modification, previous_data, book_name)
