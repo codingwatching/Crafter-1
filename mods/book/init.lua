@@ -95,38 +95,39 @@ end
 -- Handes the book gui
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 
-    print(formname)
-
-    if not formname == "book.book_gui" then return end
-
-    if fields["book.book_close"] then
-        play_book_closed_to_player( player )
+    if formname ~= "book.book_gui" then return end
     
-    elseif field_check(fields, "book.book_write", "book.book_text") then
+    if field_check( fields, "book.book_write", "book.book_text" ) then
 
-        local itemstack = ItemStack("book:book")
+        local itemstack = ItemStack( "book:book" )
 
         local meta = itemstack:get_meta()
 
-        meta:set_string("book.book_text", fields["book.book_text"])
-        meta:set_string("book.book_title", fields["book.book_title"])
-        meta:set_string("description", fields["book.book_title"])minetest.sound_play("book_write", {to_player=player:get_player_name()})
+        meta:set_string( "book.book_text", fields[ "book.book_text" ] )
+        meta:set_string( "book.book_title", fields[ "book.book_title" ] )
+        meta:set_string( "description", fields[ "book.book_title" ] )
+        minetest.sound_play("book_write", {
+            to_player = player:get_player_name()
+        })
         
         player:set_wielded_item(itemstack)
-        minetest.close_formspec(player:get_player_name(), "book.book_gui")
+        minetest.close_formspec( player:get_player_name(), "book.book_gui" )
 
         play_book_write_to_player(player)
 
-    elseif field_check("fields", "book.book_ink", "book.book_test") then
+    elseif field_check( "fields", "book.book_ink", "book.book_test" ) then
 
-        local itemstack = ItemStack("book:book_written")
+        local itemstack = ItemStack( "book:book_written" )
         local meta = itemstack:get_meta()
-        meta:set_string("book.book_text", fields["book.book_text"])
-        meta:set_string("book.book_title", fields["book.book_title"])    
-        meta:set_string("description", fields["book.book_title"])
-        player:set_wielded_item(itemstack)
-        minetest.close_formspec(player:get_player_name(), "book.book_gui")
+        meta:set_string( "book.book_text", fields[ "book.book_text" ] )
+        meta:set_string( "book.book_title", fields[ "book.book_title" ] )
+        meta:set_string( "description", fields[ "book.book_title" ] )
+        player:set_wielded_item( itemstack )
+        minetest.close_formspec( player:get_player_name(), "book.book_gui" )
 
+        play_book_closed_to_player( player )
+    else
+        -- Player hit escape or close and the gui is now closed
         play_book_closed_to_player( player )
     end
 end)
