@@ -71,17 +71,17 @@ local function open_book_item_gui(itemstack, user, editable )
         close_button_offset = -0.2
     end
 
-    local book_writing_formspec = "size[9,8.75]"..
+    local book_formspec = "size[9,8.75]"..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"..
         "style[book.book_text,book.book_title;textcolor=black;border=false;noclip=false]"..
         "textarea[0.3,0;9,0.5;book.book_title;;"..book_title.."]"..
         "textarea[0.3,0.3;9,9;book.book_text;;"..book_text.."]" ..
         "button[" .. close_button_offset .. ",8.3;" .. close_button_width .. ",1;book.book_write;" .. close_button .. "]"
-        
+
     if editable then
-        book_writing_formspec = book_writing_formspec .. "button[8.25,8.3;1,1;book.book_ink;ink]"
+        book_formspec = book_formspec .. "button[8.25,8.3;1,1;book.book_ink;ink]"
     end
-    minetest.show_formspec( user:get_player_name(), "book.book_gui", book_writing_formspec )
+    minetest.show_formspec( user:get_player_name(), "book.book_gui", book_formspec )
 end
 
 -- TODO: replace user with author as a variable name
@@ -92,8 +92,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     if formname ~= "book.book_gui" then return end
 
-    print(dump(fields))
-    
     if not fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
 
         local itemstack = ItemStack( "book:book" )
@@ -106,7 +104,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.sound_play("book_write", {
             to_player = player:get_player_name()
         })
-        
+
         player:set_wielded_item(itemstack)
         minetest.close_formspec( player:get_player_name(), "book.book_gui" )
 
