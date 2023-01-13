@@ -8,6 +8,9 @@
     4.Maybe dye books?
 ]]
 
+-- Cause why not
+local max_pages = 64
+
 -- These are functions to clarify the state of the function's procedure
 local function play_book_open_sound_to_player( author )
     minetest.sound_play( "book_open", {
@@ -47,18 +50,29 @@ local function open_book_item_gui(itemstack, user, editable )
 
     local meta = itemstack:get_meta()
 
-    -- TODO: poll last page here
+    local max_page = meta:get_int("max_pages")
+    if max_page == 0 then
+        max_page = 1
+        meta:set_int("max_pages", 1)
+    end
 
-    local book_text = meta:get_string("book.book_text")
-
-    if book_text == "" then
-        book_text = "Text here"
+    local page = meta:get_int("page")
+    if page == 0 then
+        page = max_page
+        meta:set_int("page", max_page)
     end
 
     local book_title = meta:get_string("book.book_title")
     if book_title == "" then
         book_title = "Title here"
     end
+
+    local book_text = meta:get_string("book.book_text" .. page)
+    if book_text == "" then
+        book_text = "Text here"
+    end
+
+    print("I'm on page " .. page)
 
     -- These are defaults for an inked book
     local close_button = "Close"
@@ -76,7 +90,7 @@ local function open_book_item_gui(itemstack, user, editable )
     local book_formspec = "size[9,8.75]"..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"..
         "style[book.book_text,book.book_title;textcolor=black;border=true;noclip=false]"..
-        "textarea[0.3,0;9,1;book.book_title;;"..book_title.."]"..
+        "textarea[1.75,0;6,1;book.book_title;;"..book_title.."]"..
         "textarea[0.3,1;9,8.5;book.book_text;;"..book_text.."]" ..
         "button[" .. close_button_offset .. ",8.3;" .. close_button_width .. ",1;" .. close_button_id .. ";" .. close_button .. "]"
 
@@ -132,6 +146,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.close_formspec( player:get_player_name(), "book.book_gui" )
         play_book_closed_to_player( player )
 
+        
+        -- This is the fallthrough locked book closing
     elseif fields["book.book_locked"] then
         minetest.close_formspec( player:get_player_name(), "book.book_gui" )
         -- Player hit escape or close and the gui is now closed
