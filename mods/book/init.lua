@@ -1,3 +1,4 @@
+-- An important note: This does not reuse heap objects because strings can be very HUGE and it's not high performance. Does not need to be
 
 --[[
     TODO:
