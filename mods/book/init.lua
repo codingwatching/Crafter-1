@@ -149,8 +149,6 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         -- Invisible helper label
         book_formspec = book_formspec .. "field[0,0;0,0;book_locked;book_locked;]"
     end
-
-    -- print(dump(book_formspec))
  
     minetest.show_formspec( user:get_player_name(), "book_gui", book_formspec )
 
@@ -177,20 +175,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- Player accidentally clicked the page button
     if fields["current_page"] then return end
 
-    print(dump(fields))
+    local editable = fields["book_locked"] == nil
 
-    -- TODO: fix this logic gate mess
     -- This is the save text logic gate
-    if not fields["book_locked"] and fields["book_write"] then
-        
+    if editable and fields["book_write"] then
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_write_to_player(player)
         save_current_page(player, fields)
 
     -- This is the lock book (ink it permenantly) logic gate
-    elseif not fields["book_locked"] and fields["book_ink"] then
-
-        -- TODO: Make a custom transfer here or figure out how it works in the api
+    elseif editable and fields["book_ink"] then
 
         local itemstack = ItemStack( "book:book_written" )
         local old_stack = player:get_wielded_item()
@@ -198,14 +192,25 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local meta = itemstack:get_meta()
         local old_meta = old_stack:get_meta()
 
-        for key,value in pairs(old_meta:to_table()) do
-            meta[key] = value
+        local max_pages = old_meta:get_int("max_pages")
+
+        for i = 1,max_pages do
+            meta:set_string("book_text_" .. i, old_meta:get_string( "book_text_" .. i ) )
         end
+
+        local name = old_meta:get_string("book_title")
+        if name == "" then
+            name = "Uknown"
+        end
+        name = name .. " by " .. player:get_player_name()
+        meta:set_string("book_title", name)
+        meta:set_int("page", meta:get_int("page"))
+        meta:set_int("max_pages", max_pages)
 
         player:set_wielded_item( itemstack )
 
-        minetest.close_formspec( player:get_player_name(), "book_gui" )
-        play_book_closed_to_player( player )
+        play_book_write_to_player(player)
+        open_book_item_gui(player, false, 0)
 
         -- Turn the page
     elseif fields["book_button_next"] then
@@ -213,7 +218,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local old_data = fields["book_text"] or ""
         local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, true, 1, old_data, book_name)
+        open_book_item_gui(player, editable, 1, old_data, book_name)
 
         -- Turn back the page
     elseif fields["book_button_prev"] then
@@ -221,24 +226,23 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local old_data = fields["book_text"] or ""
         local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, true, -1, old_data, book_name)
-        
+        open_book_item_gui(player, editable, -1, old_data, book_name)
+
         -- Basically cuts the book off at the current page
     elseif fields["book_max_page"] then
-        
+
         local old_data = fields["book_text"] or ""
         local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, true, 0, old_data, book_name, true)
+        open_book_item_gui(player, editable, 0, old_data, book_name, true)
+
+        -- AutoPage toggle
     elseif fields["toggle_auto_page"] then
-        print("TOGGLE DAT PAGE")
 
         local old_data = fields["book_text"] or ""
         local book_name = fields["book_title"] or ""
 
         open_book_item_gui(player, true, 0, old_data, book_name, false, true)
-
-
 
         -- This is the fallthrough locked book closing and players hitting escape or close and the gui is now closed in an editable book
     elseif fields["book_locked"]  or fields["quit"] then
