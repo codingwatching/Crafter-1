@@ -64,22 +64,26 @@ local function open_book_item_gui(itemstack, user, editable )
     local close_button = "Close"
     local close_button_width = 1
     local close_button_offset = 4
+    local close_button_id = "book.book_close"
 
     if editable then
         close_button = "Write & close"
         close_button_width = 2
         close_button_offset = -0.2
+        close_button_id = "book.book_write"
     end
 
     local book_formspec = "size[9,8.75]"..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"..
-        "style[book.book_text,book.book_title;textcolor=black;border=false;noclip=false]"..
-        "textarea[0.3,0;9,0.5;book.book_title;;"..book_title.."]"..
-        "textarea[0.3,0.3;9,9;book.book_text;;"..book_text.."]" ..
-        "button[" .. close_button_offset .. ",8.3;" .. close_button_width .. ",1;book.book_write;" .. close_button .. "]"
+        "style[book.book_text,book.book_title;textcolor=black;border=true;noclip=false]"..
+        "textarea[0.3,0;9,1;book.book_title;;"..book_title.."]"..
+        "textarea[0.3,1;9,8.5;book.book_text;;"..book_text.."]" ..
+        "button[" .. close_button_offset .. ",8.3;" .. close_button_width .. ",1;" .. close_button_id .. ";" .. close_button .. "]"
 
     if editable then
         book_formspec = book_formspec .. "button[8.25,8.3;1,1;book.book_ink;ink]"
+    else
+        book_formspec = book_formspec .. "field[0,0;0,0;book.book_locked;book.locked;]"
     end
     minetest.show_formspec( user:get_player_name(), "book.book_gui", book_formspec )
 end
@@ -92,7 +96,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     if formname ~= "book.book_gui" then return end
 
-    if not fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
+    print(dump(fields))
+
+    -- This is the save text logic gate
+    if not fields["book.book_locked"] and not fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
 
         local itemstack = ItemStack( "book:book" )
 
@@ -110,20 +117,23 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
         play_book_write_to_player(player)
 
-    elseif fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
+        -- This is the locked book (inked) logic gate
+    elseif not fields["book.book_locked"] and fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
 
         local itemstack = ItemStack( "book:book_written" )
         local meta = itemstack:get_meta()
+        if meta:contains("locked") then goto skip end
         meta:set_string( "book.book_text", fields[ "book.book_text" ] )
         meta:set_string( "book.book_title", fields[ "book.book_title" ] )
         meta:set_string( "description", fields[ "book.book_title" ] )
         player:set_wielded_item( itemstack )
-        minetest.close_formspec( player:get_player_name(), "book.book_gui" )
 
+        ::skip::
+        minetest.close_formspec( player:get_player_name(), "book.book_gui" )
         play_book_closed_to_player( player )
 
-        print("doing this")
-    else
+    elseif fields["book.book_locked"] then
+        minetest.close_formspec( player:get_player_name(), "book.book_gui" )
         -- Player hit escape or close and the gui is now closed
         play_book_closed_to_player( player )
     end
