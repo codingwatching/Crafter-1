@@ -41,63 +41,60 @@ end
 --this is the gui for un-inked books
 
 -- TODO: replace user with author as a variable name
-local function open_book_item_gui(itemstack, user)
+local function open_book_item_gui(itemstack, user, editable )
 
     play_book_open_sound_to_player( user )
 
     local meta = itemstack:get_meta()
 
+    -- TODO: poll last page here
+
     local book_text = meta:get_string("book.book_text")
-    
 
     if book_text == "" then
-
         book_text = "Text here"
-
     end
 
     local book_title = meta:get_string("book.book_title")
-
     if book_title == "" then
         book_title = "Title here"
+    end
+
+    -- These are defaults for an inked book
+    local close_button = "Close"
+    local close_button_width = 1
+    local close_button_offset = 4
+
+    if editable then
+        close_button = "Write & close"
+        close_button_width = 2
+        close_button_offset = -0.2
     end
 
     local book_writing_formspec = "size[9,8.75]"..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"..
         "style[book.book_text,book.book_title;textcolor=black;border=false;noclip=false]"..
         "textarea[0.3,0;9,0.5;book.book_title;;"..book_title.."]"..
-        "textarea[0.3,0.3;9,9;book.book_text;;"..book_text.."]"..
-        "button[-0.2,8.3;1,1;book.book_write;write]"..
-        "button[8.25,8.3;1,1;book.book_ink;ink  ]"
-    minetest.show_formspec(user:get_player_name(), "book.book_gui", book_writing_formspec)
+        "textarea[0.3,0.3;9,9;book.book_text;;"..book_text.."]" ..
+        "button[" .. close_button_offset .. ",8.3;" .. close_button_width .. ",1;book.book_write;" .. close_button .. "]"
+        
+    if editable then
+        book_writing_formspec = book_writing_formspec .. "button[8.25,8.3;1,1;book.book_ink;ink]"
+    end
+    minetest.show_formspec( user:get_player_name(), "book.book_gui", book_writing_formspec )
 end
 
 -- TODO: replace user with author as a variable name
 -- The gui for permenantly written books
 
-local function open_book_item_written_gui(itemstack, user)
-
-    play_book_open_sound_to_player( user )
-
-    local meta = itemstack:get_meta()
-    local book_text = meta:get_string("book.book_text")
-    local book_title = meta:get_string("book.book_title")
-    local book_writing_formspec = "size[9,8.75]"..
-        "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"..
-        "style_type[textarea;textcolor=black;border=false;noclip=false]"..
-        "textarea[0.3,0;9,0.5;;;"..book_title.."]"..
-        "textarea[0.3,0.3;9,9;;;"..book_text.."]"..
-        "button_exit[4,8.3;1,1;book.book_close;close]"
-    minetest.show_formspec(user:get_player_name(), "book.book_gui", book_writing_formspec)
-end
-
-
 -- Handes the book gui
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     if formname ~= "book.book_gui" then return end
+
+    print(dump(fields))
     
-    if field_check( fields, "book.book_write", "book.book_text" ) then
+    if not fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
 
         local itemstack = ItemStack( "book:book" )
 
@@ -115,7 +112,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
         play_book_write_to_player(player)
 
-    elseif field_check( "fields", "book.book_ink", "book.book_test" ) then
+    elseif fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
 
         local itemstack = ItemStack( "book:book_written" )
         local meta = itemstack:get_meta()
@@ -126,6 +123,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.close_formspec( player:get_player_name(), "book.book_gui" )
 
         play_book_closed_to_player( player )
+
+        print("doing this")
     else
         -- Player hit escape or close and the gui is now closed
         play_book_closed_to_player( player )
@@ -133,7 +132,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 end)
 
 
---this is the book item
+-- Book that is able to be edited
 minetest.register_craftitem("book:book",{
     description = "Book",
     groups = {book = 1, written = 0},
@@ -154,15 +153,15 @@ minetest.register_craftitem("book:book",{
             return
         end
         --print("make books placable on the ground")
-        open_book_item_gui(itemstack, user)
+        open_book_item_gui(itemstack, user, true)
     end,
 
     on_secondary_use = function(itemstack, user, pointed_thing)
-        open_book_item_gui(itemstack, user)
+        open_book_item_gui(itemstack, user, true)
     end,
 })
 
---permenantly written books
+-- Permenantly written books
 minetest.register_craftitem("book:book_written",{
     description = "Book",
     groups = {book = 1, written = 1},
@@ -189,11 +188,11 @@ minetest.register_craftitem("book:book_written",{
             return
         end
 
-        open_book_item_written_gui(itemstack, user)
+        open_book_item_gui(itemstack, user, false)
     end,
 
     on_secondary_use = function(itemstack, user, pointed_thing)
-        open_book_item_written_gui(itemstack, user)
+        open_book_item_gui(itemstack, user, false)
     end,
 })
 
