@@ -212,7 +212,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         open_book_item_gui(player, true, -1, old_data, book_name)
         
     elseif fields["book_max_page"] then
-        print("SETTING THE MAX PAGE!")
+        
+        local old_data = fields["book_text"] or ""
+        local book_name = fields["book_title"] or ""
+
+        open_book_item_gui(player, true, 0, old_data, book_name, true)
 
         -- This is the fallthrough locked book closing and players hitting escape or close and the gui is now closed in an editable book
     elseif fields["book_locked"]  or fields["quit"] then
