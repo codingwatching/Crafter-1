@@ -136,7 +136,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
 
     local book_formspec = "size[9,8.75]" ..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]" ..
-        "style[book_text,book_title;textcolor=black;border=true;noclip=false]" ..
+        "style[" .. text_area_name .. "," .. title_area_name .. ";textcolor=black;border=true;noclip=false]" ..
         "textarea[1.75,0;6,1;" .. title_area_name .. ";;" .. book_title .."]" ..
         "textarea[0.3,1;9,8.5;" .. text_area_name .. ";;" .. book_text .."]"  ..
         "button[" .. close_button_offset .. ",8.25;" .. close_button_width .. ",1;" .. close_button_id .. ";" .. close_button .. "]" ..
