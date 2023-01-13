@@ -11,6 +11,8 @@
     3.a make a nice looking node that represents a book
     4.Maybe make a book animation for when it's opening?
     5.Maybe dye books?
+
+    -- TODO: replace user with author as a variable name
 ]]
 
 -- Cause why not
@@ -49,7 +51,7 @@ end
 --this is the gui for un-inked books
 
 -- TODO: replace user with author as a variable name
-local function open_book_item_gui( user, editable, page_modification, previous_data)
+local function open_book_item_gui( user, editable, page_modification, previous_data, book_name)
 
     play_book_open_sound_to_player( user )
 
@@ -67,9 +69,13 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     local page = meta:get_int("page")
     
     if previous_data then
-        print("page " .. page .. " previous: " .. previous_data)
         -- Save the old page's data
         meta:set_string("book_text_" .. page, previous_data)
+    end
+
+    local book_title = book_name or meta:get_string("book_title")
+    if book_title then
+        meta:set_string("book_name", book_title)
     end
 
     page = page + page_modification
@@ -87,10 +93,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     end
     meta:set_int("max_pages", max_page)
     meta:set_int("page", page)
-
-    print("I am now on page " .. page)
     
-    local book_title = meta:get_string("book_title")
     local book_text = meta:get_string("book_text_" .. page)
 
     -- TODO: FIX THIS WORKAROUND FOR THE NOT UPDATING GLITCH WHEN IT IS FIXED
@@ -109,28 +112,25 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     if editable then
         close_button = "Write & close"
         close_button_width = 2
-        close_button_offset = -0.2
+        close_button_offset = 0
         close_button_id = "book_write"
-        page_offset = 3.75
+        page_offset = 3.5
     end
-
-
 
     local book_formspec = "size[9,8.75]" ..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]" ..
         "style[book_text,book_title;textcolor=black;border=true;noclip=false]" ..
         "textarea[1.75,0;6,1;book_title;;" .. book_title .."]" ..
         "textarea[0.3,1;9,8.5;book_text;;" .. book_text .."]"  ..
-        "button[" .. close_button_offset .. ",8.3;" .. close_button_width .. ",1;" .. close_button_id .. ";" .. close_button .. "]" ..
+        "button[" .. close_button_offset .. ",8.25;" .. close_button_width .. ",1;" .. close_button_id .. ";" .. close_button .. "]" ..
         "button[0,-0.025;1,1;book_button_prev;Prev]" ..
-        "button[8,-0.025;1,1;book_button_next;Next]" .. 
-        -- "label[" .. page_offset .. ",8.5;Page: " .. page .. "]" ..
-        "button[" .. page_offset .. ",8.3;2,1;current_page;Page: " .. page .. "]"
-        -- "style[page_offset;textcolor=black]"
+        "button[8,-0.025;1,1;book_button_next;Next]" ..
+        "button[" .. page_offset .. ",8.25;2,1;current_page;Page: " .. page .. "/" .. max_page .. "]"
 
     if editable then
-        book_formspec = book_formspec .. "button[8.25,8.3;1,1;book_ink;ink]"
+        book_formspec = book_formspec .. "button[7,8.25;2,1;book_ink;ink]"
     else
+        -- Invisible helper label
         book_formspec = book_formspec .. "field[0,0;0,0;book_locked;book_locked;]"
     end
 
@@ -141,8 +141,9 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     user:set_wielded_item(itemstack)
 end
 
--- TODO: replace user with author as a variable name
--- The gui for permenantly written books
+local function save_current_page(player)
+    
+end
 
 -- Handes the book gui
 minetest.register_on_player_receive_fields(function(player, formname, fields)
@@ -152,7 +153,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     -- Player accidentally clicked the page button
-    if fields["current_page"] then return end
+    if fields["current_page"] then
+        print("oop")
+        return
+    end
 
     -- This is the save text logic gate
     if not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and not fields["book_ink"] and fields["book_text"] and fields["book_title"] then
@@ -194,15 +198,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     elseif fields["book_button_next"] then
 
         local old_data = fields["book_text"] or ""
+        local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, true, 1, old_data)
+        open_book_item_gui(player, true, 1, old_data, book_name)
 
         -- Turn back the page
     elseif fields["book_button_prev"] then
 
         local old_data = fields["book_text"] or ""
+        local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, true, -1, old_data)
+        open_book_item_gui(player, true, -1, old_data, book_name)
 
         -- This is the fallthrough locked book closing
     elseif fields["book_locked"] then
@@ -210,6 +216,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         -- Player hit escape or close and the gui is now closed
         play_book_closed_to_player( player )
+    elseif fields["quit"] then
+        print("the player quit")
+        play_book_closed_to_player( player )
+        
     end
 end)
 
