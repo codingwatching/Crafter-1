@@ -143,8 +143,6 @@ end
 
 local function save_current_page(player, fields)
 
-    print("saving book")
-
     local itemstack = player:get_wielded_item()
     local meta = itemstack:get_meta()
     local current_page = meta:get_int("page")
@@ -163,6 +161,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- Player accidentally clicked the page button
     if fields["current_page"] then return end
 
+    print(dump(fields))
+
     -- TODO: fix this logic gate mess
     -- This is the save text logic gate
     if not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and not fields["book_ink"] and fields["book_text"] and fields["book_title"] then
@@ -172,8 +172,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- This is the lock book (ink it permenantly) logic gate
     elseif not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and fields["book_ink"] and fields["book_text"] and fields["book_title"] then
+
         -- TODO: Make a custom transfer here or figure out how it works in the api
-        
+
         local itemstack = ItemStack( "book:book_written" )
         local old_stack = player:get_wielded_item()
 
@@ -185,11 +186,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
 
         player:set_wielded_item( itemstack )
-        
+
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_closed_to_player( player )
-        
-        
+
         -- Turn the page
     elseif fields["book_button_next"] then
 
