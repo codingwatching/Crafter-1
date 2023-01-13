@@ -104,12 +104,17 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     local close_button_offset = 4
     local close_button_id = "book_close"
 
+    local page_offset = 5
+
     if editable then
         close_button = "Write & close"
         close_button_width = 2
         close_button_offset = -0.2
         close_button_id = "book_write"
+        page_offset = 3.75
     end
+
+
 
     local book_formspec = "size[9,8.75]" ..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]" ..
@@ -118,7 +123,10 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         "textarea[0.3,1;9,8.5;book_text;;" .. book_text .."]"  ..
         "button[" .. close_button_offset .. ",8.3;" .. close_button_width .. ",1;" .. close_button_id .. ";" .. close_button .. "]" ..
         "button[0,-0.025;1,1;book_button_prev;Prev]" ..
-        "button[8,-0.025;1,1;book_button_next;Next]"
+        "button[8,-0.025;1,1;book_button_next;Next]" .. 
+        -- "label[" .. page_offset .. ",8.5;Page: " .. page .. "]" ..
+        "button[" .. page_offset .. ",8.3;2,1;current_page;Page: " .. page .. "]"
+        -- "style[page_offset;textcolor=black]"
 
     if editable then
         book_formspec = book_formspec .. "button[8.25,8.3;1,1;book_ink;ink]"
@@ -142,6 +150,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "book_gui" then
         return
     end
+
+    -- Player accidentally clicked the page button
+    if fields["current_page"] then return end
 
     -- This is the save text logic gate
     if not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and not fields["book_ink"] and fields["book_text"] and fields["book_title"] then
