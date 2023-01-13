@@ -40,7 +40,7 @@ end
 
 
 -- TODO: replace user with author as a variable name
-local function open_book_item_gui( user, editable, page_modification, previous_data, book_name, setting_max_page)
+local function open_book_item_gui( user, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page)
 
     play_book_open_sound_to_player( user )
 
@@ -63,8 +63,17 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     end
     
     -- Auto generate new pages makes it create a new page when you click to the right
-    local auto_generate_new_pages = false
+    local auto_page = meta:get_int("auto_page")
 
+    if toggle_auto_page then
+        if auto_page == 0 then
+            auto_page = 1
+        else
+            auto_page = 0
+        end
+        meta:set_int("auto_page", auto_page)
+    end
+    
 
     local book_title = book_name or meta:get_string("book_title")
     if book_title then
@@ -79,7 +88,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         -- Player has reached the max number of pages allowed
     elseif page > MAX_BOOK_PAGES then
         page = 1
-    elseif editable and page > max_page then
+    elseif auto_page == 1 and editable and page > max_page then
         max_page = max_page + 1
     elseif page > max_page then
         page = 1
@@ -112,9 +121,9 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     if editable then
         close_button = "Write & close"
         close_button_width = 2
-        close_button_offset = 0
+        close_button_offset = -0.19
         close_button_id = "book_write"
-        page_offset = 2.3
+        page_offset = 1.675
     end
 
     local book_formspec = "size[9,8.75]" ..
@@ -128,10 +137,13 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         "button[" .. page_offset .. ",8.25;2,1;current_page;Page: " .. page .. "/" .. max_page .. "]"
 
     if editable then
-        book_formspec = book_formspec ..
-        "button[7,8.25;2,1;book_ink;Ink]" ..
-        "button[4.7,8.25;2,1;book_max_page;Set Max Page]"
 
+        local auto_page_display = tostring(auto_page == 1):gsub("^%l", string.upper)
+
+        book_formspec = book_formspec ..
+        "button[7.25,8.25;2,1;book_ink;Ink]" ..
+        "button[5.375,8.25;2,1;book_max_page;Set Max Page]" ..
+        "button[3.525,8.25;2,1;toggle_auto_page;AutoPage: " .. auto_page_display .. "]"
 
     else
         -- Invisible helper label
@@ -211,12 +223,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
         open_book_item_gui(player, true, -1, old_data, book_name)
         
+        -- Basically cuts the book off at the current page
     elseif fields["book_max_page"] then
         
         local old_data = fields["book_text"] or ""
         local book_name = fields["book_title"] or ""
 
         open_book_item_gui(player, true, 0, old_data, book_name, true)
+    elseif fields["toggle_auto_page"] then
+        print("TOGGLE DAT PAGE")
+
+        local old_data = fields["book_text"] or ""
+        local book_name = fields["book_title"] or ""
+
+        open_book_item_gui(player, true, 0, old_data, book_name, false, true)
+
+
 
         -- This is the fallthrough locked book closing and players hitting escape or close and the gui is now closed in an editable book
     elseif fields["book_locked"]  or fields["quit"] then
