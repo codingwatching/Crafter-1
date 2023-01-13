@@ -49,13 +49,13 @@ end
 --this is the gui for un-inked books
 
 -- TODO: replace user with author as a variable name
-local function open_book_item_gui(itemstack, user, editable )
+local function open_book_item_gui( user, editable, page_modification, previous_data)
 
     play_book_open_sound_to_player( user )
 
-    local meta = itemstack:get_meta()
+    local itemstack = user:get_wielded_item()
 
-    print("on loading I am on page " .. meta:get_int("page"))
+    local meta = itemstack:get_meta()
 
     local max_page = meta:get_int("max_pages")
 
@@ -65,67 +65,72 @@ local function open_book_item_gui(itemstack, user, editable )
     end
 
     local page = meta:get_int("page")
+    
+    if previous_data then
+        print("page " .. page .. " previous: " .. previous_data)
+        -- Save the old page's data
+        meta:set_string("book_text_" .. page, previous_data)
+    end
+
+    page = page + page_modification
 
     -- Page underflow catch
     if page == 0 then
         page = max_page
-        meta:set_int("page", max_page)
         -- Player has reached the max number of pages allowed
     elseif page > MAX_BOOK_PAGES then
         page = 1
-        meta:set_int("page", 1)
     elseif editable and page > max_page then
         max_page = max_page + 1
-        meta:set_int("max_pages", max_page)
     elseif page > max_page then
         page = 1
-        meta:set_int("page", 1)
     end
+    meta:set_int("max_pages", max_page)
+    meta:set_int("page", page)
 
-    print("I'm on page " .. page)
+    print("I am now on page " .. page)
+    
+    local book_title = meta:get_string("book_title")
+    local book_text = meta:get_string("book_text_" .. page)
 
-    local book_title = meta:get_string("book.book_title")
-
-    local book_text = meta:get_string("book.book_text_" .. page)
+    -- TODO: FIX THIS WORKAROUND FOR THE NOT UPDATING GLITCH WHEN IT IS FIXED
     if book_text == "" then
-        book_text = "NO DATA"
+        book_text = tostring(math.random())
     end
-
-    print("THE NEW DATA: " .. book_text)
 
     -- These are defaults for an inked book
     local close_button = "Close"
     local close_button_width = 1
     local close_button_offset = 4
-    local close_button_id = "book.book_close"
+    local close_button_id = "book_close"
 
     if editable then
         close_button = "Write & close"
         close_button_width = 2
         close_button_offset = -0.2
-        close_button_id = "book.book_write"
+        close_button_id = "book_write"
     end
 
     local book_formspec = "size[9,8.75]" ..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]" ..
-        "style[book.book_text,book.book_title;textcolor=black;border=true;noclip=false]" ..
-        "textarea[1.75,0;6,1;book.book_title;;" .. book_title .."]" ..
-        "textarea[0.3,1;9,8.5;book.book_text;;" .. book_text .."]"  ..
+        "style[book_text,book_title;textcolor=black;border=true;noclip=false]" ..
+        "textarea[1.75,0;6,1;book_title;;" .. book_title .."]" ..
+        "textarea[0.3,1;9,8.5;book_text;;" .. book_text .."]"  ..
         "button[" .. close_button_offset .. ",8.3;" .. close_button_width .. ",1;" .. close_button_id .. ";" .. close_button .. "]" ..
-        "button[0,-0.025;1,1;book.button_prev;Prev]" ..
-        "button[8,-0.025;1,1;book.button_next;Next]"
+        "button[0,-0.025;1,1;book_button_prev;Prev]" ..
+        "button[8,-0.025;1,1;book_button_next;Next]"
 
     if editable then
-        book_formspec = book_formspec .. "button[8.25,8.3;1,1;book.book_ink;ink]"
+        book_formspec = book_formspec .. "button[8.25,8.3;1,1;book_ink;ink]"
     else
-        book_formspec = book_formspec .. "field[0,0;0,0;book.book_locked;book.locked;]"
+        book_formspec = book_formspec .. "field[0,0;0,0;book_locked;book_locked;]"
     end
 
-    print(page .. "'s text data is: " .. book_text)
-        
-    minetest.show_formspec( user:get_player_name(), "book.book_gui", book_formspec )
+    -- print(dump(book_formspec))
+ 
+    minetest.show_formspec( user:get_player_name(), "book_gui", book_formspec )
 
-    return itemstack
+    user:set_wielded_item(itemstack)
 end
 
 -- TODO: replace user with author as a variable name
@@ -134,26 +139,28 @@ end
 -- Handes the book gui
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 
-    if formname ~= "book.book_gui" then return end
+    if formname ~= "book_gui" then
+        return
+    end
 
     -- This is the save text logic gate
-    if not fields["book.button_next"] and not fields["book.button_prev"] and not fields["book.book_locked"] and not fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
+    if not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and not fields["book_ink"] and fields["book_text"] and fields["book_title"] then
         
         print("ERROR 1")
         local itemstack = player:get_wielded_item()
         local meta = itemstack:get_meta()
         local current_page = meta:get_int("page")
 
-        meta:set_string( "book.book_title", fields[ "book.book_title" ] )
-        meta:set_string( "description", fields[ "book.book_title" ] )
-        meta:set_string( "book.book_text_" .. current_page, fields[ "book.book_text" ] )
+        meta:set_string( "book_title", fields[ "book_title" ] )
+        meta:set_string( "description", fields[ "book_title" ] )
+        meta:set_string( "book_text_" .. current_page, fields[ "book_text" ] )
 
         player:set_wielded_item(itemstack)
-        minetest.close_formspec( player:get_player_name(), "book.book_gui" )
+        minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_write_to_player(player)
 
     -- This is the lock book (ink it permenantly) logic gate
-    elseif not fields["book.button_next"] and not fields["book.button_prev"] and not fields["book.book_locked"] and fields["book.book_ink"] and fields["book.book_text"] and fields["book.book_title"] then
+    elseif not fields["book_button_next"] and not fields["book_button_prev"] and not fields["book_locked"] and fields["book_ink"] and fields["book_text"] and fields["book_title"] then
         print("ERROR 2")
         
         local itemstack = ItemStack( "book:book_written" )
@@ -168,51 +175,28 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
         player:set_wielded_item( itemstack )
         
-        minetest.close_formspec( player:get_player_name(), "book.book_gui" )
+        minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_closed_to_player( player )
         
         
         -- Turn the page
-    elseif fields["book.button_next"] then
+    elseif fields["book_button_next"] then
 
-        print("I'm turning the page")
-        
-        local itemstack = player:get_wielded_item()
-        local meta = itemstack:get_meta()
-        local current_page = meta:get_int("page")
+        local old_data = fields["book_text"] or ""
 
-        meta:set_string( "book.book_title", fields[ "book.book_title" ] )
-        meta:set_string( "description", fields[ "book.book_title" ] )
-        meta:set_string( "book.book_text_" .. current_page, fields[ "book.book_text" ] )
-
-        print("saving page " .. current_page)
-
-        meta:set_int("page", current_page + 1)
-
-        player:set_wielded_item(itemstack)
-
-        itemstack = open_book_item_gui(itemstack, player, true)
-
-        player:set_wielded_item(itemstack)
+        open_book_item_gui(player, true, 1, old_data)
 
         -- Turn back the page
-    elseif fields["book.button_prev"] then
+    elseif fields["book_button_prev"] then
 
-        local itemstack = player:get_wielded_item()
-        local meta = itemstack:get_meta()
-        local current_page = meta:get_int("page")
-        meta:set_int("page", current_page - 1)
+        local old_data = fields["book_text"] or ""
 
-        player:set_wielded_item(itemstack)
-
-        itemstack = open_book_item_gui(itemstack, player, true)
-
-        player:set_wielded_item(itemstack)
+        open_book_item_gui(player, true, -1, old_data)
 
         -- This is the fallthrough locked book closing
-    elseif fields["book.book_locked"] then
+    elseif fields["book_locked"] then
         print("closing formspec")
-        minetest.close_formspec( player:get_player_name(), "book.book_gui" )
+        minetest.close_formspec( player:get_player_name(), "book_gui" )
         -- Player hit escape or close and the gui is now closed
         play_book_closed_to_player( player )
     end
@@ -240,13 +224,11 @@ minetest.register_craftitem("book:book",{
             return
         end
         --print("make books placable on the ground")
-        itemstack = open_book_item_gui(itemstack, user, true)
-        user:set_wielded_item(itemstack)
+        open_book_item_gui( user, true, 0)
     end,
 
     on_secondary_use = function(itemstack, user, pointed_thing)
-        itemstack = open_book_item_gui(itemstack, user, true)
-        user:set_wielded_item(itemstack)
+        open_book_item_gui( user, true, 0)
     end,
 })
 
@@ -277,13 +259,11 @@ minetest.register_craftitem("book:book_written",{
             return
         end
 
-        itemstack = open_book_item_gui(itemstack, user, false)
-        user:set_wielded_item(itemstack)
+        open_book_item_gui(user, false, 0)
     end,
 
     on_secondary_use = function(itemstack, user, pointed_thing)
-        itemstack = open_book_item_gui(itemstack, user, false)
-        user:set_wielded_item(itemstack)
+        open_book_item_gui(user, false, 0)
     end,
 })
 
