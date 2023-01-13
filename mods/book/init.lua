@@ -40,7 +40,7 @@ end
 
 
 -- TODO: replace user with author as a variable name
-local function open_book_item_gui( user, editable, page_modification, previous_data, book_name)
+local function open_book_item_gui( user, editable, page_modification, previous_data, book_name, setting_max_page)
 
     play_book_open_sound_to_player( user )
 
@@ -56,11 +56,15 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     end
 
     local page = meta:get_int("page")
-    
+
     if previous_data then
         -- Save the old page's data
         meta:set_string("book_text_" .. page, previous_data)
     end
+    
+    -- Auto generate new pages makes it create a new page when you click to the right
+    local auto_generate_new_pages = false
+
 
     local book_title = book_name or meta:get_string("book_title")
     if book_title then
@@ -82,6 +86,13 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     end
     meta:set_int("max_pages", max_page)
     meta:set_int("page", page)
+
+    -- Allows the author to cut off the books length to the current page
+    if editable and setting_max_page then
+        meta:set_string("max_pages", page)
+        max_page = page
+    end
+
     
     local book_text = meta:get_string("book_text_" .. page)
 
