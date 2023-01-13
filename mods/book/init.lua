@@ -96,7 +96,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     
     local book_text = meta:get_string("book_text_" .. page)
 
-    -- TODO: FIX THIS WORKAROUND FOR THE NOT UPDATING GLITCH WHEN IT IS FIXED
+    -- TODO: REMOVE THIS WORKAROUND FOR THE NOT UPDATING GLITCH WHEN IT IS FIXED
     if book_text == "" then
         book_text = tostring(math.random())
     end
