@@ -88,7 +88,7 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         -- Player has reached the max number of pages allowed
     elseif page > MAX_BOOK_PAGES then
         page = 1
-    elseif auto_page == 1 and editable and page > max_page then
+    elseif editable and auto_page == 1 and page > max_page then
         max_page = max_page + 1
     elseif page > max_page then
         page = 1
@@ -98,9 +98,15 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
 
     -- Allows the author to cut off the books length to the current page
     if editable and setting_max_page then
+
+        local old_max = max_page
         meta:set_string("max_pages", page)
         max_page = page
-        print("REMEMBER TO REMOVE THE METADATA AFTER THIS!")
+
+        -- Remove old data
+        for i = page + 1, old_max do
+            meta:set_string("book_text_" .. i , "")
+        end
     end
 
     local book_text = meta:get_string("book_text_" .. page)
@@ -115,8 +121,9 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
     local close_button_width = 1
     local close_button_offset = 4
     local close_button_id = "book_close"
-
     local page_offset = 5
+    local title_area_name = ""
+    local text_area_name = ""
 
     if editable then
         close_button = "Write & close"
@@ -124,13 +131,15 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         close_button_offset = -0.19
         close_button_id = "book_write"
         page_offset = 1.675
+        title_area_name = "book_title"
+        text_area_name = "book_text"
     end
 
     local book_formspec = "size[9,8.75]" ..
         "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]" ..
         "style[book_text,book_title;textcolor=black;border=true;noclip=false]" ..
-        "textarea[1.75,0;6,1;book_title;;" .. book_title .."]" ..
-        "textarea[0.3,1;9,8.5;book_text;;" .. book_text .."]"  ..
+        "textarea[1.75,0;6,1;" .. title_area_name .. ";;" .. book_title .."]" ..
+        "textarea[0.3,1;9,8.5;" .. text_area_name .. ";;" .. book_text .."]"  ..
         "button[" .. close_button_offset .. ",8.25;" .. close_button_width .. ",1;" .. close_button_id .. ";" .. close_button .. "]" ..
         "button[0,-0.025;1,1;book_button_prev;Prev]" ..
         "button[8,-0.025;1,1;book_button_next;Next]" ..
@@ -186,6 +195,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     -- This is the lock book (ink it permenantly) logic gate
     elseif editable and fields["book_ink"] then
 
+        save_current_page(player, fields)
+
         local itemstack = ItemStack( "book:book_written" )
         local old_stack = player:get_wielded_item()
 
@@ -215,18 +226,26 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         -- Turn the page
     elseif fields["book_button_next"] then
 
-        local old_data = fields["book_text"] or ""
-        local book_name = fields["book_title"] or ""
+        if editable then
+            local old_data = fields["book_text"] or ""
+            local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, editable, 1, old_data, book_name)
+            open_book_item_gui(player, editable, 1, old_data, book_name)
+        else
+            open_book_item_gui(player, editable, 1)
+        end
 
         -- Turn back the page
     elseif fields["book_button_prev"] then
 
-        local old_data = fields["book_text"] or ""
-        local book_name = fields["book_title"] or ""
+        if editable then
+            local old_data = fields["book_text"] or ""
+            local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, editable, -1, old_data, book_name)
+            open_book_item_gui(player, editable, -1, old_data, book_name)
+        else
+            open_book_item_gui(player, editable, -1)
+        end
 
         -- Basically cuts the book off at the current page
     elseif fields["book_max_page"] then
@@ -260,7 +279,7 @@ minetest.register_craftitem("book:book",{
     groups = {book = 1, written = 0},
     stack_max = 1,
     inventory_image = "book.png",
-    
+
     on_place = function(itemstack, user, pointed_thing)
         if not pointed_thing.type == "node" then
             return
