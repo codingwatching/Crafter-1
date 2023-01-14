@@ -33,14 +33,8 @@ local function play_book_write_to_player( author )
 end
 
 
-
-local function open_book_item_gui( author, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page)
-
-    play_book_open_sound_to_player( author )
-
-    local itemstack = author:get_wielded_item()
-
-    local meta = itemstack:get_meta()
+-- Important note: The meta argument is an object pointer
+local function creat_book_formspec( meta, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
 
     local max_page = meta:get_int("max_pages")
 
@@ -146,6 +140,19 @@ local function open_book_item_gui( author, editable, page_modification, previous
         -- Invisible helper label
         book_formspec = book_formspec .. "field[0,0;0,0;book_locked;book_locked;]"
     end
+    return book_formspec
+end
+
+
+local function open_book_item_gui( author, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
+
+    play_book_open_sound_to_player( author )
+
+    local itemstack = author:get_wielded_item()
+
+    local meta = itemstack:get_meta()
+
+    local book_formspec = creat_book_formspec( meta, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
 
     minetest.show_formspec( author:get_player_name(), "book_gui", book_formspec )
 
