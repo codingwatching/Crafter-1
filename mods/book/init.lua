@@ -57,7 +57,7 @@ local function creat_book_formspec( meta, editable, page_modification, previous_
     -- Auto generate new pages makes it create a new page when you click to the right
     local auto_page = meta:get_int("auto_page")
 
-    if toggle_auto_page then
+    if toggle_auto_page or not meta:contains("auto_page") then
         if auto_page == 0 then
             auto_page = 1
         else
