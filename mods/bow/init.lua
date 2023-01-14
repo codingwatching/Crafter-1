@@ -318,8 +318,19 @@ function arrow:on_step( dtime, moveresult )
         ::continue::
     end
     
-    if  not self.stuck and
-        moveresult and
+    if self.stuck and self.check_dir then
+        pos2 = add_vec(pos,multiply_vec(self.check_dir,0.2))
+        ray = raycast(pos, pos2, false, false)
+        if not ray:next() then
+            self.stuck = false
+            self.object:set_acceleration(new_vec(0,-9.81,0))
+        end
+    end
+    
+    -- No point in continuing
+    if self.stuck then return end
+
+    if  moveresult and
         moveresult.collides and
         moveresult.collisions and
         moveresult.collisions[1] and
@@ -350,17 +361,7 @@ function arrow:on_step( dtime, moveresult )
         self.stuck = true
         self.object:set_velocity(new_vec(0,0,0))
         self.object:set_acceleration(new_vec(0,0,0))
-    elseif self.stuck == true and self.check_dir then
-        pos2 = add_vec(pos,multiply_vec(self.check_dir,0.2))
-        ray = raycast(pos, pos2, false, false)
-        if not ray:next() then
-            self.stuck = false
-            self.object:set_acceleration(new_vec(0,-9.81,0))
-        end
     end
-    
-    -- No point in continuing
-    if self.stuck then return end
 
     -- Makes an arrow spin as it's flying through the air
     if pos and self.oldpos then
