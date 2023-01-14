@@ -46,7 +46,6 @@ local vec_direction = vector.direction
 -- data pool
 local pool = {}
 
---this is a very complicated function which makes the bow work
 local temp_pool
 local player
 local new_index
@@ -56,6 +55,7 @@ local dir
 local vel
 local pos
 local object
+local name
 
 local function arrow_check(name,dtime)
 
@@ -350,7 +350,6 @@ minetest.register_entity("bow:arrow", arrow)
 ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚══════╝
 ]]--
 
-local inv
 local function initialize_pullback(player)
     inv = player:get_inventory()
     if inv:contains_item("main", ItemStack("bow:arrow")) then
