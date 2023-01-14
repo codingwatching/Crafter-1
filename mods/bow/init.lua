@@ -225,7 +225,7 @@ function arrow:on_step( dtime, moveresult )
         distance = vec_distance(pos2,pos)
                         
         
-        --remove if too far away
+        -- Set the distance to 0 in case the server lags and the player is able to walk away - Instant collection
         if distance > self.radius then
             distance = 0
         end
