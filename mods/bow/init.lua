@@ -114,13 +114,19 @@ local function arrow_check(name,dtime)
     end
 
     if temp_pool.step == 5 and not rightclick then
-        
-        dir = player:get_look_dir()
-        vel = multiply_vec(dir,50)
         pos = player:get_pos()
         pos.y = pos.y + 1.5
 
+        dir = player:get_look_dir()
+
         local arrow_object = minetest.add_entity( add_vec( pos, divide_vec( dir, 10 ) ), "bow:arrow" )
+
+        -- A serious engine glitch has occured
+        if not arrow_object then return end
+
+        -- Entity uses vel variable on it's initial on_step, needs to be overwritten
+        vel = multiply_vec( dir, 50)
+
         arrow_object:set_velocity(vel)
         arrow_object:get_luaentity().owner  = name
         arrow_object:get_luaentity().oldpos = pos
