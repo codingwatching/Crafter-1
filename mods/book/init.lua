@@ -575,4 +575,4 @@ minetest.register_node("book:inked_book_node", {
     end
 })
 
--- TODO: a closed book
+-- These are closed books, there's literally no reason to have this but I thought it would be neat for players to be able to close the book :)
