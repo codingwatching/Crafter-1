@@ -164,7 +164,6 @@ end
 
 local function open_book_node_gui( pos, author, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
 
-    
     play_book_open_sound_to_player( author )
 
     local meta = minetest.get_meta(pos)
@@ -288,6 +287,92 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     do return end
 
     ::book_node::
+
+
+    -- This is the save text logic gate
+    if editable and fields["book_write"] then
+        minetest.close_formspec( player:get_player_name(), "book_gui" )
+        play_book_write_to_player(player)
+        save_current_page(player, fields)
+
+    -- This is the lock book (ink it permenantly) logic gate
+    elseif editable and fields["book_ink"] then
+
+        save_current_page(player, fields)
+
+        local itemstack = ItemStack( "book:book_written" )
+        local old_stack = player:get_wielded_item()
+
+        local meta = itemstack:get_meta()
+        local old_meta = old_stack:get_meta()
+
+        local max_pages = old_meta:get_int("max_pages")
+
+        for i = 1,max_pages do
+            meta:set_string("book_text_" .. i, old_meta:get_string( "book_text_" .. i ) )
+        end
+
+        local name = old_meta:get_string("book_title")
+        if name == "" then
+            name = "Uknown"
+        end
+        name = name .. " by " .. player:get_player_name()
+        meta:set_string("book_title", name)
+        meta:set_int("page", meta:get_int("page"))
+        meta:set_int("max_pages", max_pages)
+
+        player:set_wielded_item( itemstack )
+
+        play_book_write_to_player(player)
+        open_book_item_gui(player, false, 0)
+
+        -- Turn the page
+    elseif fields["book_button_next"] then
+
+        if editable then
+            local old_data = fields["book_text"] or ""
+            local book_name = fields["book_title"] or ""
+
+            open_book_item_gui(player, editable, 1, old_data, book_name)
+        else
+            open_book_item_gui(player, editable, 1)
+        end
+
+        -- Turn back the page
+    elseif fields["book_button_prev"] then
+
+        if editable then
+            local old_data = fields["book_text"] or ""
+            local book_name = fields["book_title"] or ""
+
+            open_book_item_gui(player, editable, -1, old_data, book_name)
+        else
+            open_book_item_gui(player, editable, -1)
+        end
+
+        -- Basically cuts the book off at the current page
+    elseif fields["book_max_page"] then
+
+        local old_data = fields["book_text"] or ""
+        local book_name = fields["book_title"] or ""
+
+        open_book_item_gui(player, editable, 0, old_data, book_name, true)
+
+        -- AutoPage toggle
+    elseif fields["toggle_auto_page"] then
+
+        local old_data = fields["book_text"] or ""
+        local book_name = fields["book_title"] or ""
+
+        open_book_item_gui(player, true, 0, old_data, book_name, false, true)
+
+        -- This is the fallthrough locked book closing and players hitting escape or close and the gui is now closed in an editable book
+    elseif fields["book_locked"]  or fields["quit"] then
+
+        -- If editable book, then all changes to the current page are lost :(
+        minetest.close_formspec( player:get_player_name(), "book_gui" )
+        play_book_closed_to_player( player )
+    end
     
 
 end)
