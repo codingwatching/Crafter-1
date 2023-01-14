@@ -3,8 +3,10 @@
 --[[
     TODO:
     1. consolidate the function logic into separate functions because this is a lot of code
-
+        
     2. Make the sounds play either attached to the player or at the node's position so it's more interactive in multiplayer
+
+    3. update the item's description to match the title of the book
 
     3. make books placable on the ground
     3.a make a nice looking node that represents a book
@@ -423,6 +425,24 @@ minetest.register_craftitem("book:book",{
     end,
 })
 
+local function place_item_as_node(pos, param2, old_stack, new_node)
+    local old_meta = old_stack:get_meta()
+    minetest.place_node(pos, new_node)
+    local new_meta = minetest.get_meta(pos)
+
+    local max_page = old_meta:get_int("max_pages")
+    for i = 1,max_page do
+        new_meta:set_string( "book_text_" .. i, old_meta:get_string( "book_text_" .. i ) )
+    end
+
+    local page = old_meta:get_int("page")
+    local title = old_meta:get_string("book_title")
+
+    new_meta:set_string("book_title", title)
+    new_meta:set_int("max_pages", max_page)
+    new_meta:set_int("page", page)
+end
+
 -- Permenantly written books
 minetest.register_craftitem("book:book_written",{
     description = "Book",
@@ -444,11 +464,16 @@ minetest.register_craftitem("book:book_written",{
 
         -- TODO: check if placing above the node with a y check! vector.direction {0,1,0}
         if sneak then
-            
-            -- if not vector.equals(vector.direction(pointed_thing.under,pointed_thing.above), vector.new(0,0,0)) then return end
-            -- if vector.direction(pointed_thing.above)
-            minetest.item_place(itemstack, author, pointed_thing.above)
-            return
+
+            if nodedef.buildable_to then
+
+                minetest.item_place(itemstack, author, pointed_thing.under)
+                return
+            end
+            if vector.equals(vector.direction(pointed_thing.under,pointed_thing.above), vector.new(0,0,0)) then
+                
+                return
+            end
         end
         
         -- Ignore for rightclicking things
