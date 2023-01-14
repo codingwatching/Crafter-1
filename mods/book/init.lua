@@ -315,7 +315,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- This is the lock book (ink it permenantly) logic gate
     elseif editable and fields["book_ink"] then
-
         
         save_current_node_page(pos, fields)
         local meta = minetest.get_meta(pos)
@@ -475,7 +474,14 @@ minetest.register_node("book:book_node", {
     groups = { dig_immediate = 1, attached_node = 3 },
     tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
     node_box = node_box,
+    on_rightclick = function(pos, node, clicker)
+
+    end,
     -- TODO: drop book with meta data
+    -- Needs to use a specialized function to transfer metadata
+    on_dig = function(pos, node, digger)
+
+    end
 })
 
 minetest.register_node("book:inked_book_node", {
@@ -485,5 +491,14 @@ minetest.register_node("book:inked_book_node", {
     groups = { dig_immediate = 1, attached_node = 3},
     tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
     node_box = node_box,
+    on_rightclick = function(pos, node, clicker)
+
+    end,
     -- TODO: drop inked book with meta data
+    -- Needs to use a specialized function to transfer metadata
+    on_dig = function(pos, node, digger)
+
+    end
 })
+
+-- TODO: a closed book
