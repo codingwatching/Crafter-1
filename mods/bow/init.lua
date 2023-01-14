@@ -365,7 +365,8 @@ function arrow:on_step( dtime, moveresult )
         x = dir_to_yaw( new_vec( vec_distance( new_vec( pos.x, 0, pos.z ), new_vec( self.oldpos.x, 0, self.oldpos.z ) ), 0, pos.y - self.oldpos.y ) ) + HALF_PI
         self.object:set_rotation( new_vec( x, y, self.spin ) )
     end
-    if self.stuck == false then
+
+    if not self.stuck then
         self.oldpos = pos
         self.oldvel = vel
     end
