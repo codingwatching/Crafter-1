@@ -151,8 +151,10 @@ local ray
 local y
 local x
 
+-- Arrow class
 local arrow = {}
 
+-- Arrow fields
 arrow.initial_properties = {
     physical = true,
     collide_with_objects = false,
@@ -167,6 +169,16 @@ arrow.initial_properties = {
     --automatic_face_movement_dir = 0.0,
     --automatic_face_movement_max_rotation_per_sec = 600,
 }
+
+arrow.spin = 0
+arrow.owner = ""
+arrow.stuck = false
+arrow.timer = 0
+arrow.collecting = false
+arrow.collection_height = 0.5
+arrow.radius = 2
+
+-- Arrow methods
 arrow.on_activate = function(self, staticdata, dtime_s)
     --self.object:set_animation({x=0,y=180}, 15, 0, true)
     local vel = nil
@@ -202,15 +214,8 @@ arrow.get_staticdata = function(self)
     })
 end
 
-arrow.spin = 0
-arrow.owner = ""
-arrow.stuck = false
-arrow.timer = 0
-arrow.collecting = false
-arrow.collection_height = 0.5
-arrow.radius = 2
-
 function arrow:on_step( dtime, moveresult )
+
     self.timer = self.timer + dtime
 
     pos = self.object:get_pos()
