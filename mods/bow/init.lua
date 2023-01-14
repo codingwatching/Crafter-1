@@ -300,7 +300,7 @@ function arrow:on_step( dtime, moveresult )
             moveresult.collisions and
             moveresult.collisions[1] and
             moveresult.collisions[1].new_velocity and
-            self.stuck == false then
+            not self.stuck then
             
             collision = moveresult.collisions[1]
 
