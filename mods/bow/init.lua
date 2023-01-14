@@ -45,6 +45,10 @@ local dir
 local vel
 local pos
 local name
+local is_player
+local is_owner
+local is_object
+local is_mob
 
 local function arrow_check(name,dtime)
 
@@ -165,7 +169,7 @@ arrow.radius = 2
 -- Arrow methods
 arrow.on_activate = function(self, staticdata, dtime_s)
 
-    local vel = nil
+    vel = nil
     if s_sub(staticdata, 1, s_len("return")) == "return" then
         local data = deserialize(staticdata)
         if data and type(data) == "table" then
@@ -260,10 +264,10 @@ function arrow:on_step( dtime, moveresult )
 
         if object == self.object then goto continue end
 
-        local is_player = object:is_player()
-        local is_owner = is_player and object:get_player_name() == self.owner
-        local is_object = not is_player and object:get_luaentity()
-        local is_mob = is_object and is_object.is_mob
+        is_player = object:is_player()
+        is_owner = is_player and object:get_player_name() == self.owner
+        is_object = not is_player and object:get_luaentity()
+        is_mob = is_object and is_object.is_mob
 
         -- Something from another mod that isn't supposed to be hit by an arrow
         if not is_player and not is_owner and not is_object and not is_mob then goto continue end
