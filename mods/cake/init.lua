@@ -41,12 +41,13 @@ for i = 0,13 do
         node_box = {
             type = "fixed",
             fixed = {
-                {-7/16, -8/16, -7/16, 7/16, -1/16, (7-i)/16},
+                { -7/16, -8/16, -7/16, 7/16, -1/16, ( 7 - i ) / 16 },
             }
         },
         drop = "",
         sounds = main.woolSound(),
-        groups = {wool=1,cake=i,falling_node=1},
+        -- Yes, I always enjoy putting wool in my cake
+        groups = { wool = 1, cake = i, falling_node = 1 },
         on_construct = function(pos)
             -- This has a 0.005 percent chance of becoming an evil cake, a cake that literally eats itself
             if random() > 0.995 then
@@ -54,28 +55,40 @@ for i = 0,13 do
             end
         end,
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+
             player_eat_food(clicker,"cake:cake_item_placeholder")
-            --clicker:set_hp(clicker:get_hp()+5)
+
             if i == 13 then
-                play_sound("eat_finish",{pos=pos,gain=0.2,pitch=random(90,100)/100})
+                play_sound( "eat_finish", {
+                    pos = pos,
+                    gain = 0.2,
+                    pitch = random( 90, 100 ) / 100
+                })
                 minetest.remove_node(pos)
                 return
             else
-                play_sound("eat",{pos=pos,gain=0.2,pitch=random(90,100)/100})
-                set_node(pos, {name="cake:cake_"..i+1})
+                play_sound( "eat", {
+                    pos = pos,
+                    gain = 0.2,
+                    pitch = random( 90, 100 ) / 100
+                })
+                set_node( pos, { name= "cake:cake_" .. i + 1 } )
             end
         end,
     })
 end
 
 for i = 0,13 do
+
     local missing_slice
+
     if i == 0 then
         missing_slice = "cake_side.png^[colorize:red:140"
     else
         missing_slice = "cake_inner.png^[colorize:red:140"
     end
-    minetest.register_node("cake:cursed_cake_"..i, {
+
+    minetest.register_node( "cake:cursed_cake_" .. i, {
         description = "CURSED CAKE",
         tiles = {
             "cake_top.png^[colorize:red:140",
@@ -90,7 +103,7 @@ for i = 0,13 do
         node_box = {
             type = "fixed",
             fixed = {
-                {-7/16, -8/16, -7/16, 7/16, -1/16, (7-i)/16}, -- Cake
+                { -7/16, -8/16, -7/16, 7/16, -1/16, ( 7 - i ) / 16 },
             }
         },
         drop = "",
@@ -117,7 +130,7 @@ for i = 0,13 do
     })
 end
 
-
+-- Why is cake made with snow?
 minetest.register_craft({
     output = "cake:cake_0",
     recipe = {
