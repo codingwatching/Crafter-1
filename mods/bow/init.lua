@@ -43,7 +43,7 @@ local inv
 local dir
 local vel
 local pos
-local object
+--local object
 local name
 
 local function arrow_check(name,dtime)
@@ -102,10 +102,10 @@ local function arrow_check(name,dtime)
         pos = player:get_pos()
         pos.y = pos.y + 1.5
 
-        object = minetest.add_entity(add_vec(pos,divide_vec(dir,10)),"bow:arrow")
-        object:set_velocity(vel)
-        object:get_luaentity().owner  = name
-        object:get_luaentity().oldpos = pos
+        local arrow_object = minetest.add_entity( add_vec( pos, divide_vec( dir, 10 ) ), "bow:arrow" )
+        arrow_object:set_velocity(vel)
+        arrow_object:get_luaentity().owner  = name
+        arrow_object:get_luaentity().oldpos = pos
         
         minetest.sound_play("bow", {object=player, gain = 1.0, max_hear_distance = 60,pitch = random(80,100)/100})
 
@@ -242,6 +242,7 @@ function arrow:on_step( dtime, moveresult )
         end
 
     else
+        -- TODO: Fix object being overwritten
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
             if self.stuck == false and ((object:is_player() and object:get_player_name() ~= self.owner and object:get_hp() > 0) or (object:get_luaentity() and object:get_luaentity().mobname)) then
                 object:punch(self.object, 2, 
