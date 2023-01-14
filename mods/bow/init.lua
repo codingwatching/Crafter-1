@@ -330,16 +330,6 @@ end
 minetest.register_entity("bow:arrow", arrow)
 
 
-
---[[
-██╗████████╗███████╗███╗   ███╗███████╗
-██║╚══██╔══╝██╔════╝████╗ ████║██╔════╝
-██║   ██║   █████╗  ██╔████╔██║███████╗
-██║   ██║   ██╔══╝  ██║╚██╔╝██║╚════██║
-██║   ██║   ███████╗██║ ╚═╝ ██║███████║
-╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚══════╝
-]]--
-
 local function initialize_pullback(player)
     inv = player:get_inventory()
     if inv:contains_item("main", ItemStack("bow:arrow")) then
