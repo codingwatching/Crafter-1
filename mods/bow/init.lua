@@ -1,22 +1,19 @@
 local type = type
 local ipairs = ipairs
-
 local get_connected_players     = minetest.get_connected_players
 local get_player_by_name        = minetest.get_player_by_name
 local get_objects_inside_radius = minetest.get_objects_inside_radius
-local raycast            = minetest.raycast
+local raycast                   = minetest.raycast
 local dir_to_yaw                = minetest.dir_to_yaw
 local deserialize               = minetest.deserialize
 local serialize                 = minetest.serialize
+local string_sub  = string.sub
+local string_length  = string.len
+local math_pi     = math.pi
+local math_random = math.random
+local HALF_PI = math_pi / 2
 
-local s_sub  = string.sub
-local s_len  = string.len
-
-local pi     = math.pi
-local random = math.random
-local HALF_PI = pi / 2
-
-local new_vec       = vector.new
+local vec_new       = vector.new
 local floor_vec     = vector.floor
 local vec_distance  = vector.distance
 local normalize_vec = vector.normalize
@@ -124,7 +121,7 @@ local function arrow_check(player_name,dtime)
         arrow_object:get_luaentity().owner  = player_name
         arrow_object:get_luaentity().oldpos = pos
         
-        minetest.sound_play("bow", {object=player, gain = 1.0, max_hear_distance = 60,pitch = random(80,100)/100})
+        minetest.sound_play("bow", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math_random(80,100)/100})
 
         inv:remove_item( "main", ItemStack( "bow:arrow" ) )
         inv:set_stack( "main", temp_pool.index, ItemStack( "bow:bow_empty" ) )
@@ -168,7 +165,7 @@ arrow.radius = 2
 arrow.on_activate = function(self, staticdata, dtime_s)
 
     vel = nil
-    if s_sub(staticdata, 1, s_len("return")) == "return" then
+    if string_sub(staticdata, 1, string_length("return")) == "return" then
         local data = deserialize(staticdata)
         if data and type(data) == "table" then
             self.spin       = data.spin
@@ -183,7 +180,7 @@ arrow.on_activate = function(self, staticdata, dtime_s)
 
     if self.stuck then return end
 
-    self.object:set_acceleration(new_vec(0,-9.81,0))
+    self.object:set_acceleration(vec_new(0,-9.81,0))
     if not vel then return end
 
     self.object:set_velocity(vel)
@@ -296,12 +293,12 @@ function arrow:on_step( dtime, moveresult )
                 minetest.sound_play("pickup", {
                     to_player = object:get_player_name(),
                     gain = 0.4,
-                    pitch = random(60,100)/100
+                    pitch = math_random(60,100)/100
                 })
 
                 self.collecting = true
 
-                self.object:set_acceleration( new_vec( 0, 0, 0 ) )
+                self.object:set_acceleration( vec_new( 0, 0, 0 ) )
 
             else
 
@@ -321,7 +318,7 @@ function arrow:on_step( dtime, moveresult )
         ray = raycast(pos, pos2, false, false)
         if not ray:next() then
             self.stuck = false
-            self.object:set_acceleration(new_vec(0,-9.81,0))
+            self.object:set_acceleration(vec_new(0,-9.81,0))
         end
     end
 
@@ -340,11 +337,11 @@ function arrow:on_step( dtime, moveresult )
         node_pos = collision.node_pos
 
         if new_velocity.x == 0 and old_velocity.x ~= 0 then
-            self.check_dir = vec_direction(new_vec(pos.x,0,0),new_vec(node_pos.x,0,0))
+            self.check_dir = vec_direction(vec_new(pos.x,0,0),vec_new(node_pos.x,0,0))
         elseif new_velocity.y == 0 and old_velocity.y ~= 0 then
-            self.check_dir = vec_direction(new_vec(0,pos.y,0),new_vec(0,node_pos.y,0))
+            self.check_dir = vec_direction(vec_new(0,pos.y,0),vec_new(0,node_pos.y,0))
         elseif new_velocity.z == 0 and old_velocity.z ~= 0 then
-            self.check_dir = vec_direction(new_vec(0,0,pos.z),new_vec(0,0,node_pos.z))
+            self.check_dir = vec_direction(vec_new(0,0,pos.z),vec_new(0,0,node_pos.z))
         end
         if collision.new_pos then
             self.object:set_pos(collision.new_pos)
@@ -353,12 +350,12 @@ function arrow:on_step( dtime, moveresult )
         minetest.sound_play( "arrow_hit",{
             object = self.object,
             gain = 1,
-            pitch = random( 80, 100 ) / 100,
+            pitch = math_random( 80, 100 ) / 100,
             max_hear_distance = 64
         })
         self.stuck = true
-        self.object:set_velocity(new_vec(0,0,0))
-        self.object:set_acceleration(new_vec(0,0,0))
+        self.object:set_velocity(vec_new(0,0,0))
+        self.object:set_acceleration(vec_new(0,0,0))
     end
 
     -- Makes an arrow spin as it's flying through the air
@@ -366,14 +363,14 @@ function arrow:on_step( dtime, moveresult )
 
         self.spin = self.spin + ( dtime * 10 )
 
-        if self.spin > pi then
-            self.spin = -pi
+        if self.spin > math_pi then
+            self.spin = -math_pi
         end
 
         dir = normalize_vec( sub_vec( pos, self.oldpos ) )
         y = dir_to_yaw( dir )
-        x = dir_to_yaw( new_vec( vec_distance( new_vec( pos.x, 0, pos.z ), new_vec( self.oldpos.x, 0, self.oldpos.z ) ), 0, pos.y - self.oldpos.y ) ) + HALF_PI
-        self.object:set_rotation( new_vec( x, y, self.spin ) )
+        x = dir_to_yaw( vec_new( vec_distance( vec_new( pos.x, 0, pos.z ), vec_new( self.oldpos.x, 0, self.oldpos.z ) ), 0, pos.y - self.oldpos.y ) ) + HALF_PI
+        self.object:set_rotation( vec_new( x, y, self.spin ) )
     end
     
     self.oldpos = pos
@@ -395,7 +392,7 @@ local function initialize_pullback(player)
             object = player,
             gain = 1.0,
             max_hear_distance = 60,
-            pitch = random( 70, 110 ) / 100
+            pitch = math_random( 70, 110 ) / 100
         })
     end
 end
