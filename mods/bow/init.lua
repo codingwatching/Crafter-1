@@ -216,7 +216,7 @@ function arrow:on_step( dtime, moveresult )
         -- TODO: Figure out why this is setting the acceleration every server tick
         self.object:set_acceleration(new_vec(0,0,0))
 
-        --get the variables
+        -- Get the position vectors
         pos2 = owner:get_pos()
         player_velocity = owner:get_velocity()
         pos2.y = pos2.y + self.collection_height
