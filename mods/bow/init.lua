@@ -295,7 +295,12 @@ function arrow:on_step( dtime, moveresult )
             end
         end
 
-        if moveresult and moveresult.collides and moveresult.collisions and moveresult.collisions[1] and moveresult.collisions[1].new_velocity and self.stuck == false then
+        if  moveresult and
+            moveresult.collides and
+            moveresult.collisions and
+            moveresult.collisions[1] and
+            moveresult.collisions[1].new_velocity and
+            self.stuck == false then
             
             collision = moveresult.collisions[1]
 
