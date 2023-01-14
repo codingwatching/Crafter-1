@@ -104,12 +104,6 @@ local function open_book_item_gui( author, editable, page_modification, previous
 
     local book_text = meta:get_string("book_text_" .. page)
 
-    -- TODO: REMOVE THIS WORKAROUND FOR THE NOT UPDATING GLITCH WHEN IT IS FIXED
-    if book_text == "" then
-        book_text = tostring(math.random())
-        print("still doing formspec workaround thing")
-    end
-
     -- These are defaults for an inked book
     local close_button = "Close"
     local close_button_width = 1
