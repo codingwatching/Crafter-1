@@ -312,7 +312,9 @@ function arrow:on_step( dtime, moveresult )
         ::continue::
     end
 
-    print(dump(moveresult))
+    if moveresult and moveresult.collides then
+        print(dump(moveresult))
+    end
     
     if  not self.stuck and
         moveresult and
@@ -322,16 +324,18 @@ function arrow:on_step( dtime, moveresult )
         moveresult.collisions[1].new_velocity then
         
         collision = moveresult.collisions[1]
+        local new_velocity = collision.new_velocity
+        local old_velocity = collision.old_velocity
+        local node_pos = collision.node_pos
 
-        if collision.new_velocity.x == 0 and collision.old_velocity.x ~= 0 then
-            self.check_dir = vec_direction(new_vec(pos.x,0,0),new_vec(collision.node_pos.x,0,0))
-        elseif collision.new_velocity.y == 0 and collision.old_velocity.y ~= 0 then
-            self.check_dir = vec_direction(new_vec(0,pos.y,0),new_vec(0,collision.node_pos.y,0))
-        elseif collision.new_velocity.z == 0 and collision.old_velocity.z ~= 0 then
-            self.check_dir = vec_direction(new_vec(0,0,pos.z),new_vec(0,0,collision.node_pos.z))
+        if new_velocity.x == 0 and old_velocity.x ~= 0 then
+            self.check_dir = vec_direction(new_vec(pos.x,0,0),new_vec(node_pos.x,0,0))
+        elseif new_velocity.y == 0 and old_velocity.y ~= 0 then
+            self.check_dir = vec_direction(new_vec(0,pos.y,0),new_vec(0,node_pos.y,0))
+        elseif new_velocity.z == 0 and old_velocity.z ~= 0 then
+            self.check_dir = vec_direction(new_vec(0,0,pos.z),new_vec(0,0,node_pos.z))
         end
         if collision.new_pos then
-            --print(dump(collision.new_pos))
             self.object:set_pos(collision.new_pos)
         end
         --print(dump(collision.new_pos))
@@ -341,15 +345,14 @@ function arrow:on_step( dtime, moveresult )
         self.object:set_acceleration(new_vec(0,0,0))
     elseif self.stuck == true and self.check_dir then
         pos2 = add_vec(pos,multiply_vec(self.check_dir,0.2))
-        
         ray = raycast(pos, pos2, false, false)
-
         if not ray:next() then
             self.stuck = false
             self.object:set_acceleration(new_vec(0,-9.81,0))
         end
     end
     
+    -- Makes an arrow spin as it's flying through the air
     if not self.stuck and pos and self.oldpos then
         self.spin = self.spin + (dtime*10)
         if self.spin > pi then
