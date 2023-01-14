@@ -1,6 +1,5 @@
 local type = type
 local ipairs = ipairs
-local get_connected_players     = minetest.get_connected_players
 local get_player_by_name        = minetest.get_player_by_name
 local get_objects_inside_radius = minetest.get_objects_inside_radius
 local raycast                   = minetest.raycast
@@ -9,6 +8,9 @@ local deserialize               = minetest.deserialize
 local serialize                 = minetest.serialize
 local get_item_group            = minetest.get_item_group
 local sound_play                = minetest.sound_play
+local item_drop                 = minetest.item_drop
+local add_entity                = minetest.add_entity
+local throw_item                = minetest.throw_item
 
 local string_sub  = string.sub
 local string_length  = string.len
@@ -114,7 +116,7 @@ local function arrow_check(player_name,dtime)
         dir = player:get_look_dir()
         initial_velocity = vec_multiply( dir, 50)
 
-        local arrow_object = minetest.add_entity( vec_add( pos, vec_divide( dir, 10 ) ), "bow:arrow" )
+        local arrow_object = add_entity( vec_add( pos, vec_divide( dir, 10 ) ), "bow:arrow" )
 
         -- A serious engine glitch has occured
         if not arrow_object then return end
@@ -217,7 +219,7 @@ function arrow:on_step( dtime, moveresult )
             return
         end
 
-        owner = minetest.get_player_by_name(self.owner)
+        owner = get_player_by_name(self.owner)
 
         if not owner then
             self.object:remove()
@@ -304,8 +306,9 @@ function arrow:on_step( dtime, moveresult )
 
             else
 
+                item_drop("bow:arrow", nil, pos)
+
                 self.object:remove()
-                minetest.throw_item(pos,"bow:arrow")
 
             end
 
@@ -423,7 +426,7 @@ for i = 1,5 do
         range = 0,
         on_drop = function( itemstack, dropper, position )
             itemstack = ItemStack("bow:bow_empty")
-            minetest.item_drop(itemstack, dropper, position)
+            item_drop(itemstack, dropper, position)
             return(itemstack)
         end,
     })
