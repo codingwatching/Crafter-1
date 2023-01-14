@@ -475,7 +475,7 @@ minetest.register_node("book:book_node", {
     tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
     node_box = node_box,
     on_rightclick = function(pos, node, clicker)
-
+        open_book_node_gui( pos, clicker, true, 0)
     end,
     -- TODO: drop book with meta data
     -- Needs to use a specialized function to transfer metadata
@@ -492,7 +492,7 @@ minetest.register_node("book:inked_book_node", {
     tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
     node_box = node_box,
     on_rightclick = function(pos, node, clicker)
-
+        open_book_node_gui( pos, clicker, false, 0)
     end,
     -- TODO: drop inked book with meta data
     -- Needs to use a specialized function to transfer metadata
