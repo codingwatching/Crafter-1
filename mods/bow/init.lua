@@ -7,6 +7,8 @@ local raycast                   = minetest.raycast
 local dir_to_yaw                = minetest.dir_to_yaw
 local deserialize               = minetest.deserialize
 local serialize                 = minetest.serialize
+local get_item_group            = minetest.get_item_group
+local sound_play                = minetest.sound_play
 
 local string_sub  = string.sub
 local string_length  = string.len
@@ -78,7 +80,7 @@ local function arrow_check(player_name,dtime)
     end
 
     -- if player isn't holding a bow
-    if minetest.get_item_group(player:get_wielded_item():get_name(), "bow") == 0 then
+    if get_item_group(player:get_wielded_item():get_name(), "bow") == 0 then
         pool[player_name] = nil
         return
     end
@@ -121,7 +123,7 @@ local function arrow_check(player_name,dtime)
         arrow_object:get_luaentity().owner  = player_name
         arrow_object:get_luaentity().oldpos = pos
         
-        minetest.sound_play("bow", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math_random(80,100)/100})
+        sound_play("bow", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math_random(80,100)/100})
 
         inv:remove_item( "main", ItemStack( "bow:arrow" ) )
         inv:set_stack( "main", temp_pool.index, ItemStack( "bow:bow_empty" ) )
@@ -290,7 +292,7 @@ function arrow:on_step( dtime, moveresult )
 
                 inv:add_item("main",ItemStack("bow:arrow"))
 
-                minetest.sound_play("pickup", {
+                sound_play("pickup", {
                     to_player = object:get_player_name(),
                     gain = 0.4,
                     pitch = math_random(60,100)/100
@@ -347,7 +349,7 @@ function arrow:on_step( dtime, moveresult )
             self.object:set_pos(collision.new_pos)
         end
         --print(dump(collision.new_pos))
-        minetest.sound_play( "arrow_hit",{
+        sound_play( "arrow_hit",{
             object = self.object,
             gain = 1,
             pitch = math_random( 80, 100 ) / 100,
@@ -388,7 +390,7 @@ local function initialize_pullback(player)
         pool[name].index = player:get_wield_index()
         pool[name].float = 0
         pool[name].step  = 0
-        minetest.sound_play( "bow_pull_back", {
+        sound_play( "bow_pull_back", {
             object = player,
             gain = 1.0,
             max_hear_distance = 60,
