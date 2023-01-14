@@ -49,6 +49,9 @@ local is_player
 local is_owner
 local is_object
 local is_mob
+local new_velocity
+local old_velocity
+local node_pos
 
 local function arrow_check(name,dtime)
 
@@ -329,9 +332,9 @@ function arrow:on_step( dtime, moveresult )
         moveresult.collisions[1].new_velocity then
         
         collision = moveresult.collisions[1]
-        local new_velocity = collision.new_velocity
-        local old_velocity = collision.old_velocity
-        local node_pos = collision.node_pos
+        new_velocity = collision.new_velocity
+        old_velocity = collision.old_velocity
+        node_pos = collision.node_pos
 
         if new_velocity.x == 0 and old_velocity.x ~= 0 then
             self.check_dir = vec_direction(new_vec(pos.x,0,0),new_vec(node_pos.x,0,0))
