@@ -139,8 +139,6 @@ minetest.register_globalstep(function(dtime)
 end)
 
 
-local pos
-local vel
 local owner
 local pos2
 local player_velocity
@@ -150,7 +148,6 @@ local multiplier
 local velocity
 local collision
 local ray
-local dir
 local y
 local x
 
@@ -162,8 +159,10 @@ function arrow:arrow_step(dtime,moveresult)
     vel = self.object:get_velocity()
     
     if self.collecting == true then
+
         owner = get_player_by_name(self.owner)
-        for _,object in ipairs(get_objects_inside_radius(pos, self.radius)) do
+
+        for _ in ipairs(get_objects_inside_radius(pos, self.radius)) do
             
             if owner then
                 self.object:set_acceleration(new_vec(0,0,0))
