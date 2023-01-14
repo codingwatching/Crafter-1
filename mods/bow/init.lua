@@ -354,14 +354,14 @@ function arrow:on_step( dtime, moveresult )
     
     -- Makes an arrow spin as it's flying through the air
     if not self.stuck and pos and self.oldpos then
-        self.spin = self.spin + (dtime*10)
+        self.spin = self.spin + ( dtime * 10 )
         if self.spin > pi then
             self.spin = -pi
         end
 
-        dir = normalize_vec(sub_vec(pos,self.oldpos))
-        y = dir_to_yaw(dir)
-        x = (dir_to_yaw(new_vec(vec_distance(new_vec(pos.x,0,pos.z),new_vec(self.oldpos.x,0,self.oldpos.z)),0,pos.y-self.oldpos.y))+(pi/2))
+        dir = normalize_vec( sub_vec( pos, self.oldpos ) )
+        y = dir_to_yaw( dir )
+        x = dir_to_yaw( new_vec( vec_distance( new_vec( pos.x, 0, pos.z ), new_vec( self.oldpos.x, 0, self.oldpos.z ) ), 0, pos.y - self.oldpos.y ) ) + ( pi / 2 )
         self.object:set_rotation(new_vec(x,y,self.spin))
     end
     if self.stuck == false then
