@@ -1,4 +1,4 @@
-local type = type
+local type   = type
 local ipairs = ipairs
 local get_player_by_name        = minetest.get_player_by_name
 local get_objects_inside_radius = minetest.get_objects_inside_radius
@@ -10,19 +10,17 @@ local get_item_group            = minetest.get_item_group
 local sound_play                = minetest.sound_play
 local item_drop                 = minetest.item_drop
 local add_entity                = minetest.add_entity
-local throw_item                = minetest.throw_item
-
-local string_sub  = string.sub
-local string_length  = string.len
+local string_sub    = string.sub
+local string_length = string.len
 local math_pi     = math.pi
 local math_random = math.random
-local HALF_PI = math_pi / 2
+local HALF_PI     = math_pi / 2
 
 local vec_new       = vector.new
 local vec_distance  = vector.distance
 local vec_normalize = vector.normalize
-local vec_add     = vector.add
-local vec_subtract       = vector.subtract
+local vec_add       = vector.add
+local vec_subtract  = vector.subtract
 local vec_multiply  = vector.multiply
 local vec_divide    = vector.divide
 local vec_direction = vector.direction
@@ -125,7 +123,12 @@ local function arrow_check(player_name,dtime)
         arrow_object:get_luaentity().owner  = player_name
         arrow_object:get_luaentity().oldpos = pos
         
-        sound_play("bow", {object=player, gain = 1.0, max_hear_distance = 60,pitch = math_random(80,100)/100})
+        sound_play( "bow", {
+            object = player,
+            gain = 1.0,
+            max_hear_distance = 60,
+            pitch = math_random( 80, 100 ) / 100
+        })
 
         inv:remove_item( "main", ItemStack( "bow:arrow" ) )
         inv:set_stack( "main", temp_pool.index, ItemStack( "bow:bow_empty" ) )
