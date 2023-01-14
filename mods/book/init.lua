@@ -4,7 +4,7 @@
     TODO:
     1. give books multiple pages
 
-    2. make an auto page creation lockout in case the user wants to keep the amount of pages
+    2. make an auto page creation lockout in case the author wants to keep the amount of pages
 
     2. make a page saving function and check if there's nothing in the page
 
@@ -12,8 +12,6 @@
     3.a make a nice looking node that represents a book
     4.Maybe make a book animation for when it's opening?
     5.Maybe dye books?
-
-    -- TODO: replace user with author as a variable name
 ]]
 
 -- Cause why not
@@ -40,12 +38,11 @@ end
 
 
 
--- TODO: replace user with author as a variable name
-local function open_book_item_gui( user, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page)
+local function open_book_item_gui( author, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page)
 
-    play_book_open_sound_to_player( user )
+    play_book_open_sound_to_player( author )
 
-    local itemstack = user:get_wielded_item()
+    local itemstack = author:get_wielded_item()
 
     local meta = itemstack:get_meta()
 
@@ -159,9 +156,9 @@ local function open_book_item_gui( user, editable, page_modification, previous_d
         book_formspec = book_formspec .. "field[0,0;0,0;book_locked;book_locked;]"
     end
 
-    minetest.show_formspec( user:get_player_name(), "book_gui", book_formspec )
+    minetest.show_formspec( author:get_player_name(), "book_gui", book_formspec )
 
-    user:set_wielded_item(itemstack)
+    author:set_wielded_item(itemstack)
 end
 
 local function save_current_page(player, fields)
@@ -280,25 +277,25 @@ minetest.register_craftitem("book:book",{
     stack_max = 1,
     inventory_image = "book.png",
 
-    on_place = function(itemstack, user, pointed_thing)
+    on_place = function(itemstack, author, pointed_thing)
         if not pointed_thing.type == "node" then
             return
         end
 
-        local sneak = user:get_player_control().sneak
+        local sneak = author:get_player_control().sneak
 
         local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
         if not sneak and noddef.on_rightclick then
-            minetest.item_place(itemstack, user, pointed_thing)
+            minetest.item_place(itemstack, author, pointed_thing)
             return
         end
         --print("make books placable on the ground")
-        open_book_item_gui( user, true, 0)
+        open_book_item_gui( author, true, 0)
     end,
 
-    on_secondary_use = function(itemstack, user, pointed_thing)
-        open_book_item_gui( user, true, 0)
+    on_secondary_use = function(itemstack, author, pointed_thing)
+        open_book_item_gui( author, true, 0)
     end,
 })
 
@@ -309,13 +306,13 @@ minetest.register_craftitem("book:book_written",{
     stack_max = 1,
     inventory_image = "book_written.png",
 
-    on_place = function(itemstack, user, pointed_thing)
+    on_place = function(itemstack, author, pointed_thing)
 
         if not pointed_thing.type == "node" then
             return
         end
 
-        local sneak = user:get_player_control().sneak
+        local sneak = author:get_player_control().sneak
 
         local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
@@ -325,15 +322,15 @@ minetest.register_craftitem("book:book_written",{
         -- If a player is sneaking then they can place the book on the ground
         if sneak then
             print("placing a thing on the ground")
-            minetest.item_place(itemstack, user, pointed_thing.above)
+            minetest.item_place(itemstack, author, pointed_thing.above)
             return
         end
 
-        open_book_item_gui(user, false, 0)
+        open_book_item_gui(author, false, 0)
     end,
 
-    on_secondary_use = function(itemstack, user, pointed_thing)
-        open_book_item_gui(user, false, 0)
+    on_secondary_use = function(itemstack, author, pointed_thing)
+        open_book_item_gui(author, false, 0)
     end,
 })
 
