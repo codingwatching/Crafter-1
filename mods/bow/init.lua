@@ -1,9 +1,6 @@
-local 
-minetest,math,vector,ipairs,string,type
-= 
-minetest,math,vector,ipairs,string,type
+local type = type
+local ipairs = ipairs
 
--- minetest library
 local get_connected_players     = minetest.get_connected_players
 local get_player_by_name        = minetest.get_player_by_name
 local get_objects_inside_radius = minetest.get_objects_inside_radius
@@ -12,16 +9,13 @@ local dir_to_yaw                = minetest.dir_to_yaw
 local deserialize               = minetest.deserialize
 local serialize                 = minetest.serialize
 
--- string library
 local s_sub  = string.sub
 local s_len  = string.len
 
--- math library
 local pi     = math.pi
 local random = math.random
 local HALF_PI = pi / 2
 
--- vector library
 local new_vec       = vector.new
 local floor_vec     = vector.floor
 local vec_distance  = vector.distance
@@ -214,7 +208,7 @@ function arrow:on_step( dtime, moveresult )
 
     pos = self.object:get_pos()
     vel = self.object:get_velocity()
-    
+
     -- The arrow entity is acting like an item entity being collected
     if self.collecting then
 
@@ -235,23 +229,23 @@ function arrow:on_step( dtime, moveresult )
         pos2 = owner:get_pos()
         player_velocity = owner:get_velocity()
         pos2.y = pos2.y + self.collection_height
-                        
+
         direction = normalize_vec(sub_vec(pos2,pos))
         distance = vec_distance(pos2,pos)
-                        
-        
+
+
         -- Set the distance to 0 in case the server lags and the player is able to walk away - Instant collection
         if distance > self.radius then
             distance = 0
         end
-                        
+
         multiplier = ( self.radius * 5 ) - distance
         velocity = multiply_vec(direction,multiplier)
-        
+
         velocity = add_vec(player_velocity,velocity)
-        
+
         self.object:set_velocity(velocity)
-        
+
         if distance < 0.2 then
             self.object:remove()
         end
@@ -262,7 +256,7 @@ function arrow:on_step( dtime, moveresult )
 
 
     -- Now the arrow entity is doing it's normal things
-    
+
     -- The arrow is checking if there is a player or mob to hit, OR, if it's stuck (hit the ground) then try to be collected by a player
     -- This is what causes the arrow entity to fall and hurt you if you mine a node that another player shot at
     for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
@@ -313,7 +307,7 @@ function arrow:on_step( dtime, moveresult )
 
                 self.object:remove()
                 minetest.throw_item(pos,"bow:arrow")
-                
+
             end
 
             return
@@ -321,7 +315,7 @@ function arrow:on_step( dtime, moveresult )
 
         ::continue::
     end
-    
+
     if self.stuck and self.check_dir then
         pos2 = add_vec(pos,multiply_vec(self.check_dir,0.2))
         ray = raycast(pos, pos2, false, false)
@@ -330,7 +324,7 @@ function arrow:on_step( dtime, moveresult )
             self.object:set_acceleration(new_vec(0,-9.81,0))
         end
     end
-    
+
     -- No point in continuing, the arrow is stuck in the ground
     if self.stuck then return end
 
@@ -339,7 +333,7 @@ function arrow:on_step( dtime, moveresult )
         moveresult.collisions and
         moveresult.collisions[1] and
         moveresult.collisions[1].new_velocity then
-        
+
         collision = moveresult.collisions[1]
         new_velocity = collision.new_velocity
         old_velocity = collision.old_velocity
