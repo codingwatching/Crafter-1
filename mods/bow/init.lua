@@ -188,11 +188,12 @@ arrow.on_activate = function(self, staticdata, dtime_s)
     end
 
     if self.stuck then return end
-    
+
     self.object:set_acceleration(new_vec(0,-9.81,0))
-    if vel then
-        self.object:set_velocity(vel)
-    end
+    if not vel then return end
+
+    self.object:set_velocity(vel)
+
 end
 
 arrow.get_staticdata = function(self)
