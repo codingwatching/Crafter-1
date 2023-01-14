@@ -140,6 +140,7 @@ local function creat_book_formspec( meta, editable, page_modification, previous_
         -- Invisible helper label
         book_formspec = book_formspec .. "field[0,0;0,0;book_locked;book_locked;]"
     end
+
     return book_formspec
 end
 
@@ -159,6 +160,17 @@ local function open_book_item_gui( author, editable, page_modification, previous
     author:set_wielded_item(itemstack)
 end
 
+local function open_book_node_gui( pos, author, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
+
+    play_book_open_sound_to_player( author )
+
+    local meta = minetest.get_meta(pos)
+
+    local book_formspec = creat_book_formspec( meta, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
+
+    minetest.show_formspec( author:get_player_name(), "book_node_gui", book_formspec )
+end
+
 local function save_current_page(player, fields)
 
     local itemstack = player:get_wielded_item()
@@ -174,12 +186,16 @@ end
 -- Handes the book gui
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 
-    if formname ~= "book_gui" then return end
+    -- Wait, this isn't a book
+    if formname ~= "book_gui" and formname ~= "book_node_gui" then return end
 
     -- Player accidentally clicked the page button
     if fields["current_page"] then return end
 
     local editable = fields["book_locked"] == nil
+
+    -- It's a book node
+    if formname == "book_node_gui" then goto book_node end
 
     -- This is the save text logic gate
     if editable and fields["book_write"] then
@@ -265,6 +281,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_closed_to_player( player )
     end
+
+    do return end
+
+    ::book_node::
+    
+
 end)
 
 
