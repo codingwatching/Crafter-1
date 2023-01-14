@@ -43,7 +43,6 @@ local inv
 local dir
 local vel
 local pos
---local object
 local name
 
 local function arrow_check(name,dtime)
