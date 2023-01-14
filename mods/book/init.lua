@@ -445,7 +445,7 @@ minetest.register_craftitem("book:book",{
             end
         end
         -- Ignore for rightclicking things
-        if nodedef.on_rightclick then return end
+        if nodedef.on_rightclick then return minetest.item_place(itemstack, author, pointed_thing) end
         
         open_book_item_gui( author, true, 0)
     end,
@@ -490,7 +490,7 @@ minetest.register_craftitem("book:book_written",{
         end
         
         -- Ignore for rightclicking things
-        if nodedef.on_rightclick then return end
+        if nodedef.on_rightclick then return minetest.item_place(itemstack, author, pointed_thing) end
 
         open_book_item_gui(author, false, 0)
     end,
