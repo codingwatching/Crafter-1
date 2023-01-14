@@ -269,6 +269,7 @@ function arrow:on_step( dtime, moveresult )
         -- Something from another mod that isn't supposed to be hit by an arrow
         if not is_player and not is_owner and not is_object and not is_mob then goto continue end
 
+        -- Searching for a player or mob to hurt while flying through the air
         if not self.stuck and ( (is_player and not is_owner and object:get_hp() > 0 ) or ( is_mob and object:get_hp() > 0 ) ) then
 
             object:punch(self.object, 2,
@@ -281,6 +282,7 @@ function arrow:on_step( dtime, moveresult )
 
             return
 
+        -- Searching for it's owner to do the collection, it's very lonely :(
         elseif self.timer > 3 and is_owner then
 
             inv = object:get_inventory()
