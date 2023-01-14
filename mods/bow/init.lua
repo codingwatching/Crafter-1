@@ -204,6 +204,7 @@ function arrow:on_step( dtime, moveresult )
     pos = self.object:get_pos()
     vel = self.object:get_velocity()
     
+    -- The arrow entity is acting like an item entity being collected
     if self.collecting then
 
         -- Player logged off or a glitch occured
@@ -247,8 +248,9 @@ function arrow:on_step( dtime, moveresult )
             self.object:remove()
         end
 
+        return
+
     else
-        
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
 
             if object == self.object then goto continue end
@@ -301,8 +303,7 @@ function arrow:on_step( dtime, moveresult )
 
             ::continue::
         end
-
-        -- print(dump(moveresult))
+        
 
         if  moveresult and
             moveresult.collides and
