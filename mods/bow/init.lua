@@ -64,30 +64,30 @@ local ray
 local y
 local x
 
-local function arrow_check(name,dtime)
+local function arrow_check(player_name,dtime)
 
-    temp_pool = pool[name]
-    player = get_player_by_name(name)
+    temp_pool = pool[player_name]
+    player = get_player_by_name(player_name)
     rightclick = player:get_player_control().RMB
     new_index = player:get_wield_index()
 
     -- if player changes selected item
     if new_index ~= temp_pool.index then
         inv:set_stack("main", temp_pool.index, ItemStack("bow:bow_empty"))
-        pool[name] = nil
+        pool[player_name] = nil
         return
     end
 
     -- if player lets go of rightclick
     if temp_pool.step ~= 5 and not rightclick then
         inv:set_stack("main", temp_pool.index, ItemStack("bow:bow_empty"))
-        pool[name] = nil
+        pool[player_name] = nil
         return
     end
 
     -- if player isn't holding a bow
     if minetest.get_item_group(player:get_wielded_item():get_name(), "bow") == 0 then
-        pool[name] = nil
+        pool[player_name] = nil
         return
     end
 
@@ -96,7 +96,7 @@ local function arrow_check(name,dtime)
     -- if player doesn't have any arrows
     if not inv:contains_item("main", ItemStack("bow:arrow")) then
         inv:set_stack("main", temp_pool.index, ItemStack("bow:bow_empty"))
-        pool[name] = nil
+        pool[player_name] = nil
         return
     end
 
@@ -128,7 +128,7 @@ local function arrow_check(name,dtime)
         vel = multiply_vec( dir, 50)
 
         arrow_object:set_velocity(vel)
-        arrow_object:get_luaentity().owner  = name
+        arrow_object:get_luaentity().owner  = player_name
         arrow_object:get_luaentity().oldpos = pos
         
         minetest.sound_play("bow", {object=player, gain = 1.0, max_hear_distance = 60,pitch = random(80,100)/100})
@@ -136,13 +136,13 @@ local function arrow_check(name,dtime)
         inv:remove_item("main", ItemStack("bow:arrow"))
         inv:set_stack("main", temp_pool.index, ItemStack("bow:bow_empty"))
 
-        pool[name] = nil
+        pool[player_name] = nil
     end
 end
 
 minetest.register_globalstep(function(dtime)
-    for name in pairs(pool) do
-        arrow_check(name,dtime)
+    for player_name in pairs(pool) do
+        arrow_check(player_name,dtime)
     end
 end)
 
