@@ -7,6 +7,7 @@ local raycast                   = minetest.raycast
 local dir_to_yaw                = minetest.dir_to_yaw
 local deserialize               = minetest.deserialize
 local serialize                 = minetest.serialize
+
 local string_sub  = string.sub
 local string_length  = string.len
 local math_pi     = math.pi
@@ -418,9 +419,9 @@ for i = 1,5 do
         stack_max = 1,
         groups = { bow = 1, bow_loaded = i },
         range = 0,
-        on_drop = function( itemstack, dropper, pos )
+        on_drop = function( itemstack, dropper, position )
             itemstack = ItemStack("bow:bow_empty")
-            minetest.item_drop(itemstack, dropper, pos)
+            minetest.item_drop(itemstack, dropper, position)
             return(itemstack)
         end,
     })
