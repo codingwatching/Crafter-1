@@ -446,8 +446,7 @@ minetest.register_craftitem("book:book",{
         end
         -- Ignore for rightclicking things
         if nodedef.on_rightclick then return end
-
-        --print("make books placable on the ground")
+        
         open_book_item_gui( author, true, 0)
     end,
 
@@ -475,7 +474,6 @@ minetest.register_craftitem("book:book_written",{
 
         -- If a player is sneaking then they can place the book as a node
         if sneak then
-            print("sneaking")
             if nodedef.buildable_to then
                 local param2 = get_param2(author:get_look_dir())
                 place_item_as_node(pointed_thing.under, param2, itemstack, "book:inked_book_node")
