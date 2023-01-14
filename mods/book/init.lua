@@ -405,6 +405,7 @@ local function place_item_as_node(pos, param2, old_stack, new_node)
     new_meta:set_string("book_title", title)
     new_meta:set_int("max_pages", max_page)
     new_meta:set_int("page", page)
+    new_meta:set_int("auto_page", old_meta:get_int("auto_page"))
 end
 
 local function get_param2(dir)
@@ -535,6 +536,7 @@ local function destroy_node_function( pos, dropping_item )
     new_meta:set_string("book_title", title)
     new_meta:set_int("max_pages", max_page)
     new_meta:set_int("page", page)
+    new_meta:set_int("auto_page", old_meta:get_int("auto_page"))
 
     minetest.item_drop(new_item, nil, pos)
 end
