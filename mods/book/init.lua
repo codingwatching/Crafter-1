@@ -436,17 +436,19 @@ minetest.register_craftitem("book:book_written",{
 
         local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
-        -- Ignore for rightclicking things
-        if noddef.on_rightclick then return end
-
         -- If a player is sneaking then they can place the book on the ground
 
         -- TODO: check if placing above the node with a y check! vector.direction {0,1,0}
         if sneak then
-            print("placing a thing on the ground")
+            
+            -- if not vector.equals(vector.direction(pointed_thing.under,pointed_thing.above), vector.new(0,0,0)) then return end
+            -- if vector.direction(pointed_thing.above)
             minetest.item_place(itemstack, author, pointed_thing.above)
             return
         end
+        
+        -- Ignore for rightclicking things
+        if noddef.on_rightclick then return end
 
         open_book_item_gui(author, false, 0)
     end,
