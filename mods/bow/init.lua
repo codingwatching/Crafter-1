@@ -319,7 +319,7 @@ function arrow:on_step( dtime, moveresult )
         moveresult.collides and
         moveresult.collisions and
         moveresult.collisions[1] and
-        moveresult.collisions[1].new_velocitythen
+        moveresult.collisions[1].new_velocity then
         
         collision = moveresult.collisions[1]
 
