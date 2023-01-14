@@ -19,7 +19,6 @@ local s_len  = string.len
 -- math library
 local pi     = math.pi
 local random = math.random
-local floor  = math.floor
 
 -- vector library
 local new_vec       = vector.new
@@ -101,7 +100,7 @@ local function arrow_check(name,dtime)
         dir = player:get_look_dir()
         vel = multiply_vec(dir,50)
         pos = player:get_pos()
-        pos.y = pos.y + 1.5    
+        pos.y = pos.y + 1.5
 
         object = minetest.add_entity(add_vec(pos,divide_vec(dir,10)),"bow:arrow")
         object:set_velocity(vel)
