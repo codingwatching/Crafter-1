@@ -7,7 +7,7 @@ minetest,math,vector,ipairs,string,type
 local get_connected_players     = minetest.get_connected_players
 local get_player_by_name        = minetest.get_player_by_name
 local get_objects_inside_radius = minetest.get_objects_inside_radius
-local create_raycast            = minetest.raycast
+local raycast            = minetest.raycast
 local dir_to_yaw                = minetest.dir_to_yaw
 local deserialize               = minetest.deserialize
 local serialize                 = minetest.serialize
@@ -56,7 +56,9 @@ local dir
 local vel
 local pos
 local object
+
 local function arrow_check(name,dtime)
+
     temp_pool = pool[name]
     player = get_player_by_name(name)
     rightclick = player:get_player_control().RMB
@@ -137,15 +139,6 @@ minetest.register_globalstep(function(dtime)
 end)
 
 
---[[
- █████╗ ██████╗ ██████╗  ██████╗ ██╗    ██╗    ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
-██╔══██╗██╔══██╗██╔══██╗██╔═══██╗██║    ██║    ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
-███████║██████╔╝██████╔╝██║   ██║██║ █╗ ██║    █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
-██╔══██║██╔══██╗██╔══██╗██║   ██║██║███╗██║    ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
-██║  ██║██║  ██║██║  ██║╚██████╔╝╚███╔███╔╝    ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
-╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝  ╚══╝╚══╝     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-]]--
-
 local pos
 local vel
 local owner
@@ -160,7 +153,9 @@ local ray
 local dir
 local y
 local x
-local function arrow_step(self, dtime,moveresult)
+
+local arrow = {}
+function arrow:arrow_step(dtime,moveresult)
     self.timer = self.timer + dtime
 
     pos = self.object:get_pos()
@@ -255,7 +250,7 @@ local function arrow_step(self, dtime,moveresult)
         elseif self.stuck == true and self.check_dir then
             pos2 = add_vec(pos,multiply_vec(self.check_dir,0.2))
             
-            ray = create_raycast(pos, pos2, false, false)
+            ray = raycast(pos, pos2, false, false)
 
             if not ray:next() then
                 self.stuck = false
@@ -281,19 +276,6 @@ local function arrow_step(self, dtime,moveresult)
     end
 end
 
-
---[[
- █████╗ ██████╗ ██████╗  ██████╗ ██╗    ██╗    ███████╗███╗   ██╗████████╗██╗████████╗██╗   ██╗
-██╔══██╗██╔══██╗██╔══██╗██╔═══██╗██║    ██║    ██╔════╝████╗  ██║╚══██╔══╝██║╚══██╔══╝╚██╗ ██╔╝
-███████║██████╔╝██████╔╝██║   ██║██║ █╗ ██║    █████╗  ██╔██╗ ██║   ██║   ██║   ██║    ╚████╔╝ 
-██╔══██║██╔══██╗██╔══██╗██║   ██║██║███╗██║    ██╔══╝  ██║╚██╗██║   ██║   ██║   ██║     ╚██╔╝  
-██║  ██║██║  ██║██║  ██║╚██████╔╝╚███╔███╔╝    ███████╗██║ ╚████║   ██║   ██║   ██║      ██║   
-╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝  ╚══╝╚══╝     ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝   ╚═╝      ╚═╝   
-]]--
-
-
-
-local arrow = {}
 arrow.initial_properties = {
     physical = true,
     collide_with_objects = false,
@@ -352,7 +334,7 @@ arrow.collection_height = 0.5
 arrow.radius = 2
 
 arrow.on_step = function(self, dtime,moveresult)
-    arrow_step(self, dtime,moveresult)
+    self:arrow_step(dtime,moveresult)
 end
 minetest.register_entity("bow:arrow", arrow)
 
