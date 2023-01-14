@@ -350,9 +350,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             local old_data = fields["book_text"] or ""
             local book_name = fields["book_title"] or ""
 
-            open_book_item_gui(player, editable, -1, old_data, book_name)
+            open_book_node_gui(pos, player, editable, -1, old_data, book_name)
         else
-            open_book_item_gui(player, editable, -1)
+            open_book_node_gui(pos, player, editable, -1)
         end
 
         -- Basically cuts the book off at the current page
@@ -361,7 +361,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local old_data = fields["book_text"] or ""
         local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, editable, 0, old_data, book_name, true)
+        open_book_node_gui(pos, player, editable, 0, old_data, book_name, true)
 
         -- AutoPage toggle
     elseif fields["toggle_auto_page"] then
@@ -369,7 +369,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local old_data = fields["book_text"] or ""
         local book_name = fields["book_title"] or ""
 
-        open_book_item_gui(player, true, 0, old_data, book_name, false, true)
+        open_book_node_gui(pos, player, true, 0, old_data, book_name, false, true)
 
         -- This is the fallthrough locked book closing and players hitting escape or close and the gui is now closed in an editable book
     elseif fields["book_locked"]  or fields["quit"] then
