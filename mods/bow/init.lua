@@ -405,13 +405,13 @@ minetest.register_craftitem("bow:bow_empty", {
     description = "Bow",
     inventory_image = "bow.png",
     stack_max = 1,
-    groups = {bow=1},
+    groups = { bow = 1 },
     range = 0,
-    on_place = function(_, placer)
-        initialize_pullback(placer)
+    on_place = function( _, placer )
+        initialize_pullback( placer )
     end,
-    on_secondary_use = function(_, user)
-        initialize_pullback(user)
+    on_secondary_use = function( _, user )
+        initialize_pullback( user )
     end
 })
 
@@ -420,9 +420,9 @@ for i = 1,5 do
         description = "Bow",
         inventory_image = "bow_"..i..".png",
         stack_max = 1,
-        groups = {bow=1,bow_loaded=i},
+        groups = { bow = 1, bow_loaded = i },
         range = 0,
-        on_drop = function(itemstack, dropper, pos)
+        on_drop = function( itemstack, dropper, pos )
             itemstack = ItemStack("bow:bow_empty")
             minetest.item_drop(itemstack, dropper, pos)
             return(itemstack)
