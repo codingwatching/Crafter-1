@@ -2,11 +2,7 @@
 
 --[[
     TODO:
-    1. give books multiple pages
-
-    2. make an auto page creation lockout in case the author wants to keep the amount of pages
-
-    2. make a page saving function and check if there's nothing in the page
+    1. consolidate the function logic into separate functions because this is a lot of code
 
     3. make books placable on the ground
     3.a make a nice looking node that represents a book
