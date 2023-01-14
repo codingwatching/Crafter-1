@@ -309,6 +309,7 @@ minetest.register_craftitem("book:book",{
 
         local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
+        -- TODO: check if placing above the node with a y check! vector.direction {0,1,0}
         if not sneak and noddef.on_rightclick then
             minetest.item_place(itemstack, author, pointed_thing)
             return
@@ -343,6 +344,8 @@ minetest.register_craftitem("book:book_written",{
         if noddef.on_rightclick then return end
 
         -- If a player is sneaking then they can place the book on the ground
+
+        -- TODO: check if placing above the node with a y check! vector.direction {0,1,0}
         if sneak then
             print("placing a thing on the ground")
             minetest.item_place(itemstack, author, pointed_thing.above)
@@ -379,6 +382,7 @@ minetest.register_node("book:book_node", {
     description = "Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
+    groups = { dig_immediate=1, attached_node=1 },
     tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
     node_box = node_box
 })
@@ -387,6 +391,7 @@ minetest.register_node("book:inked_book_node", {
     description = "Inked Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
+    groups = { dig_immediate=1, attached_node=1 },
     tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
     node_box = node_box
 })
