@@ -63,6 +63,7 @@ local collision
 local ray
 local y
 local x
+local initial_velocity
 
 local function arrow_check(player_name,dtime)
 
@@ -118,16 +119,14 @@ local function arrow_check(player_name,dtime)
         pos.y = pos.y + 1.5
 
         dir = player:get_look_dir()
+        initial_velocity = multiply_vec( dir, 50)
 
         local arrow_object = minetest.add_entity( add_vec( pos, divide_vec( dir, 10 ) ), "bow:arrow" )
 
         -- A serious engine glitch has occured
         if not arrow_object then return end
 
-        -- Entity uses vel variable on it's initial on_step, needs to be overwritten
-        vel = multiply_vec( dir, 50)
-
-        arrow_object:set_velocity(vel)
+        arrow_object:set_velocity(initial_velocity)
         arrow_object:get_luaentity().owner  = player_name
         arrow_object:get_luaentity().oldpos = pos
         
