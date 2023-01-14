@@ -1,1 +1,5 @@
 book - https://github.com/minetest/minetest_game/blob/master/mods/default/textures/default_book.png
+
+book inked - same thing as above but it's recolored
+
+book node - I made it, cc0
