@@ -164,7 +164,7 @@ arrow.radius = 2
 
 -- Arrow methods
 arrow.on_activate = function(self, staticdata, dtime_s)
-    --self.object:set_animation({x=0,y=180}, 15, 0, true)
+
     local vel = nil
     if s_sub(staticdata, 1, s_len("return")) == "return" then
         local data = deserialize(staticdata)
