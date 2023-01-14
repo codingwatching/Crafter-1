@@ -256,15 +256,12 @@ function arrow:on_step( dtime, moveresult )
             local is_player = object:is_player()
             local is_owner = is_player and object:get_player_name() == self.owner
             local is_object = not is_player and object:get_luaentity()
-            local is_mob = is_object and object.is_mob
+            local is_mob = is_object and is_object.is_mob
 
             -- Something from another mod that isn't supposed to be hit by an arrow
             if not is_player and not is_owner and not is_object and not is_mob then goto continue end
 
-            if not self.stuck and ( (is_player and not is_owner and object:get_hp() > 0 ) ) then--or ( is_object and object:get_luaentity().is_mob and object:get_hp() > 0 ) ) then
-                
-                -- TODO: Check the mob's health in this logic gate
-                print("REMINDER: check the mob's health here")
+            if not self.stuck and ( (is_player and not is_owner and object:get_hp() > 0 ) or ( is_mob and object:get_hp() > 0 ) ) then
 
                 object:punch(self.object, 2,
                     {
