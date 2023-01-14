@@ -211,7 +211,8 @@ function arrow:on_step( dtime, moveresult )
             self.object:remove()
             return
         end
-         
+
+        -- TODO: Figure out why this is setting the acceleration every server tick
         self.object:set_acceleration(new_vec(0,0,0))
 
         --get the variables
@@ -238,7 +239,7 @@ function arrow:on_step( dtime, moveresult )
         if distance < 0.2 then
             self.object:remove()
         end
-        
+
     else
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
             if self.stuck == false and ((object:is_player() and object:get_player_name() ~= self.owner and object:get_hp() > 0) or (object:get_luaentity() and object:get_luaentity().mobname)) then
