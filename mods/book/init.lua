@@ -390,6 +390,24 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 end)
 
+local function place_item_as_node(pos, param2, old_stack, new_node)
+    local old_meta = old_stack:get_meta()
+    minetest.place_node(pos, {name = new_node, param2 = param2})
+    local new_meta = minetest.get_meta(pos)
+
+    local max_page = old_meta:get_int("max_pages")
+    for i = 1,max_page do
+        new_meta:set_string( "book_text_" .. i, old_meta:get_string( "book_text_" .. i ) )
+    end
+
+    local page = old_meta:get_int("page")
+    local title = old_meta:get_string("book_title")
+
+    new_meta:set_string("book_title", title)
+    new_meta:set_int("max_pages", max_page)
+    new_meta:set_int("page", page)
+end
+
 
 -- Book that is able to be edited
 minetest.register_craftitem("book:book",{
@@ -407,12 +425,23 @@ minetest.register_craftitem("book:book",{
 
         local nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
-        -- TODO: check if placing above the node with a y check! vector.direction {0,1,0}
-        if not sneak then
-            minetest.item_place(itemstack, author, pointed_thing)
-            return
+        -- If a player is sneaking then they can place the book as a node
+        if sneak then
+            if nodedef.buildable_to then
+                local dir = author:get_look_dir()
+                local param2 = minetest.dir_to_fourdir(dir)
+                place_item_as_node(pointed_thing.under, param2, itemstack, "book:book_node")
+                itemstack:take_item(1)
+                return itemstack
+            end
+            if vector.equals(vector.direction(pointed_thing.under,pointed_thing.above), vector.new(0,1,0)) then
+                local dir = author:get_look_dir()
+                local param2 = minetest.dir_to_fourdir(dir)
+                place_item_as_node(pointed_thing.above, param2, itemstack, "book:book_node")
+                itemstack:take_item(1)
+                return itemstack
+            end
         end
-
         -- Ignore for rightclicking things
         if nodedef.on_rightclick then return end
 
@@ -424,24 +453,6 @@ minetest.register_craftitem("book:book",{
         open_book_item_gui( author, true, 0)
     end,
 })
-
-local function place_item_as_node(pos, param2, old_stack, new_node)
-    local old_meta = old_stack:get_meta()
-    minetest.place_node(pos, new_node)
-    local new_meta = minetest.get_meta(pos)
-
-    local max_page = old_meta:get_int("max_pages")
-    for i = 1,max_page do
-        new_meta:set_string( "book_text_" .. i, old_meta:get_string( "book_text_" .. i ) )
-    end
-
-    local page = old_meta:get_int("page")
-    local title = old_meta:get_string("book_title")
-
-    new_meta:set_string("book_title", title)
-    new_meta:set_int("max_pages", max_page)
-    new_meta:set_int("page", page)
-end
 
 -- Permenantly written books
 minetest.register_craftitem("book:book_written",{
@@ -460,19 +471,23 @@ minetest.register_craftitem("book:book_written",{
 
         local nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
-        -- If a player is sneaking then they can place the book on the ground
-
-        -- TODO: check if placing above the node with a y check! vector.direction {0,1,0}
+        -- If a player is sneaking then they can place the book as a node
         if sneak then
-
+            print("sneaking")
             if nodedef.buildable_to then
-
-                minetest.item_place(itemstack, author, pointed_thing.under)
-                return
+                local dir = author:get_look_dir()
+                local param2 = minetest.dir_to_fourdir(dir)
+                place_item_as_node(pointed_thing.under, param2, itemstack, "book:inked_book_node")
+                itemstack:take_item(1)
+                return itemstack
             end
-            if vector.equals(vector.direction(pointed_thing.under,pointed_thing.above), vector.new(0,0,0)) then
-                
-                return
+
+            if vector.equals(vector.direction(pointed_thing.under,pointed_thing.above), vector.new(0,1,0)) then
+                local dir = author:get_look_dir()
+                local param2 = minetest.dir_to_fourdir(dir)
+                place_item_as_node(pointed_thing.above, param2, itemstack, "book:inked_book_node")
+                itemstack:take_item(1)
+                return itemstack
             end
         end
         
@@ -513,7 +528,7 @@ local function destroy_node_function( pos, dropping_item )
 
     local max_page = old_meta:get_int("max_pages")
     for i = 1,max_page do
-        new_meta:set_string( "book_text_" .. i, old_meta:get_string( "book_text_" .. i ) )        
+        new_meta:set_string( "book_text_" .. i, old_meta:get_string( "book_text_" .. i ) )
     end
 
     local page = old_meta:get_int("page")
