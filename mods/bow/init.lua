@@ -381,17 +381,17 @@ minetest.register_craftitem("bow:arrow", {
 minetest.register_craft({
     output = "bow:bow_empty",
     recipe = {
-        {""           , "main:stick", "mob:string"},
-        {"main:stick" , ""          , "mob:string"},
-        {""           , "main:stick", "mob:string"},
+        { "", "main:stick", "mob:string"},
+        { "main:stick", "", "mob:string"},
+        { "", "main:stick", "mob:string"},
     },
 })
 
 minetest.register_craft({
     output = "bow:arrow 16",
     recipe = {
-        {"main:iron", ""          , ""           },
-        {""         , "main:stick", ""           },
-        {""         , ""          , "mob:feather"},
+        { "main:iron", "", "" },
+        { "", "main:stick", "" },
+        { "", "", "mob:feather" },
     },
 })
