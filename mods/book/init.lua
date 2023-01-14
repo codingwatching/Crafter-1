@@ -347,3 +347,16 @@ minetest.register_craft({
     }
 })
 
+minetest.register_node("book:book_node", {
+    description = "Book",
+    drawtype = "nodebox",
+    paramtype2 = "4dir",
+    tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
+    node_box = {
+        type = "fixed",
+        fixed = {
+            {-0.4375, -0.5000, -0.3750, 0.4375, -0.4375, 0.3750},
+            {-0.3750, -0.4375, -0.3750, 0.3750, -0.3750, 0.3750}
+        }
+    }
+})
