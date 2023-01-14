@@ -211,37 +211,34 @@ function arrow:on_step( dtime, moveresult )
             self.object:remove()
             return
         end
+         
+        self.object:set_acceleration(new_vec(0,0,0))
 
-        -- This was doing ipairs on all entities within the radius to get the owner's position
-        for _ in ipairs(get_objects_inside_radius(pos, self.radius)) do
-            
-            self.object:set_acceleration(new_vec(0,0,0))
-
-            --get the variables
-            pos2 = owner:get_pos()
-            player_velocity = owner:get_velocity()
-            pos2.y = pos2.y + self.collection_height
-                            
-            direction = normalize_vec(sub_vec(pos2,pos))
-            distance = vec_distance(pos2,pos)
-                            
-            
-            --remove if too far away
-            if distance > self.radius then
-                distance = 0
-            end
-                            
-            multiplier = (self.radius*5) - distance
-            velocity = multiply_vec(direction,multiplier)
-            
-            velocity = add_vec(player_velocity,velocity)
-            
-            self.object:set_velocity(velocity)
-            
-            if distance < 0.2 then
-                self.object:remove()
-            end
+        --get the variables
+        pos2 = owner:get_pos()
+        player_velocity = owner:get_velocity()
+        pos2.y = pos2.y + self.collection_height
+                        
+        direction = normalize_vec(sub_vec(pos2,pos))
+        distance = vec_distance(pos2,pos)
+                        
+        
+        --remove if too far away
+        if distance > self.radius then
+            distance = 0
         end
+                        
+        multiplier = (self.radius*5) - distance
+        velocity = multiply_vec(direction,multiplier)
+        
+        velocity = add_vec(player_velocity,velocity)
+        
+        self.object:set_velocity(velocity)
+        
+        if distance < 0.2 then
+            self.object:remove()
+        end
+        
     else
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
             if self.stuck == false and ((object:is_player() and object:get_player_name() ~= self.owner and object:get_hp() > 0) or (object:get_luaentity() and object:get_luaentity().mobname)) then
