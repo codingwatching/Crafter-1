@@ -153,6 +153,14 @@ mob_register.sound_pitch_mod_max = def.sound_pitch_mod_max
 mob_register.sound_pitch_mod_min_die = def.sound_pitch_mod_min_die
 mob_register.sound_pitch_mod_max_die = def.sound_pitch_mod_max_die
 
+function mob_register.is_mob()
+    return true
+end
+
+function mob_register:get_hp()
+    return self.hp
+end
+
 
 if def.pathfinds then
     --mob_register.path = {}
