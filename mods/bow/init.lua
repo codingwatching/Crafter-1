@@ -207,6 +207,7 @@ function arrow:on_step( dtime, moveresult )
     
     if self.collecting then
 
+        -- Player logged off or a glitch occured
         if not self.owner or not minetest.get_player_by_name(self.owner) then
             self.object:remove()
             return
