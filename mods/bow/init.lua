@@ -407,10 +407,10 @@ minetest.register_craftitem("bow:bow_empty", {
     stack_max = 1,
     groups = {bow=1},
     range = 0,
-    on_secondary_use = function(itemstack, user, pointed_thing)
+    on_secondary_use = function(_, user)
         initialize_pullback(user)
     end,
-    on_place = function(itemstack, placer, pointed_thing)
+    on_place = function(_, placer)
         initialize_pullback(placer)
     end,
 })
