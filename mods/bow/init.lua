@@ -255,6 +255,8 @@ function arrow:on_step( dtime, moveresult )
 
     -- Now the arrow entity is doing it's normal things
     
+    -- The arrow is checking if there is a player or mob to hit, OR, if it's stuck (hit the ground) then try to be collected by a player
+    -- This is what causes the arrow entity to fall and hurt you if you mine a node that another player shot at
     for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
 
         if object == self.object then goto continue end
