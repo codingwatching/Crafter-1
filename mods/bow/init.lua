@@ -114,11 +114,6 @@ local function arrow_check(name,dtime)
 
         pool[name] = nil
     end
-
-
-    --add hand fatigue timer
-    --gradually increase fatigue until cap is reached
-
 end
 
 minetest.register_globalstep(function(dtime)
