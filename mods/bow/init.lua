@@ -250,7 +250,11 @@ function arrow:on_step( dtime, moveresult )
     else
         
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
-            if self.stuck == false and ((object:is_player() and object:get_player_name() ~= self.owner and object:get_hp() > 0) or (object:get_luaentity() and object:get_luaentity().mobname)) then
+
+            local is_player = object:is_player()
+            local is_owner = is_player and object:get_player_name() == self.owner
+
+            if self.stuck == false and ( (not is_owner and object:get_hp() > 0 ) or object:get_luaentity().mobname ) then
                 object:punch(self.object, 2,
                     {
                     full_punch_interval=1.5,
@@ -259,7 +263,7 @@ function arrow:on_step( dtime, moveresult )
 
                 self.object:remove()
                 return
-            elseif self.timer > 3 and (object:is_player() and object:get_player_name() == self.owner) then
+            elseif self.timer > 3 and is_owner then
                 self.collecting = true
                 local inv = object:get_inventory()
                 if inv and inv:room_for_item("main", ItemStack("bow:arrow")) then
