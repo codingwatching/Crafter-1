@@ -4,6 +4,8 @@
     TODO:
     1. consolidate the function logic into separate functions because this is a lot of code
 
+    2. Make the sounds play either attached to the player or at the node's position so it's more interactive in multiplayer
+
     3. make books placable on the ground
     3.a make a nice looking node that represents a book
     4.Maybe make a book animation for when it's opening?
@@ -162,6 +164,7 @@ end
 
 local function open_book_node_gui( pos, author, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
 
+    
     play_book_open_sound_to_player( author )
 
     local meta = minetest.get_meta(pos)
