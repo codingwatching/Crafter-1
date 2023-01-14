@@ -52,6 +52,17 @@ local is_mob
 local new_velocity
 local old_velocity
 local node_pos
+local owner
+local pos2
+local player_velocity
+local direction
+local distance
+local multiplier
+local velocity
+local collision
+local ray
+local y
+local x
 
 local function arrow_check(name,dtime)
 
@@ -128,19 +139,6 @@ minetest.register_globalstep(function(dtime)
         arrow_check(name,dtime)
     end
 end)
-
-
-local owner
-local pos2
-local player_velocity
-local direction
-local distance
-local multiplier
-local velocity
-local collision
-local ray
-local y
-local x
 
 -- Arrow class
 local arrow = {}
