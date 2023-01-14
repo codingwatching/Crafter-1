@@ -174,15 +174,19 @@ local function open_book_node_gui( pos, author, editable, page_modification, pre
 end
 
 local function save_current_page(player, fields)
-
     local itemstack = player:get_wielded_item()
     local meta = itemstack:get_meta()
     local current_page = meta:get_int("page")
-
     meta:set_string("book_title", fields["book_title"])
     meta:set_string("book_text_" .. current_page, fields["book_text"])
-
     player:set_wielded_item(itemstack)
+end
+
+local function save_current_node_page(pos, fields)
+    local meta = minetest.get_meta(pos)
+    local current_page = meta:get_int("page")
+    meta:set_string("book_title", fields["book_title"])
+    meta:set_string("book_text_" .. current_page, fields["book_text"])
 end
 
 -- Handes the book gui
@@ -291,6 +295,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- This is the save text logic gate
     if editable and fields["book_write"] then
+
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_write_to_player(player)
         save_current_page(player, fields)
