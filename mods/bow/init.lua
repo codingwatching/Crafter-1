@@ -178,11 +178,12 @@ arrow.on_activate = function(self, staticdata, dtime_s)
             vel             = data.vel
         end
     end
-    if not self.stuck then
-        self.object:set_acceleration(new_vec(0,-9.81,0))
-        if vel then
-            self.object:set_velocity(vel)
-        end
+
+    if self.stuck then return end
+    
+    self.object:set_acceleration(new_vec(0,-9.81,0))
+    if vel then
+        self.object:set_velocity(vel)
     end
 end
 
@@ -296,7 +297,7 @@ function arrow:on_step( dtime, moveresult )
                 })
 
                 self.collecting = true
-                
+
                 self.object:set_acceleration( new_vec( 0, 0, 0 ) )
 
             else
