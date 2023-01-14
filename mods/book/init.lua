@@ -486,7 +486,9 @@ local function destroy_node_function( pos, dropping_item )
     end
 
     local page = old_meta:get_int("page")
-
+    local title = old_meta:get_string("book_title")
+    
+    new_meta:set_string("book_title", title)
     new_meta:set_int("max_pages", max_page)
     new_meta:set_int("page", page)
 
@@ -509,6 +511,9 @@ minetest.register_node("book:book_node", {
         destroy_node_function( pos, "book:book" )
         minetest.remove_node(pos)
         return true
+    end,
+    on_destruct = function(pos)
+        destroy_node_function( pos, "book:book" )
     end
 })
 
@@ -528,6 +533,9 @@ minetest.register_node("book:inked_book_node", {
         destroy_node_function( pos, "book:inked_book" )
         minetest.remove_node( pos )
         return true
+    end,
+    on_destruct = function(pos)
+        destroy_node_function( pos, "book:inked_book" )
     end
 })
 
