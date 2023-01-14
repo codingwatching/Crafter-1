@@ -384,7 +384,8 @@ minetest.register_node("book:book_node", {
     paramtype2 = "4dir",
     groups = { dig_immediate = 1, attached_node = 3 },
     tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
-    node_box = node_box
+    node_box = node_box,
+    -- TODO: drop book with meta data
 })
 
 minetest.register_node("book:inked_book_node", {
@@ -393,5 +394,6 @@ minetest.register_node("book:inked_book_node", {
     paramtype2 = "4dir",
     groups = { dig_immediate = 1, attached_node = 3},
     tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
-    node_box = node_box
+    node_box = node_box,
+    -- TODO: drop inked book with meta data
 })
