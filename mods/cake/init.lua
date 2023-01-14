@@ -8,21 +8,24 @@ local set_node   = minetest.set_node
 
 local random     = math.random
 
-minetest.register_food("cake:cake_item_placeholder",{
+minetest.register_food( "cake:cake_item_placeholder" ,{
     description = "",
     texture = "nothing.png",
-    satiation=30,
-    hunger=6,
+    satiation = 30,
+    hunger = 6,
 })
 
 
 for i = 0,13 do
+
     local missing_slice
+
     if i == 0 then
         missing_slice = "cake_side.png"
     else
         missing_slice = "cake_inner.png"
     end
+
     minetest.register_node("cake:cake_"..i, {
         description = "Cake",
         tiles = {
@@ -45,9 +48,9 @@ for i = 0,13 do
         sounds = main.woolSound(),
         groups = {wool=1,cake=i,falling_node=1},
         on_construct = function(pos)
-            --randomly cake eats itself
+            -- This has a 0.005 percent chance of becoming an evil cake, a cake that literally eats itself
             if random() > 0.995 then
-                set_node(pos, {name="cake:cursed_cake_0"})
+                set_node( pos, { name = "cake:cursed_cake_0" } )
             end
         end,
         on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
