@@ -250,112 +250,115 @@ function arrow:on_step( dtime, moveresult )
 
         return
 
-    else
-        for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
+    end
 
-            if object == self.object then goto continue end
 
-            local is_player = object:is_player()
-            local is_owner = is_player and object:get_player_name() == self.owner
-            local is_object = not is_player and object:get_luaentity()
-            local is_mob = is_object and is_object.is_mob
+    -- Now the arrow entity is doing it's normal things
+    
+    for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
 
-            -- Something from another mod that isn't supposed to be hit by an arrow
-            if not is_player and not is_owner and not is_object and not is_mob then goto continue end
+        if object == self.object then goto continue end
 
-            if not self.stuck and ( (is_player and not is_owner and object:get_hp() > 0 ) or ( is_mob and object:get_hp() > 0 ) ) then
+        local is_player = object:is_player()
+        local is_owner = is_player and object:get_player_name() == self.owner
+        local is_object = not is_player and object:get_luaentity()
+        local is_mob = is_object and is_object.is_mob
 
-                object:punch(self.object, 2,
-                    {
-                    full_punch_interval=1.5,
-                    damage_groups = {damage=3},
+        -- Something from another mod that isn't supposed to be hit by an arrow
+        if not is_player and not is_owner and not is_object and not is_mob then goto continue end
+
+        if not self.stuck and ( (is_player and not is_owner and object:get_hp() > 0 ) or ( is_mob and object:get_hp() > 0 ) ) then
+
+            object:punch(self.object, 2,
+                {
+                full_punch_interval=1.5,
+                damage_groups = {damage=3},
+            })
+
+            self.object:remove()
+
+            return
+
+        elseif self.timer > 3 and is_owner then
+
+            inv = object:get_inventory()
+
+            if inv and inv:room_for_item( "main", ItemStack( "bow:arrow" ) ) then
+
+                inv:add_item("main",ItemStack("bow:arrow"))
+
+                minetest.sound_play("pickup", {
+                    to_player = object:get_player_name(),
+                    gain = 0.4,
+                    pitch = random(60,100)/100
                 })
 
+                self.collecting = true
+
+            else
+
                 self.object:remove()
-
-                return
-
-            elseif self.timer > 3 and is_owner then
-
-                inv = object:get_inventory()
-
-                if inv and inv:room_for_item( "main", ItemStack( "bow:arrow" ) ) then
-
-                    inv:add_item("main",ItemStack("bow:arrow"))
-
-                    minetest.sound_play("pickup", {
-                        to_player = object:get_player_name(),
-                        gain = 0.4,
-                        pitch = random(60,100)/100
-                    })
-
-                    self.collecting = true
-
-                else
-
-                    self.object:remove()
-                    minetest.throw_item(pos,"bow:arrow")
-                    
-                end
-
-                return
+                minetest.throw_item(pos,"bow:arrow")
+                
             end
 
-            ::continue::
+            return
         end
+
+        ::continue::
+    end
+    
+
+    if  moveresult and
+        moveresult.collides and
+        moveresult.collisions and
+        moveresult.collisions[1] and
+        moveresult.collisions[1].new_velocity and
+        not self.stuck then
         
+        collision = moveresult.collisions[1]
 
-        if  moveresult and
-            moveresult.collides and
-            moveresult.collisions and
-            moveresult.collisions[1] and
-            moveresult.collisions[1].new_velocity and
-            not self.stuck then
-            
-            collision = moveresult.collisions[1]
-
-            if collision.new_velocity.x == 0 and collision.old_velocity.x ~= 0 then
-                self.check_dir = vec_direction(new_vec(pos.x,0,0),new_vec(collision.node_pos.x,0,0))
-            elseif collision.new_velocity.y == 0 and collision.old_velocity.y ~= 0 then
-                self.check_dir = vec_direction(new_vec(0,pos.y,0),new_vec(0,collision.node_pos.y,0))
-            elseif collision.new_velocity.z == 0 and collision.old_velocity.z ~= 0 then
-                self.check_dir = vec_direction(new_vec(0,0,pos.z),new_vec(0,0,collision.node_pos.z))
-            end
-            if collision.new_pos then
-                --print(dump(collision.new_pos))
-                self.object:set_pos(collision.new_pos)
-            end
+        if collision.new_velocity.x == 0 and collision.old_velocity.x ~= 0 then
+            self.check_dir = vec_direction(new_vec(pos.x,0,0),new_vec(collision.node_pos.x,0,0))
+        elseif collision.new_velocity.y == 0 and collision.old_velocity.y ~= 0 then
+            self.check_dir = vec_direction(new_vec(0,pos.y,0),new_vec(0,collision.node_pos.y,0))
+        elseif collision.new_velocity.z == 0 and collision.old_velocity.z ~= 0 then
+            self.check_dir = vec_direction(new_vec(0,0,pos.z),new_vec(0,0,collision.node_pos.z))
+        end
+        if collision.new_pos then
             --print(dump(collision.new_pos))
-            minetest.sound_play("arrow_hit",{object=self.object,gain=1,pitch=random(80,100)/100,max_hear_distance=64})
-            self.stuck = true
-            self.object:set_velocity(new_vec(0,0,0))
-            self.object:set_acceleration(new_vec(0,0,0))
-        elseif self.stuck == true and self.check_dir then
-            pos2 = add_vec(pos,multiply_vec(self.check_dir,0.2))
-            
-            ray = raycast(pos, pos2, false, false)
-
-            if not ray:next() then
-                self.stuck = false
-                self.object:set_acceleration(new_vec(0,-9.81,0))
-            end
+            self.object:set_pos(collision.new_pos)
         end
+        --print(dump(collision.new_pos))
+        minetest.sound_play("arrow_hit",{object=self.object,gain=1,pitch=random(80,100)/100,max_hear_distance=64})
+        self.stuck = true
+        self.object:set_velocity(new_vec(0,0,0))
+        self.object:set_acceleration(new_vec(0,0,0))
+    elseif self.stuck == true and self.check_dir then
+        pos2 = add_vec(pos,multiply_vec(self.check_dir,0.2))
         
-        if not self.stuck and pos and self.oldpos then
-            self.spin = self.spin + (dtime*10)
-            if self.spin > pi then
-                self.spin = -pi
-            end
+        ray = raycast(pos, pos2, false, false)
 
-            dir = normalize_vec(sub_vec(pos,self.oldpos))
-            y = dir_to_yaw(dir)
-            x = (dir_to_yaw(new_vec(vec_distance(new_vec(pos.x,0,pos.z),new_vec(self.oldpos.x,0,self.oldpos.z)),0,pos.y-self.oldpos.y))+(pi/2))
-            self.object:set_rotation(new_vec(x,y,self.spin))
+        if not ray:next() then
+            self.stuck = false
+            self.object:set_acceleration(new_vec(0,-9.81,0))
         end
-        if self.stuck == false then
-            self.oldpos = pos
-            self.oldvel = vel
+    end
+    
+    if not self.stuck and pos and self.oldpos then
+        self.spin = self.spin + (dtime*10)
+        if self.spin > pi then
+            self.spin = -pi
         end
+
+        dir = normalize_vec(sub_vec(pos,self.oldpos))
+        y = dir_to_yaw(dir)
+        x = (dir_to_yaw(new_vec(vec_distance(new_vec(pos.x,0,pos.z),new_vec(self.oldpos.x,0,self.oldpos.z)),0,pos.y-self.oldpos.y))+(pi/2))
+        self.object:set_rotation(new_vec(x,y,self.spin))
+    end
+    if self.stuck == false then
+        self.oldpos = pos
+        self.oldvel = vel
     end
 end
 minetest.register_entity("bow:arrow", arrow)
