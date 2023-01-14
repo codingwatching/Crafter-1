@@ -159,9 +159,7 @@ arrow.initial_properties = {
     textures = {
         "basic_bow_arrow_uv.png"
     },
-    pointable = false,
-    --automatic_face_movement_dir = 0.0,
-    --automatic_face_movement_max_rotation_per_sec = 600,
+    pointable = false
 }
 
 arrow.spin = 0
