@@ -382,7 +382,7 @@ minetest.register_node("book:book_node", {
     description = "Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
-    groups = { dig_immediate=1, attached_node=1 },
+    groups = { dig_immediate = 1, attached_node = 3 },
     tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
     node_box = node_box
 })
@@ -391,7 +391,7 @@ minetest.register_node("book:inked_book_node", {
     description = "Inked Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
-    groups = { dig_immediate=1, attached_node=1 },
+    groups = { dig_immediate = 1, attached_node = 3},
     tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
     node_box = node_box
 })
