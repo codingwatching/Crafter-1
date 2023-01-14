@@ -236,7 +236,7 @@ function arrow:on_step( dtime, moveresult )
             distance = 0
         end
                         
-        multiplier = (self.radius*5) - distance
+        multiplier = ( self.radius * 5 ) - distance
         velocity = multiply_vec(direction,multiplier)
         
         velocity = add_vec(player_velocity,velocity)
@@ -248,7 +248,7 @@ function arrow:on_step( dtime, moveresult )
         end
 
     else
-        -- TODO: Fix object being overwritten
+        
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
             if self.stuck == false and ((object:is_player() and object:get_player_name() ~= self.owner and object:get_hp() > 0) or (object:get_luaentity() and object:get_luaentity().mobname)) then
                 object:punch(self.object, 2,
