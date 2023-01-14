@@ -251,10 +251,18 @@ function arrow:on_step( dtime, moveresult )
         
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
 
+            if object == self.object then goto continue end
+
             local is_player = object:is_player()
             local is_owner = is_player and object:get_player_name() == self.owner
 
-            if self.stuck == false and ( (not is_owner and object:get_hp() > 0 ) or object:get_luaentity().mobname ) then
+            print(self.owner)
+            
+            print("is player: " .. tostring(is_player))
+
+            print(dump(object:get_luaentity().mobname))
+
+            if not self.stuck and ( (not is_player and not is_owner and object:get_hp() > 0 ) or object:get_luaentity().mobname ) then
                 
                 -- TODO: Check the mob's health in this logic gate
                 print("REMINDER: check the mob's health here")
@@ -266,6 +274,7 @@ function arrow:on_step( dtime, moveresult )
                 })
 
                 self.object:remove()
+                
                 return
 
             elseif self.timer > 3 and is_owner then
@@ -293,7 +302,11 @@ function arrow:on_step( dtime, moveresult )
 
                 return
             end
+
+            ::continue::
         end
+
+        print(dump(moveresult))
 
         if  moveresult and
             moveresult.collides and
