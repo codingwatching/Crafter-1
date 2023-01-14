@@ -152,7 +152,65 @@ local y
 local x
 
 local arrow = {}
-function arrow:arrow_step(dtime,moveresult)
+
+arrow.initial_properties = {
+    physical = true,
+    collide_with_objects = false,
+    collisionbox = {-0.05, -0.05, -0.05, 0.05, 0.05, 0.05},
+    visual = "mesh",
+    visual_size = {x = 1 , y = 1},
+    mesh = "basic_bow_arrow.b3d",
+    textures = {
+        "basic_bow_arrow_uv.png"
+    },
+    pointable = false,
+    --automatic_face_movement_dir = 0.0,
+    --automatic_face_movement_max_rotation_per_sec = 600,
+}
+arrow.on_activate = function(self, staticdata, dtime_s)
+    --self.object:set_animation({x=0,y=180}, 15, 0, true)
+    local vel = nil
+    if s_sub(staticdata, 1, s_len("return")) == "return" then
+        local data = deserialize(staticdata)
+        if data and type(data) == "table" then
+            self.spin       = data.spin
+            self.owner      = data.owner
+            self.stuck      = data.stuck
+            self.timer      = data.timer
+            self.collecting = data.collecting
+            self.check_dir  = data.check_dir
+            vel             = data.vel
+        end
+    end
+    if not self.stuck then
+        self.object:set_acceleration(new_vec(0,-9.81,0))
+        if vel then
+            self.object:set_velocity(vel)
+        end
+    end
+end
+
+arrow.get_staticdata = function(self)
+    return serialize({
+        spin       = self.spin,
+        owner      = self.owner,
+        stuck      = self.stuck,
+        timer      = self.timer,
+        collecting = self.collecting,
+        check_dir  = self.check_dir,
+        vel        = self.object:get_velocity()
+    })
+end
+
+arrow.spin = 0
+arrow.owner = ""
+arrow.stuck = false
+arrow.timer = 0
+arrow.collecting = false
+arrow.collection_height = 0.5
+arrow.radius = 2
+
+function arrow:on_step( dtime, moveresult )
     self.timer = self.timer + dtime
 
     pos = self.object:get_pos()
@@ -273,67 +331,6 @@ function arrow:arrow_step(dtime,moveresult)
             self.oldvel = vel
         end
     end
-end
-
-arrow.initial_properties = {
-    physical = true,
-    collide_with_objects = false,
-    collisionbox = {-0.05, -0.05, -0.05, 0.05, 0.05, 0.05},
-    visual = "mesh",
-    visual_size = {x = 1 , y = 1},
-    mesh = "basic_bow_arrow.b3d",
-    textures = {
-        "basic_bow_arrow_uv.png"
-    },
-    pointable = false,
-    --automatic_face_movement_dir = 0.0,
-    --automatic_face_movement_max_rotation_per_sec = 600,
-}
-arrow.on_activate = function(self, staticdata, dtime_s)
-    --self.object:set_animation({x=0,y=180}, 15, 0, true)
-    local vel = nil
-    if s_sub(staticdata, 1, s_len("return")) == "return" then
-        local data = deserialize(staticdata)
-        if data and type(data) == "table" then
-            self.spin       = data.spin
-            self.owner      = data.owner
-            self.stuck      = data.stuck
-            self.timer      = data.timer
-            self.collecting = data.collecting
-            self.check_dir  = data.check_dir
-            vel             = data.vel
-        end
-    end
-    if not self.stuck then
-        self.object:set_acceleration(new_vec(0,-9.81,0))
-        if vel then
-            self.object:set_velocity(vel)
-        end
-    end
-end
-
-arrow.get_staticdata = function(self)
-    return serialize({
-        spin       = self.spin,
-        owner      = self.owner,
-        stuck      = self.stuck,
-        timer      = self.timer,
-        collecting = self.collecting,
-        check_dir  = self.check_dir,
-        vel        = self.object:get_velocity()
-    })
-end
-
-arrow.spin = 0
-arrow.owner = ""
-arrow.stuck = false
-arrow.timer = 0
-arrow.collecting = false
-arrow.collection_height = 0.5
-arrow.radius = 2
-
-arrow.on_step = function(self, dtime,moveresult)
-    self:arrow_step(dtime,moveresult)
 end
 minetest.register_entity("bow:arrow", arrow)
 
