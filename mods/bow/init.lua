@@ -14,13 +14,12 @@ local math_random = math.random
 local HALF_PI = math_pi / 2
 
 local vec_new       = vector.new
-local floor_vec     = vector.floor
 local vec_distance  = vector.distance
-local normalize_vec = vector.normalize
-local add_vec       = vector.add
-local sub_vec       = vector.subtract
-local multiply_vec  = vector.multiply
-local divide_vec    = vector.divide
+local vec_normalize = vector.normalize
+local vec_add     = vector.add
+local vec_subtract       = vector.subtract
+local vec_multiply  = vector.multiply
+local vec_divide    = vector.divide
 local vec_direction = vector.direction
 
 
@@ -110,9 +109,9 @@ local function arrow_check(player_name,dtime)
         pos.y = pos.y + 1.5
 
         dir = player:get_look_dir()
-        initial_velocity = multiply_vec( dir, 50)
+        initial_velocity = vec_multiply( dir, 50)
 
-        local arrow_object = minetest.add_entity( add_vec( pos, divide_vec( dir, 10 ) ), "bow:arrow" )
+        local arrow_object = minetest.add_entity( vec_add( pos, vec_divide( dir, 10 ) ), "bow:arrow" )
 
         -- A serious engine glitch has occured
         if not arrow_object then return end
@@ -227,7 +226,7 @@ function arrow:on_step( dtime, moveresult )
         player_velocity = owner:get_velocity()
         pos2.y = pos2.y + self.collection_height
 
-        direction = normalize_vec(sub_vec(pos2,pos))
+        direction = vec_normalize(vec_subtract(pos2,pos))
         distance = vec_distance(pos2,pos)
 
 
@@ -237,9 +236,9 @@ function arrow:on_step( dtime, moveresult )
         end
 
         multiplier = ( self.radius * 5 ) - distance
-        velocity = multiply_vec(direction,multiplier)
+        velocity = vec_multiply(direction,multiplier)
 
-        velocity = add_vec(player_velocity,velocity)
+        velocity = vec_add(player_velocity,velocity)
 
         self.object:set_velocity(velocity)
 
@@ -314,7 +313,7 @@ function arrow:on_step( dtime, moveresult )
     end
 
     if self.stuck and self.check_dir then
-        pos2 = add_vec(pos,multiply_vec(self.check_dir,0.2))
+        pos2 = vec_add(pos,vec_multiply(self.check_dir,0.2))
         ray = raycast(pos, pos2, false, false)
         if not ray:next() then
             self.stuck = false
@@ -367,7 +366,7 @@ function arrow:on_step( dtime, moveresult )
             self.spin = -math_pi
         end
 
-        dir = normalize_vec( sub_vec( pos, self.oldpos ) )
+        dir = vec_normalize( vec_subtract( pos, self.oldpos ) )
         y = dir_to_yaw( dir )
         x = dir_to_yaw( vec_new( vec_distance( vec_new( pos.x, 0, pos.z ), vec_new( self.oldpos.x, 0, self.oldpos.z ) ), 0, pos.y - self.oldpos.y ) ) + HALF_PI
         self.object:set_rotation( vec_new( x, y, self.spin ) )
