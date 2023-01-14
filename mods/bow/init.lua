@@ -379,6 +379,7 @@ function arrow:on_step( dtime, moveresult )
     self.oldpos = pos
     self.oldvel = vel
 end
+
 minetest.register_entity("bow:arrow", arrow)
 
 
