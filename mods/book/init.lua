@@ -300,6 +300,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     -- book_node_gui
 
+    -- An important note: When the book is opened, pages turned, anything, the formspec will have the position as a serialized value!
+
+    local pos = minetest.deserialize(fields["book_pos"])
+
     -- This is the save text logic gate
     if editable and fields["book_write"] then
 
@@ -307,13 +311,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         play_book_write_to_player(player)
 
         -- TODO: this is used so many times this might as well be created above
-        local pos = minetest.deserialize(fields["book_pos"])
         save_current_node_page(pos, fields)
 
     -- This is the lock book (ink it permenantly) logic gate
     elseif editable and fields["book_ink"] then
 
-        local pos = minetest.deserialize(fields["book_pos"])
+        
         save_current_node_page(pos, fields)
         local meta = minetest.get_meta(pos)
         local name = meta:get_string("book_title")
@@ -326,7 +329,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.swap_node( pos, { name = "book:inked_book_node" } )
 
         play_book_write_to_player(player)
-        open_book_node_gui(pos, false, 0)
+        open_book_node_gui(pos, player, false, 0)
 
         -- Turn the page
     elseif fields["book_button_next"] then
@@ -335,9 +338,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             local old_data = fields["book_text"] or ""
             local book_name = fields["book_title"] or ""
 
-            open_book_item_gui(player, editable, 1, old_data, book_name)
+            open_book_node_gui(pos, player, editable, 1, old_data, book_name)
         else
-            open_book_item_gui(player, editable, 1)
+            open_book_node_gui(pos, player, editable, 1)
         end
 
         -- Turn back the page
