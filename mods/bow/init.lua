@@ -187,7 +187,7 @@ arrow.on_activate = function(self, staticdata, dtime_s)
 
     if self.stuck then return end
 
-    self.object:set_acceleration(vec_new(0,-9.81,0))
+    self.object:set_acceleration( vec_new( 0, -9.81, 0 ) )
     if not vel then return end
 
     self.object:set_velocity(vel)
