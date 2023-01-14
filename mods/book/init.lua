@@ -146,7 +146,7 @@ local function creat_book_formspec( meta, editable, page_modification, previous_
     return book_formspec
 end
 
-
+-- Opening the book guis are not only the entry points into this, they're also the logic loop!
 local function open_book_item_gui( author, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
 
     play_book_open_sound_to_player( author )
@@ -167,6 +167,11 @@ local function open_book_node_gui( pos, author, editable, page_modification, pre
     play_book_open_sound_to_player( author )
 
     local meta = minetest.get_meta(pos)
+
+    -- Reuse this over and over
+    if not meta:contains("pos") then
+        meta:set_string("pos", minetest.serialize(pos))
+    end
 
     local book_formspec = creat_book_formspec( meta, editable, page_modification, previous_data, book_name, setting_max_page, toggle_auto_page )
 
@@ -290,6 +295,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     do return end
 
+
     ::book_node::
 
 
@@ -298,7 +304,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
         minetest.close_formspec( player:get_player_name(), "book_gui" )
         play_book_write_to_player(player)
-        save_current_page(player, fields)
+        save_current_node_page(player, fields)
 
     -- This is the lock book (ink it permenantly) logic gate
     elseif editable and fields["book_ink"] then
