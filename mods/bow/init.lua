@@ -207,7 +207,14 @@ function arrow:on_step( dtime, moveresult )
     if self.collecting then
 
         -- Player logged off or a glitch occured
-        if not self.owner or not minetest.get_player_by_name(self.owner) then
+        if not self.owner then
+            self.object:remove()
+            return
+        end
+
+        owner = minetest.get_player_by_name(self.owner)
+
+        if not owner then
             self.object:remove()
             return
         end
@@ -244,7 +251,7 @@ function arrow:on_step( dtime, moveresult )
         -- TODO: Fix object being overwritten
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
             if self.stuck == false and ((object:is_player() and object:get_player_name() ~= self.owner and object:get_hp() > 0) or (object:get_luaentity() and object:get_luaentity().mobname)) then
-                object:punch(self.object, 2, 
+                object:punch(self.object, 2,
                     {
                     full_punch_interval=1.5,
                     damage_groups = {damage=3},
