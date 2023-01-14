@@ -327,7 +327,7 @@ function arrow:on_step( dtime, moveresult )
         end
     end
     
-    -- No point in continuing
+    -- No point in continuing, the arrow is stuck in the ground
     if self.stuck then return end
 
     if  moveresult and
