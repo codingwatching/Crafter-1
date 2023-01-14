@@ -317,10 +317,6 @@ function arrow:on_step( dtime, moveresult )
 
         ::continue::
     end
-
-    if moveresult and moveresult.collides then
-        print(dump(moveresult))
-    end
     
     if  not self.stuck and
         moveresult and
