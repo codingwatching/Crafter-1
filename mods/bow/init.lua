@@ -132,8 +132,8 @@ local function arrow_check(player_name,dtime)
         
         minetest.sound_play("bow", {object=player, gain = 1.0, max_hear_distance = 60,pitch = random(80,100)/100})
 
-        inv:remove_item("main", ItemStack("bow:arrow"))
-        inv:set_stack("main", temp_pool.index, ItemStack("bow:bow_empty"))
+        inv:remove_item( "main", ItemStack( "bow:arrow" ) )
+        inv:set_stack( "main", temp_pool.index, ItemStack( "bow:bow_empty" ) )
 
         pool[player_name] = nil
     end
