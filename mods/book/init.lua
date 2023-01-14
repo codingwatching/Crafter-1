@@ -576,3 +576,37 @@ minetest.register_node("book:inked_book_node", {
 })
 
 -- These are closed books, there's literally no reason to have this but I thought it would be neat for players to be able to close the book :)
+
+minetest.register_node("book:book_node_closed", {
+    description = "Book",
+    drawtype = "nodebox",
+    paramtype2 = "4dir",
+    sunlight_propagates = true,
+    groups = { dig_immediate = 1, attached_node = 3 },
+    tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
+    node_box = node_box,
+    drop = "",
+    on_rightclick = function( pos, _, clicker )
+        open_book_node_gui( pos, clicker, true, 0)
+    end,
+    on_destruct = function(pos)
+        destroy_node_function( pos, "book:book" )
+    end
+})
+
+minetest.register_node("book:inked_book_node_closed", {
+    description = "Inked Book",
+    drawtype = "nodebox",
+    paramtype2 = "4dir",
+    sunlight_propagates = true,
+    groups = { dig_immediate = 1, attached_node = 3},
+    tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
+    node_box = node_box,
+    drop = "",
+    on_rightclick = function( pos, _, clicker )
+        open_book_node_gui( pos, clicker, false, 0)
+    end,
+    on_destruct = function(pos)
+        destroy_node_function( pos, "book:book_written" )
+    end
+})
