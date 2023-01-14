@@ -329,10 +329,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
         local old_node = minetest.get_node(pos)
         local param1 = old_node.param1
-        local param2 = old_node.param2
-
-        print(dump(old_node))
-        
+        local param2 = old_node.param2        
 
         minetest.swap_node( pos, { name = "book:inked_book_node", param1 = param1, param2 = param2} )
 
@@ -392,7 +389,9 @@ end)
 
 local function place_item_as_node(pos, param2, old_stack, new_node)
     local old_meta = old_stack:get_meta()
-    minetest.place_node(pos, {name = new_node, param2 = param2})
+
+    minetest.set_node(pos, {name = new_node, param2 = param2})
+
     local new_meta = minetest.get_meta(pos)
 
     local max_page = old_meta:get_int("max_pages")
@@ -409,7 +408,9 @@ local function place_item_as_node(pos, param2, old_stack, new_node)
 end
 
 local function get_param2(dir)
-    return minetest.dir_to_fourdir(dir)
+    local param2 = minetest.dir_to_fourdir(dir)
+
+    return param2
 end
 
 -- Book that is able to be edited
@@ -540,9 +541,12 @@ local function destroy_node_function( pos, dropping_item )
     minetest.item_drop(new_item, nil, pos)
 end
 
+
+
 minetest.register_node("book:book_node", {
     description = "Book",
     drawtype = "nodebox",
+    paramtype = "light",
     paramtype2 = "4dir",
     sunlight_propagates = true,
     groups = { wool = 1, attached_node = 3 },
@@ -554,12 +558,21 @@ minetest.register_node("book:book_node", {
     end,
     on_destruct = function(pos)
         destroy_node_function( pos, "book:book" )
+    end,
+    on_punch = function(pos, node, puncher)
+        if not puncher:get_player_control().sneak then return end
+        minetest.sound_play("book_close", {
+            pos = pos,
+            max_hear_distance = 20,
+        })
+        minetest.swap_node(pos, { name = "book:book_node_closed", param1 = node.param1, param2 = node.param2 } )
     end
 })
 
 minetest.register_node("book:inked_book_node", {
     description = "Inked Book",
     drawtype = "nodebox",
+    paramtype = "light",
     paramtype2 = "4dir",
     sunlight_propagates = true,
     groups = { wool = 1, attached_node = 3 },
@@ -571,6 +584,14 @@ minetest.register_node("book:inked_book_node", {
     end,
     on_destruct = function(pos)
         destroy_node_function( pos, "book:book_written" )
+    end,
+    on_punch = function(pos, node, puncher)
+        if not puncher:get_player_control().sneak then return end
+        minetest.sound_play("book_close", {
+            pos = pos,
+            max_hear_distance = 20,
+        })
+        minetest.swap_node(pos, { name = "book:inked_book_node_closed", param1 = node.param1, param2 = node.param2 } )
     end
 })
 
@@ -586,6 +607,7 @@ local nodebox_closed = {
 minetest.register_node("book:book_node_closed", {
     description = "Book",
     drawtype = "nodebox",
+    paramtype = "light",
     paramtype2 = "4dir",
     sounds = main.woolSound(),
     sunlight_propagates = true,
@@ -602,12 +624,21 @@ minetest.register_node("book:book_node_closed", {
     drop = "",
     on_destruct = function(pos)
         destroy_node_function( pos, "book:book" )
+    end,
+    on_punch = function(pos, node, puncher)
+        if not puncher:get_player_control().sneak then return end
+        minetest.sound_play("book_open", {
+            pos = pos,
+            max_hear_distance = 20,
+        })
+        minetest.swap_node(pos, { name = "book:book_node", param1 = node.param1, param2 = node.param2 } )
     end
 })
 
 minetest.register_node("book:inked_book_node_closed", {
     description = "Inked Book",
     drawtype = "nodebox",
+    paramtype = "light",
     paramtype2 = "4dir",
     sounds = main.woolSound(),
     sunlight_propagates = true,
@@ -624,5 +655,13 @@ minetest.register_node("book:inked_book_node_closed", {
     drop = "",
     on_destruct = function(pos)
         destroy_node_function( pos, "book:book_written" )
+    end,
+    on_punch = function(pos, node, puncher)
+        if not puncher:get_player_control().sneak then return end
+        minetest.sound_play("book_open", {
+            pos = pos,
+            max_hear_distance = 20,
+        })
+        minetest.swap_node(pos, { name = "book:inked_book_node", param1 = node.param1, param2 = node.param2 } )
     end
 })
