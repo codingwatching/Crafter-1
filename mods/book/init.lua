@@ -408,6 +408,9 @@ local function place_item_as_node(pos, param2, old_stack, new_node)
     new_meta:set_int("page", page)
 end
 
+local function get_param2(dir)
+    return minetest.dir_to_fourdir(dir)
+end
 
 -- Book that is able to be edited
 minetest.register_craftitem("book:book",{
@@ -428,15 +431,13 @@ minetest.register_craftitem("book:book",{
         -- If a player is sneaking then they can place the book as a node
         if sneak then
             if nodedef.buildable_to then
-                local dir = author:get_look_dir()
-                local param2 = minetest.dir_to_fourdir(dir)
+                local param2 = get_param2(author:get_look_dir())
                 place_item_as_node(pointed_thing.under, param2, itemstack, "book:book_node")
                 itemstack:take_item(1)
                 return itemstack
             end
             if vector.equals(vector.direction(pointed_thing.under,pointed_thing.above), vector.new(0,1,0)) then
-                local dir = author:get_look_dir()
-                local param2 = minetest.dir_to_fourdir(dir)
+                local param2 = get_param2(author:get_look_dir())
                 place_item_as_node(pointed_thing.above, param2, itemstack, "book:book_node")
                 itemstack:take_item(1)
                 return itemstack
@@ -475,16 +476,14 @@ minetest.register_craftitem("book:book_written",{
         if sneak then
             print("sneaking")
             if nodedef.buildable_to then
-                local dir = author:get_look_dir()
-                local param2 = minetest.dir_to_fourdir(dir)
+                local param2 = get_param2(author:get_look_dir())
                 place_item_as_node(pointed_thing.under, param2, itemstack, "book:inked_book_node")
                 itemstack:take_item(1)
                 return itemstack
             end
 
             if vector.equals(vector.direction(pointed_thing.under,pointed_thing.above), vector.new(0,1,0)) then
-                local dir = author:get_look_dir()
-                local param2 = minetest.dir_to_fourdir(dir)
+                local param2 = get_param2(author:get_look_dir())
                 place_item_as_node(pointed_thing.above, param2, itemstack, "book:inked_book_node")
                 itemstack:take_item(1)
                 return itemstack
@@ -546,7 +545,7 @@ minetest.register_node("book:book_node", {
     drawtype = "nodebox",
     paramtype2 = "4dir",
     sunlight_propagates = true,
-    groups = { dig_immediate = 1, attached_node = 3 },
+    groups = { wool = 1, attached_node = 3 },
     tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
     node_box = node_box,
     drop = "",
@@ -563,7 +562,7 @@ minetest.register_node("book:inked_book_node", {
     drawtype = "nodebox",
     paramtype2 = "4dir",
     sunlight_propagates = true,
-    groups = { dig_immediate = 1, attached_node = 3},
+    groups = { wool = 1, attached_node = 3 },
     tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
     node_box = node_box,
     drop = "",
@@ -577,18 +576,30 @@ minetest.register_node("book:inked_book_node", {
 
 -- These are closed books, there's literally no reason to have this but I thought it would be neat for players to be able to close the book :)
 
+local nodebox_closed = {
+	type = "fixed",
+	fixed = {
+		{-0.2500, -0.5000, -0.3750, 0.2500, -0.2500, 0.3750}
+	}
+}
+
 minetest.register_node("book:book_node_closed", {
     description = "Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
+    sounds = main.woolSound(),
     sunlight_propagates = true,
-    groups = { dig_immediate = 1, attached_node = 3 },
-    tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
-    node_box = node_box,
+    groups = { wool = 1, attached_node = 3 },
+    tiles = {
+        "book_closed_top.png",
+        "book_closed_top.png",
+        "book_closed_right.png",
+        "book_closed_left.png",
+        "book_closed_front.png",
+        "book_closed_back.png"
+    },
+    node_box = nodebox_closed,
     drop = "",
-    on_rightclick = function( pos, _, clicker )
-        open_book_node_gui( pos, clicker, true, 0)
-    end,
     on_destruct = function(pos)
         destroy_node_function( pos, "book:book" )
     end
@@ -598,14 +609,19 @@ minetest.register_node("book:inked_book_node_closed", {
     description = "Inked Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
+    sounds = main.woolSound(),
     sunlight_propagates = true,
-    groups = { dig_immediate = 1, attached_node = 3},
-    tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
-    node_box = node_box,
+    groups = { wool = 1, attached_node = 3 },
+    tiles = {
+        "inked_book_closed_top.png",
+        "inked_book_closed_top.png",
+        "inked_book_closed_right.png",
+        "inked_book_closed_left.png",
+        "inked_book_closed_front.png",
+        "inked_book_closed_back.png"
+    },
+    node_box = nodebox_closed,
     drop = "",
-    on_rightclick = function( pos, _, clicker )
-        open_book_node_gui( pos, clicker, false, 0)
-    end,
     on_destruct = function(pos)
         destroy_node_function( pos, "book:book_written" )
     end
