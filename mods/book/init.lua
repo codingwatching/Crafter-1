@@ -325,7 +325,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         name = name .. " by " .. player:get_player_name()
         meta:set_string("book_title", name)
 
-        minetest.swap_node( pos, { name = "book:inked_book_node" } )
+        local old_node = minetest.get_node(pos)
+        local param1 = old_node.param1
+        local param2 = old_node.param2
+
+        print(dump(old_node))
+        
+
+        minetest.swap_node( pos, { name = "book:inked_book_node", param1 = param1, param2 = param2} )
 
         play_book_write_to_player(player)
         open_book_node_gui(pos, player, false, 0)
@@ -467,20 +474,41 @@ local node_box = {
     }
 }
 
+local function destroy_node_function( pos, dropping_item )
+    local old_meta = minetest.get_meta( pos )
+
+    local new_item = ItemStack( dropping_item )
+    local new_meta = new_item:get_meta()
+
+    local max_page = old_meta:get_int("max_pages")
+    for i = 1,max_page do
+        new_meta:set_string( "book_text_" .. i, old_meta:get_string( "book_text_" .. i ) )        
+    end
+
+    local page = old_meta:get_int("page")
+
+    new_meta:set_int("max_pages", max_page)
+    new_meta:set_int("page", page)
+
+    minetest.item_drop(new_item, nil, pos)
+end
+
 minetest.register_node("book:book_node", {
     description = "Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
+    sunlight_propagates = true,
     groups = { dig_immediate = 1, attached_node = 3 },
     tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
     node_box = node_box,
-    on_rightclick = function(pos, node, clicker)
+    drop = "",
+    on_rightclick = function( pos, _, clicker )
         open_book_node_gui( pos, clicker, true, 0)
     end,
-    -- TODO: drop book with meta data
-    -- Needs to use a specialized function to transfer metadata
-    on_dig = function(pos, node, digger)
-
+    on_dig = function( pos )
+        destroy_node_function( pos, "book:book" )
+        minetest.remove_node(pos)
+        return true
     end
 })
 
@@ -488,16 +516,18 @@ minetest.register_node("book:inked_book_node", {
     description = "Inked Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
+    sunlight_propagates = true,
     groups = { dig_immediate = 1, attached_node = 3},
     tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
     node_box = node_box,
-    on_rightclick = function(pos, node, clicker)
+    drop = "",
+    on_rightclick = function( pos, _, clicker )
         open_book_node_gui( pos, clicker, false, 0)
     end,
-    -- TODO: drop inked book with meta data
-    -- Needs to use a specialized function to transfer metadata
-    on_dig = function(pos, node, digger)
-
+    on_dig = function(pos)
+        destroy_node_function( pos, "book:inked_book" )
+        minetest.remove_node( pos )
+        return true
     end
 })
 
