@@ -212,6 +212,7 @@ function arrow:on_step( dtime, moveresult )
             return
         end
 
+        -- This was doing ipairs on all entities within the radius to get the owner's position
         for _ in ipairs(get_objects_inside_radius(pos, self.radius)) do
             
             self.object:set_acceleration(new_vec(0,0,0))
@@ -240,8 +241,6 @@ function arrow:on_step( dtime, moveresult )
             if distance < 0.2 then
                 self.object:remove()
             end
-            
-            
         end
     else
         for _,object in ipairs(get_objects_inside_radius(pos, 2)) do
