@@ -347,18 +347,20 @@ minetest.register_craft({
     }
 })
 
+local node_box = {
+    type = "fixed",
+    fixed = {
+        {-0.4375, -0.5000, -0.3750, 0.4375, -0.4375, 0.3750},
+        {-0.3750, -0.4375, -0.3750, 0.3750, -0.3750, 0.3750}
+    }
+}
+
 minetest.register_node("book:book_node", {
     description = "Book",
     drawtype = "nodebox",
     paramtype2 = "4dir",
     tiles = {"book_top.png","book_bottom.png","book_side.png","book_side.png","book_side.png","book_side.png"},
-    node_box = {
-        type = "fixed",
-        fixed = {
-            {-0.4375, -0.5000, -0.3750, 0.4375, -0.4375, 0.3750},
-            {-0.3750, -0.4375, -0.3750, 0.3750, -0.3750, 0.3750}
-        }
-    }
+    node_box = node_box
 })
 
 minetest.register_node("book:inked_book_node", {
@@ -366,11 +368,5 @@ minetest.register_node("book:inked_book_node", {
     drawtype = "nodebox",
     paramtype2 = "4dir",
     tiles = {"inked_book_top.png","inked_book_bottom.png","inked_book_side.png","inked_book_side.png","inked_book_side.png","inked_book_side.png"},
-    node_box = {
-        type = "fixed",
-        fixed = {
-            {-0.4375, -0.5000, -0.3750, 0.4375, -0.4375, 0.3750},
-            {-0.3750, -0.4375, -0.3750, 0.3750, -0.3750, 0.3750}
-        }
-    }
+    node_box = node_box
 })
