@@ -403,13 +403,17 @@ minetest.register_craftitem("book:book",{
 
         local sneak = author:get_player_control().sneak
 
-        local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+        local nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
         -- TODO: check if placing above the node with a y check! vector.direction {0,1,0}
-        if not sneak and noddef.on_rightclick then
+        if not sneak then
             minetest.item_place(itemstack, author, pointed_thing)
             return
         end
+
+        -- Ignore for rightclicking things
+        if nodedef.on_rightclick then return end
+
         --print("make books placable on the ground")
         open_book_item_gui( author, true, 0)
     end,
@@ -434,7 +438,7 @@ minetest.register_craftitem("book:book_written",{
 
         local sneak = author:get_player_control().sneak
 
-        local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+        local nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
         -- If a player is sneaking then they can place the book on the ground
 
@@ -448,7 +452,7 @@ minetest.register_craftitem("book:book_written",{
         end
         
         -- Ignore for rightclicking things
-        if noddef.on_rightclick then return end
+        if nodedef.on_rightclick then return end
 
         open_book_item_gui(author, false, 0)
     end,
