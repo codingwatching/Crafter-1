@@ -311,14 +311,15 @@ function arrow:on_step( dtime, moveresult )
 
         ::continue::
     end
-    
 
-    if  moveresult and
+    print(dump(moveresult))
+    
+    if  not self.stuck and
+        moveresult and
         moveresult.collides and
         moveresult.collisions and
         moveresult.collisions[1] and
-        moveresult.collisions[1].new_velocity and
-        not self.stuck then
+        moveresult.collisions[1].new_velocitythen
         
         collision = moveresult.collisions[1]
 
