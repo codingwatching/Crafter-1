@@ -221,9 +221,6 @@ function arrow:on_step( dtime, moveresult )
             return
         end
 
-        -- TODO: Figure out why this is setting the acceleration every server tick
-        self.object:set_acceleration(new_vec(0,0,0))
-
         -- Get the position vectors
         pos2 = owner:get_pos()
         player_velocity = owner:get_velocity()
@@ -299,6 +296,8 @@ function arrow:on_step( dtime, moveresult )
                 })
 
                 self.collecting = true
+                
+                self.object:set_acceleration( new_vec( 0, 0, 0 ) )
 
             else
 
@@ -430,7 +429,7 @@ for i = 1,5 do
     })
 end
 
-minetest.register_craftitem("bow:arrow", {
+minetest.register_craftitem( "bow:arrow", {
     description = "Arrow",
     inventory_image = "arrow_item.png",
 })
