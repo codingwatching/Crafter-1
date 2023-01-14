@@ -255,6 +255,10 @@ function arrow:on_step( dtime, moveresult )
             local is_owner = is_player and object:get_player_name() == self.owner
 
             if self.stuck == false and ( (not is_owner and object:get_hp() > 0 ) or object:get_luaentity().mobname ) then
+                
+                -- TODO: Check the mob's health in this logic gate
+                print("REMINDER: check the mob's health here")
+
                 object:punch(self.object, 2,
                     {
                     full_punch_interval=1.5,
@@ -263,20 +267,31 @@ function arrow:on_step( dtime, moveresult )
 
                 self.object:remove()
                 return
+
             elseif self.timer > 3 and is_owner then
-                self.collecting = true
-                local inv = object:get_inventory()
-                if inv and inv:room_for_item("main", ItemStack("bow:arrow")) then
+
+                inv = object:get_inventory()
+
+                if inv and inv:room_for_item( "main", ItemStack( "bow:arrow" ) ) then
+
                     inv:add_item("main",ItemStack("bow:arrow"))
+
                     minetest.sound_play("pickup", {
                         to_player = object:get_player_name(),
                         gain = 0.4,
                         pitch = random(60,100)/100
                     })
+
+                    self.collecting = true
+
                 else
+
                     self.object:remove()
                     minetest.throw_item(pos,"bow:arrow")
+                    
                 end
+
+                return
             end
         end
 
