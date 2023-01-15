@@ -60,7 +60,7 @@ local door_rightclick = function(pos)
             set_node( pos, { name = "door:bottom_" .. material .. "_closed", param2 = param2 } )
             set_node( pos2, { name = "door:top_" .. material .. "_closed", param2 = param2 } )
         end
-    --open the door
+    -- Opens the door
     elseif closed > 0 then
         play_sound( "door_open", {
             pos = pos,
