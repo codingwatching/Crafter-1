@@ -124,7 +124,7 @@ for i = 0,13 do
                     gain = 0.2,
                     pitch = random( 90, 100 ) / 100
                 })
-                set_node( pos, {name="cake:cursed_cake_"..i+1})
+                set_node( pos, { name = "cake:cursed_cake_" .. i + 1 } )
             end
         end,
     })
