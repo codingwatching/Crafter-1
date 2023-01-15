@@ -35,7 +35,7 @@ end
 -- This person has an outdated or future client mod, let them know in a kick message
 local function wrong_client_version(sender, reported_development_cycle, reported_version)
     minetest.kick_player(sender,
-        "You have the wrong client version.\n" ..
+        "\nYou have the wrong client version.\n" ..
         "Your version: " .. tostring(reported_version) .. " " .. reported_development_cycle .. "\n" ..
         "Server version: " .. tostring(current_version) .. " " .. current_development_cycle .. "\n" ..
         "To install the correct version, please go to:\n" .. current_client_link
