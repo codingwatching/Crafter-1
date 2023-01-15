@@ -1,5 +1,7 @@
+local type = type
+
 -- What the heck is this
-minetest.register_node("client_version_checker:this_is_the_signature_of_crafter00111010010001000011110000110011",{})
+minetest.register_node(":crafterclient_version_checker:this_is_a_hack_to_not_crash_other_servers",{})
 
 local client_versions = {}
 local client_version_channels = {}
