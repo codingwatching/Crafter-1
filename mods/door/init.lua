@@ -78,9 +78,8 @@ local door_rightclick = function(pos)
     end
 end
 
---this is where the top and bottom of the door are created
-for _,door in ipairs(door_sections) do
-
+    -- Create the top and bottom door nodes
+    for _,door in ipairs(door_sections) do
         for _,state in ipairs(door_states) do
             local door_node_box = {}
             if state == "closed" then
@@ -95,7 +94,7 @@ for _,door in ipairs(door_sections) do
             local redstone_deactivation
             local redstone_activation
 
-            --redstone input
+            -- Redstone IO
             if state == "open" then
                 redstone_deactivation = function(pos)
                     door_rightclick(pos)
@@ -105,20 +104,20 @@ for _,door in ipairs(door_sections) do
                     door_rightclick(pos)
                 end
             end
-            
+
             if material == "wood" then
                 sounds = main.woodSound()
                 on_rightclick = function(pos)
                     door_rightclick(pos)
                 end
-                --bottom
+                -- Bottom
                 if door == "bottom" then
                     tiles = { "wood.png" }
                     groups = {
                         wood = 2, tree = 1, hard = 1, axe = 1, hand = 3, bottom = 1,door_open = ( ( state == "open" and 1 ) or 0 ), door_closed = ( ( state == "closed" and 1 ) or 0 )
                     }
-                    
-                --top
+
+                -- Top
                 else
                     if state == "closed" then
                         tiles = { "wood.png","wood.png","wood.png","wood.png","wood_door_top.png","wood_door_top.png" }
@@ -136,7 +135,6 @@ for _,door in ipairs(door_sections) do
                     groups = {
                         stone = 1, hard = 1, pickaxe = 1, hand = 4, bottom = 1,door_open = ( ( state == "open" and 1 ) or 0), door_closed = ( ( state == "closed" and 1 ) or 0 )
                     }
-                    
                 else
                     if state == "closed" then
                         tiles = {"iron_block.png","iron_block.png","iron_block.png","iron_block.png","iron_door_top.png","iron_door_top.png"}
@@ -148,6 +146,7 @@ for _,door in ipairs(door_sections) do
                     }
                 end
             end
+
             minetest.register_node( "door:" .. door .. "_" .. material .. "_" .. state, {
                 description = material:gsub( "^%l", string.upper ) .. " Door",
                 tiles = tiles,
@@ -168,7 +167,6 @@ for _,door in ipairs(door_sections) do
                     },
 
                 -- Redstone activation is in both because only the bottom is defined as an activator and it's easier to do it like this
-
                 redstone_activation = redstone_activation,
                 redstone_deactivation = redstone_deactivation,
 
@@ -197,14 +195,15 @@ for _,door in ipairs(door_sections) do
             })
         end
     end
-minetest.register_craft({
-    output = "door:bottom_" .. material .. "_closed",
-    recipe = {
-        { "main:" .. material, "main:" .. material },
-        { "main:" .. material, "main:" .. material },
-        { "main:" .. material, "main:" .. material }
-    }
-})
+
+    minetest.register_craft({
+        output = "door:bottom_" .. material .. "_closed",
+        recipe = {
+            { "main:" .. material, "main:" .. material },
+            { "main:" .. material, "main:" .. material },
+            { "main:" .. material, "main:" .. material }
+        }
+    })
 end
 
 
