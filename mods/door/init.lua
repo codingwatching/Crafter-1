@@ -88,6 +88,8 @@ for _,material in ipairs(door_materials) do
             elseif state == "open" then
                 door_node_box = { 5/16, -0.5,  -0.5, 0.5,  0.5, 0.5 }
             end
+
+            -- These are not runtime vars so don't bother optimizing them
             local tiles
             local groups
             local sounds
