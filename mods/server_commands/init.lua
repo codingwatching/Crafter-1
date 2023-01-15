@@ -39,6 +39,7 @@ minetest.register_chatcommand("clearinv", {
             for _,inventory_name in ipairs(inventory_list) do
                 inventory:set_list(inventory_name, {})
             end
+            
             log("action", name.." clears "..player:get_player_name().."'s inventory")
             return true, "Cleared "..player:get_player_name().."'s inventory."
         else
@@ -72,7 +73,7 @@ minetest.register_chatcommand("kill", {
 
         if target_name and target_name ~= "" and target_name ~= name then
             if not check_player_privs(name, {server=true}) then
-                return false, "You don't have permission to clear another player's inventory (missing privilege: server)"
+                return false, "You don't have permission to kill another player! (missing privilege: server)"
             end
             player = get_player_by_name(target_name)
             chat_send_player(target_name, name.." cleared your inventory.")
