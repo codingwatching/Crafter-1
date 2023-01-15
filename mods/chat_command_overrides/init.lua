@@ -1,3 +1,4 @@
+local ipairs = ipairs
 local get_player_by_name = minetest.get_player_by_name
 local check_player_privs = minetest.check_player_privs
 local log = minetest.log
@@ -30,13 +31,10 @@ minetest.register_chatcommand("clearinv", {
         end
 
         if player then
-            player:get_inventory():set_list("main", {})
-            player:get_inventory():set_list("craft", {})
-            player:get_inventory():set_list("craftpreview", {})
-            player:get_inventory():set_list("armor_head", {})
-            player:get_inventory():set_list("armor_torso", {})
-            player:get_inventory():set_list("armor_legs", {})
-            player:get_inventory():set_list("armor_feet", {})
+            local inventory = player:get_inventory()
+            for _,inventory_name in ipairs(inventory_list) do
+                inventory:set_list(inventory_name, {})
+            end
             
             log("action", name.." clears "..player:get_player_name().."'s inventory")
             return true, "Cleared "..player:get_player_name().."'s inventory."
