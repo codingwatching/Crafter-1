@@ -33,7 +33,7 @@ local door_states = {
 
 for _,material in ipairs(door_materials) do
 
---this is the function that makes the door open and close when rightclicked
+-- Makes the door open and close when rightclicked
 local door_rightclick = function(pos)
     node = get_node(pos)
     name = node.name
@@ -44,8 +44,8 @@ local door_rightclick = function(pos)
     bottom = get_item_group( name, "bottom" )
     param2 = node.param2
     pos2 = t_copy( pos )
-    
-    --close the door
+
+    -- Closes the door
     if opened > 0 then
         play_sound( "door_close", {
             pos = pos,
@@ -53,12 +53,12 @@ local door_rightclick = function(pos)
         })
         if top > 0 then
             pos2.y = pos2.y - 1
-            set_node(pos,{name="door:top_"..material.."_closed",param2=param2})
-            set_node(pos2,{name="door:bottom_"..material.."_closed",param2=param2})
+            set_node( pos, { name = "door:top_" .. material .. "_closed", param2 = param2 } )
+            set_node( pos2, { name = "door:bottom_" .. material .. "_closed", param2 = param2 } )
         elseif bottom > 0 then
             pos2.y = pos2.y + 1
-            set_node(pos,{name="door:bottom_"..material.."_closed",param2=param2})
-            set_node(pos2,{name="door:top_"..material.."_closed",param2=param2})
+            set_node( pos, { name = "door:bottom_" .. material .. "_closed", param2 = param2 } )
+            set_node( pos2, { name = "door:top_" .. material .. "_closed", param2 = param2 } )
         end
     --open the door
     elseif closed > 0 then
