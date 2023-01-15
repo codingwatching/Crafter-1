@@ -40,7 +40,7 @@ minetest.register_chatcommand("clearinv", {
             for _,inventory_name in ipairs(inventory_list) do
                 inventory:set_list(inventory_name, {})
             end
-            
+
             if name == target_name then
                 log("action", name .. " cleared their inventory.")
                 return true, "Cleared your inventory."
