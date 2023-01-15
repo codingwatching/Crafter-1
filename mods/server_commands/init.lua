@@ -13,6 +13,9 @@ local inventory_list = {
     "armor_legs",
     "armor_feet"
 }
+
+-- Clearinv allows the player to clear their own inventory in case they did something dumb
+-- This also allows admins to clear other player's inventory in case they are cheating
 minetest.register_chatcommand("clearinv", {
     params = "[<name>]",
     description = "Clear the inventory of yourself or another player",
@@ -41,3 +44,5 @@ minetest.register_chatcommand("clearinv", {
         end
     end,
 })
+
+
