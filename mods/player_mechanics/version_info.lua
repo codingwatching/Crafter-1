@@ -1,17 +1,16 @@
 local register_on_joinplayer = minetest.register_on_joinplayer
 
 local release_state = "Alpha"
--- Semantic versioning, but display like how MC used to because it looked cool
 local release_version = "0.0.8"
 
-local version_info = release_state .. " " .. release_version
+local version_info = "Crafter v" .. release_state .. " " .. release_version
 
 local function addVersionInfo(player)
 
     -- This adds the version info to the hud to emulate how MC used to show it
 
     player:hud_add({
-        name = "versionbg",
+        name = "version_info_background",
         text = version_info,
         hud_elem_type = "text",
         position = {
@@ -35,7 +34,7 @@ local function addVersionInfo(player)
             x = 1,
             y = 0
         },
-        name = "versionfg",
+        name = "version_info_foreground",
         text = version_info,
         number = 0xFFFFFF,
         offset = {
