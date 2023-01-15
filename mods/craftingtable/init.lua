@@ -1,3 +1,4 @@
+-- TODO: Move this into the main mod
 minetest.register_node( "craftingtable:craftingtable", {
     description = "Crafting Table",
     tiles = {
