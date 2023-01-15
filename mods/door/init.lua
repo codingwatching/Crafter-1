@@ -21,6 +21,10 @@ local door_materials = {
     "wood",
     "iron"
 }
+local door_sections = {
+    "top",
+    "bottom"
+}
 
 
 for _,material in ipairs(door_materials) do
@@ -65,7 +69,7 @@ local door_rightclick = function(pos)
 end
 
 --this is where the top and bottom of the door are created
-for _,door in pairs({"top","bottom"}) do
+for _,door in ipairs(door_sections) do
         for _,state in pairs({"open","closed"}) do
             local door_node_box = {}
             if state == "closed" then
