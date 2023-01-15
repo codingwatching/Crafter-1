@@ -21,8 +21,7 @@ minetest.register_chatcommand("clearinv", {
         local player
         if param and param ~= "" and param ~= name then
             if not check_player_privs(name, {server=true}) then
-                return false, "You don't have permission"
-                        .. " to clear another player's inventory (missing privilege: server)"
+                return false, "You don't have permission to clear another player's inventory (missing privilege: server)"
             end
             player = get_player_by_name(param)
             chat_send_player(param, name.." cleared your inventory.")
