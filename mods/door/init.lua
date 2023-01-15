@@ -3,6 +3,7 @@ local ItemStack = ItemStack
 local get_item_group = minetest.get_item_group
 local get_node       = minetest.get_node
 local set_node       = minetest.set_node
+local remove_node    = minetest.remove_node
 local play_sound     = minetest.sound_play
 local t_copy         = table.copy
 
@@ -179,17 +180,17 @@ for _,material in ipairs(door_materials) do
                     if get_node( pos2 ).name == "air" then
                         set_node( pos2, { name = "door:top_" .. material .. "_closed", param2 = param2 } )
                     else
-                        minetest.remove_node(pos)
+                        remove_node(pos)
                         itemstack:add_item( ItemStack( "door:bottom_" .. material .. "_closed" ) )
                     end
                 end,
                 after_dig_node = function( pos, oldnode )
                     if string.match( oldnode.name, ":bottom" ) then
                         pos.y = pos.y + 1
-                        minetest.remove_node(pos)
+                        remove_node(pos)
                     else
                         pos.y = pos.y - 1
-                        minetest.remove_node(pos)
+                        remove_node(pos)
                     end
                 end,
             })
