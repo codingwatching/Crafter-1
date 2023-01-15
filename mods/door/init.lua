@@ -37,12 +37,12 @@ for _,material in ipairs(door_materials) do
 local door_rightclick = function(pos)
     node = get_node(pos)
     name = node.name
+    param2 = node.param2
     opened = get_item_group( name, "door_open" )
     closed = get_item_group( name, "door_closed" )
     closed = get_item_group( name, "door_closed" )
     top = get_item_group( name, "top" )
     bottom = get_item_group( name, "bottom" )
-    param2 = node.param2
     pos2 = t_copy( pos )
 
     -- Closes the door
