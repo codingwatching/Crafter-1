@@ -16,7 +16,7 @@ local inventory_list = {
 minetest.register_chatcommand("clearinv", {
     params = "[<name>]",
     description = "Clear the inventory of yourself or another player",
-    privs = {server = true},
+    privs = { server = true },
     func = function(name, param)
         local player
         if param and param ~= "" and param ~= name then
@@ -35,7 +35,6 @@ minetest.register_chatcommand("clearinv", {
             for _,inventory_name in ipairs(inventory_list) do
                 inventory:set_list(inventory_name, {})
             end
-            
             log("action", name.." clears "..player:get_player_name().."'s inventory")
             return true, "Cleared "..player:get_player_name().."'s inventory."
         else
