@@ -39,7 +39,19 @@ minetest.register_on_modchannel_message(function(channel_name, sender, message)
 
     -- Not the right type of data, tried to crash the server
     if type(version_info[1]) ~= "string" or type(version_info[2]) ~= "number" then return end
-    
+
+
+    -- We know everything is okay and this person is just trying to play, let's continue
+
+
+
+
+    -- We know this person is a piece of crap and is trying to crash an opensource game server, let's kick their ass out
+    ::youre_an_asshole::
+
+
+    -- This person has an outdated or future client mod, let them know
+    ::wrong_client_version::
 
 
 
