@@ -173,20 +173,20 @@ for _,door in ipairs(door_sections) do
                 redstone_deactivation = redstone_deactivation,
 
                 on_rightclick = on_rightclick,
-                after_place_node = function(pos, placer, itemstack, pointed_thing)
-                    local node = get_node(pos)
-                    local param2 = node.param2
-                    local pos2 = t_copy(pos)
+                after_place_node = function( pos, _, itemstack )
+                    node = get_node(pos)
+                    param2 = node.param2
+                    pos2 = t_copy(pos)
                     pos2.y = pos2.y + 1
-                    if get_node(pos2).name == "air" then
-                        set_node(pos2,{name="door:top_"..material.."_closed",param2=param2})
+                    if get_node( pos2 ).name == "air" then
+                        set_node( pos2, { name = "door:top_" .. material .. "_closed", param2 = param2 } )
                     else
                         minetest.remove_node(pos)
-                        itemstack:add_item(ItemStack("door:bottom_"..material.."_closed"))
+                        itemstack:add_item( ItemStack( "door:bottom_" .. material .. "_closed" ) )
                     end
-                end,    
-                after_dig_node = function(pos, oldnode, oldmetadata, digger)
-                    if string.match(oldnode.name, ":bottom") then
+                end,
+                after_dig_node = function( pos, oldnode )
+                    if string.match( oldnode.name, ":bottom" ) then
                         pos.y = pos.y + 1
                         minetest.remove_node(pos)
                     else
