@@ -79,15 +79,23 @@ minetest.register_chatcommand("kill", {
         local player
 
         if target_name and target_name ~= "" and target_name ~= name then
-            if not check_player_privs(name, {server=true}) then
+            if not check_player_privs( name, { server = true } ) then
                 return false, "You don't have permission to kill another player! (missing privilege: server)"
             end
-            player = get_player_by_name(target_name)
-            chat_send_player(target_name, name.." cleared your inventory.")
+            player = get_player_by_name( target_name )
+            chat_send_player( target_name, name.." killed you." )
         else
-            player = get_player_by_name(name)
+            player = get_player_by_name( name )
         end
 
         if not player then return end
+
+        if target_name == name then
+            log("action", name .. " commited suicide.")
+        else
+            log("action", name .. " killed " .. target_name .. ".")
+        end
+        
+        player:set_hp(-1)
     end
 })
