@@ -20,17 +20,19 @@ minetest.register_chatcommand("clearinv", {
     params = "[<name>]",
     description = "Clear the inventory of yourself or another player",
     privs = {},
-    func = function(name, param)
+    func = function(name, target_name)
         local player
-        if param and param ~= "" and param ~= name then
+        if target_name and target_name ~= "" and target_name ~= name then
             if not check_player_privs(name, {server=true}) then
                 return false, "You don't have permission to clear another player's inventory (missing privilege: server)"
             end
-            player = get_player_by_name(param)
-            chat_send_player(param, name.." cleared your inventory.")
+            player = get_player_by_name(target_name)
+            chat_send_player(target_name, name.." cleared your inventory.")
         else
             player = get_player_by_name(name)
         end
+
+        if not player then return end
 
         if player then
             local inventory = player:get_inventory()
@@ -45,11 +47,39 @@ minetest.register_chatcommand("clearinv", {
     end,
 })
 
+-- Allows player to instantly die
 minetest.register_chatcommand("suicide", {
     params = "",
     description = "Kill yourself instantly",
     privs = {},
-    func = function(name, param)
+    func = function(name)
+        local player = get_player_by_name(name)
+        if not player then return end
+        player:set_hp(-1)
+    end
+})
 
+-- Allows player to instantly die
+-- Allows server admins to kill players that are misbehaving
+minetest.register_chatcommand("kill", {
+    params = "[<name>]",
+    description = "Kill yourself instantly",
+    -- Don't need the privs to kill themself but they need to have the privs to kill another player
+    privs = {},
+    func = function(name, target_name)
+
+        local player
+
+        if target_name and target_name ~= "" and target_name ~= name then
+            if not check_player_privs(name, {server=true}) then
+                return false, "You don't have permission to clear another player's inventory (missing privilege: server)"
+            end
+            player = get_player_by_name(target_name)
+            chat_send_player(target_name, name.." cleared your inventory.")
+        else
+            player = get_player_by_name(name)
+        end
+
+        if not player then return end
     end
 })
