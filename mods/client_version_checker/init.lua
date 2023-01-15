@@ -16,13 +16,35 @@ minetest.register_on_joinplayer(function(player)
     client_version_channels[name] = minetest.mod_channel_join(name..":client_version_channel")
 end)
 
+-- TODO: all of these return ends needs to jump to a section that kicks them with the correct client mod link
 minetest.register_on_modchannel_message(function(channel_name, sender, message)
 
     local channel_decyphered = channel_name:gsub(sender,"")
 
     if channel_decyphered ~= ":client_version_channel" then return end
+
+    -- I don't know why this would ever happen but check anyways
+    if not message then return end
+
+    local version_info = minetest.deserialize(message)
+
+    -- Player tried to do something weird to crash the server
+    if not version_info then return end
+
+    -- Random data, tried to crash the server
+    if not type(version_info) == "table" then return end
     
-    local version = tonumber(message)
+    -- Not the right amount of data, tried to crash the server
+    if #version_info ~= 2 then return end
+
+    -- Not the right type of data, tried to crash the server
+    if type(version_info[1]) ~= "string" or type(version_info[2]) ~= "number" then return end
+    
+
+
+
+    
+    
     if type(version) ~= "number" then
         minetest.chat_send_player(sender, minetest.colorize("yellow", "Please do not try to crash the server."))
         for _ = 1,5 do
