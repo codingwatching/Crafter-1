@@ -4,6 +4,8 @@ local remove_node = minetest.remove_node
 local get_node_timer = minetest.get_node_timer
 local math_random = math.random
 
+-- TODO: make cake be made with sugar and milk not snow
+
 for i = 0,13 do
 
     local missing_slice

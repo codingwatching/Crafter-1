@@ -44,6 +44,8 @@ local night_ends   = 5500  / 24000
     store the player's old position and look direction
 
     TODO: store the player's bed position in mod storage! I don't know why this was removed >:(
+
+    TODO: make the crafting recipe use wool group!
 ]]
 local players_in_bed = {}
 local name
