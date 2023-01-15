@@ -9,6 +9,9 @@ local function addVersionInfo(player)
 
     -- This adds the version info to the hud to emulate how MC used to show it
 
+    local x = -98
+    local y = -20
+
     player:hud_add({
         name = "version_info_background",
         text = version_info,
@@ -19,8 +22,8 @@ local function addVersionInfo(player)
         },
         number = 0x000000,
         offset = {
-            x = -98,
-            y = 20
+            x = x,
+            y = y
         },
         size = {
             x = 2,
@@ -28,6 +31,10 @@ local function addVersionInfo(player)
         },
         z_index = 0,
     })
+
+    x = x - 2
+    y = y - 2
+
     player:hud_add({
         hud_elem_type = "text",
         position = {
@@ -38,8 +45,8 @@ local function addVersionInfo(player)
         text = version_info,
         number = 0xFFFFFF,
         offset = {
-            x = -100,
-            y = 18
+            x = x,
+            y = y
         },
         size = {
             x = 2,
