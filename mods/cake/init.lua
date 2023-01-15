@@ -1,20 +1,8 @@
-local
-minetest,math
-=
-minetest,math
-
 local play_sound = minetest.sound_play
 local set_node   = minetest.set_node
-
-local random     = math.random
-
-minetest.register_food( "cake:cake_item_placeholder" ,{
-    description = "",
-    texture = "nothing.png",
-    satiation = 30,
-    hunger = 6,
-})
-
+local remove_node = minetest.remove_node
+local get_node_timer = minetest.get_node_timer
+local math_random = math.random
 
 for i = 0,13 do
 
@@ -31,7 +19,6 @@ for i = 0,13 do
             { -7/16, -8/16, -7/16, 7/16, -1/16, ( 7 - i ) / 16 },
         }
     }
-
 
     minetest.register_node("cake:cake_"..i, {
         description = "Cake",
@@ -52,11 +39,11 @@ for i = 0,13 do
         groups = { wool = 1, cake = i, falling_node = 1 },
         on_construct = function(pos)
             -- This has a 0.005 percent chance of becoming an evil cake, a cake that literally eats itself
-            if random() > 0.995 then
+            if math_random() > 0.995 then
                 set_node( pos, { name = "cake:cursed_cake_0" } )
             end
         end,
-        on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+        on_rightclick = function(pos, _, clicker)
 
             player_eat_food(clicker,"cake:cake_item_placeholder")
 
@@ -64,15 +51,15 @@ for i = 0,13 do
                 play_sound( "eat_finish", {
                     pos = pos,
                     gain = 0.2,
-                    pitch = random( 90, 100 ) / 100
+                    pitch = math_random( 90, 100 ) / 100
                 })
-                minetest.remove_node(pos)
+                remove_node(pos)
                 return
             else
                 play_sound( "eat", {
                     pos = pos,
                     gain = 0.2,
-                    pitch = random( 90, 100 ) / 100
+                    pitch = math_random( 90, 100 ) / 100
                 })
                 set_node( pos, { name= "cake:cake_" .. i + 1 } )
             end
@@ -102,27 +89,25 @@ for i = 0,13 do
         sounds = main.woolSound(),
         groups = {wool=1,cursed_cake=i,falling_node=1},
         on_construct = function(pos)
-            local timer = minetest.get_node_timer(pos)
-            timer:start(0.2)
+            get_node_timer(pos):start(0.2)
         end,
-        on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-            player_eat_food(clicker,"cake:cake_item_placeholder")
-            clicker:set_hp(clicker:get_hp()-5)
+        on_rightclick = function(_, _, clicker)
+            clicker:set_hp( clicker:get_hp() - 5 )
         end,
-        on_timer = function(pos, elapsed)
+        on_timer = function(pos)
             if i == 13 then
                 play_sound( "eat_finish", {
                     pos = pos,
                     gain = 0.2,
-                    pitch = random( 90, 100 ) / 100
+                    pitch = math_random( 90, 100 ) / 100
                 })
-                minetest.remove_node(pos)
+                remove_node(pos)
                 return
             else
                 play_sound( "eat", {
                     pos = pos,
                     gain = 0.2,
-                    pitch = random( 90, 100 ) / 100
+                    pitch = math_random( 90, 100 ) / 100
                 })
                 set_node( pos, { name = "cake:cursed_cake_" .. i + 1 } )
             end
