@@ -24,6 +24,7 @@ minetest.register_chatcommand("clearinv", {
         local player
         if target_name and target_name ~= "" and target_name ~= name then
             if not check_player_privs(name, {server=true}) then
+                log("action", name .. " tried to clear another player's inventory without permission!")
                 return false, "You don't have permission to clear another player's inventory! (missing privilege: server)"
             end
             player = get_player_by_name(target_name)
@@ -41,7 +42,7 @@ minetest.register_chatcommand("clearinv", {
             end
             
             if name == target_name then
-                log("action", name .. " cleared their own inventory.")
+                log("action", name .. " cleared their inventory.")
                 return true, "Cleared your inventory."
             else
                 log("action", name.." cleared "..player:get_player_name().."'s inventory.")
