@@ -80,6 +80,7 @@ minetest.register_chatcommand("kill", {
 
         if target_name and target_name ~= "" and target_name ~= name then
             if not check_player_privs( name, { server = true } ) then
+                log("action", name .. " tried to kill another player without permission!")
                 return false, "You don't have permission to kill another player! (missing privilege: server)"
             end
             player = get_player_by_name( target_name )
@@ -95,7 +96,7 @@ minetest.register_chatcommand("kill", {
         else
             log("action", name .. " killed " .. target_name .. ".")
         end
-        
+
         player:set_hp(-1)
     end
 })
