@@ -3,6 +3,15 @@ local check_player_privs = minetest.check_player_privs
 local log = minetest.log
 local chat_send_player = minetest.chat_send_player
 
+local inventory_list = {
+    "main",
+    "craft",
+    "craftpreview",
+    "armor_head",
+    "armor_torso",
+    "armor_legs",
+    "armor_feet"
+}
 minetest.register_chatcommand("clearinv", {
     params = "[<name>]",
     description = "Clear the inventory of yourself or another player",
