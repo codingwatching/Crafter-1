@@ -27,7 +27,7 @@ minetest.register_chatcommand("clearinv", {
                 return false, "You don't have permission to clear another player's inventory! (missing privilege: server)"
             end
             player = get_player_by_name(target_name)
-            chat_send_player(target_name, name.." cleared your inventory.")
+            chat_send_player(target_name, name .. " cleared your inventory.")
         else
             player = get_player_by_name(name)
         end
@@ -42,10 +42,10 @@ minetest.register_chatcommand("clearinv", {
             
             if name == target_name then
                 log("action", name .. " cleared their own inventory.")
-                return true, "Cleared "..player:get_player_name().."'s inventory."
+                return true, "Cleared your inventory."
             else
                 log("action", name.." cleared "..player:get_player_name().."'s inventory.")
-                return true, "Cleared "..player:get_player_name().."'s inventory."
+                return true, "Cleared " .. target_name .. "'s inventory."
             end
         else
             return false, "Player must be online to clear inventory!"
@@ -62,6 +62,7 @@ minetest.register_chatcommand("suicide", {
         local player = get_player_by_name(name)
         if not player then return end
         player:set_hp(-1)
+        log("action", name .. " commited suicide.")
     end
 })
 
