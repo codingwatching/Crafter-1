@@ -1,7 +1,4 @@
-local
-minetest,math,pairs,table
-=
-minetest,math,pairs,table
+local ipairs = ipairs
 
 local get_item_group = minetest.get_item_group
 local get_node       = minetest.get_node
@@ -13,7 +10,6 @@ local t_copy         = table.copy
 local node
 local name
 local opened
-local closed
 local closed
 local top
 local bottom
