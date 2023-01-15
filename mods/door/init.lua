@@ -1,5 +1,5 @@
 local ipairs = ipairs
-
+local ItemStack = ItemStack
 local get_item_group = minetest.get_item_group
 local get_node       = minetest.get_node
 local set_node       = minetest.set_node
