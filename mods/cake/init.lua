@@ -110,13 +110,21 @@ for i = 0,13 do
             clicker:set_hp(clicker:get_hp()-5)
         end,
         on_timer = function(pos, elapsed)
-            if i == 13 then 
-                play_sound("eat_finish",{pos=pos,gain=0.2,pitch=random(90,100)/100})
+            if i == 13 then
+                play_sound( "eat_finish", {
+                    pos = pos,
+                    gain = 0.2,
+                    pitch = random( 90, 100 ) / 100
+                })
                 minetest.remove_node(pos)
                 return
             else
-                play_sound("eat",{pos=pos,gain=0.2,pitch=random(90,100)/100})
-                set_node(pos, {name="cake:cursed_cake_"..i+1})
+                play_sound( "eat", {
+                    pos = pos,
+                    gain = 0.2,
+                    pitch = random( 90, 100 ) / 100
+                })
+                set_node( pos, {name="cake:cursed_cake_"..i+1})
             end
         end,
     })
