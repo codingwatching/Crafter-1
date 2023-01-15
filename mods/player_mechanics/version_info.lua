@@ -1,7 +1,8 @@
 local register_on_joinplayer = minetest.register_on_joinplayer
 
 local release_state = "Alpha"
-local release_version = "0.07b"
+-- Semantic versioning, but display like how MC used to because it looked cool
+local release_version = "0.0.8"
 
 local version_info = release_state .. " " .. release_version
 
