@@ -19,7 +19,7 @@ local inventory_list = {
 minetest.register_chatcommand("clearinv", {
     params = "[<name>]",
     description = "Clear the inventory of yourself or another player",
-    privs = { server = true },
+    privs = {},
     func = function(name, param)
         local player
         if param and param ~= "" and param ~= name then
@@ -45,4 +45,11 @@ minetest.register_chatcommand("clearinv", {
     end,
 })
 
+minetest.register_chatcommand("suicide", {
+    params = "",
+    description = "Kill yourself instantly",
+    privs = {},
+    func = function(name, param)
 
+    end
+})
