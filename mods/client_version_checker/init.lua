@@ -8,6 +8,7 @@ local client_version_channels = {}
 
 -- Storing a semantic versioning in a table like: {"alpha", 0.071}. This is serialized.
 local current_development_cycle = "alpha"
+-- 0.0.7b
 local current_version = 0.071
 
 minetest.register_on_joinplayer(function(player)
