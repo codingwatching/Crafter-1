@@ -3,14 +3,16 @@ local register_on_joinplayer = minetest.register_on_joinplayer
 local release_state = "Alpha"
 local release_version = "0.0.8"
 
-local version_info = "Crafter v" .. release_state .. " " .. release_version
+local version_info = "Crafter " .. release_state .. " v" .. release_version
 
 local function addVersionInfo(player)
 
     -- This adds the version info to the hud to emulate how MC used to show it
 
-    local x = -98
-    local y = -20
+    local x = -146
+    local y = 20
+
+    local size = 2
 
     player:hud_add({
         name = "version_info_background",
@@ -26,8 +28,7 @@ local function addVersionInfo(player)
             y = y
         },
         size = {
-            x = 2,
-            y = 2
+            x = size,
         },
         z_index = 0,
     })
@@ -49,8 +50,7 @@ local function addVersionInfo(player)
             y = y
         },
         size = {
-            x = 2,
-            y = 2
+            x = size,
         },
         z_index = 0,
     })
