@@ -17,7 +17,14 @@ local param2
 local pos2
 
 
-for _,material in pairs({"wood","iron"}) do
+local door_materials = {
+    "wood",
+    "iron"
+}
+
+
+for _,material in ipairs(door_materials) do
+
 --this is the function that makes the door open and close when rightclicked
 local door_rightclick = function(pos)
     node = get_node(pos)
