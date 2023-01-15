@@ -25,6 +25,13 @@ for i = 0,13 do
     else
         missing_slice = "cake_inner.png"
     end
+    local node_box = {
+        type = "fixed",
+        fixed = {
+            { -7/16, -8/16, -7/16, 7/16, -1/16, ( 7 - i ) / 16 },
+        }
+    }
+
 
     minetest.register_node("cake:cake_"..i, {
         description = "Cake",
@@ -38,12 +45,7 @@ for i = 0,13 do
         },
         drawtype = "nodebox",
         paramtype = "light",
-        node_box = {
-            type = "fixed",
-            fixed = {
-                { -7/16, -8/16, -7/16, 7/16, -1/16, ( 7 - i ) / 16 },
-            }
-        },
+        node_box = node_box,
         drop = "",
         sounds = main.woolSound(),
         -- Yes, I always enjoy putting wool in my cake
@@ -76,11 +78,6 @@ for i = 0,13 do
             end
         end,
     })
-end
-
-for i = 0,13 do
-
-    local missing_slice
 
     if i == 0 then
         missing_slice = "cake_side.png^[colorize:red:140"
@@ -100,12 +97,7 @@ for i = 0,13 do
         },
         drawtype = "nodebox",
         paramtype = "light",
-        node_box = {
-            type = "fixed",
-            fixed = {
-                { -7/16, -8/16, -7/16, 7/16, -1/16, ( 7 - i ) / 16 },
-            }
-        },
+        node_box = node_box,
         drop = "",
         sounds = main.woolSound(),
         groups = {wool=1,cursed_cake=i,falling_node=1},
@@ -119,7 +111,7 @@ for i = 0,13 do
         end,
         on_timer = function(pos, elapsed)
             if i == 13 then 
-                play_sound("eat_finish",{pos=pos,gain=0.2,pitch=random(90,100)/100}) 
+                play_sound("eat_finish",{pos=pos,gain=0.2,pitch=random(90,100)/100})
                 minetest.remove_node(pos)
                 return
             else
