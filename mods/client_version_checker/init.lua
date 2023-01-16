@@ -51,8 +51,8 @@ end
 local function wrong_client_version(sender, reported_development_cycle, reported_version)
     minetest.kick_player(sender,
         "\nYou have the wrong client version.\n" ..
-        "Your version: " .. tostring(reported_version) .. " " .. reported_development_cycle .. "\n" ..
-        "Server version: " .. tostring(current_version) .. " " .. current_development_cycle .. "\n" ..
+        "Your version: " .. tostring(reported_version) .. " " .. tostring(reported_development_cycle) .. "\n" ..
+        "Server version: " .. tostring(current_version) .. " " .. tostring(current_development_cycle) .. "\n" ..
         "To install the correct version, please go to:\n" .. current_client_link
     )
 end
