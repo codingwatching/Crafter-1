@@ -15,6 +15,7 @@
         "create_aether_portal",
         "destroy_aether_portal",
         "get_skin",
-        "get_liquid_flow_direction"
+        "get_liquid_flow_direction",
+        "is_player_drowning"
     ]
 }
