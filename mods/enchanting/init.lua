@@ -49,7 +49,7 @@ minetest.register_node("enchanting:table", {
 
             local meta = stack:get_meta()
 
-            if meta:get_string("enchanted") == "true" then return end
+            if meta:get_int("enchanted") > 0 then return end
 
             local tool_definition = registered_tools[itemstack:get_name()]
 
@@ -107,7 +107,7 @@ minetest.register_node("enchanting:table", {
             end
             
             meta:set_string( "description", "Enchanted " .. description )
-            meta:set_string( "enchanted", "true" )
+            meta:set_int( "enchanted", 1 )
             meta:set_tool_capabilities(tool_caps)
             
             set_player_xp_level(clicker,player_level)
