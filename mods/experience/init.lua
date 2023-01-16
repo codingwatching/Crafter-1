@@ -179,7 +179,7 @@ minetest.register_on_joinplayer(function(player)
         number = 0x000000,
         offset = {x = 0, y = -(48 + 24 + 24)},
         z_index = 0,
-    })               
+    })
     add_hud(player,"xp_level_fg",{
         hud_elem_type = "text",
         position = {x=0.5, y=1},
@@ -272,8 +272,43 @@ minetest.register_on_dieplayer(function(player)
 end)
 
 
+-- Experience orb class
+local xp_orb = {}
 
-local function xp_step(self, dtime)
+-- Experience orb fields
+xp_orb.initial_properties = {
+    hp_max = 1,
+    physical = true,
+    collide_with_objects = false,
+    collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2},
+    visual = "sprite",
+    visual_size = {x = 0.4, y = 0.4},
+    textures = {name="experience_orb.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}},
+    spritediv = {x = 1, y = 14},
+    initial_sprite_basepos = {x = 0, y = 0},
+    is_visible = true,
+    pointable = false,
+    static_save = false,
+}
+
+xp_orb.moving_state = true
+xp_orb.slippery_state = false
+xp_orb.physical_state = true
+-- Item expiry
+xp_orb.age = 0
+-- Pushing item out of solid nodes
+xp_orb.force_out = nil
+xp_orb.force_out_start = nil
+--Collection Variables
+xp_orb.collectable = false
+xp_orb.try_timer = 0
+xp_orb.collected = false
+xp_orb.delete_timer = 0
+xp_orb.radius = 4
+
+
+
+function xp_orb:xp_step(dtime)
     --if item set to be collected then only execute go to player
     if self.collected then
         if not self.collector then
@@ -399,34 +434,7 @@ local function xp_step(self, dtime)
 end
 
 minetest.register_entity("experience:orb", {
-    initial_properties = {
-        hp_max = 1,
-        physical = true,
-        collide_with_objects = false,
-        collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2},
-        visual = "sprite",
-        visual_size = {x = 0.4, y = 0.4},
-        textures = {name="experience_orb.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}},
-        spritediv = {x = 1, y = 14},
-        initial_sprite_basepos = {x = 0, y = 0},
-        is_visible = true,
-        pointable = false,
-        static_save = false,
-    },
-    moving_state = true,
-    slippery_state = false,
-    physical_state = true,
-    -- Item expiry
-    age = 0,
-    -- Pushing item out of solid nodes
-    force_out = nil,
-    force_out_start = nil,
-    --Collection Variables
-    collectable = false,
-    try_timer = 0,
-    collected = false,
-    delete_timer = 0,
-    radius = 4,
+    
 
 
     on_activate = function(self, staticdata, dtime_s)
