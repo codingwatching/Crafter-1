@@ -13,6 +13,9 @@ local vec_distance  = vector.distance
 local add_vec       = vector.add
 local multiply_vec  = vector.multiply
 local vec_direction = vector.direction
+local add_hud = hud_manager.add_hud
+local change_hud = hud_manager.change_hud
+
 local pi     = math.pi
 local random = math.random
 local abs    = math.abs
@@ -103,13 +106,13 @@ end
 function set_player_xp_level( player, level )
     name = player:get_player_name()
     pool[name].xp_level = level
-    hud_manager.change_hud({
+    change_hud({
         player   = player,
         hud_name = "xp_level_fg",
         element  = "text",
         data     = tostring(level)
     })
-    hud_manager.change_hud({
+    change_hud({
         player   = player,
         hud_name = "xp_level_bg",
         element  = "text",
@@ -133,8 +136,8 @@ minetest.register_on_joinplayer(function(player)
 
     name = player:get_player_name()
     temp_pool = pool[name]
-        
-    hud_manager.add_hud(player,"heart_bar_bg",{
+
+    add_hud(player,"heart_bar_bg",{
         hud_elem_type = "statbar",
         position = {x = 0.5, y = 1},
         text = "heart_bg.png",
@@ -143,9 +146,8 @@ minetest.register_on_joinplayer(function(player)
         size = {x = 24, y = 24},
         offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 38)},
     })
-    
 
-    hud_manager.add_hud(player,"experience_bar_background",{
+    add_hud(player,"experience_bar_background",{
         hud_elem_type = "statbar",
         position = {x=0.5, y=1},
         name = "experience bar background",
@@ -156,8 +158,8 @@ minetest.register_on_joinplayer(function(player)
         size = { x=28, y=28 },
         z_index = 0,
     })
-    
-    hud_manager.add_hud(player,"experience_bar",{
+
+    add_hud(player,"experience_bar",{
         hud_elem_type = "statbar",
         position = {x=0.5, y=1},
         name = "experience bar",
@@ -168,8 +170,8 @@ minetest.register_on_joinplayer(function(player)
         size = { x=28, y=28 },
         z_index = 0,
     })
-    
-    hud_manager.add_hud(player,"xp_level_bg",{
+
+    add_hud(player,"xp_level_bg",{
         hud_elem_type = "text",
         position = {x=0.5, y=1},
         name = "xp_level_bg",
@@ -177,8 +179,8 @@ minetest.register_on_joinplayer(function(player)
         number = 0x000000,
         offset = {x = 0, y = -(48 + 24 + 24)},
         z_index = 0,
-    })                            
-    hud_manager.add_hud(player,"xp_level_fg",{
+    })               
+    add_hud(player,"xp_level_fg",{
         hud_elem_type = "text",
         position = {x=0.5, y=1},
         name = "xp_level_fg",
@@ -186,22 +188,22 @@ minetest.register_on_joinplayer(function(player)
         number = 0xFFFFFF,
         offset = {x = -1, y = -(48 + 24 + 25)},
         z_index = 0,
-    })                                                           
+    })
 end)
 
 local function level_up_experience(player)
     name = player:get_player_name()
     temp_pool = pool[name]
-    
+
     temp_pool.xp_level = temp_pool.xp_level + 1
-    
-    hud_manager.change_hud({
+
+    change_hud({
         player   = player,
         hud_name = "xp_level_fg",
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
-    hud_manager.change_hud({
+    change_hud({
         player   = player,
         hud_name = "xp_level_bg",
         element  = "text",
@@ -212,9 +214,9 @@ end
 local function add_experience(player,experience)
     name = player:get_player_name()
     temp_pool = pool[name]
-    
+
     temp_pool.xp_bar = temp_pool.xp_bar + experience
-    
+
     if temp_pool.xp_bar > 36 then
         if get_time()/1000000 - temp_pool.last_time > 0.04 then
             play_sound("level_up",{gain=0.2,to_player = name})
@@ -228,7 +230,7 @@ local function add_experience(player,experience)
             play_sound("experience",{gain=0.1,to_player = name,pitch=random(75,99)/100})
         end
     end
-    hud_manager.change_hud({
+    change_hud({
         player   = player,
         hud_name = "experience_bar",
         element  = "number",
@@ -241,39 +243,39 @@ minetest.register_on_dieplayer(function(player)
     name = player:get_player_name()
     temp_pool = pool[name]
     xp_amount = temp_pool.xp_level
-    
+
     temp_pool.xp_bar   = 0
     temp_pool.xp_level = 0
 
 
-    hud_manager.change_hud({
+    change_hud({
         player   = player,
         hud_name = "xp_level_fg",
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
-    hud_manager.change_hud({
+    change_hud({
         player   = player,
         hud_name = "xp_level_bg",
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
 
-    hud_manager.change_hud({
+    change_hud({
         player   = player,
         hud_name = "experience_bar",
         element  = "number",
         data     = temp_pool.xp_bar
     })
 
-    minetest.throw_experience(player:get_pos(), xp_amount)                       
+    minetest.throw_experience(player:get_pos(), xp_amount)
 end)
 
 
 
 local function xp_step(self, dtime)
     --if item set to be collected then only execute go to player
-    if self.collected == true then
+    if self.collected then
         if not self.collector then
             self.collected = false
             return
@@ -287,11 +289,11 @@ local function xp_step(self, dtime)
             --get the variables
             pos = self.object:get_pos()
             pos2 = collector:get_pos()
-            
+
             player_velocity = collector:get_velocity()
-                                        
+
             pos2.y = pos2.y + 0.8
-                            
+
             direction = vec_direction(pos,pos2)
             distance = vec_distance(pos2,pos)
             multiplier = distance
