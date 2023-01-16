@@ -41,16 +41,6 @@ minetest.register_on_leaveplayer(function(player)
     checked_clients[name] = nil
 end)
 
-
-
--- TODO: inform the person that they need the client mod 10 seconds after they join if they're not in the version channel
-
--- This person is a piece of crap and is trying to crash an opensource game server, let's kick their ass out
-local function trying_to_crash_server(sender)
-    minetest.kick_player(sender, "Stop trying to crash the server.")
-    minetest.log("action", sender .. " tried to crash the server.")
-end
-
 -- Something that absolutely isn't supposed to happen, happened
 local function a_serious_error(sender)
     minetest.kick_player(sender, "Something has gone seriously wrong, please check your client mod version.")
@@ -67,7 +57,6 @@ local function wrong_client_version(sender, reported_development_cycle, reported
     )
 end
 
--- TODO: all of these return ends needs to jump to a section that kicks them with the correct client mod link
 minetest.register_on_modchannel_message(function(channel_name, sender, message)
 
     local channel_decyphered = channel_name:gsub(sender,"")
@@ -84,25 +73,25 @@ minetest.register_on_modchannel_message(function(channel_name, sender, message)
 
     -- Player tried to do something weird to crash the server
     if not version_info then
-        trying_to_crash_server(sender)
+        wrong_client_version(sender)
         return
     end
 
     -- Random data, tried to crash the server
     if not type(version_info) == "table" then
-        trying_to_crash_server(sender)
+        wrong_client_version(sender)
         return
     end
 
     -- Not the right amount of data, tried to crash the server
     if #version_info ~= 2 then
-        trying_to_crash_server(sender)
+        wrong_client_version(sender)
         return
     end
 
     -- Not the right type of data, tried to crash the server
     if type(version_info[1]) ~= "string" or type(version_info[2]) ~= "number" then
-        trying_to_crash_server(sender)
+        wrong_client_version(sender)
         return
     end
 
