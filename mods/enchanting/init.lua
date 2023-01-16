@@ -51,7 +51,9 @@ minetest.register_node("enchanting:table", {
 
             if meta:get_string("enchanted") == "true" then return end
 
-            if not registered_tools[itemstack:get_name()] then return end
+            local tool_definition = registered_tools[itemstack:get_name()]
+
+            if tool_definition then return end
 
             local tool_caps = itemstack:get_tool_capabilities()
 
@@ -69,7 +71,7 @@ minetest.register_node("enchanting:table", {
 
             if enchants_available > 3 then enchants_available = 3 end
 
-            local description = registered_tools[stack:get_name()].description
+            local description = tool_definition.description
 
             for _ = 1,enchants_available do
                 local new_enchant = enchantment_list[ math.random( 1, #enchantment_list ) ]
