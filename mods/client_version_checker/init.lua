@@ -1,10 +1,10 @@
 local type = type
 local tostring = tostring
 
--- What the heck is this
+-- This is a simple check for the client mod to see if the player is on a crafter server
 minetest.register_node(":crafter_client_version_checker:this_is_a_hack_to_not_crash_other_servers",{})
 
-local client_versions = {}
+local checked_clients = {}
 local client_version_channels = {}
 
 -- Storing a semantic versioning in a table like: {"alpha", 0.071}. This is serialized.
@@ -13,10 +13,35 @@ local current_development_cycle = "alpha"
 local current_version = 0.08
 local current_client_link = "https://github.com/jordan4ibanez/crafter_client"
 
+
+-- This person does not have the client mod installed, kick them and tell them
+local function client_not_installed(name)
+    minetest.kick_player(name,
+        "\nYou do not have the client mod installed.\n" ..
+        "To install the correct version, please go to:\n" .. current_client_link
+    )
+end
+
 minetest.register_on_joinplayer(function(player)
     local name = player:get_player_name()
     client_version_channels[name] = minetest.mod_channel_join(name..":client_version_channel")
+
+    -- Check if a client mod has successfully initialized
+    minetest.after(5,
+    function()
+
+        if checked_clients[name] then return end
+
+        client_not_installed(name)
+    end)
 end)
+
+minetest.register_on_leaveplayer(function(player)
+    local name = player:get_player_name()
+    checked_clients[name] = nil
+end)
+
+
 
 -- TODO: inform the person that they need the client mod 10 seconds after they join if they're not in the version channel
 
@@ -92,5 +117,6 @@ minetest.register_on_modchannel_message(function(channel_name, sender, message)
     end
 
     -- Everything checked out
+    checked_clients[sender] = true
 end)
 
