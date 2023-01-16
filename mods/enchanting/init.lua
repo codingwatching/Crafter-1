@@ -1,3 +1,8 @@
+local pairs = pairs
+local after = minetest.after
+local itemstring_with_color = minetest.itemstring_with_color
+local registered_tools = minetest.registered_tools
+
 --[[
 swiftness - how fast you mine
 hardness - allows the tool to go way above it's level
@@ -10,7 +15,7 @@ spiky - the tool will randomly hurt you when used
 sharpness - the tool does more damage
 ]]--
 
-local registered_tools = minetest.registered_tools
+-- TODO: Make a GUI for this
 
 local enchantment_list = {
     "swiftness",
@@ -43,7 +48,7 @@ minetest.register_node("enchanting:table", {
 
     on_rightclick = function(_, _, clicker, itemstack)
 
-        minetest.after(0,function()
+        after(0,function()
 
             local stack = clicker:get_wielded_item()
 
@@ -85,16 +90,16 @@ minetest.register_node("enchanting:table", {
                     description = description .. "\n" .. new_enchant:gsub("^%l", string.upper) .. ": " .. tostring(level)
 
                     if new_enchant == "swiftness" then
-                        for index,table in pairs(groupcaps) do
-                            for index2,time in pairs(table.times) do
+                        for index,current_cap in pairs(groupcaps) do
+                            for index2,time in pairs(current_cap.times) do
                                 tool_caps["groupcaps"][index]["times"][index2] = time / ( level + 1 )
                             end
                         end
                     end
 
                     if new_enchant == "durable" then
-                        for index,table in pairs(groupcaps) do
-                            tool_caps["groupcaps"][index]["uses"] = table.uses * ( level + 1 )
+                        for index,current_cap in pairs(groupcaps) do
+                            tool_caps["groupcaps"][index]["uses"] = current_cap.uses * ( level + 1 )
                         end
                     end
                     
@@ -119,7 +124,7 @@ minetest.register_node("enchanting:table", {
                 colorstring = colorstring .. hexer[ math.random( 1, 16 ) ]
             end
 
-            stack = minetest.itemstring_with_color(stack, colorstring)
+            stack = itemstring_with_color(stack, colorstring)
             clicker:set_wielded_item(stack)
         end)
     end
