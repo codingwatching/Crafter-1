@@ -342,7 +342,7 @@ function xp_orb:disable_physics()
     end
 end
 
-function xp_orb:xp_step(dtime)
+function xp_orb:on_step(dtime)
     --if item set to be collected then only execute go to player
     if self.collected then
         if not self.collector then
@@ -465,10 +465,6 @@ function xp_orb:xp_step(dtime)
         self.object:set_acceleration({x = 0, y = 0, z = 0})
         self.object:set_velocity({x = 0, y = 0, z = 0})
     end
-end
-
-function xp_orb:on_step(dtime)
-    self:xp_step(dtime)
 end
 
 minetest.register_entity("experience:orb", xp_orb)
