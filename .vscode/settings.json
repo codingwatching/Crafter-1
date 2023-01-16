@@ -16,6 +16,8 @@
         "destroy_aether_portal",
         "get_skin",
         "get_liquid_flow_direction",
-        "is_player_drowning"
+        "is_player_drowning",
+        "get_player_xp_level",
+        "set_player_xp_level"
     ]
 }
