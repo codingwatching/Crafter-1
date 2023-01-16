@@ -167,9 +167,9 @@ local handle_breath = function(player,dtime)
             end
         end
 
-        if temp_pool.ticker >= 1.3 then
-            temp_pool.ticker = 0
-        end
+        if temp_pool.ticker < 1.3 then return end
+
+        temp_pool.ticker = 0
 
     else
 
