@@ -307,6 +307,40 @@ xp_orb.delete_timer = 0
 xp_orb.radius = 4
 
 
+function xp_orb:on_activate(staticdata, dtime_s)
+    self.object:set_velocity(new_vec(
+        random(-2,2)*random(),
+        random(2,5),
+        random(-2,2)*random()
+    ))
+    self.object:set_armor_groups({immortal = 1})
+    self.object:set_velocity({x = 0, y = 2, z = 0})
+    self.object:set_acceleration({x = 0, y = -9.81, z = 0})
+    size = random(20,36)/100
+    self.object:set_properties({
+        visual_size = {x = size, y = size},
+        glow = 14,
+    })
+    self.object:set_sprite( { x = 1, y = random( 1, 14 ) }, 14, 0.05, false )
+end
+
+function xp_orb:enable_physics()
+    if not self.physical_state then
+        self.physical_state = true
+        self.object:set_properties({physical = true})
+        self.object:set_velocity({x=0, y=0, z=0})
+        self.object:set_acceleration({x=0, y=-9.81, z=0})
+    end
+end
+
+function xp_orb:disable_physics()
+    if self.physical_state then
+        self.physical_state = false
+        self.object:set_properties({physical = false})
+        self.object:set_velocity({x=0, y=0, z=0})
+        self.object:set_acceleration({x=0, y=0, z=0})
+    end
+end
 
 function xp_orb:xp_step(dtime)
     --if item set to be collected then only execute go to player
@@ -433,48 +467,11 @@ function xp_orb:xp_step(dtime)
     end
 end
 
-minetest.register_entity("experience:orb", {
-    
+function xp_orb:on_step(dtime)
+    self:xp_step(dtime)
+end
 
-
-    on_activate = function(self, staticdata, dtime_s)
-        self.object:set_velocity(new_vec(
-            random(-2,2)*random(),
-            random(2,5),
-            random(-2,2)*random()
-        ))
-        self.object:set_armor_groups({immortal = 1})
-        self.object:set_velocity({x = 0, y = 2, z = 0})
-        self.object:set_acceleration({x = 0, y = -9.81, z = 0})
-        size = random(20,36)/100
-        self.object:set_properties({
-            visual_size = {x = size, y = size},
-            glow = 14,
-        })
-        self.object:set_sprite({x=1,y=random(1,14)}, 14, 0.05, false)
-    end,
-
-    enable_physics = function(self)
-        if not self.physical_state then
-            self.physical_state = true
-            self.object:set_properties({physical = true})
-            self.object:set_velocity({x=0, y=0, z=0})
-            self.object:set_acceleration({x=0, y=-9.81, z=0})
-        end
-    end,
-
-    disable_physics = function(self)
-        if self.physical_state then
-            self.physical_state = false
-            self.object:set_properties({physical = false})
-            self.object:set_velocity({x=0, y=0, z=0})
-            self.object:set_acceleration({x=0, y=0, z=0})
-        end
-    end,
-    on_step = function(self, dtime)
-        xp_step(self, dtime)
-    end,
-})
+minetest.register_entity("experience:orb", xp_orb)
 
 
 minetest.register_chatcommand("xp", {
