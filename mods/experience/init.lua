@@ -1,43 +1,30 @@
-local
-minetest,math,vector,os,pairs,type
-=
-minetest,math,vector,os,pairs,type
-
-local mod_storage = minetest.get_mod_storage()
-
--- minetest library
+local type = type
+local pairs = pairs
 local get_node_or_nil    = minetest.get_node_or_nil
 local get_time           = minetest.get_us_time
 local get_player_by_name = minetest.get_player_by_name
 local yaw_to_dir         = minetest.yaw_to_dir
 local dir_to_yaw         = minetest.dir_to_yaw
 local get_item_group     = minetest.get_item_group
-local serialize          = minetest.serialize
-local deserialize        = minetest.deserialize
 local play_sound         = minetest.sound_play
-local registered_nodes
-minetest.register_on_mods_loaded(function()
-    registered_nodes = minetest.registered_nodes
-end)
-
--- vector library
+local mod_storage        = minetest.get_mod_storage()
 local new_vec       = vector.new
 local vec_distance  = vector.distance
 local add_vec       = vector.add
 local multiply_vec  = vector.multiply
 local vec_direction = vector.direction
-
--- math library
 local pi     = math.pi
 local random = math.random
 local abs    = math.abs
+local registered_nodes
+minetest.register_on_mods_loaded(function()
+    registered_nodes = minetest.registered_nodes
+end)
 
--- string library
-local s_sub  = string.sub
-local s_len  = string.len
+
 
 local pool = {}
--- loads data from mod storage
+-- Load data from mod storage
 local name
 local temp_pool
 local load_data = function(player)
@@ -57,15 +44,11 @@ local load_data = function(player)
     end
 end
 
--- saves data to be utilized on next login
-local name
-local temp_pool
-local save_data = function(name)
-    if type(name) ~= "string" and name:is_player() then
-        name = name:get_player_name()
-    end
-    temp_pool = pool[name]
+-- Save data to be utilized on next login
+local save_data = function(player_name)
     
+    temp_pool = pool[name]
+
     mod_storage:set_int(name.."xp_level",temp_pool.xp_level)
     mod_storage:set_int(name.."xp_bar",  temp_pool.xp_bar  )
 
@@ -76,13 +59,14 @@ end
 
 -- saves specific users data for when they relog
 minetest.register_on_leaveplayer(function(player)
-    save_data(player)
+    name = player:get_player_name()
+    save_data(name)
 end)
 
 -- is used for shutdowns to save all data
 local save_all = function()
-    for name,_ in pairs(pool) do
-        save_data(name)
+    for player_name,_ in pairs(pool) do
+        save_data(player_name)
     end
 end
 
@@ -92,14 +76,11 @@ minetest.register_on_shutdown(function()
 end)
 
 
-local name
 function get_player_xp_level(player)
     name = player:get_player_name()
     return(pool[name].xp_level)
 end
 
-local name
-local temp_pool
 function set_player_xp_level(player,level)
     name = player:get_player_name()
     pool[name].xp_level = level
@@ -127,8 +108,6 @@ minetest.hud_replace_builtin("health",{
     offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 38)},
 })
 
-local name
-local temp_pool
 minetest.register_on_joinplayer(function(player)
 
     load_data(player)
