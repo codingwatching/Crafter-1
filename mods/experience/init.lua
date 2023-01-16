@@ -342,64 +342,72 @@ function xp_orb:disable_physics()
     end
 end
 
-function xp_orb:on_step(dtime)
-    --if item set to be collected then only execute go to player
-    if self.collected then
-        if not self.collector then
-            self.collected = false
-            return
-        end
-        collector = get_player_by_name(self.collector)
-        if collector and collector:get_hp() > 0 and vec_distance(self.object:get_pos(),collector:get_pos()) < 5 then
-            temp_pool = pool[self.collector]
+-- Returns boolean
+function xp_orb:execute_collection()
 
-            self.object:set_acceleration(new_vec(0,0,0))
-            self.disable_physics(self)
-            --get the variables
-            pos = self.object:get_pos()
-            pos2 = collector:get_pos()
+    if not self.collected then return false end
 
-            player_velocity = collector:get_velocity()
-
-            pos2.y = pos2.y + 0.8
-
-            direction = vec_direction(pos,pos2)
-            distance = vec_distance(pos2,pos)
-            multiplier = distance
-            if multiplier < 1 then
-                multiplier = 1
-            end
-            goal = multiply_vec(direction,multiplier)
-            currentvel = self.object:get_velocity()
-
-            if distance > 1 then
-                multiplier = 20 - distance
-                velocity = multiply_vec(direction,multiplier)
-                goal = velocity
-                acceleration = new_vec(goal.x-currentvel.x,goal.y-currentvel.y,goal.z-currentvel.z)
-                self.object:add_velocity(add_vec(acceleration,player_velocity))
-            elseif distance > 0.9 and temp_pool.buffer > 0 then
-                temp_pool.buffer = temp_pool.buffer - dtime
-                multiplier = 20 - distance
-                velocity = multiply_vec(direction,multiplier)
-                goal = multiply_vec(yaw_to_dir(dir_to_yaw(vec_direction(new_vec(pos.x,0,pos.z),new_vec(pos2.x,0,pos2.z)))+pi/2),10)
-                goal = add_vec(player_velocity,goal)
-                acceleration = new_vec(goal.x-currentvel.x,goal.y-currentvel.y,goal.z-currentvel.z)
-                self.object:add_velocity(acceleration)
-            end
-            if distance < 0.4 and temp_pool.buffer <= 0 then
-                temp_pool.buffer = 0.04
-                add_experience(collector,2)
-                self.object:remove()
-            end
-            return
-        else
-            self.collector = nil
-            self.enable_physics(self)
-        end
+    if not self.collector then
+        self.collected = false
+        return false
     end
 
-                    
+    collector = get_player_by_name(self.collector)
+    
+    if collector and collector:get_hp() > 0 and vec_distance(self.object:get_pos(),collector:get_pos()) < 5 then
+        temp_pool = pool[self.collector]
+
+        self.object:set_acceleration(new_vec(0,0,0))
+        self.disable_physics(self)
+        --get the variables
+        pos = self.object:get_pos()
+        pos2 = collector:get_pos()
+
+        player_velocity = collector:get_velocity()
+
+        pos2.y = pos2.y + 0.8
+
+        direction = vec_direction(pos,pos2)
+        distance = vec_distance(pos2,pos)
+        multiplier = distance
+        if multiplier < 1 then
+            multiplier = 1
+        end
+        goal = multiply_vec(direction,multiplier)
+        currentvel = self.object:get_velocity()
+
+        if distance > 1 then
+            multiplier = 20 - distance
+            velocity = multiply_vec(direction,multiplier)
+            goal = velocity
+            acceleration = new_vec(goal.x-currentvel.x,goal.y-currentvel.y,goal.z-currentvel.z)
+            self.object:add_velocity(add_vec(acceleration,player_velocity))
+        elseif distance > 0.9 and temp_pool.buffer > 0 then
+            temp_pool.buffer = temp_pool.buffer - dtime
+            multiplier = 20 - distance
+            velocity = multiply_vec(direction,multiplier)
+            goal = multiply_vec(yaw_to_dir(dir_to_yaw(vec_direction(new_vec(pos.x,0,pos.z),new_vec(pos2.x,0,pos2.z)))+pi/2),10)
+            goal = add_vec(player_velocity,goal)
+            acceleration = new_vec(goal.x-currentvel.x,goal.y-currentvel.y,goal.z-currentvel.z)
+            self.object:add_velocity(acceleration)
+        end
+        if distance < 0.4 and temp_pool.buffer <= 0 then
+            temp_pool.buffer = 0.04
+            add_experience(collector,2)
+            self.object:remove()
+        end
+        return true
+    end
+
+    self.collector = nil
+    self.enable_physics(self)
+    return false
+end
+
+function xp_orb:on_step(dtime)
+
+    if self:execute_collection() then return end
+
     self.age = self.age + dtime
     if self.age > 300 then
         self.object:remove()
