@@ -9,6 +9,10 @@ local get_connected_players = minetest.get_connected_players
 
 local mod_storage = minetest.get_mod_storage()
 local pool = {}
+local name
+local temp_pool
+local head
+local hp
 
 -- Update bubble bar
 local update_breath_bar = function(player,breath)
@@ -51,9 +55,7 @@ local update_breath_bar = function(player,breath)
     end
 end
 
--- loads data from mod storage
-local name
-local temp_pool
+-- Loads data from mod storage
 local load_data = function(player)
     name = player:get_player_name()
     pool[name] = {}
@@ -134,8 +136,6 @@ minetest.register_on_respawnplayer(function(player)
 end)
 
 -- Handle the breath bar
-local head
-local hp
 local handle_breath = function(player,dtime)
     name = player:get_player_name()
     head = get_player_head_env(player)
