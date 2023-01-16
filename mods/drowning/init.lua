@@ -2,6 +2,7 @@ local ipairs = ipairs
 local hud_exists = hud_manager.hud_exists
 local remove_hud = hud_manager.remove_hud
 local add_hud    = hud_manager.add_hud
+local change_hud = hud_manager.change_hud
 local get_item_group = minetest.get_item_group
 local get_connected_players = minetest.get_connected_players
 
