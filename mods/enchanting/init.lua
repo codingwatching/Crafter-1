@@ -9,19 +9,39 @@ autorepair - tool will repair itself randomly
 spiky - the tool will randomly hurt you when used
 sharpness - the tool does more damage
 ]]--
-local enchantment_list = {"swiftness", "durable", "careful", "fortune", "autorepair",  "sharpness"}
 
-local temp_names = {"Monster", "Behemoth", "Ultra", "Wow!", "Oh Em Gee", "The Ultimatum", "Holy Moly!", "Infinity"}
+local enchantment_list = {
+    "swiftness",
+    "durable",
+    "careful",
+    "fortune",
+    "autorepair",
+    "sharpness"
+}
+
+local temp_names = {
+    "Monster",
+    "Behemoth",
+    "Ultra",
+    "Wow!",
+    "Oh Em Gee",
+    "The Ultimatum",
+    "Holy Moly!",
+    "Infinity"
+}
 
 local hexer = {"a","b","c","d","e","f","1","2","3","4","5","6","7","8","9","0"}
+
 minetest.register_node("enchanting:table", {
     description = "Enchanting Table",
     tiles = {"bedrock.png"},
-    groups = {wood = 1, pathable = 1},
+    groups = { wood = 1, pathable = 1 },
     sounds = main.stoneSound(),
     is_ground_content = false,
+
     on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-        minetest.after(0,function(clicker)
+
+        minetest.after(0,function()
             local stack = clicker:get_wielded_item()
             
             local meta = stack:get_meta()
@@ -46,6 +66,7 @@ minetest.register_node("enchanting:table", {
             if enchants_available > 3 then enchants_available = 3 end
             local stock_name = minetest.registered_tools[stack:get_name()].name
             local description = minetest.registered_tools[stack:get_name()].description--temp_names[math.random(1,table.getn(temp_names))]
+
             for i = 1,enchants_available do
                 local new_enchant = enchantment_list[math.random(1,table.getn(enchantment_list))]
                 local level = math.random(1,max_enchant_level)
@@ -74,29 +95,30 @@ minetest.register_node("enchanting:table", {
                 end
             end
             
-            meta:set_string("description", "Enchanted "..description)
-            meta:set_string("enchanted", "true")
+            meta:set_string( "description", "Enchanted " .. description )
+            meta:set_string( "enchanted", "true" )
             meta:set_tool_capabilities(tool_caps)
             
             set_player_xp_level(clicker,player_level)
             
             
-            --create truly random hex
+            -- Create random colorstring
             local colorstring = "#"
-            for i = 1,6 do
-                colorstring = colorstring..hexer[math.random(1,16)]
+            for _ = 1,6 do
+                colorstring = colorstring .. hexer[ math.random( 1, 16 ) ]
             end
+
             stack = minetest.itemstring_with_color(stack, colorstring)
             clicker:set_wielded_item(stack)
-        end,clicker)
+        end)
     end
 })
 
 minetest.register_craft({
     output = "enchanting:table",
     recipe = {
-        {"nether:obsidian", "nether:obsidian", "nether:obsidian"},
-        {"nether:obsidian", "main:diamond", "nether:obsidian"},
-        {"nether:obsidian", "nether:obsidian", "nether:obsidian"},
+        { "nether:obsidian", "nether:obsidian", "nether:obsidian" },
+        { "nether:obsidian", "main:diamond", "nether:obsidian" },
+        { "nether:obsidian", "nether:obsidian", "nether:obsidian" },
     },
 })
