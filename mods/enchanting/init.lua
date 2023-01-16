@@ -79,8 +79,11 @@ minetest.register_node("enchanting:table", {
             local description = tool_definition.description
 
             for _ = 1,enchants_available do
+
                 local new_enchant = enchantment_list[ math.random( 1, #enchantment_list ) ]
+
                 local level = math.random( 1, max_enchant_level )
+
                 if meta:get_int(new_enchant) == 0 then
 
                     player_level = player_level - 5
@@ -102,22 +105,23 @@ minetest.register_node("enchanting:table", {
                             tool_caps["groupcaps"][index]["uses"] = current_cap.uses * ( level + 1 )
                         end
                     end
-                    
+
                     if new_enchant == "sharpness" then
                         for index,data in pairs(tool_caps.damage_groups) do
                             tool_caps.damage_groups[index] = data*(level+1)
                         end
                     end
+
                 end
+
             end
-            
+
             meta:set_string( "description", "Enchanted " .. description )
             meta:set_int( "enchanted", 1 )
             meta:set_tool_capabilities(tool_caps)
-            
+
             set_player_xp_level(clicker,player_level)
-            
-            
+
             -- Create random colorstring
             local colorstring = "#"
             for _ = 1,6 do
