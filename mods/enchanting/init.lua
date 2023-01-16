@@ -42,30 +42,32 @@ minetest.register_node("enchanting:table", {
     on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 
         minetest.after(0,function()
+
             local stack = clicker:get_wielded_item()
-            
+
             local meta = stack:get_meta()
-            
+
             if meta:get_string("enchanted") == "true" then return end
-            
+
             if not minetest.registered_tools[itemstack:get_name()] then return end
-            
+
             local tool_caps = itemstack:get_tool_capabilities()
+
             local groupcaps = tool_caps.groupcaps
-            
+
             if not groupcaps then return end
-            
-            local able_enchantments = table.copy(enchantment_list)
-            
 
             local player_level = get_player_xp_level(clicker)
-            
+
             local enchants_available = math.floor(player_level/5)
+
             local max_enchant_level = math.floor(player_level/5)
+
             if enchants_available <= 0 then return end
+
             if enchants_available > 3 then enchants_available = 3 end
-            local stock_name = minetest.registered_tools[stack:get_name()].name
-            local description = minetest.registered_tools[stack:get_name()].description--temp_names[math.random(1,table.getn(temp_names))]
+
+            local description = minetest.registered_tools[stack:get_name()].description
 
             for i = 1,enchants_available do
                 local new_enchant = enchantment_list[math.random(1,table.getn(enchantment_list))]
