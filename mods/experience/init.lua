@@ -353,13 +353,13 @@ function xp_orb:execute_collection()
     end
 
     collector = get_player_by_name(self.collector)
-    
-    if collector and collector:get_hp() > 0 and vec_distance(self.object:get_pos(),collector:get_pos()) < 5 then
-        temp_pool = pool[self.collector]
 
-        self.object:set_acceleration(new_vec(0,0,0))
+    if collector and collector:get_hp() > 0 and vec_distance(self.object:get_pos(),collector:get_pos()) < 5 then
+
+        temp_pool = pool[self.collector]
+        
         self.disable_physics(self)
-        --get the variables
+        
         pos = self.object:get_pos()
         pos2 = collector:get_pos()
 
