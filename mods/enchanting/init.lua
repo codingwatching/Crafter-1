@@ -10,6 +10,8 @@ spiky - the tool will randomly hurt you when used
 sharpness - the tool does more damage
 ]]--
 
+local registered_tools = minetest.registered_tools
+
 local enchantment_list = {
     "swiftness",
     "durable",
@@ -39,7 +41,7 @@ minetest.register_node("enchanting:table", {
     sounds = main.stoneSound(),
     is_ground_content = false,
 
-    on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+    on_rightclick = function(_, _, clicker, itemstack)
 
         minetest.after(0,function()
 
@@ -49,7 +51,7 @@ minetest.register_node("enchanting:table", {
 
             if meta:get_string("enchanted") == "true" then return end
 
-            if not minetest.registered_tools[itemstack:get_name()] then return end
+            if not registered_tools[itemstack:get_name()] then return end
 
             local tool_caps = itemstack:get_tool_capabilities()
 
@@ -59,33 +61,38 @@ minetest.register_node("enchanting:table", {
 
             local player_level = get_player_xp_level(clicker)
 
-            local enchants_available = math.floor(player_level/5)
+            local enchants_available = math.floor( player_level / 5 )
 
-            local max_enchant_level = math.floor(player_level/5)
+            local max_enchant_level = math.floor( player_level / 5 )
 
             if enchants_available <= 0 then return end
 
             if enchants_available > 3 then enchants_available = 3 end
 
-            local description = minetest.registered_tools[stack:get_name()].description
+            local description = registered_tools[stack:get_name()].description
 
-            for i = 1,enchants_available do
-                local new_enchant = enchantment_list[math.random(1,table.getn(enchantment_list))]
-                local level = math.random(1,max_enchant_level)
+            for _ = 1,enchants_available do
+                local new_enchant = enchantment_list[ math.random( 1, #enchantment_list ) ]
+                local level = math.random( 1, max_enchant_level )
                 if meta:get_int(new_enchant) == 0 then
+
                     player_level = player_level - 5
-                    meta:set_int(new_enchant, level)
-                    description = description.."\n"..new_enchant:gsub("^%l", string.upper)..": "..tostring(level)
+
+                    meta:set_int( new_enchant, level )
+
+                    description = description .. "\n" .. new_enchant:gsub("^%l", string.upper) .. ": " .. tostring(level)
+
                     if new_enchant == "swiftness" then
                         for index,table in pairs(groupcaps) do
                             for index2,time in pairs(table.times) do
-                                tool_caps["groupcaps"][index]["times"][index2] = time/(level+1)
+                                tool_caps["groupcaps"][index]["times"][index2] = time / ( level + 1 )
                             end
                         end
                     end
+
                     if new_enchant == "durable" then
                         for index,table in pairs(groupcaps) do
-                            tool_caps["groupcaps"][index]["uses"] = table.uses*(level+1)
+                            tool_caps["groupcaps"][index]["uses"] = table.uses * ( level + 1 )
                         end
                     end
                     
