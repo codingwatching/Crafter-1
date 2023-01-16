@@ -22,11 +22,30 @@ minetest.register_on_mods_loaded(function()
 end)
 
 
-
 local pool = {}
--- Load data from mod storage
 local name
 local temp_pool
+local xp_amount
+local collector
+local pos
+local pos2
+local direction
+local distance
+local player_velocity
+local goal
+local currentvel
+local acceleration
+local multiplier
+local velocity
+local node
+local vel
+local def
+local is_moving
+local is_slippery
+local slippery
+local slip_factor
+local size
+
 local load_data = function(player)
     name = player:get_player_name()
     pool[name] = {}
@@ -46,18 +65,18 @@ end
 
 -- Save data to be utilized on next login
 local save_data = function(player_name)
-    
-    temp_pool = pool[name]
 
-    mod_storage:set_int(name.."xp_level",temp_pool.xp_level)
-    mod_storage:set_int(name.."xp_bar",  temp_pool.xp_bar  )
+    temp_pool = pool[ player_name ]
 
-    mod_storage:set_int(name.."xp_save",1)
+    mod_storage:set_int( player_name .. "xp_level", temp_pool.xp_level )
+    mod_storage:set_int( player_name .. "xp_bar", temp_pool.xp_bar )
 
-    pool[name] = nil
+    mod_storage:set_int( player_name .. "xp_save", 1 )
+
+    pool[player_name] = nil
 end
 
--- saves specific users data for when they relog
+-- Saves data for players when they relog
 minetest.register_on_leaveplayer(function(player)
     name = player:get_player_name()
     save_data(name)
@@ -81,7 +100,7 @@ function get_player_xp_level(player)
     return(pool[name].xp_level)
 end
 
-function set_player_xp_level(player,level)
+function set_player_xp_level( player, level )
     name = player:get_player_name()
     pool[name].xp_level = level
     hud_manager.change_hud({
@@ -102,7 +121,7 @@ minetest.hud_replace_builtin("health",{
     hud_elem_type = "statbar",
     position = {x = 0.5, y = 1},
     text = "heart.png",
-    number = core.PLAYER_MAX_HP_DEFAULT,
+    number = minetest.PLAYER_MAX_HP_DEFAULT,
     direction = 0,
     size = {x = 24, y = 24},
     offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 38)},
@@ -119,7 +138,7 @@ minetest.register_on_joinplayer(function(player)
         hud_elem_type = "statbar",
         position = {x = 0.5, y = 1},
         text = "heart_bg.png",
-        number = core.PLAYER_MAX_HP_DEFAULT,
+        number = minetest.PLAYER_MAX_HP_DEFAULT,
         direction = 0,
         size = {x = 24, y = 24},
         offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 38)},
@@ -170,9 +189,6 @@ minetest.register_on_joinplayer(function(player)
     })                                                           
 end)
 
-
-local name
-local temp_pool
 local function level_up_experience(player)
     name = player:get_player_name()
     temp_pool = pool[name]
@@ -193,9 +209,6 @@ local function level_up_experience(player)
     })
 end
 
-
-local name
-local temp_pool
 local function add_experience(player,experience)
     name = player:get_player_name()
     temp_pool = pool[name]
@@ -224,9 +237,6 @@ local function add_experience(player,experience)
 end
 
 --reset player level
-local name
-local temp_pool
-local xp_amount
 minetest.register_on_dieplayer(function(player)
     name = player:get_player_name()
     temp_pool = pool[name]
@@ -260,28 +270,7 @@ minetest.register_on_dieplayer(function(player)
 end)
 
 
-local name
-local temp_pool
-local collector
-local pos
-local pos2
-local direction
-local distance
-local player_velocity
-local goal
-local currentvel
-local acceleration
-local multiplier
-local velocity
-local node
-local vel
-local def
-local is_moving
-local is_slippery
-local slippery
-local slip_factor
-local size
-local data
+
 local function xp_step(self, dtime)
     --if item set to be collected then only execute go to player
     if self.collected == true then
