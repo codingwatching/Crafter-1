@@ -175,17 +175,16 @@ local handle_breath = function(player,dtime)
 
         temp_pool.ticker = temp_pool.ticker + dtime
 
-        if temp_pool.breath < 21 and temp_pool.ticker >= 0.25 then
-            temp_pool.breath = temp_pool.breath + 2
-            temp_pool.drowning = 0
-            temp_pool.ticker = 0
+        if temp_pool.breath > 20 or temp_pool.ticker < 0.25 then return end
 
-            update_breath_bar( player, temp_pool.breath )
-        end
+        temp_pool.breath = temp_pool.breath + 2
+        temp_pool.drowning = 0
+        temp_pool.ticker = 0
+
+        update_breath_bar( player, temp_pool.breath )
     end
 end
 
--- inject into main loop
 minetest.register_globalstep(function(dtime)
     for _,player in ipairs(get_connected_players()) do
         handle_breath( player, dtime )
