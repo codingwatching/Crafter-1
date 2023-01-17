@@ -127,8 +127,8 @@ minetest.hud_replace_builtin("health",{
     text = "heart.png",
     number = minetest.PLAYER_MAX_HP_DEFAULT,
     direction = 0,
-    size = {x = 24, y = 24},
-    offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 38)},
+    size = { x = 24, y = 24 },
+    offset = {x = ( -10 * 24 ) - 25, y = - ( 48 + 24 + 38 ) },
 })
 
 minetest.register_on_joinplayer(function(player)
@@ -144,50 +144,50 @@ minetest.register_on_joinplayer(function(player)
         text = "heart_bg.png",
         number = minetest.PLAYER_MAX_HP_DEFAULT,
         direction = 0,
-        size = {x = 24, y = 24},
-        offset = {x = (-10 * 24) - 25, y = -(48 + 24 + 38)},
+        size = { x = 24, y = 24 },
+        offset = { x = ( -10 * 24 ) - 25, y = - ( 48 + 24 + 38 ) },
     })
 
     add_hud(player,"experience_bar_background",{
         hud_elem_type = "statbar",
-        position = {x=0.5, y=1},
+        position = { x = 0.5, y = 1 },
         name = "experience bar background",
         text = "experience_bar_background.png",
         number = 36,
         direction = 0,
-        offset = {x = (-8 * 28) - 29, y = -(48 + 24 + 16)},
-        size = { x=28, y=28 },
+        offset = { x = ( -8 * 28 ) - 29, y = -( 48 + 24 + 16 ) },
+        size = { x = 28, y = 28 },
         z_index = 0,
     })
 
     add_hud(player,"experience_bar",{
         hud_elem_type = "statbar",
-        position = {x=0.5, y=1},
+        position = { x = 0.5, y = 1 },
         name = "experience bar",
         text = "experience_bar.png",
         number = temp_pool.xp_bar,
         direction = 0,
         offset = {x = (-8 * 28) - 29, y = -(48 + 24 + 16)},
-        size = { x=28, y=28 },
+        size = { x = 28, y = 28 },
         z_index = 0,
     })
 
     add_hud(player,"xp_level_bg",{
         hud_elem_type = "text",
-        position = {x=0.5, y=1},
+        position = { x = 0.5, y = 1 },
         name = "xp_level_bg",
         text = tostring(temp_pool.xp_level),
         number = 0x000000,
-        offset = {x = 0, y = -(48 + 24 + 24)},
+        offset = { x = 0, y = - ( 48 + 24 + 24 ) },
         z_index = 0,
     })
     add_hud(player,"xp_level_fg",{
         hud_elem_type = "text",
-        position = {x=0.5, y=1},
+        position = { x = 0.5, y = 1 },
         name = "xp_level_fg",
         text = tostring(temp_pool.xp_level),
         number = 0xFFFFFF,
-        offset = {x = -1, y = -(48 + 24 + 25)},
+        offset = { x = -1, y = - ( 48 + 24 + 25 ) },
         z_index = 0,
     })
 end)
