@@ -8,6 +8,7 @@ local dir_to_yaw         = minetest.dir_to_yaw
 local get_item_group     = minetest.get_item_group
 local play_sound         = minetest.sound_play
 local mod_storage        = minetest.get_mod_storage()
+local throw_experience   = minetest.throw_experience
 local new_vec       = vector.new
 local vec_distance  = vector.distance
 local add_vec       = vector.add
@@ -269,7 +270,7 @@ minetest.register_on_dieplayer(function(player)
         data     = temp_pool.xp_bar
     })
 
-    minetest.throw_experience(player:get_pos(), xp_amount)
+    throw_experience(player:get_pos(), xp_amount)
 end)
 
 
@@ -493,6 +494,6 @@ minetest.register_chatcommand("xp", {
         pos = player:get_pos()
         pos.y = pos.y + 1.2
         pos.x = pos.x + 3
-        minetest.throw_experience(pos, 1000)
+        throw_experience(pos, 1000)
     end,
 })
