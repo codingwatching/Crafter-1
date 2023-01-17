@@ -50,6 +50,9 @@ local slippery
 local slip_factor
 local size
 
+
+-- TODO: precalculate and hold use the result of these weirdly calculated values instead of calculating it every time
+
 local load_data = function(player)
     name = player:get_player_name()
     pool[name] = {}
