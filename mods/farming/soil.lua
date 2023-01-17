@@ -1,8 +1,15 @@
-local farmland = {"wet","dry"}
+local ipairs = ipairs
 
-for level,dryness in pairs(farmland) do
-    local coloring = 160/level
+local farmland = {
+    "wet","dry"
+}
+
+for level,dryness in ipairs(farmland) do
+
+    local coloring = 160 / level
     local on_construct
+    local on_timer
+
     if dryness == "wet" then
         on_construct = function(pos)
             local found = table.getn(minetest.find_nodes_in_area(vector.new(pos.x-3,pos.y,pos.z-3), vector.new(pos.x+3,pos.y,pos.z+3), {"main:water","main:waterflow"})) > 0
