@@ -1,30 +1,32 @@
- --plant growth time contants (in seconds)
- local plant_min = 60
- local plant_max = 240
- 
- minetest.register_plant = function(name,def)
+-- Plant growth time constants (in seconds)
+local plant_min = 60
+local plant_max = 240
+
+minetest.register_plant = function(name,def)
+
     local max = 1
-     if def.stages then
-         max = def.stages
-     end
-     for i = 1,max do
+    if def.stages then
+        max = def.stages
+    end
+
+    for i = 1,max do
         local nodename
         if def.stages then
             nodename = "farming:"..name.."_"..i
         else
             nodename = "farming:"..name
         end
-     
-     
-         local after_dig_node
-         local on_abm
-         local on_construct
-         local after_destruct
-         local after_place_node
-         --do custom functions for each node
-         --wether growing in place or up
-         if def.grows == "up" then
-             after_dig_node = function(pos, node, metadata, digger)
+        
+        
+            local after_dig_node
+            local on_abm
+            local on_construct
+            local after_destruct
+            local after_place_node
+            --do custom functions for each node
+            --wether growing in place or up
+            if def.grows == "up" then
+                after_dig_node = function(pos, node, metadata, digger)
                 if digger == nil then return end
                 local np = {x = pos.x, y = pos.y + 1, z = pos.z}
                 local nn = minetest.get_node(np)
@@ -203,7 +205,7 @@
             --flooding function
             floodable         = true,
             on_flood = function(pos, oldnode, newnode)
-                 minetest.dig_node(pos)
+                    minetest.dig_node(pos)
             end,
             
             after_dig_node   = after_dig_node,
@@ -225,7 +227,7 @@
             })
         end
     end
-    
+
     --create final stage for grow in place plant stems that create food
     if def.grows == "in_place_yields" then
         minetest.register_node("farming:"..name.."_complete", {
@@ -262,7 +264,7 @@
             end
         })
     end
-    
+
     if def.seed_name then
         minetest.register_craftitem("farming:"..def.seed_name.."_seeds", {
             description = def.seed_description,
@@ -274,7 +276,7 @@
                 local pointed_thing_diff = pointed_thing.above.y - pointed_thing.under.y
                 
                 if pointed_thing_diff < 1 then return end
-                 
+                    
                 if minetest.get_node(pointed_thing.above).name ~= "air" then return end
                 local pb = pointed_thing.above
                 if minetest.get_node_group(minetest.get_node(vector.new(pb.x,pb.y-1,pb.z)).name, "farmland") == 0 or minetest.get_node(pointed_thing.above).name ~= "air"  then
@@ -301,5 +303,5 @@
                 return itemstack
             end
         })
-    end
+end
 end
