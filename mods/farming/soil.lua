@@ -77,20 +77,18 @@ for level,dryness in ipairs(farmland) do
         end
     end
     
+    local soil_node_box = {
+        type = "fixed",
+        fixed = { -0.5, -0.5, -0.5, 0.5, 6/16, 0.5 },
+    }
     minetest.register_node("farming:farmland_" .. dryness,{
         description = "Farmland",
         paramtype = "light",
         drawtype = "nodebox",
         sounds = main.dirtSound(),
-        node_box = {
-            type = "fixed",
-            fixed = { -0.5, -0.5, -0.5, 0.5, 6/16, 0.5 },
-        },
+        node_box = soil_node_box,
+        collision_box = soil_node_box,
         wetness = math_abs(level-2),
-        collision_box = {
-            type = "fixed",
-            fixed = { -0.5, -0.5, -0.5, 0.5, 6/16, 0.5 },
-        },
         tiles = {
             "dirt.png^farmland.png^[colorize:black:" .. coloring,
             "dirt.png^[colorize:black:" .. coloring,
