@@ -16,9 +16,10 @@ local vec_direction = vector.direction
 local add_hud = hud_manager.add_hud
 local change_hud = hud_manager.change_hud
 
-local pi     = math.pi
-local random = math.random
-local abs    = math.abs
+local math_pi     = math.pi
+local math_random = math.random
+local math_abs    = math.abs
+local HALF_PI     = math_pi / 2
 local registered_nodes
 minetest.register_on_mods_loaded(function()
     registered_nodes = minetest.registered_nodes
@@ -227,7 +228,7 @@ local function add_experience(player,experience)
     else
         if get_time()/1000000 - temp_pool.last_time > 0.01 then
             temp_pool.last_time = get_time()/1000000
-            play_sound("experience",{gain=0.1,to_player = name,pitch=random(75,99)/100})
+            play_sound("experience",{gain=0.1,to_player = name,pitch=math_random(75,99)/100})
         end
     end
     change_hud({
@@ -309,19 +310,19 @@ xp_orb.radius = 4
 
 function xp_orb:on_activate(staticdata, dtime_s)
     self.object:set_velocity(new_vec(
-        random(-2,2)*random(),
-        random(2,5),
-        random(-2,2)*random()
+        math_random(-2,2)*math_random(),
+        math_random(2,5),
+        math_random(-2,2)*math_random()
     ))
     self.object:set_armor_groups({immortal = 1})
     self.object:set_velocity({x = 0, y = 2, z = 0})
     self.object:set_acceleration({x = 0, y = -9.81, z = 0})
-    size = random(20,36)/100
+    size = math_random(20,36)/100
     self.object:set_properties({
         visual_size = {x = size, y = size},
         glow = 14,
     })
-    self.object:set_sprite( { x = 1, y = random( 1, 14 ) }, 14, 0.05, false )
+    self.object:set_sprite( { x = 1, y = math_random( 1, 14 ) }, 14, 0.05, false )
 end
 
 function xp_orb:enable_physics()
@@ -396,7 +397,7 @@ function xp_orb:execute_collection(dtime)
 
             velocity = multiply_vec(direction,multiplier)
 
-            goal = multiply_vec( yaw_to_dir( dir_to_yaw( vec_direction( new_vec( pos.x, 0, pos.z ), new_vec( pos2.x, 0, pos2.z ) ) ) + pi / 2 ), 10 )
+            goal = multiply_vec( yaw_to_dir( dir_to_yaw( vec_direction( new_vec( pos.x, 0, pos.z ), new_vec( pos2.x, 0, pos2.z ) ) ) + HALF_PI ), 10 )
 
             goal = add_vec( player_velocity, goal )
 
@@ -463,7 +464,7 @@ function xp_orb:on_step(dtime)
     if def and def.walkable then
         slippery = get_item_group(node.name, "slippery")
         is_slippery = slippery ~= 0
-        if is_slippery and (abs(vel.x) > 0.2 or abs(vel.z) > 0.2) then
+        if is_slippery and (math_abs(vel.x) > 0.2 or math_abs(vel.z) > 0.2) then
             -- Horizontal deceleration
             slip_factor = 4.0 / (slippery + 4)
             self.object:set_acceleration({
