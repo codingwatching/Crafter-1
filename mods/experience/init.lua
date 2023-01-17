@@ -33,13 +33,10 @@ local xp_amount
 local collector
 local pos
 local pos2
-local direction
 local distance
 local player_velocity
 local goal
 local currentvel
-local acceleration
-local multiplier
 local velocity
 local node
 local vel
@@ -372,41 +369,27 @@ function xp_orb:execute_collection(dtime)
 
         pos2.y = pos2.y + 0.8
 
-        direction = vec_direction(pos,pos2)
         distance = vec_distance(pos2,pos)
 
-        multiplier = distance
-
-        if multiplier < 1 then
-            multiplier = 1
-        end
-
-        goal = multiply_vec(direction,multiplier)
         currentvel = self.object:get_velocity()
 
         if distance > 1 then
-            multiplier = 20 - distance
-            velocity = multiply_vec(direction,multiplier)
-            goal = velocity
-            acceleration = new_vec( goal.x - currentvel.x, goal.y - currentvel.y, goal.z - currentvel.z )
 
-            self.object:add_velocity(add_vec(acceleration,player_velocity))
+            goal = multiply_vec( vec_direction( pos, pos2 ) , 20 - distance )
+
+            velocity = add_vec( new_vec( goal.x - currentvel.x, goal.y - currentvel.y, goal.z - currentvel.z ), player_velocity )
+
+            self.object:add_velocity(velocity)
 
         elseif distance > 0.9 and temp_pool.buffer > 0 then
 
             temp_pool.buffer = temp_pool.buffer - dtime
 
-            multiplier = 20 - distance
+            goal = add_vec( player_velocity, multiply_vec( yaw_to_dir( dir_to_yaw( vec_direction( new_vec( pos.x, 0, pos.z ), new_vec( pos2.x, 0, pos2.z ) ) ) + HALF_PI ), 10 ) )
 
-            velocity = multiply_vec(direction,multiplier)
+            velocity = new_vec( goal.x - currentvel.x, goal.y - currentvel.y, goal.z - currentvel.z )
 
-            goal = multiply_vec( yaw_to_dir( dir_to_yaw( vec_direction( new_vec( pos.x, 0, pos.z ), new_vec( pos2.x, 0, pos2.z ) ) ) + HALF_PI ), 10 )
-
-            goal = add_vec( player_velocity, goal )
-
-            acceleration = new_vec( goal.x - currentvel.x, goal.y - currentvel.y, goal.z - currentvel.z )
-
-            self.object:add_velocity( acceleration )
+            self.object:add_velocity( velocity )
         end
 
         -- Collected successfully
