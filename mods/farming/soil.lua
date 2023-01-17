@@ -5,9 +5,9 @@ local set_node = minetest.set_node
 local get_node_timer = minetest.get_node_timer
 local get_item_group = minetest.get_item_group
 local dig_node = minetest.dig_node
-
 local math_random = math.random
 local math_abs = math.abs
+local vec_new = vector.new
 
 
 -- TODO: There can be an extreme amount of soil at once in huge farms so reuse as much data on the heap as possible
@@ -19,8 +19,23 @@ local water_nodes = {
     "main:water","main:waterflow"
 }
 
+-- Allocated heap objects
+local reused_vector1 = vec_new(0,0,0)
+local reused_vector2 = vec_new(0,0,0)
+
 local function find_water(pos)
-    return #find_nodes_in_area( vector.new( pos.x - 3, pos.y, pos.z - 3 ), vector.new( pos.x + 3, pos.y, pos.z + 3 ), water_nodes) > 0
+    reused_vector1.x = pos.x - 3
+    reused_vector1.y = pos.y
+    reused_vector1.z = pos.z - 3
+    reused_vector2.x = pos.x + 3
+    reused_vector2.y = pos.y
+    reused_vector2.z = pos.z + 3
+
+    return #find_nodes_in_area(
+        reused_vector1,
+        reused_vector2,
+        water_nodes
+    ) > 0
 end
 
 for level,dryness in ipairs(farmland) do
