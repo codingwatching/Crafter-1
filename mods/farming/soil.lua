@@ -6,11 +6,10 @@ local get_node_timer = minetest.get_node_timer
 local get_item_group = minetest.get_item_group
 local dig_node = minetest.dig_node
 local math_random = math.random
-local math_abs = math.abs
 local vec_new = vector.new
 
 local farmland = {
-    "wet","dry"
+    "dry", "wet"
 }
 local water_nodes = {
     "main:water","main:waterflow"
@@ -76,7 +75,7 @@ for level,dryness in ipairs(farmland) do
             end
         end
     end
-    
+
     local soil_node_box = {
         type = "fixed",
         fixed = { -0.5, -0.5, -0.5, 0.5, 6/16, 0.5 },
@@ -88,7 +87,7 @@ for level,dryness in ipairs(farmland) do
         sounds = main.dirtSound(),
         node_box = soil_node_box,
         collision_box = soil_node_box,
-        wetness = math_abs(level-2),
+        wetness = level,
         tiles = {
             "dirt.png^farmland.png^[colorize:black:" .. coloring,
             "dirt.png^[colorize:black:" .. coloring,
