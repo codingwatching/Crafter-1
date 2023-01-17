@@ -303,5 +303,5 @@ minetest.register_plant = function(name,def)
                 return itemstack
             end
         })
-end
+    end
 end
