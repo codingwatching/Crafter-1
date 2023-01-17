@@ -48,6 +48,7 @@ local is_slippery
 local slippery
 local slip_factor
 local size
+local acceleration
 
 
 -- TODO: precalculate and hold use the result of these weirdly calculated values instead of calculating it every time
@@ -461,13 +462,13 @@ function xp_orb:on_step(dtime)
 
         if vector.length(dir) == 0 then
 
-            local acceleration = vector.new( 0 - vel.x, 55 - vel.y, 0 - vel.z )
+            acceleration = vector.new( 0 - vel.x, 55 - vel.y, 0 - vel.z )
             acceleration = vector.multiply( acceleration, 0.01 )
             self.object:add_velocity(acceleration)
 
         else
             dir = vector.multiply(dir,10)
-            local acceleration = vector.new( dir.x - vel.x, 55 - vel.y, dir.z - vel.z )
+            acceleration = vector.new( dir.x - vel.x, 55 - vel.y, dir.z - vel.z )
             acceleration = vector.multiply( acceleration, 0.01 )
             self.object:add_velocity(acceleration)
         end
