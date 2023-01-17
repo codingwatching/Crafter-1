@@ -444,13 +444,47 @@ function xp_orb:on_step(dtime)
         return -- Don't do anything
     end
 
-    -- Slide on slippery nodes
-    vel = self.object:get_velocity()
-    def = node and registered_nodes[node.name]
-    is_moving = (def and not def.walkable) or vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0
-    is_slippery = false
+    local current_node = get_node_or_nil(pos)
 
-    if def and def.walkable then
+    def = node and registered_nodes[current_node.name]
+
+    local in_water = false
+
+    -- XP flowing or floating in water
+    if def.name == "main:water" or def.name == "main:waterflow" then
+
+        in_water = true
+
+        local dir = get_liquid_flow_direction(pos)
+
+        vel = self.object:get_velocity()
+
+        if vector.length(dir) == 0 then
+
+            local acceleration = vector.new( 0 - vel.x, 55 - vel.y, 0 - vel.z )
+            acceleration = vector.multiply( acceleration, 0.01 )
+            self.object:add_velocity(acceleration)
+
+        else
+            dir = vector.multiply(dir,10)
+            local acceleration = vector.new( dir.x - vel.x, 55 - vel.y, dir.z - vel.z )
+            acceleration = vector.multiply( acceleration, 0.01 )
+            self.object:add_velocity(acceleration)
+        end
+
+        is_moving = true
+
+    else
+        vel = self.object:get_velocity()
+        is_moving = (def and not def.walkable) or vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0
+        is_slippery = false
+    end
+
+
+    def = node and registered_nodes[node.name]
+
+    -- Slide on slippery nodes
+    if not in_water and def and def.walkable then
 
         slippery = get_item_group(node.name, "slippery")
 
@@ -470,7 +504,9 @@ function xp_orb:on_step(dtime)
     end
 
     -- Do not update anything until the moving state changes
-    if self.moving_state == is_moving and self.slippery_state == is_slippery then return end
+    if self.moving_state == is_moving and self.slippery_state == is_slippery then
+        return
+    end
 
     self.moving_state = is_moving
     self.slippery_state = is_slippery
@@ -495,6 +531,6 @@ minetest.register_chatcommand("xp", {
         pos = player:get_pos()
         pos.y = pos.y + 1.2
         pos.x = pos.x + 3
-        throw_experience(pos, 1000)
+        throw_experience(pos, 1)
     end,
 })
