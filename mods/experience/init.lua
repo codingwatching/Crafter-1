@@ -362,10 +362,11 @@ function xp_orb:execute_collection(dtime)
 
         self.disable_physics(self)
 
-        pos = self.object:get_pos()
-        pos2 = collector:get_pos()
-
         player_velocity = collector:get_velocity()
+
+        pos = self.object:get_pos()
+
+        pos2 = collector:get_pos()
 
         pos2.y = pos2.y + 0.8
 
@@ -413,6 +414,7 @@ function xp_orb:on_step(dtime)
     if self:execute_collection(dtime) then return end
 
     self.age = self.age + dtime
+
     if self.age > 300 then
         self.object:remove()
         return
@@ -443,16 +445,18 @@ function xp_orb:on_step(dtime)
     -- Slide on slippery nodes
     vel = self.object:get_velocity()
     def = node and registered_nodes[node.name]
-    is_moving = (def and not def.walkable) or
-        vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0
+    is_moving = (def and not def.walkable) or vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0
     is_slippery = false
 
     if def and def.walkable then
+
         slippery = get_item_group(node.name, "slippery")
+
         is_slippery = slippery ~= 0
+
         if is_slippery and (math_abs(vel.x) > 0.2 or math_abs(vel.z) > 0.2) then
             -- Horizontal deceleration
-            slip_factor = 4.0 / (slippery + 4)
+            slip_factor = 4.0 / ( slippery + 4 )
             self.object:set_acceleration({
                 x = -vel.x * slip_factor,
                 y = 0,
@@ -463,10 +467,8 @@ function xp_orb:on_step(dtime)
         end
     end
 
-    if self.moving_state == is_moving and self.slippery_state == is_slippery then
-        -- Do not update anything until the moving state changes
-        return
-    end
+    -- Do not update anything until the moving state changes
+    if self.moving_state == is_moving and self.slippery_state == is_slippery then return end
 
     self.moving_state = is_moving
     self.slippery_state = is_slippery
@@ -484,12 +486,13 @@ minetest.register_entity("experience:orb", xp_orb)
 
 minetest.register_chatcommand("xp", {
     params = "nil",
-    description = "Spawn x amount of a mob, used as /spawn 'mob' 10 or /spawn 'mob' for one",
-    privs = {server=true},
-    func = function(name)
-        local player = get_player_by_name(name)
-        local pos = player:get_pos()
+    description = "Admin command to spawn particles",
+    privs = { server = true },
+    func = function(player_name)
+        local player = get_player_by_name(player_name)
+        pos = player:get_pos()
         pos.y = pos.y + 1.2
+        pos.x = pos.x + 3
         minetest.throw_experience(pos, 1000)
     end,
 })
