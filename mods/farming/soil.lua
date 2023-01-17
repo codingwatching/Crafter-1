@@ -69,8 +69,11 @@ for level,dryness in ipairs(farmland) do
                 get_node_timer(pos):start(1)
             else
                 set_node(pos,{name="main:dirt"})
-                if get_item_group( get_node( vector.new( pos.x, pos.y + 1, pos.z ) ).name, "plant" ) > 0 then
-                    dig_node( vector.new( pos.x, pos.y + 1, pos.z ) )
+                reused_vector1.x = pos.x
+                reused_vector1.y = pos.y + 1
+                reused_vector1.z = pos.z
+                if get_item_group( get_node( reused_vector1 ).name, "plant" ) > 0 then
+                    dig_node( reused_vector1 )
                 end
             end
         end
