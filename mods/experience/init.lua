@@ -16,6 +16,7 @@ local multiply_vec  = vector.multiply
 local vec_direction = vector.direction
 local add_hud = hud_manager.add_hud
 local change_hud = hud_manager.change_hud
+local get_liquid_flow_direction = get_liquid_flow_direction
 
 local math_pi     = math.pi
 local math_random = math.random
