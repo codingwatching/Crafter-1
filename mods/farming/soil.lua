@@ -9,9 +9,6 @@ local math_random = math.random
 local math_abs = math.abs
 local vec_new = vector.new
 
-
--- TODO: There can be an extreme amount of soil at once in huge farms so reuse as much data on the heap as possible
-
 local farmland = {
     "wet","dry"
 }
@@ -48,28 +45,28 @@ for level,dryness in ipairs(farmland) do
     if dryness == "wet" then
         on_construct = function(pos)
             if not find_water(pos) then
-                set_node(pos,{name="farming:farmland_dry"})
+                set_node( pos, { name = "farming:farmland_dry" } )
             end
             get_node_timer(pos):start(1)
         end
 
         on_timer = function(pos)
             if not find_water(pos) then
-                set_node(pos,{name="farming:farmland_dry"})
+                set_node( pos, { name = "farming:farmland_dry" } )
             end
-            get_node_timer(pos):start(math_random(10,25))
+            get_node_timer(pos):start( math_random( 10, 25 ) )
         end
     else
         on_construct = function(pos)
-            get_node_timer(pos):start(math_random(10,25))
+            get_node_timer(pos):start( math_random( 10, 25 ) )
         end
 
         on_timer = function(pos)
             if find_water(pos) then
-                set_node(pos,{name="farming:farmland_wet"})
+                set_node( pos, { name = "farming:farmland_wet" } )
                 get_node_timer(pos):start(1)
             else
-                set_node(pos,{name="main:dirt"})
+                set_node( pos, { name = "main:dirt" } )
                 reused_vector1.x = pos.x
                 reused_vector1.y = pos.y + 1
                 reused_vector1.z = pos.z
@@ -79,7 +76,7 @@ for level,dryness in ipairs(farmland) do
             end
         end
     end
-
+    
     minetest.register_node("farming:farmland_" .. dryness,{
         description = "Farmland",
         paramtype = "light",
@@ -87,12 +84,12 @@ for level,dryness in ipairs(farmland) do
         sounds = main.dirtSound(),
         node_box = {
             type = "fixed",
-            fixed = {-0.5, -0.5, -0.5, 0.5, 6/16, 0.5},
+            fixed = { -0.5, -0.5, -0.5, 0.5, 6/16, 0.5 },
         },
         wetness = math_abs(level-2),
         collision_box = {
             type = "fixed",
-            fixed = {-0.5, -0.5, -0.5, 0.5, 6/16, 0.5},
+            fixed = { -0.5, -0.5, -0.5, 0.5, 6/16, 0.5 },
         },
         tiles = {
             "dirt.png^farmland.png^[colorize:black:" .. coloring,
