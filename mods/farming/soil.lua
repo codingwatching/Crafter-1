@@ -21,6 +21,7 @@ local water_nodes = {
 
 -- Allocated heap objects
 local reused_vector1 = vec_new(0,0,0)
+-- This second heap object only exists so we can do the find_water() calculation below
 local reused_vector2 = vec_new(0,0,0)
 
 local function find_water(pos)
