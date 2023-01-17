@@ -1,8 +1,18 @@
 local ipairs = ipairs
+local find_nodes_in_area = minetest.find_nodes_in_area
+
 
 local farmland = {
     "wet","dry"
 }
+local water_nodes = {
+    "main:water","main:waterflow"
+}
+-- TODO: There can be A LOT of plants, so optimize this to no end
+
+local function find_water(pos)
+    return #find_nodes_in_area( vector.new( pos.x - 3, pos.y, pos.z - 3 ), vector.new( pos.x + 3, pos.y, pos.z + 3 ), water_nodes) > 0
+end
 
 for level,dryness in ipairs(farmland) do
 
@@ -12,18 +22,15 @@ for level,dryness in ipairs(farmland) do
 
     if dryness == "wet" then
         on_construct = function(pos)
-            local found = table.getn(minetest.find_nodes_in_area(vector.new(pos.x-3,pos.y,pos.z-3), vector.new(pos.x+3,pos.y,pos.z+3), {"main:water","main:waterflow"})) > 0
-            if not found then
+            if not find_water(pos) then
                 minetest.set_node(pos,{name="farming:farmland_dry"})
             end
             local timer = minetest.get_node_timer(pos)
             timer:start(1)
         end
-        
+
         on_timer = function(pos)
-            local found = table.getn(minetest.find_nodes_in_area(vector.new(pos.x-3,pos.y,pos.z-3), vector.new(pos.x+3,pos.y,pos.z+3), {"main:water","main:waterflow"})) > 0
-            
-            if not found then
+            if not find_water(pos) then
                 minetest.set_node(pos,{name="farming:farmland_dry"})
             end
             local timer = minetest.get_node_timer(pos)
@@ -34,17 +41,16 @@ for level,dryness in ipairs(farmland) do
             local timer = minetest.get_node_timer(pos)
             timer:start(math.random(10,25))
         end
-        
+
         on_timer = function(pos)
-            local found = table.getn(minetest.find_nodes_in_area(vector.new(pos.x-3,pos.y,pos.z-3), vector.new(pos.x+3,pos.y,pos.z+3), {"main:water","main:waterflow"})) > 0
-            if found then
+            if find_water(pos) then
                 minetest.set_node(pos,{name="farming:farmland_wet"})
                 local timer = minetest.get_node_timer(pos)
                 timer:start(1)
             else
                 minetest.set_node(pos,{name="main:dirt"})
-                if minetest.get_node_group(minetest.get_node(vector.new(pos.x,pos.y+1,pos.z)).name, "plant") > 0 then
-                    minetest.dig_node(vector.new(pos.x,pos.y+1,pos.z))
+                if minetest.get_node_group( minetest.get_node( vector.new( pos.x, pos.y + 1, pos.z ) ).name, "plant" ) > 0 then
+                    minetest.dig_node( vector.new( pos.x, pos.y + 1, pos.z ) )
                 end
             end
         end
