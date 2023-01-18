@@ -39,7 +39,7 @@ end
 
 for level,dryness in ipairs(farmland) do
 
-    local coloring = 160 / level
+    local coloring = 160 * ( level - 1 )
     local on_construct
     local on_timer
 
