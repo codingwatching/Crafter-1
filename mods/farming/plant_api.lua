@@ -71,6 +71,11 @@ local function too_dark_to_grow(pos)
     return minetest.get_node_light(pos) < 10
 end
 
+local function start_plant_timer(pos)
+    --minetest.get_node_timer(pos):start(math.random(6, 250))
+    minetest.get_node_timer(pos):start(1)
+end
+
 minetest.register_plant = function( name, def )
 
     local max = 1
@@ -89,10 +94,10 @@ minetest.register_plant = function( name, def )
         end
 
         local after_dig_node
-        local on_abm
         local on_construct
         local after_destruct
         local after_place_node
+        local on_timer
 
 
         -- Plants that grow up, like sugarcane
@@ -116,7 +121,7 @@ minetest.register_plant = function( name, def )
                 end
             end
 
-            on_abm = function(pos)
+            on_timer = function(pos)
 
                 if too_dark_to_grow(pos) then return end
 
@@ -166,7 +171,7 @@ minetest.register_plant = function( name, def )
         -- Plants that grow in place, like wheat
         elseif def.grows == "in_place" then
 
-            on_abm = function(pos)
+            on_timer = function(pos)
 
                 if too_dark_to_grow(pos) then
                     minetest.dig_node(pos)
@@ -214,7 +219,7 @@ minetest.register_plant = function( name, def )
         -- Basically, consider this the plant's stem growing logic
         elseif def.grows == "in_place_yields" then
 
-            on_abm = function(pos)
+            on_timer = function(pos)
 
                 if too_dark_to_grow(pos) then
                     minetest.dig_node(pos)
@@ -399,7 +404,7 @@ minetest.register_plant = function( name, def )
     end
 
     if def.seed_name then
-        minetest.register_craftitem("farming:"..def.seed_name.."_seeds", {
+        minetest.register_craftitem( "farming:" .. def.seed_name .. "_seeds", {
             description = def.seed_description,
             inventory_image = def.seed_inventory_image,
             on_place = function(itemstack, placer, pointed_thing)
