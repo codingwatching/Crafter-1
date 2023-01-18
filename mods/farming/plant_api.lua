@@ -19,6 +19,8 @@ local water_nodes = {
 
 -- TODO: Optimize this and reuse as much data as possible. Farms can be huge!
 -- TODO: Custom functions for plants
+-- TODO: Make soil check a function
+-- TODO: Use node timers instead
 
 local reused_vector1 = vector.new(0,0,0)
 -- This second heap object only exists so we can do the find_water() calculation below
@@ -200,19 +202,28 @@ minetest.register_plant = function( name, def )
                 minetest.dig_node(pos)
 
             end
-                
+
         -- Plants that grow in place, but yield a crop, like pumpkins and melons
+        -- Basically, consider this the plant's stem growing logic
         elseif def.grows == "in_place_yields" then
+
             on_abm = function(pos)
-                if minetest.get_node_light(pos, nil) < 10 then
+
+                if too_dark_to_grow(pos) then
                     minetest.dig_node(pos)
-                    minetest.sound_play("dirt",{pos=pos,gain=0.2})
-                    --print("failed to grow at "..dump(pos))
+                    minetest.sound_play( "dirt", {
+                        pos = pos,
+                        gain = 0.2
+                    })
+
                     return
                 end
+
                 pos.y = pos.y - 1
+
                 local found = minetest.get_node_group(minetest.get_node(pos).name, "farmland") > 0
-                --if found farmland below
+
+                -- Plant stem searches for an air node adjacent to it, yet has a dirt, soil, or grass block under it
                 if found then    
                     if i < max then
                         pos.y = pos.y + 1
