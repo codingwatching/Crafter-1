@@ -43,6 +43,7 @@ for level,dryness in ipairs(farmland) do
     local on_construct
     local on_timer
 
+    -- Wet soil
     if dryness == "wet" then
         on_construct = function(pos)
             if not find_water(pos) then
@@ -57,6 +58,7 @@ for level,dryness in ipairs(farmland) do
             end
             get_node_timer(pos):start( math_random( 10, 25 ) )
         end
+    -- Dry soil
     else
         on_construct = function(pos)
             get_node_timer(pos):start( math_random( 10, 25 ) )
