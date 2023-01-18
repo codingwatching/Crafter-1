@@ -244,9 +244,7 @@ minetest.register_plant = function( name, def )
                         pos.y = pos.y + 1
 
                         found = false
-
-                        local add_node = nil
-
+                        
                         -- Hold this y position during loop
                         reused_vector1.y = pos.y
 
@@ -263,15 +261,14 @@ minetest.register_plant = function( name, def )
                             
                         end
                         
-                        if found == true and add_node then
-                            local param2 = minetest.dir_to_facedir(vector.direction(pos,add_node))
-                            minetest.add_node(add_node,{name=def.grown_node,param2=param2})
-                            
-                            local facedir = minetest.facedir_to_dir(param2)
-                            
-                            local inverted_facedir = vector.multiply(facedir,-1)
-                            minetest.set_node(vector.add(inverted_facedir,add_node), {name="farming:"..name.."_complete", param2=minetest.dir_to_facedir(facedir)})
-                        end
+                        if not found then return end
+                        
+                        local param2 = minetest.dir_to_fourdir( vector.direction( pos, reused_vector1 ) )
+
+                        minetest.add_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
+
+                        minetest.set_node( pos, { name = "farming:"..name.."_complete", param2 = param2 } )
+                    
                     end
                 --if not found farmland
                 else
