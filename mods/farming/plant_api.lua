@@ -2,6 +2,8 @@
 local plant_min = 60
 local plant_max = 240
 
+-- TODO: Optimize this and reuse as much data as possible. Farms can be huge!
+
 minetest.register_plant = function(name,def)
 
     local max = 1
