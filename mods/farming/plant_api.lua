@@ -26,6 +26,7 @@ local reused_vector2 = vec_new(0,0,0)
 local water_find_distance = 4
 local gotten_node
 local gotten_name
+local able_to_grow
 
 -- Finds water nodes in a 3x1x3 area
 local function find_water_flat(pos)
@@ -117,7 +118,7 @@ minetest.register_plant = function( name, def )
 
                 gotten_name = minetest.get_node(pos).name
 
-                local able_to_grow = minetest.get_item_group(gotten_name, "soil") > 0 or gotten_name == nodename
+                able_to_grow = minetest.get_item_group(gotten_name, "soil") > 0 or gotten_name == nodename
 
                 if found and able_to_grow then
 
@@ -137,14 +138,18 @@ minetest.register_plant = function( name, def )
                 end
             end
 
-            after_place_node = function(pos, placer, itemstack, pointed_thing)
+            after_place_node = function(pos)
+
                 pos.y = pos.y - 1
-                local noder = minetest.get_node(pos).name
-                local found = minetest.get_node_group(noder, "soil") > 0
-                if not found then
+
+                gotten_name = minetest.get_node(pos).name
+                able_to_grow = minetest.get_node_group(gotten_name, "soil") > 0
+
+                if not able_to_grow then
                     pos.y = pos.y + 1
                     minetest.dig_node(pos)
                 end
+
             end
 
         -- The plant grows in place
