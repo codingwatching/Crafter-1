@@ -243,7 +243,7 @@ minetest.register_plant = function( name, def )
                         pos.y = pos.y + 1
 
                         found = false
-                        
+
                         -- Hold this y position during loop
                         reused_vector1.y = pos.y
 
@@ -257,20 +257,20 @@ minetest.register_plant = function( name, def )
                                 found = true
                                 break
                             end
-                            
+
                         end
-                        
+
                         if not found then return end
-                        
+
                         local param2 = minetest.dir_to_fourdir( vector.direction( pos, reused_vector1 ) )
 
                         minetest.add_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
 
-                        minetest.set_node( pos, { name = "farming:"..name.."_complete", param2 = param2 } )
-                    
+                        minetest.set_node( pos, { name = "farming:" .. name .. "_complete", param2 = param2 } )
+
                         return
                     end
-                
+
                 end
                 -- No farmland was found
                 minetest.dig_node(pos)
@@ -279,7 +279,7 @@ minetest.register_plant = function( name, def )
                     gain = 0.2
                 })
             end
-            after_place_node = function(pos, placer, itemstack, pointed_thing)
+            after_place_node = function(pos)
                 pos.y = pos.y - 1
                 local noder = minetest.get_node(pos).name
                 local found = minetest.get_node_group(noder, "farmland") > 0
