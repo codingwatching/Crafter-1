@@ -155,7 +155,7 @@ minetest.register_plant = function( name, def )
                 pos.y = pos.y - 1
 
                 gotten_name = minetest.get_node(pos).name
-                able_to_grow = minetest.get_node_group(gotten_name, "soil") > 0
+                able_to_grow = minetest.get_item_group(gotten_name, "soil") > 0
 
                 if able_to_grow then return end
 
@@ -179,7 +179,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                able_to_grow = minetest.get_node_group(minetest.get_node(pos).name, "farmland") > 0
+                able_to_grow = minetest.get_item_group(minetest.get_node(pos).name, "farmland") > 0
 
                 if able_to_grow then
                     if i < max then
@@ -201,7 +201,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                able_to_grow = minetest.get_node_group(minetest.get_node(pos).name, "farmland") > 0
+                able_to_grow = minetest.get_item_group(minetest.get_node(pos).name, "farmland") > 0
 
                 if able_to_grow then return end
 
@@ -228,7 +228,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                local found = minetest.get_node_group(minetest.get_node(pos).name, "farmland") > 0
+                local found = minetest.get_item_group(minetest.get_node(pos).name, "farmland") > 0
 
                 -- Plant stem searches for an air node adjacent to it, yet has a dirt, soil, or grass block under it
                 if found then
@@ -286,7 +286,7 @@ minetest.register_plant = function( name, def )
 
                 local noder = minetest.get_node(pos).name
 
-                local found = minetest.get_node_group(noder, "farmland") > 0
+                local found = minetest.get_item_group(noder, "farmland") > 0
 
                 if found then return end
 
@@ -403,16 +403,23 @@ minetest.register_plant = function( name, def )
             description = def.seed_description,
             inventory_image = def.seed_inventory_image,
             on_place = function(itemstack, placer, pointed_thing)
+
                 if pointed_thing.type ~= "node" then
                     return itemstack
                 end
+
+                local nodedef = minetest.registered_nodes[get_node(pointed_thing.under).name]
+
+                if nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
+
+                print(dump(vector.subtract(pointed_thing.above, pointed_thing.under)))
                 local pointed_thing_diff = pointed_thing.above.y - pointed_thing.under.y
-                
+
                 if pointed_thing_diff < 1 then return end
                     
                 if minetest.get_node(pointed_thing.above).name ~= "air" then return end
                 local pb = pointed_thing.above
-                if minetest.get_node_group(minetest.get_node(vector.new(pb.x,pb.y-1,pb.z)).name, "farmland") == 0 or minetest.get_node(pointed_thing.above).name ~= "air"  then
+                if minetest.get_item_group(minetest.get_node(vector.new(pb.x,pb.y-1,pb.z)).name, "farmland") == 0 or minetest.get_node(pointed_thing.above).name ~= "air"  then
                     return itemstack
                 end
 
