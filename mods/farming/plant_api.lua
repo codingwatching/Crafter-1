@@ -412,34 +412,25 @@ minetest.register_plant = function( name, def )
 
                 if nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
 
-                print(dump(vector.subtract(pointed_thing.above, pointed_thing.under)))
-                local pointed_thing_diff = pointed_thing.above.y - pointed_thing.under.y
+                local buildable_to = nodedef.buildable_to
 
-                if pointed_thing_diff < 1 then return end
-                    
-                if minetest.get_node(pointed_thing.above).name ~= "air" then return end
-                local pb = pointed_thing.above
-                if minetest.get_item_group(minetest.get_node(vector.new(pb.x,pb.y-1,pb.z)).name, "farmland") == 0 or minetest.get_node(pointed_thing.above).name ~= "air"  then
+                if not buildable_to and vector.subtract(pointed_thing.above, pointed_thing.under) ~= vector.new(0,1,0) then print("fook") return end
+                
+                if not buildable_to and minetest.get_node(pointed_thing.above).name ~= "air" then return end
+
+                reused_vector1.x = pointed_thing.above.x
+                reused_vector1.y = pointed_thing.above.y - 1
+                reused_vector1.z = pointed_thing.above.z
+
+                if minetest.get_item_group(minetest.get_node(reused_vector1).name, "farmland") == 0 or minetest.get_node(pointed_thing.above).name ~= "air"  then
                     return itemstack
                 end
 
-                local wdir = minetest.dir_to_wallmounted(vector.subtract(pointed_thing.under,pointed_thing.above))
-
-                local fakestack = itemstack
-                local retval = false
-
-                retval = fakestack:set_name(def.seed_plants)
-
-                if not retval then
-                    return itemstack
-                end
-                itemstack, retval = minetest.item_place(fakestack, placer, pointed_thing, wdir)
-                itemstack:set_name("farming:"..def.seed_name.."_seeds")
-
-                if retval then
-                    minetest.sound_play("leaves", {pos=pointed_thing.above, gain = 1.0})
-                end
-
+                itemstack:take_item()
+                minetest.sound_play( "leaves", {
+                    pos = pointed_thing.above,
+                    gain = 1.0
+                })
                 return itemstack
             end
         })
