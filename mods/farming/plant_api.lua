@@ -1,9 +1,45 @@
+local ipairs = ipairs
+local find_nodes_in_area = minetest.find_nodes_in_area
+local get_node = minetest.get_node
+local set_node = minetest.set_node
+local get_node_timer = minetest.get_node_timer
+local get_item_group = minetest.get_item_group
+local dig_node = minetest.dig_node
+local math_random = math.random
+local vec_new = vector.new
+
+
 -- Plant growth time constants (in seconds)
 local plant_min = 60
 local plant_max = 240
 
+local water_nodes = {
+    "main:water","main:waterflow"
+}
+
 -- TODO: Optimize this and reuse as much data as possible. Farms can be huge!
 -- TODO: Custom functions for plants
+
+local reused_vector1 = vector.new(0,0,0)
+-- This second heap object only exists so we can do the find_water() calculation below
+local reused_vector2 = vec_new(0,0,0)
+local water_find_distance = 4
+
+-- Finds water nodes in a 3x1x3 area
+local function find_water(pos)
+    reused_vector1.x = pos.x - water_find_distance
+    reused_vector1.y = pos.y
+    reused_vector1.z = pos.z - water_find_distance
+    reused_vector2.x = pos.x + water_find_distance
+    reused_vector2.y = pos.y
+    reused_vector2.z = pos.z + water_find_distance
+
+    return #find_nodes_in_area(
+        reused_vector1,
+        reused_vector2,
+        water_nodes
+    ) > 0
+end
 
 minetest.register_plant = function( name, def )
 
@@ -41,7 +77,8 @@ minetest.register_plant = function( name, def )
                 local gotten_node = minetest.get_node(node_position)
 
                 if gotten_node.name == node.name then
-                    minetest.node_dig(node_position, gotten_node, digger)
+
+                    minetest.node_dig( node_position, gotten_node, digger )
                     minetest.sound_play( "dirt", {
                         pos = node_position,
                         gain=0.2
@@ -50,10 +87,15 @@ minetest.register_plant = function( name, def )
             end
 
             on_abm = function(pos)
+
                 if minetest.get_node_light(pos, nil) < 10 then return end
+
                 local found = minetest.find_node_near( pos, 3, { "main:water","main:waterflow" } )
+
                 pos.y = pos.y - 1
+
                 local noder = minetest.get_node(pos).name
+
                 local found_soil = minetest.get_item_group(noder, "soil") > 0
                 local found_self = noder == nodename
 
