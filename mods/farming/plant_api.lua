@@ -3,8 +3,9 @@ local plant_min = 60
 local plant_max = 240
 
 -- TODO: Optimize this and reuse as much data as possible. Farms can be huge!
+-- TODO: Custom functions for plants
 
-minetest.register_plant = function(name,def)
+minetest.register_plant = function( name, def )
 
     local max = 1
     if def.stages then
@@ -12,43 +13,50 @@ minetest.register_plant = function(name,def)
     end
 
     for i = 1,max do
+
         local nodename
+
         if def.stages then
             nodename = "farming:"..name.."_"..i
         else
             nodename = "farming:"..name
         end
-        
+
         local after_dig_node
         local on_abm
         local on_construct
         local after_destruct
         local after_place_node
-        --do custom functions for each node
-        --wether growing in place or up
+
+
+        -- The plant grows up like sugarcane
         if def.grows == "up" then
-                after_dig_node = function(pos, node, metadata, digger)
-                if digger == nil then return end
-                local np = {x = pos.x, y = pos.y + 1, z = pos.z}
-                local nn = minetest.get_node(np)
-                if nn.name == node.name then
-                    minetest.node_dig(np, nn, digger)
-                    minetest.sound_play("dirt",{pos=pos,gain=0.2})
+
+            after_dig_node = function(pos, node, _, digger)
+
+                if not digger then return end
+
+                local node_position = vector.new(pos.x, pos.y + 1, pos.z)
+
+                local gotten_node = minetest.get_node(node_position)
+
+                if gotten_node.name == node.name then
+                    minetest.node_dig(node_position, gotten_node, digger)
+                    minetest.sound_play( "dirt", {
+                        pos = node_position,
+                        gain=0.2
+                    })
                 end
             end
-            
+
             on_abm = function(pos)
-                if minetest.get_node_light(pos, nil) < 10 then
-                    --print("failed to grow at "..dump(pos))
-                    return
-                end
-                
-                local found = minetest.find_node_near(pos, 3, {"main:water","main:waterflow"})
+                if minetest.get_node_light(pos, nil) < 10 then return end
+                local found = minetest.find_node_near( pos, 3, { "main:water","main:waterflow" } )
                 pos.y = pos.y - 1
                 local noder = minetest.get_node(pos).name
                 local found_soil = minetest.get_item_group(noder, "soil") > 0
-                local found_self--[[this is deep]]= (noder == nodename)
-                
+                local found_self = noder == nodename
+
                 if found and (found_soil or found_self) then
                     pos.y = pos.y + 2
                     if minetest.get_node(pos).name == "air" then
@@ -60,7 +68,7 @@ minetest.register_plant = function(name,def)
                     minetest.sound_play("dirt",{pos=pos,gain=0.2})
                 end
             end
-            
+
             after_place_node = function(pos, placer, itemstack, pointed_thing)
                 pos.y = pos.y - 1
                 local noder = minetest.get_node(pos).name
@@ -70,9 +78,10 @@ minetest.register_plant = function(name,def)
                     minetest.dig_node(pos)
                 end
             end
-            
-        --for plants that grow in place
+
+        -- The plant grows in place
         elseif def.grows == "in_place" then
+
             on_abm = function(pos)
                 if minetest.get_node_light(pos, nil) < 10 then
                     minetest.dig_node(pos)
@@ -80,7 +89,7 @@ minetest.register_plant = function(name,def)
                     --print("failed to grow at "..dump(pos))
                     return
                 end
-                
+
                 pos.y = pos.y - 1
                 local found = minetest.get_node_group(minetest.get_node(pos).name, "farmland") > 0
                 --if found farmland below
@@ -95,6 +104,7 @@ minetest.register_plant = function(name,def)
                     minetest.sound_play("dirt",{pos=pos,gain=0.2})
                 end
             end
+
             after_place_node = function(pos, placer, itemstack, pointed_thing)
                 pos.y = pos.y - 1
                 local noder = minetest.get_node(pos).name
