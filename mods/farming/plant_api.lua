@@ -242,6 +242,7 @@ minetest.register_plant = function( name, def )
                         pos = pos,
                         gain = 0.2
                     })
+                    return
                 end
 
                 -- Plant stem searches for an air node adjacent to it, yet has a dirt, soil, or grass block under it
