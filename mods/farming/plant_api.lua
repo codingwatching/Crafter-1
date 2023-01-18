@@ -279,18 +279,23 @@ minetest.register_plant = function( name, def )
                     gain = 0.2
                 })
             end
+
             after_place_node = function(pos)
+
                 pos.y = pos.y - 1
+
                 local noder = minetest.get_node(pos).name
+
                 local found = minetest.get_node_group(noder, "farmland") > 0
-                if not found then
-                    pos.y = pos.y + 1
-                    minetest.dig_node(pos)
-                end
+
+                if found then return end
+
+                pos.y = pos.y + 1
+                minetest.dig_node(pos)
             end
         end
-        
-        --allow plants to only drop item at max stage
+
+        -- Only allow plants to drop their seeds at the max level
         local drop
         if i == max and def.grows ~= "in_place_yields" then
             drop = def.drop
@@ -299,16 +304,16 @@ minetest.register_plant = function( name, def )
         else
             drop = ""
         end
-        
+
         local tiles
         if max > 1 then
-            tiles = {def.tiles[1].."_"..i..".png"}
+            tiles = { def.tiles[ 1 ] .. "_" .. i .. ".png" }
         else
             tiles = def.tiles
         end
-        
+
         def.groups.plants = 1
-        
+
         minetest.register_node(nodename, {
             description               = def.description,
             drawtype                  = def.drawtype,
@@ -329,17 +334,18 @@ minetest.register_plant = function( name, def )
             node_placement_prediction = "",
             is_ground_content         = false,
             
-            --flooding function
             floodable         = true,
-            on_flood = function(pos, oldnode, newnode)
-                    minetest.dig_node(pos)
+            on_flood = function(pos)
+                minetest.dig_node(pos)
             end,
-            
+
             after_dig_node   = after_dig_node,
             after_place_node = after_place_node,
             on_construct     = on_construct,
             after_destruct   = after_destruct,
         })
+
+        -- TODO: Node timers
         if on_abm then
             minetest.register_abm({
                 label = nodename.." Grow",
