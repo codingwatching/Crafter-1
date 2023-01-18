@@ -25,6 +25,7 @@ local reused_vector1 = vector.new(0,0,0)
 local reused_vector2 = vec_new(0,0,0)
 local water_find_distance = 4
 local gotten_node
+local gotten_name
 
 -- Finds water nodes in a 3x1x3 area
 local function find_water_flat(pos)
@@ -84,7 +85,7 @@ minetest.register_plant = function( name, def )
         local after_place_node
 
 
-        -- The plant grows up like sugarcane
+        -- Plants that grow up, like sugarcane
         if def.grows == "up" then
 
             after_dig_node = function(pos, node, _, digger)
@@ -102,7 +103,7 @@ minetest.register_plant = function( name, def )
                     minetest.node_dig( reused_vector1, gotten_node, digger )
                     minetest.sound_play( "dirt", {
                         pos = reused_vector1,
-                        gain=0.2
+                        gain = 0.2
                     })
                 end
             end
@@ -116,20 +117,25 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                local noder = minetest.get_node(pos).name
+                gotten_name = minetest.get_node(pos).name
 
-                local found_soil = minetest.get_item_group(noder, "soil") > 0
-                local found_self = noder == nodename
+                local able_to_grow = minetest.get_item_group(gotten_name, "soil") > 0 or gotten_name == nodename
 
-                if found and (found_soil or found_self) then
+                if found and able_to_grow then
+
                     pos.y = pos.y + 2
-                    if minetest.get_node(pos).name == "air" then
-                        minetest.set_node(pos,{name="farming:"..name})
-                    end
-                elseif not found_self then
+
+                    if minetest.get_node(pos).name ~= "air" then return end
+
+                    minetest.set_node( pos, { name = "farming:" .. name } )
+
+                elseif not able_to_grow then
+
                     pos.y = pos.y + 1
+
                     minetest.dig_node(pos)
-                    minetest.sound_play("dirt",{pos=pos,gain=0.2})
+
+                    minetest.sound_play( "dirt", { pos = pos, gain = 0.2 } )
                 end
             end
 
