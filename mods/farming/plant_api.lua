@@ -134,7 +134,10 @@ minetest.register_plant = function( name, def )
 
                     minetest.dig_node(pos)
 
-                    minetest.sound_play( "dirt", { pos = pos, gain = 0.2 } )
+                    minetest.sound_play( "dirt", {
+                        pos = pos,
+                        gain = 0.2
+                    })
                 end
             end
 
@@ -145,37 +148,41 @@ minetest.register_plant = function( name, def )
                 gotten_name = minetest.get_node(pos).name
                 able_to_grow = minetest.get_node_group(gotten_name, "soil") > 0
 
-                if not able_to_grow then
-                    pos.y = pos.y + 1
-                    minetest.dig_node(pos)
-                end
-
+                if able_to_grow then return end
+                
+                pos.y = pos.y + 1
+                minetest.dig_node(pos)
             end
 
         -- The plant grows in place
         elseif def.grows == "in_place" then
 
             on_abm = function(pos)
-                if minetest.get_node_light(pos, nil) < 10 then
+
+                if too_dark_to_grow(pos) then
                     minetest.dig_node(pos)
-                    minetest.sound_play("dirt",{pos=pos,gain=0.2})
-                    --print("failed to grow at "..dump(pos))
+                    minetest.sound_play( "dirt", {
+                        pos = pos,
+                        gain = 0.2
+                    })
                     return
                 end
 
                 pos.y = pos.y - 1
-                local found = minetest.get_node_group(minetest.get_node(pos).name, "farmland") > 0
-                --if found farmland below
-                if found then    
+
+                able_to_grow = minetest.get_node_group(minetest.get_node(pos).name, "farmland") > 0
+
+                if able_to_grow then
                     if i < max then
                         pos.y = pos.y + 1
                         minetest.set_node(pos,{name="farming:"..name.."_"..(i+1)})
                     end
-                --if not found farmland
-                else
-                    minetest.dig_node(pos)
-                    minetest.sound_play("dirt",{pos=pos,gain=0.2})
+                    return
                 end
+
+                minetest.dig_node(pos)
+                minetest.sound_play("dirt",{pos=pos,gain=0.2})
+
             end
 
             after_place_node = function(pos, placer, itemstack, pointed_thing)
