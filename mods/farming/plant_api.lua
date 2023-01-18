@@ -24,9 +24,10 @@ local reused_vector1 = vector.new(0,0,0)
 -- This second heap object only exists so we can do the find_water() calculation below
 local reused_vector2 = vec_new(0,0,0)
 local water_find_distance = 4
+local gotten_node
 
 -- Finds water nodes in a 3x1x3 area
-local function find_water(pos)
+local function find_water_flat(pos)
     reused_vector1.x = pos.x - water_find_distance
     reused_vector1.y = pos.y
     reused_vector1.z = pos.z - water_find_distance
@@ -34,6 +35,20 @@ local function find_water(pos)
     reused_vector2.y = pos.y
     reused_vector2.z = pos.z + water_find_distance
 
+    return #find_nodes_in_area(
+        reused_vector1,
+        reused_vector2,
+        water_nodes
+    ) > 0
+end
+
+local function find_water_vertical(pos, plant_height)
+    reused_vector1.x = pos.x - water_find_distance
+    reused_vector1.y = pos.y - plant_height
+    reused_vector1.z = pos.z - water_find_distance
+    reused_vector2.x = pos.x + water_find_distance
+    reused_vector2.y = pos.y + plant_height
+    reused_vector2.z = pos.z + water_find_distance
     return #find_nodes_in_area(
         reused_vector1,
         reused_vector2,
@@ -76,7 +91,7 @@ minetest.register_plant = function( name, def )
                 reused_vector1.y = pos.y + 1
                 reused_vector1.z = pos.z
 
-                local gotten_node = minetest.get_node(reused_vector1)
+                gotten_node = minetest.get_node(reused_vector1)
 
                 if gotten_node.name == node.name then
 
@@ -92,7 +107,8 @@ minetest.register_plant = function( name, def )
 
                 if minetest.get_node_light(pos, nil) < 10 then return end
 
-                local found = minetest.find_node_near( pos, 3, { "main:water","main:waterflow" } )
+                -- These plants grow vertically so search near in radius
+                local found = find_water_vertical(pos, def.plant_height)
 
                 pos.y = pos.y - 1
 
