@@ -56,6 +56,10 @@ local function find_water_vertical(pos, plant_height)
     ) > 0
 end
 
+local function too_dark_to_grow(pos)
+    return minetest.get_node_light(pos) < 10
+end
+
 minetest.register_plant = function( name, def )
 
     local max = 1
@@ -105,7 +109,7 @@ minetest.register_plant = function( name, def )
 
             on_abm = function(pos)
 
-                if minetest.get_node_light(pos, nil) < 10 then return end
+                if too_dark_to_grow(pos) then return end
 
                 -- These plants grow vertically so search near in radius
                 local found = find_water_vertical(pos, def.plant_height)
