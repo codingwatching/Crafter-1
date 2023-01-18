@@ -13,21 +13,21 @@ minetest.register_craftitem("farming:wheat", {
 minetest.register_food("farming:bread",{
     description = "Bread",
     texture = "bread.png",
-    satiation=6,
-    hunger=2,
+    satiation = 6,
+    hunger = 2,
 })
 
 minetest.register_food("farming:toast",{
     description = "Toast",
     texture = "bread.png^[colorize:black:100",
-    satiation=12,
-    hunger=4,
+    satiation = 12,
+    hunger = 4,
 })
 
 minetest.register_craft({
     output = "farming:bread",
     recipe = {
-        {"farming:wheat", "farming:wheat", "farming:wheat"}
+        { "farming:wheat", "farming:wheat", "farming:wheat" }
     }
 })
 
