@@ -149,12 +149,12 @@ minetest.register_plant = function( name, def )
                 able_to_grow = minetest.get_node_group(gotten_name, "soil") > 0
 
                 if able_to_grow then return end
-                
+
                 pos.y = pos.y + 1
                 minetest.dig_node(pos)
             end
 
-        -- The plant grows in place
+        -- Plants that grow in place, like wheat
         elseif def.grows == "in_place" then
 
             on_abm = function(pos)
@@ -200,6 +200,8 @@ minetest.register_plant = function( name, def )
                 minetest.dig_node(pos)
 
             end
+                
+        -- Plants that grow in place, but yield a crop, like pumpkins and melons
         elseif def.grows == "in_place_yields" then
             on_abm = function(pos)
                 if minetest.get_node_light(pos, nil) < 10 then
