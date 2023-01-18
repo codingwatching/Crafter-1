@@ -17,6 +17,13 @@ local water_nodes = {
     "main:water","main:waterflow"
 }
 
+local stem_search_instructions = {
+    vector.new( 1, 0, 0 ),
+    vector.new(-1, 0, 0 ),
+    vector.new( 0, 0, 1 ),
+    vector.new( 0, 0,-1 )
+}
+
 -- TODO: Optimize this and reuse as much data as possible. Farms can be huge!
 -- TODO: Custom functions for plants
 -- TODO: Make soil check a function
@@ -232,14 +239,6 @@ minetest.register_plant = function( name, def )
 
                     -- Stem is yielding a crop
                     else
-
-                        -- TODO: Move this outside the scope of this function
-                        local stem_search_instructions = {
-                            vector.new( 1, 0, 0 ),
-                            vector.new(-1, 0, 0 ),
-                            vector.new( 0, 0, 1 ),
-                            vector.new( 0, 0,-1 )
-                        }
 
                         pos.y = pos.y + 1
 
