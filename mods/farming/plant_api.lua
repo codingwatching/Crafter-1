@@ -175,24 +175,30 @@ minetest.register_plant = function( name, def )
                 if able_to_grow then
                     if i < max then
                         pos.y = pos.y + 1
-                        minetest.set_node(pos,{name="farming:"..name.."_"..(i+1)})
+                        minetest.set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
                     end
                     return
                 end
 
                 minetest.dig_node(pos)
-                minetest.sound_play("dirt",{pos=pos,gain=0.2})
+                minetest.sound_play( "dirt", {
+                    pos = pos,
+                    gain = 0.2
+                })
 
             end
 
-            after_place_node = function(pos, placer, itemstack, pointed_thing)
+            after_place_node = function(pos)
+
                 pos.y = pos.y - 1
-                local noder = minetest.get_node(pos).name
-                local found = minetest.get_node_group(noder, "farmland") > 0
-                if not found then
-                    pos.y = pos.y + 1
-                    minetest.dig_node(pos)
-                end
+
+                able_to_grow = minetest.get_node_group(minetest.get_node(pos).name, "farmland") > 0
+
+                if able_to_grow then return end
+
+                pos.y = pos.y + 1
+                minetest.dig_node(pos)
+
             end
         elseif def.grows == "in_place_yields" then
             on_abm = function(pos)
