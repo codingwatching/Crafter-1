@@ -269,12 +269,16 @@ minetest.register_plant = function( name, def )
 
                         minetest.set_node( pos, { name = "farming:"..name.."_complete", param2 = param2 } )
                     
+                        return
                     end
-                --if not found farmland
-                else
-                    minetest.dig_node(pos)
-                    minetest.sound_play("dirt",{pos=pos,gain=0.2})
+                
                 end
+                -- No farmland was found
+                minetest.dig_node(pos)
+                minetest.sound_play( "dirt", {
+                    pos = pos,
+                    gain = 0.2
+                })
             end
             after_place_node = function(pos, placer, itemstack, pointed_thing)
                 pos.y = pos.y - 1
