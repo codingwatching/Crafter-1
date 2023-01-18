@@ -235,54 +235,56 @@ minetest.register_plant = function( name, def )
 
                 local found = minetest.get_item_group(minetest.get_node(pos).name, "farmland") > 0
 
+                if not found then
+                    -- No farmland was found
+                    minetest.dig_node(pos)
+                    minetest.sound_play( "dirt", {
+                        pos = pos,
+                        gain = 0.2
+                    })
+                end
+
                 -- Plant stem searches for an air node adjacent to it, yet has a dirt, soil, or grass block under it
-                if found then
-                    -- Stem is still growing
-                    if i < max then
-                        pos.y = pos.y + 1
-                        minetest.set_node(pos,{name="farming:"..name.."_"..(i+1)})
 
-                    -- Stem is yielding a crop
-                    else
+                -- Stem is still growing
+                if i < max then
+                    pos.y = pos.y + 1
+                    minetest.set_node(pos,{name="farming:"..name.."_"..(i+1)})
 
-                        pos.y = pos.y + 1
+                -- Stem is yielding a crop
+                else
 
-                        found = false
+                    pos.y = pos.y + 1
 
-                        -- Hold this y position during loop
-                        reused_vector1.y = pos.y
+                    found = false
 
-                        for _,direction in ipairs(stem_search_instructions) do
+                    -- Hold this y position during loop
+                    reused_vector1.y = pos.y
 
-                            reused_vector1.x = pos.x + direction.x
-                            reused_vector1.z = pos.z + direction.z
+                    for _,direction in ipairs(stem_search_instructions) do
 
-                            if minetest.get_node(reused_vector1).name == "air" then
-                                -- Reused_vector1 is now the selected position
-                                found = true
-                                break
-                            end
+                        reused_vector1.x = pos.x + direction.x
+                        reused_vector1.z = pos.z + direction.z
 
+                        if minetest.get_node(reused_vector1).name == "air" then
+                            -- Reused_vector1 is now the selected position
+                            found = true
+                            break
                         end
 
-                        if not found then return end
-
-                        local param2 = minetest.dir_to_fourdir( vector.direction( pos, reused_vector1 ) )
-
-                        minetest.add_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
-
-                        minetest.set_node( pos, { name = "farming:" .. name .. "_complete", param2 = param2 } )
-
-                        return
                     end
 
+                    if not found then return end
+
+                    local param2 = minetest.dir_to_fourdir( vector.direction( pos, reused_vector1 ) )
+
+                    minetest.add_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
+
+                    minetest.set_node( pos, { name = "farming:" .. name .. "_complete", param2 = param2 } )
+
+                    return
                 end
-                -- No farmland was found
-                minetest.dig_node(pos)
-                minetest.sound_play( "dirt", {
-                    pos = pos,
-                    gain = 0.2
-                })
+                
             end
 
             after_place_node = function(pos)
