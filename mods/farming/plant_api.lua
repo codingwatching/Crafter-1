@@ -415,7 +415,7 @@ minetest.register_plant = function( name, def )
                 local buildable_to = nodedef.buildable_to
 
                 if not buildable_to and vector.subtract(pointed_thing.above, pointed_thing.under) ~= vector.new(0,1,0) then print("fook") return end
-                
+
                 if not buildable_to and minetest.get_node(pointed_thing.above).name ~= "air" then return end
 
                 reused_vector1.x = pointed_thing.above.x
@@ -431,6 +431,9 @@ minetest.register_plant = function( name, def )
                     pos = pointed_thing.above,
                     gain = 1.0
                 })
+
+                minetest.place_node(pointed_thing.above, { name = def.seed_plants })
+
                 return itemstack
             end
         })
