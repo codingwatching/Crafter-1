@@ -19,15 +19,14 @@ minetest.register_plant = function(name,def)
             nodename = "farming:"..name
         end
         
-        
-            local after_dig_node
-            local on_abm
-            local on_construct
-            local after_destruct
-            local after_place_node
-            --do custom functions for each node
-            --wether growing in place or up
-            if def.grows == "up" then
+        local after_dig_node
+        local on_abm
+        local on_construct
+        local after_destruct
+        local after_place_node
+        --do custom functions for each node
+        --wether growing in place or up
+        if def.grows == "up" then
                 after_dig_node = function(pos, node, metadata, digger)
                 if digger == nil then return end
                 local np = {x = pos.x, y = pos.y + 1, z = pos.z}
