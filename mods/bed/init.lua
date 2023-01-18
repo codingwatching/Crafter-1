@@ -266,7 +266,10 @@ register_node("bed:bed", {
         if pointed_thing.type ~= "node" then return end
         sneak = placer:get_player_control().sneak
         nodedef = registered_nodes[get_node(pointed_thing.under).name]
-        if not sneak and nodedef.on_rightclick then
+
+        if nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
+
+        if not sneak then
             item_place(itemstack, placer, pointed_thing)
             return
         end
