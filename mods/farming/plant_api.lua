@@ -92,17 +92,15 @@ minetest.register_plant = function( name, def )
 
                 if not digger then return end
 
-                reused_vector1.x = pos.x
-                reused_vector1.y = pos.y + 1
-                reused_vector1.z = pos.z
+                pos.y = pos.y + 1
 
-                gotten_node = minetest.get_node(reused_vector1)
+                gotten_node = minetest.get_node(pos)
 
                 if gotten_node.name == node.name then
 
-                    minetest.node_dig( reused_vector1, gotten_node, digger )
+                    minetest.node_dig( pos, gotten_node, digger )
                     minetest.sound_play( "dirt", {
-                        pos = reused_vector1,
+                        pos = pos,
                         gain = 0.2
                     })
                 end
