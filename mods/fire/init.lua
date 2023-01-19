@@ -32,7 +32,7 @@ minetest.register_node("fire:fire", {
         if under == "nether:obsidian" then
             minetest.remove_node(pos)
             create_nether_portal(pos)
-        -- Fire lasts forever on netherrack
+        -- Fire lasts forever on netherrack, as a side effect, you can also make fire art with this :)
         elseif under ~= "nether:netherrack" then
             start_fire_timer(pos)
         end
