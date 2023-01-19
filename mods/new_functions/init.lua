@@ -256,7 +256,7 @@ local start_fire_not_sure_why_this_is_here = function(player)
     end
         
     if table.getn(real_nodes) > 0 then
-        start_fire(player)
+        player:set_fire_state(true)
     end
 end
 
