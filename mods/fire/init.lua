@@ -258,6 +258,7 @@ minetest.register_on_joinplayer(function(player)
         local name = player:get_player_name()
         local meta = player:get_meta()
 
+        -- Player is being lit on fire by a mod
         if state then
             local fire_entity = minetest.add_entity( player:get_pos(), "fire:fire" )
 
@@ -273,6 +274,8 @@ minetest.register_on_joinplayer(function(player)
             fire_channels[name]:send_all("1")
 
             metatable.fire_entity = fire_entity
+
+        -- Player is being extinguished by a mod
         else
 
             local fire_entity = metatable.fire_entity
@@ -291,9 +294,11 @@ minetest.register_on_joinplayer(function(player)
 
         meta:set_int("fire_state", state and 1 or 0)
     end
+
     function metatable:get_fire_state()
         return player:get_meta():get_int("fire_state") == 1
     end
+
 end)
 
 --[[
