@@ -18,6 +18,10 @@
         "get_liquid_flow_direction",
         "is_player_drowning",
         "get_player_xp_level",
-        "set_player_xp_level"
+        "set_player_xp_level",
+        "is_player_on_fire",
+        "is_entity_on_fire",
+        "start_fire",
+        "put_fire_out"
     ]
 }
