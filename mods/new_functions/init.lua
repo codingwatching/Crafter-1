@@ -216,7 +216,7 @@ local a_max
 local _
 local light
 local head_pos
-local start_fire = function(player)
+local start_fire_not_sure_why_this_is_here = function(player)
     name = player:get_player_name()
     if player:get_hp() <= 0 then
         return
@@ -394,9 +394,9 @@ local index_players_surroundings = function(dtime)
 
         hurt_inside(player,dtime)
 
-        start_fire(player)
+        start_fire_not_sure_why_this_is_here(player)
 
-        player:set_fire_state(false)
+        -- player:set_fire_state(false)
         --handle_player_suffocation(player,dtime)
     end
 end
