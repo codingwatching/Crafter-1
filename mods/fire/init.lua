@@ -45,10 +45,12 @@ minetest.register_node("fire:fire", {
         end
 
         start_fire_timer(pos)
-        for _,new_position in ipairs(minetest.find_nodes_in_area(vector.subtract(pos,1), vector.add(pos,1), {"group:flammable"})) do
-            if math.random() > 0.75 then
-                minetest.set_node( new_position,{ name = "fire:fire" } )
-                start_fire_timer(new_position)
+        if math.random() > 0.5 then
+            for _,new_position in ipairs(minetest.find_nodes_in_area(vector.subtract(pos,1), vector.add(pos,1), {"group:flammable"})) do
+                if math.random() > 0.75 then
+                    minetest.set_node( new_position,{ name = "fire:fire" } )
+                    start_fire_timer(new_position)
+                end
             end
         end
     end,
