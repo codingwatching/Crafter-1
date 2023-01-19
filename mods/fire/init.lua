@@ -1,7 +1,7 @@
 local ipairs = ipairs
 
 local function start_fire_timer(pos)
-    minetest.get_node_timer(pos):start(math.random(1,4) + math.random())
+    minetest.get_node_timer(pos):start(math.random(1,6))
 end
 
 minetest.register_node("fire:fire", {
@@ -37,27 +37,19 @@ minetest.register_node("fire:fire", {
             start_fire_timer(pos)
         end
     end,
-    on_timer = function(pos, elapsed)
-        local find_flammable = minetest.find_nodes_in_area(vector.subtract(pos,1), vector.add(pos,1), {"group:flammable"})
+    on_timer = function(pos)
 
-        for _,p_pos in ipairs(find_flammable) do
-
-            if math.random() > 0.9 then
-
-                minetest.set_node(p_pos,{name="fire:fire"})
-
-                local timer = minetest.get_node_timer(p_pos)
-
-                timer:start(math.random(0,2)+math.random())
-
-            end
-        end
-        
-        if math.random() > 0.85 then
+        if math.random() > 0.75 then
             minetest.remove_node(pos)
-        else
-            local timer = minetest.get_node_timer(pos)
-            timer:start(math.random(0,2)+math.random())
+            return
+        end
+
+        start_fire_timer(pos)
+        for _,new_position in ipairs(minetest.find_nodes_in_area(vector.subtract(pos,1), vector.add(pos,1), {"group:flammable"})) do
+            if math.random() > 0.75 then
+                minetest.set_node( new_position,{ name = "fire:fire" } )
+                start_fire_timer(new_position)
+            end
         end
     end,
 })
