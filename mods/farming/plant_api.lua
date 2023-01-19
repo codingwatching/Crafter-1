@@ -221,7 +221,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                able_to_grow = minetest.get_item_group(minetest.get_node(pos).name, "farmland") > 0
+                able_to_grow = is_soil(minetest.get_node(pos).name)
 
                 if not able_to_grow then
                     plant_dies( pos, nodename )
@@ -239,7 +239,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                able_to_grow = minetest.get_item_group(minetest.get_node(pos).name, "farmland") > 0
+                able_to_grow = is_soil(minetest.get_node(pos).name)
 
                 if able_to_grow then return end
 
@@ -261,9 +261,9 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                local found = minetest.get_item_group(minetest.get_node(pos).name, "farmland") > 0
+                able_to_grow = is_soil(minetest.get_node(pos).name)
 
-                if not found then
+                if not able_to_grow then
                     -- No farmland was found
                     plant_dies( pos, nodename )
                     return
@@ -276,12 +276,12 @@ minetest.register_plant = function( name, def )
                 -- Stem is still growing
                 if i < max then
 
-                    minetest.set_node( pos,{ name = "farming:" .. name .. "_" .. ( i + 1 ) } )
+                    minetest.set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
 
                 -- Stem is yielding a crop
                 else
 
-                    found = false
+                    local found = false
 
                     -- Hold this y position during loop
                     reused_vector1.y = pos.y
@@ -317,11 +317,9 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                local noder = minetest.get_node(pos).name
+                able_to_grow = is_soil(minetest.get_node(pos).name)
 
-                local found = minetest.get_item_group(noder, "farmland") > 0
-
-                if found then return end
+                if able_to_grow then return end
 
                 pos.y = pos.y + 1
                 plant_dies( pos, nodename )
