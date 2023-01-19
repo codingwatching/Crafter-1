@@ -385,9 +385,10 @@ minetest.register_plant = function( name, def )
             sounds      = def.fruit_sounds,
             drop        = def.fruit_drop,
             paramtype2  = "facedir",
-            after_destruct = function(pos,oldnode)
+            after_destruct = function( pos, oldnode )
+
                 local facedir = oldnode.param2
-                facedir = minetest.facedir_to_dir(facedir)
+                facedir = minetest.fourdir_to_dir(facedir)
                 local dir = vector.multiply(facedir,-1)
                 local stem_pos = vector.add(dir,pos)
 
