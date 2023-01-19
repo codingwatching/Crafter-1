@@ -180,33 +180,40 @@ fire.frame_update = function(self)
 end
 
 function fire:on_step(dtime)
+
+    if not self.owner then
+        self.object:remove()
+        return
+    end
+
     if self.owner and (self.owner:is_player() or self.owner:get_luaentity()) then
+
         if self.owner:is_player() and self.owner:get_hp() <= 0 then
             put_fire_out(self.owner)
         end
+
         self.timer = self.timer + dtime
         self.life = self.life + dtime
+
         if self.life >= 7 then
             put_fire_out(self.owner)
             self.object:remove()
             return
         end
-        
+
         if self.timer >= 1 then
             self.timer = 0
             if self.owner:is_player() then
-                self.owner:set_hp(self.owner:get_hp()-1)
+                self.owner:set_hp( self.owner:get_hp() - 1 )
             elseif self.owner:get_luaentity() then
-                self.owner:punch(self.object, 2, 
-                    {
-                    full_punch_interval=0,
-                    damage_groups = {damage=2},
+                self.owner:punch(self.object, 2, {
+                    full_punch_interval = 0,
+                    damage_groups = { damage = 2 },
                 })
             end
         end
-    else
-        self.object:remove()
     end
+
     self.frame_timer = self.frame_timer + dtime
     if self.frame_timer >= 0.015 then
         self.frame_timer = 0
