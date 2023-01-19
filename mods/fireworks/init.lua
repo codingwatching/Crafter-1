@@ -12,25 +12,17 @@ local colors_halloween = {
 --TODO: internal API to make firework 3d models
 
 local function fireworks_pop(pos)
-    for _,color in ipairs(colors) do
+    -- for _,color in ipairs(colors) do
+    local color = "black"
         minetest.add_particlespawner({
             amount = 30,
             time = 0.01,
             pos = pos,
-            -- exptime = { x = 500, y = 1000 },
-            --[[
-            vel = {
-                min = vector.new(0,0,0),
-                max = vector.new(0,0,0)
-            },
-            attract = {
-                kind = "point",
-                strength = {-0.1, -0.5},
-                origin = pos,
-                die_on_contact = false
-            },
-            ]]
+
+            exptime = { min = 500, max = 1000 },
+
             radius = 1,
+
             texture = {
                 scale_tween = {
                     {x = 20, y = 20},
@@ -38,12 +30,11 @@ local function fireworks_pop(pos)
                 },
                 name = "smoke.png^[colorize:"..color..":255",
                 glow = 14,
-            },
-            --collisiondetection = false,
-            --collision_removal = false,
-            --vertical = false,
+            }
+
         })
-    end
+        -- })
+    -- end
     minetest.sound_play("fireworks_pop",{pos=pos,pitch=math.random(80,100)/100,gain=6.0,max_hear_distance = 128})
 end
 
