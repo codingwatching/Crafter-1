@@ -76,12 +76,35 @@ local function start_plant_timer(pos)
     minetest.get_node_timer(pos):start(1)
 end
 
+local function spawn_plant_particles(pos, plant_name)
+    minetest.add_particlespawner({
+        time = 0.0001,
+        pos = {
+            min = vector.subtract(pos, -0.5),
+            max = vector.subtract(pos, 0.5)
+        },
+        acc = {
+            min = vector.new(0,-9.81,0),
+            max = vector.new(0,-9.81,0)
+        },
+        vel = {
+            min = vector.new(-0.5,1,-0.5),
+            max = vector.new(0.5,3,0.5)
+        },
+        drag = 0.2,
+        amount = math.random(10,20),
+        node = {name = plant_name},
+        collisiondetection = true
+    })
+end
+
 local function plant_dies(pos, plant_name)
     minetest.dig_node( pos )
     minetest.sound_play( "dirt", {
         pos = pos,
         gain = 0.2
     })
+    spawn_plant_particles(pos, plant_name)
 end
 
 minetest.register_plant = function( name, def )
@@ -96,9 +119,9 @@ minetest.register_plant = function( name, def )
         local nodename
 
         if def.stages then
-            nodename = "farming:"..name.."_"..i
+            nodename = "farming:" .. name .. "_" .. i
         else
-            nodename = "farming:"..name
+            nodename = "farming:" .. name
         end
 
         local after_dig_node
@@ -330,7 +353,7 @@ minetest.register_plant = function( name, def )
 
             floodable         = true,
             on_flood = function(pos)
-                minetest.dig_node(pos)
+                plant_dies( pos, nodename )
             end,
 
             after_dig_node   = after_dig_node,
