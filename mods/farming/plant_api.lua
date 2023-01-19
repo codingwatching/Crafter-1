@@ -153,6 +153,8 @@ minetest.register_plant = function( name, def )
                         gain = 0.2
                     })
                 end
+
+                start_plant_timer(pos)
             end
 
             after_place_node = function(pos)
@@ -190,6 +192,7 @@ minetest.register_plant = function( name, def )
                     if i < max then
                         pos.y = pos.y + 1
                         minetest.set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
+                        start_plant_timer(pos)
                     end
                     return
                 end
@@ -247,15 +250,15 @@ minetest.register_plant = function( name, def )
 
                 -- Plant stem searches for an air node adjacent to it, yet has a dirt, soil, or grass block under it
 
+                pos.y = pos.y + 1
+
                 -- Stem is still growing
                 if i < max then
-                    pos.y = pos.y + 1
-                    minetest.set_node(pos,{name="farming:"..name.."_"..(i+1)})
+                    
+                    minetest.set_node( pos,{ name = "farming:" .. name .. "_" .. ( i + 1 ) } )
 
                 -- Stem is yielding a crop
                 else
-
-                    pos.y = pos.y + 1
 
                     found = false
 
@@ -283,9 +286,10 @@ minetest.register_plant = function( name, def )
 
                     minetest.set_node( pos, { name = "farming:" .. name .. "_complete", param2 = param2 } )
 
-                    return
                 end
-                
+
+                start_plant_timer(pos)
+
             end
 
             after_place_node = function(pos)
@@ -341,7 +345,9 @@ minetest.register_plant = function( name, def )
             node_box                  = def.node_box,
             node_placement_prediction = "",
             is_ground_content         = false,
-            
+
+            on_timer                  = on_timer,
+
             floodable         = true,
             on_flood = function(pos)
                 minetest.dig_node(pos)
@@ -353,25 +359,11 @@ minetest.register_plant = function( name, def )
             after_destruct   = after_destruct,
         })
 
-        -- TODO: Node timers
-        if on_abm then
-            minetest.register_abm({
-                label = nodename.." Grow",
-                nodenames = {nodename},
-                neighbors = {"air"},
-                interval = 6,
-                chance = 250,
-                catch_up = true,
-                action = function(pos)
-                    on_abm(pos)
-                end,
-            })
-        end
     end
 
-    --create final stage for grow in place plant stems that create food
+    -- Final stage for grow in place plant stems that create food, ie, pumpkins, melons
     if def.grows == "in_place_yields" then
-        minetest.register_node("farming:"..name.."_complete", {
+        minetest.register_node("farming:" .. name .. "_complete", {
             description         = def.stem_description,
             tiles               = def.stem_tiles,
             drawtype            = def.stem_drawtype,
@@ -385,22 +377,23 @@ minetest.register_plant = function( name, def )
             selection_box       = def.stem_selection_box,
             paramtype2          = "facedir",
         })
+
         minetest.register_node("farming:"..def.fruit_name, {
             description = def.fruit_description,
             tiles       = def.fruit_tiles,
             groups      = def.fruit_groups,
             sounds      = def.fruit_sounds,
             drop        = def.fruit_drop,
-            --this is hardcoded to work no matter what
             paramtype2  = "facedir",
             after_destruct = function(pos,oldnode)
                 local facedir = oldnode.param2
                 facedir = minetest.facedir_to_dir(facedir)
                 local dir = vector.multiply(facedir,-1)
                 local stem_pos = vector.add(dir,pos)
-                
-                if minetest.get_node(stem_pos).name == "farming:"..name.."_complete" then
-                    minetest.set_node(stem_pos, {name = "farming:"..name.."_1"})
+
+                if minetest.get_node(stem_pos).name == "farming:" .. name .. "_complete" then
+                    minetest.set_node( stem_pos, { name = "farming:"..name.."_" .. max } )
+                    start_plant_timer(stem_pos)
                 end
             end
         })
@@ -441,6 +434,8 @@ minetest.register_plant = function( name, def )
                 })
 
                 minetest.place_node(pointed_thing.above, { name = def.seed_plants })
+
+                start_plant_timer(pointed_thing.above)
 
                 return itemstack
             end
