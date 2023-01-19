@@ -191,7 +191,6 @@ minetest.register_plant = function( name, def )
                     plant_dies( pos, nodename )
                 end
 
-                
             end
 
             after_place_node = function(pos)
@@ -206,7 +205,7 @@ minetest.register_plant = function( name, def )
                 start_plant_timer(pos)
 
                 if able_to_grow then return end
-                
+
                 plant_dies( pos, nodename )
             end
 
@@ -224,16 +223,16 @@ minetest.register_plant = function( name, def )
 
                 able_to_grow = minetest.get_item_group(minetest.get_node(pos).name, "farmland") > 0
 
-                if able_to_grow then
-                    if i < max then
-                        pos.y = pos.y + 1
-                        minetest.set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
-                        start_plant_timer(pos)
-                    end
-                    return
+                if not able_to_grow then
+                    plant_dies( pos, nodename )
                 end
 
-                plant_dies( pos, nodename )
+                if i < max then
+                    pos.y = pos.y + 1
+                    minetest.set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
+                    start_plant_timer(pos)
+                end
+
             end
 
             after_place_node = function(pos)
