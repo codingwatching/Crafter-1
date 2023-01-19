@@ -200,8 +200,8 @@ function fire:on_step(dtime)
     self.damage_timer = self.damage_timer + dtime
     self.life = self.life + dtime
 
-    -- The flame died out
-    if self.life >= 7 then
+    -- The flame died out, 8 second flame lifetime
+    if self.life >= 8 then
         self.owner:set_fire_state(false)
         return
     end
