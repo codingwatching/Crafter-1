@@ -47,6 +47,9 @@ local reused_vector2 = vec_new(0,0,0)
 local gotten_node
 local gotten_name
 local able_to_grow
+local found
+local found_water
+local param2
 
 -- Finds water nodes in a 1 x H x 1 area
 local function find_water_vertical(pos, plant_height)
@@ -178,7 +181,7 @@ minetest.register_plant = function( name, def )
                 end
 
                 -- These plants grow vertically so search near in radius
-                local found_water = find_water_vertical(pos, def.plant_height)
+                found_water = find_water_vertical(pos, def.plant_height)
 
                 pos.y = pos.y - 1
 
@@ -273,7 +276,7 @@ minetest.register_plant = function( name, def )
                 -- Stem is yielding a crop
                 else
 
-                    local found = false
+                    found = false
 
                     -- Hold this y position during loop
                     reused_vector1.y = pos.y
@@ -293,7 +296,7 @@ minetest.register_plant = function( name, def )
 
                     if not found then return end
 
-                    local param2 = dir_to_fourdir( vec_direction( pos, reused_vector1 ) )
+                    param2 = dir_to_fourdir( vec_direction( pos, reused_vector1 ) )
 
                     set_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
 
