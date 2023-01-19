@@ -106,7 +106,7 @@ local function spawn_plant_particles(pos, plant_name)
             max = vec_new(0.5,3,0.5)
         },
         drag = 0.2,
-        amount = math.random(10,20),
+        amount = math_random(10,20),
         node = {name = plant_name},
         collisiondetection = true
     })
@@ -200,7 +200,7 @@ minetest.register_plant = function( name, def )
 
                     pos.y = pos.y + 1
 
-                    plant_dies( pos, nodename )
+                    start_plant_timer(pos)
                 end
 
             end
