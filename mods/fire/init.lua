@@ -243,12 +243,7 @@ minetest.register_on_joinplayer(function(player)
     fire_channels[name] = minetest.mod_channel_join(name..":fire_state")
 end)
 
-
--- TODO: this is a deprectated function remove this
-function is_entity_on_fire(object)
-    return false
-end
-
+-- Injects fire methods into the player object when they join the server
 minetest.register_on_joinplayer(function(player)
 
     local metatable = getmetatable(player)
@@ -302,6 +297,12 @@ minetest.register_on_joinplayer(function(player)
 end)
 
 --[[
+
+-- TODO: this is a deprectated function remove this
+function is_entity_on_fire(object)
+    return false
+end
+
 local fire_obj
 
 function start_fire(object)
