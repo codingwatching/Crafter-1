@@ -1,4 +1,9 @@
-local minetest,math,vector = minetest,math,vector
+local ipairs = ipairs
+
+local function start_fire_timer(pos)
+    minetest.get_node_timer(pos):start(math.random(1,4) + math.random())
+end
+
 minetest.register_node("fire:fire", {
     description = "Fire",
     drawtype = "firelike",
@@ -13,35 +18,38 @@ minetest.register_node("fire:fire", {
             },
         },
     },
-    --inventory_image = "fire.png",
-    groups = {dig_immediate = 1,fire=1,hurt_inside=1},
+    groups = { dig_immediate = 1, fire = 1, hurt_inside = 1 },
     sounds = main.stoneSound(),
     floodable = true,
     drop = "",
     walkable = false,
     is_ground_content = false,
-    light_source = 11, --debugging
+    light_source = 11,
     on_construct = function(pos)
-        local under = minetest.get_node(vector.new(pos.x,pos.y-1,pos.z)).name
-        --makes nether portal
+
+        local under = minetest.get_node( vector.new( pos.x, pos.y - 1, pos.z ) ).name
+        -- Creates a nether portal
         if under == "nether:obsidian" then
             minetest.remove_node(pos)
             create_nether_portal(pos)
-        --fire lasts forever on netherrack
+        -- Fire lasts forever on netherrack
         elseif under ~= "nether:netherrack" then
-            local timer = minetest.get_node_timer(pos)
-            timer:start(math.random(0,2)+math.random())
+            start_fire_timer(pos)
         end
     end,
     on_timer = function(pos, elapsed)
         local find_flammable = minetest.find_nodes_in_area(vector.subtract(pos,1), vector.add(pos,1), {"group:flammable"})
-        --print(dump(find_flammable))
-        
-        for _,p_pos in pairs(find_flammable) do
+
+        for _,p_pos in ipairs(find_flammable) do
+
             if math.random() > 0.9 then
+
                 minetest.set_node(p_pos,{name="fire:fire"})
+
                 local timer = minetest.get_node_timer(p_pos)
+
                 timer:start(math.random(0,2)+math.random())
+
             end
         end
         
