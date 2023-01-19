@@ -79,7 +79,7 @@ mobs.create_movement_functions = function(def,mob_register)
             end
             fire = minetest.get_item_group(node, "fire")
             if not self.on_fire and fire > 0 then
-                start_fire(self.object)
+                print("remember to do the fire methods into the mobs")
             end
             self.hurt_inside_timer = 0.25
         else

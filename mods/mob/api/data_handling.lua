@@ -74,7 +74,7 @@ mobs.create_data_handling_functions = function(def,mob_register)
         end
 
         if self.on_fire == true then
-            start_fire(self.object)
+            print("remember 2 do dat mob api methods boi")
         end
 
         --use this to handle the global mob table

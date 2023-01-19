@@ -191,19 +191,22 @@ function fire:on_step(dtime)
         return
     end
 
+    -- The owner died :(
     if self.owner:get_hp() <= 0 then
-        put_fire_out(self.owner)
+        self.owner:set_fire_state(false)
+        return
     end
 
     self.damage_timer = self.damage_timer + dtime
     self.life = self.life + dtime
 
+    -- The flame died out
     if self.life >= 7 then
-        put_fire_out(self.owner)
-        self.object:remove()
+        self.owner:set_fire_state(false)
         return
     end
 
+    -- Punching whatever it's attached to
     if self.damage_timer >= 1 then
 
         self.damage_timer = 0

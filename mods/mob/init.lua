@@ -446,7 +446,7 @@ mobs.register_mob(
         for i = 1,4 do
             local obj = minetest.add_entity(pos,"mob:medium_slime")
             if self.on_fire then
-                start_fire(obj)
+                print("Remember to implement the fire methods into the mob!")
             end
         end
     end,
@@ -495,7 +495,7 @@ mobs.register_mob(
         for i = 1,4 do
             local obj = minetest.add_entity(pos,"mob:small_slime")
             if self.on_fire then
-                start_fire(obj)
+                print("remember to do dat fire method in the mob api boi")
             end
         end
     end,

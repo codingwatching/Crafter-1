@@ -78,7 +78,7 @@ mobs.create_interaction_functions = function(def,mob_register)
                 end
             end
             if fire_it_up then
-                start_fire(self.object)
+                print("remember to do the fire methods into the mobs")
             end
         end
 
@@ -133,11 +133,10 @@ mobs.create_interaction_functions = function(def,mob_register)
                                     },vector.direction(pos,pos2))
                                     --light the player on fire
                                     if self.on_fire then
-                                        start_fire(object)
+                                        print("remember to do the fire methods into the mobs")
                                     end
                                     if object:get_fire_state() then
                                         print("implement fire spreading into the mobs again")
-                                        -- start_fire(self.object)
                                     end
                                 end
                             end
@@ -430,20 +429,19 @@ mobs.create_interaction_functions = function(def,mob_register)
                     if object:is_player() then
                         object:add_velocity(vel2)
                         if self.on_fire then
-                            start_fire(object)
+                            print("remember to do the fire methods into the mobs")
                         end
 
                         if object:get_fire_state() then
                             print("remember to set the mob on fire with the fire spread thing")
-                            -- start_fire(self.object)
                         end
                     else
                         object:add_velocity(vel2)
                         if self.on_fire then
-                            start_fire(object)
+                            print("remember to do the fire methods into the mobs")
                         end
                         if object:get_luaentity().on_fire then
-                            start_fire(self.object)
+                            print("remember to do the fire methods into the mobs")
                         end
                     end
                 end
