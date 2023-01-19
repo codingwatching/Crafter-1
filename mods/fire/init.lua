@@ -77,18 +77,18 @@ minetest.register_tool("fire:flint_and_steel", {
 
         if not sneak and nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
 
-        if minetest.get_node(pointed_thing.above).name ~= "air" then
-            minetest.sound_play( "flint_failed", {
-                pos = pointed_thing.above
-            })
-            return
-        end
-
         -- Can't make fire in the aether
         if pointed_thing.above.y >= 20000 then
             minetest.sound_play( "flint_failed", {
                 pos = pointed_thing.above,
                 pitch = math.random( 75, 95 ) / 100
+            })
+            return
+        end
+
+        if minetest.get_node(pointed_thing.above).name ~= "air" then
+            minetest.sound_play( "flint_failed", {
+                pos = pointed_thing.above
             })
             return
         end
