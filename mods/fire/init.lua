@@ -248,7 +248,7 @@ minetest.register_on_joinplayer(function(player)
     local metatable = getmetatable(player)
 
     -- Intake boolean, store as integer, return as boolean
-    function metatable:set_fire_state(state)
+    function metatable:set_fire_state(state, silent_extinguish)
 
         local current_state = player:get_fire_state()
 
@@ -259,6 +259,7 @@ minetest.register_on_joinplayer(function(player)
 
         -- Player is being lit on fire by a mod
         if state then
+
             local fire_entity = minetest.add_entity( player:get_pos(), "fire:fire" )
 
             -- A serious glitch has occured, log and keep the server running
@@ -283,12 +284,14 @@ minetest.register_on_joinplayer(function(player)
                 fire_entity:remove()
             end
             fire_channels[name]:send_all("0")
-            minetest.sound_play( "fire_extinguish", {
-                object = player,
-                gain = 0.3,
-                pitch = math.random( 80, 100 ) / 100
-            })
-
+            
+            if not silent_extinguish then
+                minetest.sound_play( "fire_extinguish", {
+                    object = player,
+                    gain = 0.3,
+                    pitch = math.random( 80, 100 ) / 100
+                })
+            end
         end
 
         meta:set_int("fire_state", state and 1 or 0)
@@ -297,6 +300,16 @@ minetest.register_on_joinplayer(function(player)
     function metatable:get_fire_state()
         return player:get_meta():get_int("fire_state") == 1
     end
+
+    local old_state = player:get_fire_state()
+
+    if not old_state then return end
+
+    player:set_fire_state(false, true)
+
+    minetest.after(2.1, function()
+        player:set_fire_state(true)
+    end)
 
 end)
 
