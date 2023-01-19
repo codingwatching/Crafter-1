@@ -278,10 +278,9 @@ function arrow:on_step( dtime, moveresult )
         -- Searching for a player or mob to hurt while flying through the air
         if not self.stuck and ( (is_player and not is_owner and object:get_hp() > 0 ) or ( is_mob and object:get_hp() > 0 ) ) then
 
-            object:punch(self.object, 2,
-                {
-                full_punch_interval=1.5,
-                damage_groups = {damage=3},
+            object:punch(self.object, 2, {
+                full_punch_interval = 1.5,
+                damage_groups = { damage = 3 },
             })
 
             self.object:remove()
