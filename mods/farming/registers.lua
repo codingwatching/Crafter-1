@@ -56,6 +56,8 @@ minetest.register_plant("sugarcane", {
     buildable_to = false,
     
     waving = 1,
+
+    plant_height = 7,
     
     walkable = false,
     --inventory_image   = def.inventory_image,
