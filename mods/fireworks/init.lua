@@ -27,6 +27,37 @@ extra smokey fireworks
 ]]
 
 
+local fireworks_alphabet = {
+    a = {
+        scale = 1,
+        vertices = {
+            {
+                color = "blue",
+                time = { min = 3, max = 3},
+                expansion = { min = -3, max = -3 },
+                expands = true,
+                coords = {
+                    vector.new( -1, 0, -1 ),
+                    vector.new( -1, 0,  1 ),
+                    vector.new(  1, 0,  1 ),
+                    vector.new(  1, 0, -1 ),
+
+                }
+            },
+            {
+                color = "blue",
+                time = { min = 3, max = 3},
+                expansion = { min = -3, max = -3 },
+                expands = true,
+                coords = {
+                    vector.new( -1, 0, 0 ),
+                    vector.new(  1, 0, 0 ),
+                }
+            }
+        }
+    }
+}
+
 -- This is laid out like an opengl vertices buffer slightly tweaked so it's more readable
 local test_box = {
     scale = 1,
@@ -35,6 +66,7 @@ local test_box = {
             color = "blue",
             -- Allow things to fade at different rates
             time = { min = 3, max = 3},
+            expands = false,
             coords = {
                 vector.new( -1, 0, -1 ),
                 vector.new( -1, 0, 1 ), -- left |
@@ -55,39 +87,47 @@ local function fireworks_debug_pop(pos, mesh)
         local coords = data_container.coords
         local color = data_container.color
         local time = data_container.time
+        local expansion = data_container.expansion
+        local expands = data_container.expands
 
         for i = 1,#coords - 1 do
 
             local min_pos = vector.add(vector.multiply(coords[i], scale), pos)
             local max_pos = vector.add(vector.multiply(coords[i + 1], scale), pos)
 
-            minetest.add_particlespawner({
-                amount = 30,
-                time = 0.01,
-                pos = {
-                    min = min_pos,
-                    max = max_pos
-                },
+            local definition = {}
 
-                exptime = { min = 1, max = 3 },
+            
+            definition.amount = 30
+            definition.time = 0.01
+            definition.pos = {
+                min = min_pos,
+                max = max_pos
+            }
 
-                -- Smoke expands and fades out
-                texture = {
-                    scale_tween = {
-                        {x = 1, y = 1},
-                        {x = 5, y = 5},
-                    },
-                    alpha_tween = { 1, 0 },
-                    name = "smoke.png^[colorize:" .. color .. ":255",
-                    glow = 14,
+            definition.exptime = { min = 1, max = 3 }
+
+            -- Smoke expands and fades out
+            definition.texture = {
+                scale_tween = {
+                    {x = 1, y = 1},
+                    {x = 5, y = 5},
                 },
-                -- Smoke explodes away from the center
-                attract = {
+                alpha_tween = { 1, 0 },
+                name = "smoke.png^[colorize:" .. color .. ":255",
+                glow = 14,
+            }
+            -- Smoke explodes away from the center
+            if expands then
+                definition.attract = {
                     kind = "point",
                     strength = { min = -5, max = -5 },
-                    origin = pos
+                    origin = pos,
+                    direction = vector.new(0,1,0),
+                    die_on_contact = false
                 }
-            })
+            end
+            minetest.add_particlespawner(definition)
         end
     end
 end
@@ -171,7 +211,7 @@ minetest.register_entity("fireworks:rocket", {
     on_step = function(self, dtime)    
         self.timer = self.timer + dtime
         if self.timer >= 1 then
-            fireworks_debug_pop(self.object:get_pos(), test_box)
+            fireworks_debug_pop(self.object:get_pos(), fireworks_alphabet.a)
             -- fireworks_pop(self.object:get_pos())
             self.object:remove()
         end
