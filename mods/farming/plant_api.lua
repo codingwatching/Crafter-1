@@ -375,7 +375,7 @@ minetest.register_plant = function( name, def )
             sounds              = def.stem_sounds,
             node_box            = def.stem_node_box,
             selection_box       = def.stem_selection_box,
-            paramtype2          = "facedir",
+            paramtype2          = "4dir",
         })
 
         minetest.register_node("farming:"..def.fruit_name, {
@@ -384,7 +384,7 @@ minetest.register_plant = function( name, def )
             groups      = def.fruit_groups,
             sounds      = def.fruit_sounds,
             drop        = def.fruit_drop,
-            paramtype2  = "facedir",
+            paramtype2  = "4dir",
             after_destruct = function( pos, oldnode )
 
                 local facedir = oldnode.param2
