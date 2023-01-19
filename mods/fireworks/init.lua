@@ -32,12 +32,67 @@ local test_box = {
     scale = 1,
     vertices = {
         {
-            vector.new( 0, 0, 0 ),
-            vector.new( 0, 0, 0 ),
-            vector.new( 0, 0, 0 ),
+            color = "blue",
+            -- Allow things to fade at different rates
+            time = { min = 3, max = 3},
+            coords = {
+                vector.new( -1, 0, -1 ),
+                vector.new( -1, 0, 1 ), -- left |
+                vector.new( 1, 0, 1 ), -- top -
+                vector.new( 1, 0, -1 ), -- right |
+                vector.new( -1, 0, -1 ), -- Loops over to bottom -
+                -- This includes a duplicate so things like text are possible
+            }
         }
     }
 }
+
+local function fireworks_debug_pop(pos, mesh)
+    local scale = mesh.scale
+    local vertices = mesh.vertices
+
+    for _,data_container in ipairs(vertices) do
+        local coords = data_container.coords
+        local color = data_container.color
+        local time = data_container.time
+
+        for i = 1,#coords - 1 do
+
+            local min_pos = vector.add(vector.multiply(coords[i], scale), pos)
+            local max_pos = vector.add(vector.multiply(coords[i + 1], scale), pos)
+
+            minetest.add_particlespawner({
+                amount = 30,
+                time = 0.01,
+                pos = {
+                    min = min_pos,
+                    max = max_pos
+                },
+
+                exptime = { min = 1, max = 3 },
+
+                -- Smoke expands and fades out
+                texture = {
+                    scale_tween = {
+                        {x = 1, y = 1},
+                        {x = 5, y = 5},
+                    },
+                    alpha_tween = { 1, 0 },
+                    name = "smoke.png^[colorize:" .. color .. ":255",
+                    glow = 14,
+                },
+                -- Smoke explodes away from the center
+                attract = {
+                    kind = "point",
+                    strength = { min = -5, max = -5 },
+                    origin = pos
+                }
+            })
+        end
+    end
+end
+
+
 
 
 local function fireworks_pop(pos)
@@ -89,6 +144,7 @@ minetest.register_entity("fireworks:rocket", {
     
     on_activate = function(self, staticdata, dtime_s)
         self.object:set_acceleration(vector.new(0,50,0))
+        local pos = self.object:get_pos()
         minetest.add_particlespawner({
             amount = 30,
             time = 1,
@@ -115,12 +171,12 @@ minetest.register_entity("fireworks:rocket", {
     on_step = function(self, dtime)    
         self.timer = self.timer + dtime
         if self.timer >= 1 then
-            fireworks_pop(self.object:get_pos())
+            fireworks_debug_pop(self.object:get_pos(), test_box)
+            -- fireworks_pop(self.object:get_pos())
             self.object:remove()
         end
     end,
 })
-
 
 minetest.register_craftitem("fireworks:rocket", {
     description = "Fireworks",
