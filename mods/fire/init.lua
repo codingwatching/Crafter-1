@@ -301,6 +301,7 @@ minetest.register_on_joinplayer(function(player)
     end
 end)
 
+--[[
 local fire_obj
 
 function start_fire(object)
@@ -361,3 +362,4 @@ function put_fire_out(object)
     end
 
 end
+]]--
