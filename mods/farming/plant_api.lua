@@ -11,11 +11,16 @@ local get_node_light = minetest.get_node_light
 local dig_node = minetest.dig_node
 local add_particlespawner = minetest.add_particlespawner
 local register_craftitem = minetest.register_craftitem
-local math_random = math.random
 local registered_nodes = minetest.registered_nodes
 local item_place = minetest.item_place
 local place_node = minetest.place_node
 local vec_new = vector.new
+local vec_add = vector.add
+local vec_subtract = vector.subtract
+local vec_multiply = vector.multiply
+local vec_direction = vector.direction
+
+local math_random = math.random
 
 
 -- Plant growth time constants (in seconds)
@@ -27,16 +32,16 @@ local water_nodes = {
 }
 
 local stem_search_instructions = {
-    vector.new( 1, 0, 0 ),
-    vector.new(-1, 0, 0 ),
-    vector.new( 0, 0, 1 ),
-    vector.new( 0, 0,-1 )
+    vec_new( 1, 0, 0 ),
+    vec_new(-1, 0, 0 ),
+    vec_new( 0, 0, 1 ),
+    vec_new( 0, 0,-1 )
 }
 
 -- TODO: Optimize this and reuse as much data as possible. Farms can be huge!
 -- TODO: Custom functions for plants
 
-local reused_vector1 = vector.new(0,0,0)
+local reused_vector1 = vec_new(0,0,0)
 -- This second heap object only exists so we can do the find_water() calculation below
 local reused_vector2 = vec_new(0,0,0)
 local gotten_node
@@ -89,16 +94,16 @@ local function spawn_plant_particles(pos, plant_name)
     add_particlespawner({
         time = 0.0001,
         pos = {
-            min = vector.subtract(pos, -0.5),
-            max = vector.subtract(pos, 0.5)
+            min = vec_subtract(pos, -0.5),
+            max = vec_subtract(pos, 0.5)
         },
         acc = {
-            min = vector.new(0,-9.81,0),
-            max = vector.new(0,-9.81,0)
+            min = vec_new(0,-9.81,0),
+            max = vec_new(0,-9.81,0)
         },
         vel = {
-            min = vector.new(-0.5,1,-0.5),
-            max = vector.new(0.5,3,0.5)
+            min = vec_new(-0.5,1,-0.5),
+            max = vec_new(0.5,3,0.5)
         },
         drag = 0.2,
         amount = math.random(10,20),
@@ -288,7 +293,7 @@ minetest.register_plant = function( name, def )
 
                     if not found then return end
 
-                    local param2 = dir_to_fourdir( vector.direction( pos, reused_vector1 ) )
+                    local param2 = dir_to_fourdir( vec_direction( pos, reused_vector1 ) )
 
                     set_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
 
@@ -388,8 +393,8 @@ minetest.register_plant = function( name, def )
 
                 local facedir = oldnode.param2
                 facedir = fourdir_to_dir(facedir)
-                local dir = vector.multiply(facedir,-1)
-                local stem_pos = vector.add(dir,pos)
+                local dir = vec_multiply(facedir,-1)
+                local stem_pos = vec_add(dir,pos)
 
                 if get_node(stem_pos).name == "farming:" .. name .. "_complete" then
                     set_node( stem_pos, { name = "farming:"..name.."_" .. max } )
@@ -415,7 +420,7 @@ minetest.register_plant = function( name, def )
 
                 local buildable_to = nodedef.buildable_to
 
-                if not buildable_to and vector.subtract(pointed_thing.above, pointed_thing.under) ~= vector.new(0,1,0) then return end
+                if not buildable_to and vec_subtract(pointed_thing.above, pointed_thing.under) ~= vec_new(0,1,0) then return end
 
                 if not buildable_to and get_node(pointed_thing.above).name ~= "air" then return end
 
