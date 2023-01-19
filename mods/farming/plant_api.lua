@@ -76,6 +76,24 @@ local function start_plant_timer(pos)
     minetest.get_node_timer(pos):start(1)
 end
 
+local soil_nodes = {
+    ["farming:farmland_dry"] = true,
+    ["farming:farmland_wet"] = true
+}
+local sugarcane_nodes = {
+    ["main:dirt"] = true,
+    ["main:grass"] = true,
+    ["main:sand"] = true
+}
+
+local function is_soil(node_name)
+    return soil_nodes[node_name] ~= nil
+end
+
+local function is_sugarcane_soil(node_name)
+    return sugarcane_nodes[node_name] ~= nil
+end
+
 local function spawn_plant_particles(pos, plant_name)
     minetest.add_particlespawner({
         time = 0.0001,
@@ -149,6 +167,8 @@ minetest.register_plant = function( name, def )
 
             on_timer = function(pos)
 
+                print("I am a sugarcane")
+
                 if too_dark_to_grow(pos) then return end
 
                 -- These plants grow vertically so search near in radius
@@ -185,9 +205,12 @@ minetest.register_plant = function( name, def )
                 gotten_name = minetest.get_node(pos).name
                 able_to_grow = minetest.get_item_group(gotten_name, "soil") > 0
 
-                if able_to_grow then return end
-
                 pos.y = pos.y + 1
+
+                start_plant_timer(pos)
+
+                if able_to_grow then return end
+                
                 plant_dies( pos, nodename )
             end
 
