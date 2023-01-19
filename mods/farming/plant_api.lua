@@ -76,6 +76,14 @@ local function start_plant_timer(pos)
     minetest.get_node_timer(pos):start(1)
 end
 
+local function plant_dies(pos, plant_name)
+    minetest.dig_node( pos )
+    minetest.sound_play( "dirt", {
+        pos = pos,
+        gain = 0.2
+    })
+end
+
 minetest.register_plant = function( name, def )
 
     local max = 1
@@ -112,12 +120,7 @@ minetest.register_plant = function( name, def )
                 gotten_node = minetest.get_node(pos)
 
                 if gotten_node.name == node.name then
-
-                    minetest.node_dig( pos, gotten_node, digger )
-                    minetest.sound_play( "dirt", {
-                        pos = pos,
-                        gain = 0.2
-                    })
+                    plant_dies( pos, nodename )
                 end
             end
 
@@ -146,12 +149,7 @@ minetest.register_plant = function( name, def )
 
                     pos.y = pos.y + 1
 
-                    minetest.dig_node(pos)
-
-                    minetest.sound_play( "dirt", {
-                        pos = pos,
-                        gain = 0.2
-                    })
+                    plant_dies( pos, nodename )
                 end
 
                 start_plant_timer(pos)
@@ -167,7 +165,7 @@ minetest.register_plant = function( name, def )
                 if able_to_grow then return end
 
                 pos.y = pos.y + 1
-                minetest.dig_node(pos)
+                plant_dies( pos, nodename )
             end
 
         -- Plants that grow in place, like wheat
@@ -176,11 +174,7 @@ minetest.register_plant = function( name, def )
             on_timer = function(pos)
 
                 if too_dark_to_grow(pos) then
-                    minetest.dig_node(pos)
-                    minetest.sound_play( "dirt", {
-                        pos = pos,
-                        gain = 0.2
-                    })
+                    plant_dies( pos, nodename )
                     return
                 end
 
@@ -197,12 +191,7 @@ minetest.register_plant = function( name, def )
                     return
                 end
 
-                minetest.dig_node(pos)
-                minetest.sound_play( "dirt", {
-                    pos = pos,
-                    gain = 0.2
-                })
-
+                plant_dies( pos, nodename )
             end
 
             after_place_node = function(pos)
@@ -214,7 +203,7 @@ minetest.register_plant = function( name, def )
                 if able_to_grow then return end
 
                 pos.y = pos.y + 1
-                minetest.dig_node(pos)
+                plant_dies( pos, nodename )
 
             end
 
@@ -225,12 +214,7 @@ minetest.register_plant = function( name, def )
             on_timer = function(pos)
 
                 if too_dark_to_grow(pos) then
-                    minetest.dig_node(pos)
-                    minetest.sound_play( "dirt", {
-                        pos = pos,
-                        gain = 0.2
-                    })
-
+                    plant_dies( pos, nodename )
                     return
                 end
 
@@ -240,11 +224,7 @@ minetest.register_plant = function( name, def )
 
                 if not found then
                     -- No farmland was found
-                    minetest.dig_node(pos)
-                    minetest.sound_play( "dirt", {
-                        pos = pos,
-                        gain = 0.2
-                    })
+                    plant_dies( pos, nodename )
                     return
                 end
 
@@ -303,7 +283,7 @@ minetest.register_plant = function( name, def )
                 if found then return end
 
                 pos.y = pos.y + 1
-                minetest.dig_node(pos)
+                plant_dies( pos, nodename )
             end
         end
 
