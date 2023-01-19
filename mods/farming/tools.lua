@@ -1,3 +1,4 @@
+-- TODO: Gem hoes
 --Quick definition of hoes
 local materials  = {"wood","stone","iron","gold","diamond"}
 local construct = {"wood","cobble","iron","gold","diamond"}
