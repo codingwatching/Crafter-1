@@ -71,9 +71,11 @@ minetest.register_tool("fire:flint_and_steel", {
             return
         end
 
+        local sneak = placer:get_player_control().sneak
+
         local nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
 
-        if nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
+        if not sneak and nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
 
         if minetest.get_node(pointed_thing.above).name ~= "air" then
             minetest.sound_play("flint_failed", {pos=pointed_thing.above})
