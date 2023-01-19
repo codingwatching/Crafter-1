@@ -93,18 +93,26 @@ minetest.register_tool("fire:flint_and_steel", {
             return
         end
 
-        minetest.add_node(pointed_thing.above,{name="fire:fire"})
-        minetest.sound_play("flint_and_steel", {pos=pointed_thing.above})
+        minetest.add_node( pointed_thing.above, { name = "fire:fire" } )
+        minetest.sound_play( "flint_and_steel", {
+            pos = pointed_thing.above
+        })
+
         itemstack:add_wear(100)
         return(itemstack)
     end,
     tool_capabilities = {
         groupcaps={
-            _namespace_reserved = {times={[1]=5555}, uses=0, maxlevel=1},
-        },
+            _namespace_reserved = { times = { [ 1 ] = 5555 }, uses = 0, maxlevel = 1},
+        }
     },
-    groups = {flint=1},
-    sound = {breaks = {name="tool_break",gain=0.4}},
+    groups = { flint = 1},
+    sound = {
+        breaks = {
+            name = "tool_break",
+            gain = 0.4
+        }
+    },
 })
 
 minetest.register_craft({
