@@ -135,8 +135,9 @@ mobs.create_interaction_functions = function(def,mob_register)
                                     if self.on_fire then
                                         start_fire(object)
                                     end
-                                    if is_player_on_fire(object) then
-                                        start_fire(self.object)
+                                    if object:get_fire_state() then
+                                        print("implement fire spreading into the mobs again")
+                                        -- start_fire(self.object)
                                     end
                                 end
                             end
@@ -431,8 +432,10 @@ mobs.create_interaction_functions = function(def,mob_register)
                         if self.on_fire then
                             start_fire(object)
                         end
-                        if is_player_on_fire(object) then
-                            start_fire(self.object)
+
+                        if object:get_fire_state() then
+                            print("remember to set the mob on fire with the fire spread thing")
+                            -- start_fire(self.object)
                         end
                     else
                         object:add_velocity(vel2)

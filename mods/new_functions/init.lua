@@ -396,9 +396,7 @@ local index_players_surroundings = function(dtime)
 
         start_fire(player)
 
-        if is_player_on_fire(player) then
-            extinguish(player)
-        end
+        player:set_fire_state(false)
         --handle_player_suffocation(player,dtime)
     end
 end
