@@ -1,5 +1,5 @@
 --Quick definition of hoes
-local material  = {"wood","stone","iron","gold","diamond"}
+local materials  = {"wood","stone","iron","gold","diamond"}
 local construct = {"wood","cobble","iron","gold","diamond"}
 local function till_soil(pos)
     local nodey = minetest.get_node(pos).name
@@ -11,7 +11,8 @@ local function till_soil(pos)
     end
 end
 
-for level,material in pairs(material) do
+for level,material in pairs(materials) do
+    local damage
     local wear = 100*(6-level)
     local groupcaps2
     if material == "wood" then
@@ -66,16 +67,16 @@ for level,material in pairs(material) do
             },
         sound = {breaks = {name="tool_break",gain=0.4}}, -- change this
         groups = {flammable = 2, tool=1 },
-        
+
         on_place = function(itemstack, placer, pointed_thing)
             local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
             local sneak = placer:get_player_control().sneak
-            
+
             if not sneak and noddef.on_rightclick then
                 minetest.item_place(itemstack, placer, pointed_thing)
                 return
             end
-        
+
             local tilled = till_soil(pointed_thing.under)
             if tilled == true then 
                 if minetest.registered_nodes[minetest.get_node(vector.new(pointed_thing.under.x,pointed_thing.under.y+1,pointed_thing.under.z)).name].buildable_to then
@@ -83,7 +84,7 @@ for level,material in pairs(material) do
                 end
                 itemstack:add_wear(wear)
             end
-            
+
             local damage = itemstack:get_wear()
             if damage <= 0 and tilled == true  then
                 minetest.sound_play("tool_break",{object=placer})
@@ -107,4 +108,4 @@ for level,material in pairs(material) do
             {"", "main:stick", ""}
         }
     })
-end 
+end
