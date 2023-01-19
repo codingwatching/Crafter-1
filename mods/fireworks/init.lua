@@ -1,29 +1,36 @@
-local colors ={
+local colors = {
     "red",
     "white",
     "blue"
 }
-local colors_halloween ={
+
+local colors_halloween = {
     "orange",
     "black"
 }
 
 
 local function fireworks_pop(pos)
-    for _,color in pairs(colors) do
+    for _,color in ipairs(colors) do
+        print("this is running")
         minetest.add_particlespawner({
-            amount = 15,
-            time = 0.001,
-            minpos = pos,
-            maxpos = pos,
-            minvel = vector.new(-16,-16,-16),
-            maxvel = vector.new(16,16,16),
-            minacc = {x=0, y=0, z=0},
-            maxacc = {x=0, y=0, z=0},
-            minexptime = 1.1,
-            maxexptime = 1.5,
-            minsize = 1,
-            maxsize = 2,
+            amount = 30,
+            time = 0.01,
+            pos = pos,
+            exptime = { 5, 10 },
+            vel = {
+                min = vector.new(0,0,0),
+                max = vector.new(0,0,0)
+            },
+            --[[
+            attract = {
+                kind = "point",
+                strength = {-0.1, -0.5},
+                origin = pos
+            },
+            ]]
+            radius = 1,
+            scale = 2,
             collisiondetection = false,
             collision_removal = false,
             vertical = false,
