@@ -3,8 +3,14 @@ local find_nodes_in_area = minetest.find_nodes_in_area
 local get_node = minetest.get_node
 local set_node = minetest.set_node
 local get_node_timer = minetest.get_node_timer
-local get_item_group = minetest.get_item_group
+local register_node = minetest.register_node
+local dir_to_fourdir = minetest.dir_to_fourdir
+local fourdir_to_dir = minetest.fourdir_to_dir
+local sound_play = minetest.sound_play
+local get_node_light = minetest.get_node_light
 local dig_node = minetest.dig_node
+local add_particlespawner = minetest.add_particlespawner
+local register_craftitem = minetest.register_craftitem
 local math_random = math.random
 local vec_new = vector.new
 
@@ -52,12 +58,12 @@ local function find_water_vertical(pos, plant_height)
 end
 
 local function too_dark_to_grow(pos)
-    return minetest.get_node_light(pos) < 10
+    return get_node_light(pos) < 10
 end
 
 local function start_plant_timer(pos)
     --minetest.get_node_timer(pos):start(math.random(6, 250))
-    minetest.get_node_timer(pos):start(1)
+    get_node_timer(pos):start(1)
 end
 
 local soil_nodes = {
@@ -79,7 +85,7 @@ local function is_sugarcane_soil(node_name)
 end
 
 local function spawn_plant_particles(pos, plant_name)
-    minetest.add_particlespawner({
+    add_particlespawner({
         time = 0.0001,
         pos = {
             min = vector.subtract(pos, -0.5),
@@ -101,8 +107,8 @@ local function spawn_plant_particles(pos, plant_name)
 end
 
 local function plant_dies(pos, plant_name)
-    minetest.dig_node( pos )
-    minetest.sound_play( "dirt", {
+    dig_node( pos )
+    sound_play( "dirt", {
         pos = pos,
         gain = 0.2
     })
@@ -143,7 +149,7 @@ minetest.register_plant = function( name, def )
                 -- Check above
                 pos.y = pos.y + 1
 
-                gotten_node = minetest.get_node(pos)
+                gotten_node = get_node(pos)
 
                 if gotten_node.name == node.name then
                     plant_dies( pos, nodename )
@@ -152,7 +158,7 @@ minetest.register_plant = function( name, def )
                 -- Now check below
                 pos.y = pos.y - 2
 
-                gotten_node = minetest.get_node(pos)
+                gotten_node = get_node(pos)
                 if gotten_node.name == node.name then
                     start_plant_timer(pos)
                 end
@@ -170,7 +176,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                gotten_name = minetest.get_node(pos).name
+                gotten_name = get_node(pos).name
 
                 able_to_grow = is_sugarcane_soil(gotten_name) or gotten_name == nodename
 
@@ -178,7 +184,7 @@ minetest.register_plant = function( name, def )
 
                     pos.y = pos.y + 2
 
-                    if minetest.get_node(pos).name ~= "air" then return end
+                    if get_node(pos).name ~= "air" then return end
 
                     set_node( pos, { name = "farming:" .. name } )
 
@@ -209,7 +215,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                able_to_grow = is_soil(minetest.get_node(pos).name)
+                able_to_grow = is_soil(get_node(pos).name)
 
                 if not able_to_grow then
                     plant_dies( pos, nodename )
@@ -241,7 +247,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                able_to_grow = is_soil(minetest.get_node(pos).name)
+                able_to_grow = is_soil(get_node(pos).name)
 
                 if not able_to_grow then
                     -- No farmland was found
@@ -271,7 +277,7 @@ minetest.register_plant = function( name, def )
                         reused_vector1.x = pos.x + direction.x
                         reused_vector1.z = pos.z + direction.z
 
-                        if minetest.get_node(reused_vector1).name == "air" then
+                        if get_node(reused_vector1).name == "air" then
                             -- Reused_vector1 is now the selected position
                             found = true
                             break
@@ -281,9 +287,9 @@ minetest.register_plant = function( name, def )
 
                     if not found then return end
 
-                    local param2 = minetest.dir_to_fourdir( vector.direction( pos, reused_vector1 ) )
+                    local param2 = dir_to_fourdir( vector.direction( pos, reused_vector1 ) )
 
-                    minetest.add_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
+                    set_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
 
                     set_node( pos, { name = "farming:" .. name .. "_complete", param2 = param2 } )
 
@@ -317,7 +323,7 @@ minetest.register_plant = function( name, def )
 
         def.groups.plants = 1
 
-        minetest.register_node(nodename, {
+        register_node(nodename, {
             description               = def.description,
             drawtype                  = def.drawtype,
             waving                    = def.waving,
@@ -355,7 +361,7 @@ minetest.register_plant = function( name, def )
     -- Final stage for grow in place plant stems that create food, ie, pumpkins, melons
     -- This node makes it look attached to the fruit
     if def.grows == "in_place_yields" then
-        minetest.register_node("farming:" .. name .. "_complete", {
+        register_node("farming:" .. name .. "_complete", {
             description         = def.stem_description,
             tiles               = def.stem_tiles,
             drawtype            = def.stem_drawtype,
@@ -370,7 +376,7 @@ minetest.register_plant = function( name, def )
             paramtype2          = "4dir",
         })
 
-        minetest.register_node("farming:"..def.fruit_name, {
+        register_node("farming:"..def.fruit_name, {
             description = def.fruit_description,
             tiles       = def.fruit_tiles,
             groups      = def.fruit_groups,
@@ -380,11 +386,11 @@ minetest.register_plant = function( name, def )
             after_destruct = function( pos, oldnode )
 
                 local facedir = oldnode.param2
-                facedir = minetest.fourdir_to_dir(facedir)
+                facedir = fourdir_to_dir(facedir)
                 local dir = vector.multiply(facedir,-1)
                 local stem_pos = vector.add(dir,pos)
 
-                if minetest.get_node(stem_pos).name == "farming:" .. name .. "_complete" then
+                if get_node(stem_pos).name == "farming:" .. name .. "_complete" then
                     set_node( stem_pos, { name = "farming:"..name.."_" .. max } )
                     start_plant_timer(stem_pos)
                 end
@@ -393,7 +399,7 @@ minetest.register_plant = function( name, def )
     end
 
     if def.seed_name then
-        minetest.register_craftitem( "farming:" .. def.seed_name .. "_seeds", {
+        register_craftitem( "farming:" .. def.seed_name .. "_seeds", {
             description = def.seed_description,
             inventory_image = def.seed_inventory_image,
             on_place = function(itemstack, placer, pointed_thing)
@@ -402,9 +408,9 @@ minetest.register_plant = function( name, def )
                     return itemstack
                 end
 
-                local nodedef = minetest.registered_nodes[get_node(pointed_thing.under).name]
+                local nodedef = registered_nodes[get_node(pointed_thing.under).name]
 
-                if nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
+                if nodedef.on_rightclick then return item_place(itemstack, placer, pointed_thing) end
 
                 local buildable_to = nodedef.buildable_to
 
@@ -421,12 +427,12 @@ minetest.register_plant = function( name, def )
                 end
 
                 itemstack:take_item()
-                minetest.sound_play( "leaves", {
+                sound_play( "leaves", {
                     pos = pointed_thing.above,
                     gain = 1.0
                 })
 
-                minetest.place_node(pointed_thing.above, { name = def.seed_plants })
+                place_node(pointed_thing.above, { name = def.seed_plants })
 
                 start_plant_timer(pointed_thing.above)
 
