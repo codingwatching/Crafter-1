@@ -61,19 +61,25 @@ minetest.register_node("fire:fire", {
     end,
 })
 
---flint and steel
+-- Flint and steel
 minetest.register_tool("fire:flint_and_steel", {
     description = "Flint and Steel",
     inventory_image = "flint_and_steel.png",
     on_place = function(itemstack, placer, pointed_thing)
+
         if pointed_thing.type ~= "node" then
             return
         end
+
+        local nodedef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
+
+        if nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
+
         if minetest.get_node(pointed_thing.above).name ~= "air" then
             minetest.sound_play("flint_failed", {pos=pointed_thing.above})
             return
         end
-        
+
         --can't make fire in the aether
         if pointed_thing.above.y >= 20000 then
             minetest.sound_play("flint_failed", {pos=pointed_thing.above,pitch=math.random(75,95)/100})
