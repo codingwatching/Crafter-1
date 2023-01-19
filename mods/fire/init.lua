@@ -10,9 +10,12 @@ local remove_node = minetest.remove_node
 local add_entity = minetest.add_entity
 local after = minetest.after
 local log = minetest.log
+local vec_new = vector.new
+local math_random = math.random
+local getmetatable = getmetatable
 
 local function start_fire_timer(pos)
-    get_node_timer(pos):start(math.random(1,7))
+    get_node_timer(pos):start(math_random(1,7))
 end
 
 minetest.register_node("fire:fire", {
@@ -38,7 +41,7 @@ minetest.register_node("fire:fire", {
     light_source = 11,
     on_construct = function(pos)
 
-        local under = get_node( vector.new( pos.x, pos.y - 1, pos.z ) ).name
+        local under = get_node( vec_new( pos.x, pos.y - 1, pos.z ) ).name
         -- Creates a nether portal
         if under == "nether:obsidian" then
             remove_node(pos)
@@ -50,7 +53,7 @@ minetest.register_node("fire:fire", {
     end,
     on_timer = function(pos)
 
-        local fire_spread_position = find_node_near(pos, 1, {"group:flammable"})
+        local fire_spread_position = find_node_near( pos, 1, { "group:flammable" } )
 
         -- Reduce the amount of serverwide fires that can happen from stagnant fire nodes in air
         if not fire_spread_position then
@@ -61,7 +64,7 @@ minetest.register_node("fire:fire", {
         if fire_spread_position then
             -- This encourages players to use their flint and steel more, along with reducing the amount of
             -- huge server wide fires that can happen
-            if math.random() > 0.25 then
+            if math_random() > 0.25 then
 
                 set_node( fire_spread_position, { name = "fire:fire" } )
                 start_fire_timer(fire_spread_position)
@@ -92,7 +95,7 @@ minetest.register_tool("fire:flint_and_steel", {
         if pointed_thing.above.y >= 20000 then
             sound_play( "flint_failed", {
                 pos = pointed_thing.above,
-                pitch = math.random( 75, 95 ) / 100
+                pitch = math_random( 75, 95 ) / 100
             })
             return
         end
@@ -280,8 +283,8 @@ minetest.register_on_joinplayer(function(player)
             end
 
             fire_entity:get_luaentity().owner = player
-            fire_entity:set_attach(player, "", vector.new( 0, 11, 0 ), vector.new( 0, 0, 0 ) )
-            fire_entity:set_properties( { visual_size = vector.new( 1, 2, 1 ) } )
+            fire_entity:set_attach(player, "", vec_new( 0, 11, 0 ), vec_new( 0, 0, 0 ) )
+            fire_entity:set_properties( { visual_size = vec_new( 1, 2, 1 ) } )
             fire_channels[name]:send_all("1")
 
             metatable.fire_entity = fire_entity
@@ -300,7 +303,7 @@ minetest.register_on_joinplayer(function(player)
                 sound_play( "fire_extinguish", {
                     object = player,
                     gain = 0.3,
-                    pitch = math.random( 80, 100 ) / 100
+                    pitch = math_random( 80, 100 ) / 100
                 })
             end
         end
@@ -349,7 +352,7 @@ function start_fire(object)
 
             local entity_fire_def = object:get_luaentity().fire_table
 
-            fire_obj:set_attach(object, "", entity_fire_def.position,vector.new(0,0,0))
+            fire_obj:set_attach(object, "", entity_fire_def.position,vec_new(0,0,0))
 
             fire_obj:set_properties({visual_size=entity_fire_def.visual_size})
 
@@ -384,7 +387,7 @@ function put_fire_out(object)
         minetest.sound_play( "fire_extinguish", {
             object = object,
             gain = 0.3,
-            pitch = math.random( 80, 100 ) / 100
+            pitch = math_random( 80, 100 ) / 100
         })
 
     end
