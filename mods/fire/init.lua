@@ -234,17 +234,13 @@ end
 minetest.register_entity( "fire:fire", fire )
 
 
--- Fire event handling
-
 local fire_channels = {}
-
-minetest.register_on_joinplayer(function(player)
-    local name = player:get_player_name()
-    fire_channels[name] = minetest.mod_channel_join(name..":fire_state")
-end)
 
 -- Injects fire methods into the player object when they join the server
 minetest.register_on_joinplayer(function(player)
+
+    local player_name = player:get_player_name()
+    fire_channels[player_name] = minetest.mod_channel_join(player_name..":fire_state")
 
     local metatable = getmetatable(player)
 
