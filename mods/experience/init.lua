@@ -452,7 +452,7 @@ function xp_orb:on_step(dtime)
     local in_water = false
 
     -- XP flowing or floating in water
-    if def.name == "main:water" or def.name == "main:waterflow" then
+    if def and def.name == "main:water" or def.name == "main:waterflow" then
 
         in_water = true
 
