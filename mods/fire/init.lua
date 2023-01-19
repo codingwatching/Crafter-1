@@ -1,7 +1,7 @@
 local ipairs = ipairs
 
 local function start_fire_timer(pos)
-    minetest.get_node_timer(pos):start(math.random(1,6))
+    minetest.get_node_timer(pos):start(math.random(1,7))
 end
 
 minetest.register_node("fire:fire", {
@@ -14,7 +14,7 @@ minetest.register_node("fire:fire", {
                 type = "vertical_frames",
                 aspect_w = 16,
                 aspect_h = 16,
-                length = 0.3
+                length = 0.6
             },
         },
     },
@@ -39,20 +39,25 @@ minetest.register_node("fire:fire", {
     end,
     on_timer = function(pos)
 
-        if math.random() > 0.75 then
+        local fire_spread_position = minetest.find_node_near(pos, 1, {"group:flammable"})
+
+        -- Reduce the amount of serverwide fires that can happen from stagnant fire nodes in air
+        if not fire_spread_position then
             minetest.remove_node(pos)
             return
         end
 
-        start_fire_timer(pos)
-        if math.random() > 0.5 then
-            for _,new_position in ipairs(minetest.find_nodes_in_area(vector.subtract(pos,1), vector.add(pos,1), {"group:flammable"})) do
-                if math.random() > 0.75 then
-                    minetest.set_node( new_position,{ name = "fire:fire" } )
-                    start_fire_timer(new_position)
-                end
+        if fire_spread_position then
+            -- This encourages players to use their flint and steel more, along with reducing the amount of
+            -- huge server wide fires that can happen
+            if math.random() > 0.25 then
+
+                minetest.set_node( fire_spread_position, { name = "fire:fire" } )
+                start_fire_timer(fire_spread_position)
             end
         end
+
+        start_fire_timer(pos)
     end,
 })
 
