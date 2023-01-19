@@ -180,7 +180,7 @@ minetest.register_plant = function( name, def )
 
                     if minetest.get_node(pos).name ~= "air" then return end
 
-                    minetest.set_node( pos, { name = "farming:" .. name } )
+                    set_node( pos, { name = "farming:" .. name } )
 
                     start_plant_timer(pos)
 
@@ -218,7 +218,7 @@ minetest.register_plant = function( name, def )
 
                 if i < max then
                     pos.y = pos.y + 1
-                    minetest.set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
+                    set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
                     start_plant_timer(pos)
                 end
 
@@ -256,7 +256,7 @@ minetest.register_plant = function( name, def )
                 -- Stem is still growing
                 if i < max then
 
-                    minetest.set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
+                    set_node( pos, { name = "farming:" .. name .. "_" .. ( i + 1 ) } )
 
                 -- Stem is yielding a crop
                 else
@@ -285,7 +285,7 @@ minetest.register_plant = function( name, def )
 
                     minetest.add_node( reused_vector1, { name = def.grown_node, param2 = param2 } )
 
-                    minetest.set_node( pos, { name = "farming:" .. name .. "_complete", param2 = param2 } )
+                    set_node( pos, { name = "farming:" .. name .. "_complete", param2 = param2 } )
 
                 end
 
@@ -385,7 +385,7 @@ minetest.register_plant = function( name, def )
                 local stem_pos = vector.add(dir,pos)
 
                 if minetest.get_node(stem_pos).name == "farming:" .. name .. "_complete" then
-                    minetest.set_node( stem_pos, { name = "farming:"..name.."_" .. max } )
+                    set_node( stem_pos, { name = "farming:"..name.."_" .. max } )
                     start_plant_timer(stem_pos)
                 end
             end
@@ -408,15 +408,15 @@ minetest.register_plant = function( name, def )
 
                 local buildable_to = nodedef.buildable_to
 
-                if not buildable_to and vector.subtract(pointed_thing.above, pointed_thing.under) ~= vector.new(0,1,0) then print("fook") return end
+                if not buildable_to and vector.subtract(pointed_thing.above, pointed_thing.under) ~= vector.new(0,1,0) then return end
 
-                if not buildable_to and minetest.get_node(pointed_thing.above).name ~= "air" then return end
+                if not buildable_to and get_node(pointed_thing.above).name ~= "air" then return end
 
                 reused_vector1.x = pointed_thing.above.x
                 reused_vector1.y = pointed_thing.above.y - 1
                 reused_vector1.z = pointed_thing.above.z
 
-                if minetest.get_item_group(minetest.get_node(reused_vector1).name, "farmland") == 0 or minetest.get_node(pointed_thing.above).name ~= "air"  then
+                if not is_soil(get_node(reused_vector1).name) or get_node(pointed_thing.above).name ~= "air"  then
                     return itemstack
                 end
 
