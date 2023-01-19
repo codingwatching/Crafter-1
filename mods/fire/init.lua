@@ -255,6 +255,7 @@ minetest.register_on_joinplayer(function(player)
 
     -- Intake boolean, store as integer, return as boolean
     function metatable:set_fire_state(state)
+
         local current_state = player:get_fire_state()
 
         if current_state == state then return end
@@ -274,14 +275,14 @@ minetest.register_on_joinplayer(function(player)
             fire_entity:get_luaentity().owner = player
             fire_entity:set_attach(player, "", vector.new( 0, 11, 0 ), vector.new( 0, 0, 0 ) )
             fire_entity:set_properties( { visual_size = vector.new( 1, 2, 1 ) } )
-            fire_entity[name]:send_all("1")
+            fire_channels[name]:send_all("1")
 
             metatable.fire_entity = fire_entity
         else
 
             local fire_entity = metatable.fire_entity
 
-            if fire_entity:get_luaentity() then
+            if fire_entity and fire_entity:get_luaentity() then
                 fire_entity:remove()
             end
             fire_channels[name]:send_all("0")
