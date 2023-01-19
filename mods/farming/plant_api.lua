@@ -197,16 +197,15 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                gotten_name = minetest.get_node(pos).name
-
-                pos.y = pos.y + 1
-
-                if is_soil(gotten_name) then
-                    start_plant_timer(pos)
+                if not is_soil(minetest.get_node(pos).name) then
+                    pos.y = pos.y + 1
+                    plant_dies( pos, nodename )
                     return
                 end
 
-                plant_dies( pos, nodename )
+                pos.y = pos.y + 1
+
+                start_plant_timer(pos)
             end
 
         -- Plants that grow in place, like wheat
