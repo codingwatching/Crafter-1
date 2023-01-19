@@ -12,6 +12,9 @@ local dig_node = minetest.dig_node
 local add_particlespawner = minetest.add_particlespawner
 local register_craftitem = minetest.register_craftitem
 local math_random = math.random
+local registered_nodes = minetest.registered_nodes
+local item_place = minetest.item_place
+local place_node = minetest.place_node
 local vec_new = vector.new
 
 
@@ -32,8 +35,6 @@ local stem_search_instructions = {
 
 -- TODO: Optimize this and reuse as much data as possible. Farms can be huge!
 -- TODO: Custom functions for plants
--- TODO: Make soil check a function
--- TODO: Use node timers instead
 
 local reused_vector1 = vector.new(0,0,0)
 -- This second heap object only exists so we can do the find_water() calculation below
