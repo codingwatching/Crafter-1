@@ -143,7 +143,7 @@ fire.initial_properties = {
 fire.frame = 0
 fire.frame_timer = 0
 fire.glow = -1
-fire.timer = 0
+fire.damage_timer = 0
 fire.life = 0
 
 -- Fire methods
@@ -186,35 +186,39 @@ function fire:on_step(dtime)
         return
     end
 
-    if self.owner and (self.owner:is_player() or self.owner:get_luaentity()) then
+    if not self.owner:is_player() and not self.owner:get_luaentity() then
+        self.object:remove()
+        return
+    end
 
-        if self.owner:is_player() and self.owner:get_hp() <= 0 then
-            put_fire_out(self.owner)
-        end
+    if self.owner:get_hp() <= 0 then
+        put_fire_out(self.owner)
+    end
 
-        self.timer = self.timer + dtime
-        self.life = self.life + dtime
+    self.damage_timer = self.damage_timer + dtime
+    self.life = self.life + dtime
 
-        if self.life >= 7 then
-            put_fire_out(self.owner)
-            self.object:remove()
-            return
-        end
+    if self.life >= 7 then
+        put_fire_out(self.owner)
+        self.object:remove()
+        return
+    end
 
-        if self.timer >= 1 then
-            self.timer = 0
-            if self.owner:is_player() then
-                self.owner:set_hp( self.owner:get_hp() - 1 )
-            elseif self.owner:get_luaentity() then
-                self.owner:punch(self.object, 2, {
-                    full_punch_interval = 0,
-                    damage_groups = { damage = 2 },
-                })
-            end
+    if self.damage_timer >= 1 then
+        self.damage_timer = 0
+        if self.owner:is_player() then
+            self.owner:set_hp( self.owner:get_hp() - 1 )
+        elseif self.owner:get_luaentity() then
+            self.owner:punch(self.object, 2, {
+                full_punch_interval = 0,
+                damage_groups = { damage = 2 },
+            })
         end
     end
 
+    -- Animation handling
     self.frame_timer = self.frame_timer + dtime
+
     if self.frame_timer >= 0.015 then
         self.frame_timer = 0
         self.frame_update(self)
