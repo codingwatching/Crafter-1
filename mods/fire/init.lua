@@ -18,7 +18,7 @@ minetest.register_node("fire:fire", {
             },
         },
     },
-    groups = { dig_immediate = 1, fire = 1, hurt_inside = 1 },
+    groups = { dig_immediate = 1, fire = 1 },
     sounds = main.stoneSound(),
     floodable = true,
     drop = "",
