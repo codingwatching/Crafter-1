@@ -24,8 +24,8 @@ local math_random = math.random
 
 
 -- Plant growth time constants (in seconds)
-local plant_min = 60
-local plant_max = 240
+local plant_timer_min = 30
+local plant_timer_max = 260
 
 local water_nodes = {
     "main:water","main:waterflow"
@@ -71,8 +71,7 @@ local function too_dark_to_grow(pos)
 end
 
 local function start_plant_timer(pos)
-    --minetest.get_node_timer(pos):start(math_random(6, 250))
-    get_node_timer(pos):start(1)
+    get_node_timer(pos):start(math_random(plant_timer_min, plant_timer_max))
 end
 
 local soil_nodes = {
