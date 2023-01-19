@@ -156,6 +156,7 @@ minetest.register_plant = function( name, def )
 
                 if not digger then return end
 
+                -- Check above
                 pos.y = pos.y + 1
 
                 gotten_node = minetest.get_node(pos)
@@ -163,13 +164,22 @@ minetest.register_plant = function( name, def )
                 if gotten_node.name == node.name then
                     plant_dies( pos, nodename )
                 end
+
+                -- Now check below
+                pos.y = pos.y - 2
+
+                gotten_node = minetest.get_node(pos)
+                if gotten_node.name == node.name then
+                    start_plant_timer(pos)
+                end
             end
 
             on_timer = function(pos)
 
-                print("I am a sugarcane")
-
-                if too_dark_to_grow(pos) then return end
+                if too_dark_to_grow(pos) then
+                    start_plant_timer(pos)
+                    return
+                end
 
                 -- These plants grow vertically so search near in radius
                 local found = find_water_vertical(pos, def.plant_height)
@@ -178,7 +188,7 @@ minetest.register_plant = function( name, def )
 
                 gotten_name = minetest.get_node(pos).name
 
-                able_to_grow = minetest.get_item_group(gotten_name, "soil") > 0 or gotten_name == nodename
+                able_to_grow = is_sugarcane_soil(gotten_name) or gotten_name == nodename
 
                 if found and able_to_grow then
 
@@ -188,6 +198,8 @@ minetest.register_plant = function( name, def )
 
                     minetest.set_node( pos, { name = "farming:" .. name } )
 
+                    start_plant_timer(pos)
+
                 elseif not able_to_grow then
 
                     pos.y = pos.y + 1
@@ -195,7 +207,7 @@ minetest.register_plant = function( name, def )
                     plant_dies( pos, nodename )
                 end
 
-                start_plant_timer(pos)
+                
             end
 
             after_place_node = function(pos)
