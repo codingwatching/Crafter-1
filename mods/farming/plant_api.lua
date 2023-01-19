@@ -166,7 +166,7 @@ minetest.register_plant = function( name, def )
                 end
 
                 -- These plants grow vertically so search near in radius
-                local found = find_water_vertical(pos, def.plant_height)
+                local found_water = find_water_vertical(pos, def.plant_height)
 
                 pos.y = pos.y - 1
 
@@ -174,7 +174,7 @@ minetest.register_plant = function( name, def )
 
                 able_to_grow = is_sugarcane_soil(gotten_name) or gotten_name == nodename
 
-                if found and able_to_grow then
+                if found_water and able_to_grow then
 
                     pos.y = pos.y + 2
 
@@ -184,7 +184,7 @@ minetest.register_plant = function( name, def )
 
                     start_plant_timer(pos)
 
-                elseif not able_to_grow then
+                else
 
                     pos.y = pos.y + 1
 
@@ -198,13 +198,13 @@ minetest.register_plant = function( name, def )
                 pos.y = pos.y - 1
 
                 gotten_name = minetest.get_node(pos).name
-                able_to_grow = minetest.get_item_group(gotten_name, "soil") > 0
 
                 pos.y = pos.y + 1
 
-                start_plant_timer(pos)
-
-                if able_to_grow then return end
+                if is_soil(gotten_name) then
+                    start_plant_timer(pos)
+                    return
+                end
 
                 plant_dies( pos, nodename )
             end
@@ -317,9 +317,7 @@ minetest.register_plant = function( name, def )
 
                 pos.y = pos.y - 1
 
-                able_to_grow = is_soil(minetest.get_node(pos).name)
-
-                if able_to_grow then return end
+                if is_soil(minetest.get_node(pos).name) then return end
 
                 pos.y = pos.y + 1
                 plant_dies( pos, nodename )
