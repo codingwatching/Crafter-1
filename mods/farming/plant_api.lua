@@ -32,34 +32,18 @@ local stem_search_instructions = {
 local reused_vector1 = vector.new(0,0,0)
 -- This second heap object only exists so we can do the find_water() calculation below
 local reused_vector2 = vec_new(0,0,0)
-local water_find_distance = 4
 local gotten_node
 local gotten_name
 local able_to_grow
 
--- Finds water nodes in a 3x1x3 area
-local function find_water_flat(pos)
-    reused_vector1.x = pos.x - water_find_distance
-    reused_vector1.y = pos.y
-    reused_vector1.z = pos.z - water_find_distance
-    reused_vector2.x = pos.x + water_find_distance
-    reused_vector2.y = pos.y
-    reused_vector2.z = pos.z + water_find_distance
-
-    return #find_nodes_in_area(
-        reused_vector1,
-        reused_vector2,
-        water_nodes
-    ) > 0
-end
-
+-- Finds water nodes in a 1 x H x 1 area
 local function find_water_vertical(pos, plant_height)
-    reused_vector1.x = pos.x - water_find_distance
+    reused_vector1.x = pos.x - 1
     reused_vector1.y = pos.y - plant_height
-    reused_vector1.z = pos.z - water_find_distance
-    reused_vector2.x = pos.x + water_find_distance
+    reused_vector1.z = pos.z - 1
+    reused_vector2.x = pos.x + 1
     reused_vector2.y = pos.y
-    reused_vector2.z = pos.z + water_find_distance
+    reused_vector2.z = pos.z + 1
     return #find_nodes_in_area(
         reused_vector1,
         reused_vector2,
