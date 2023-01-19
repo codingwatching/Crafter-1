@@ -254,6 +254,19 @@ function is_entity_on_fire(object)
     return(pool[object] ~= nil)
 end
 
+minetest.register_on_joinplayer(function(player)
+
+    local metatable = getmetatable(player)
+
+    -- Intake boolean, store as integer, return as boolean
+    function metatable:set_fire_state(state)
+        player:get_meta():set_int("fire_state", state and 1 or 0)
+    end
+    function metatable:get_fire_state()
+        return player:get_meta():get_int("fire_state") == 1
+    end
+end)
+
 
 function start_fire(object)
 
