@@ -254,7 +254,7 @@ minetest.register_plant = function( name, def )
 
                 -- Stem is still growing
                 if i < max then
-                    
+
                     minetest.set_node( pos,{ name = "farming:" .. name .. "_" .. ( i + 1 ) } )
 
                 -- Stem is yielding a crop
@@ -362,6 +362,7 @@ minetest.register_plant = function( name, def )
     end
 
     -- Final stage for grow in place plant stems that create food, ie, pumpkins, melons
+    -- This node makes it look attached to the fruit
     if def.grows == "in_place_yields" then
         minetest.register_node("farming:" .. name .. "_complete", {
             description         = def.stem_description,
