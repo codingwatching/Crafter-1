@@ -180,7 +180,7 @@ minetest.register_plant = function( name, def )
                 end
 
                 -- These plants grow vertically so search near in radius
-                found_water = find_water_vertical(pos, def.plant_height)
+                found_water = def.grows_dry or find_water_vertical(pos, def.plant_height)
 
                 pos.y = pos.y - 1
 

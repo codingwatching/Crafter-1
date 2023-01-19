@@ -1,29 +1,15 @@
 minetest.register_plant("cactus", {
     description = "Cactus",
-    
     tiles = {"cactus_top.png", "cactus_bottom.png", "cactus_side.png"},
-    
     groups = {dig_immediate=1,flammable=1,touch_hurt=1},
-    
     sounds = main.dirtSound(),
-    
     paramtype = "light",
-    
     sunlight_propagates = true,
-    
     drawtype = "nodebox",
-    
     buildable_to = false,
-    
-    waving            = 0,
-    --inventory_image   = def.inventory_image,
-    --walkable          = def.walkable,
-    --climbable         = def.climbable,
-    --paramtype2        = def.paramtype2,
-    --buildable_to      = def.buildable_to,
-    --selection_box     = def.selection_box,
-    --drop              = def.drop,
-    grows             = "up",
+    waving = 0,
+    grows = "up",
+    grows_dry = true,
     node_box = {
         type = "fixed",
         fixed = {
