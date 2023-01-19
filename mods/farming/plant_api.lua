@@ -68,7 +68,7 @@ local function too_dark_to_grow(pos)
 end
 
 local function start_plant_timer(pos)
-    --minetest.get_node_timer(pos):start(math.random(6, 250))
+    --minetest.get_node_timer(pos):start(math_random(6, 250))
     get_node_timer(pos):start(1)
 end
 
