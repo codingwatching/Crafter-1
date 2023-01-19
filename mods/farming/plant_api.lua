@@ -194,18 +194,14 @@ minetest.register_plant = function( name, def )
             end
 
             after_place_node = function(pos)
-
                 pos.y = pos.y - 1
-
-                if not is_soil(minetest.get_node(pos).name) then
-                    pos.y = pos.y + 1
-                    plant_dies( pos, nodename )
+                able_to_grow = is_soil(minetest.get_node(pos).name)
+                pos.y = pos.y + 1
+                if able_to_grow then
+                    start_plant_timer(pos)
                     return
                 end
-
-                pos.y = pos.y + 1
-
-                start_plant_timer(pos)
+                plant_dies( pos, nodename )
             end
 
         -- Plants that grow in place, like wheat
@@ -224,6 +220,7 @@ minetest.register_plant = function( name, def )
 
                 if not able_to_grow then
                     plant_dies( pos, nodename )
+                    return
                 end
 
                 if i < max then
@@ -235,16 +232,14 @@ minetest.register_plant = function( name, def )
             end
 
             after_place_node = function(pos)
-
                 pos.y = pos.y - 1
-
                 able_to_grow = is_soil(minetest.get_node(pos).name)
-
-                if able_to_grow then return end
-
                 pos.y = pos.y + 1
+                if able_to_grow then
+                    start_plant_timer(pos)
+                    return
+                end
                 plant_dies( pos, nodename )
-
             end
 
         -- Plants that grow in place, but yield a crop, like pumpkins and melons
