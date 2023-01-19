@@ -9,7 +9,36 @@ local colors_halloween = {
     "black"
 }
 
+--[[
 --TODO: internal API to make firework 3d models
+
+ideas:
+
+spiral fireworks
+
+wavey fireworks
+
+colored fireworks smoke on launch
+
+extra smokey fireworks
+
+3d fireworks model :D
+
+]]
+
+
+-- This is laid out like an opengl vertices buffer slightly tweaked so it's more readable
+local test_box = {
+    scale = 1,
+    vertices = {
+        {
+            vector.new( 0, 0, 0 ),
+            vector.new( 0, 0, 0 ),
+            vector.new( 0, 0, 0 ),
+        }
+    }
+}
+
 
 local function fireworks_pop(pos)
     for _,color in ipairs(colors) do
