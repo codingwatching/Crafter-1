@@ -58,7 +58,7 @@ local function find_water_vertical(pos, plant_height)
     reused_vector1.y = pos.y - plant_height
     reused_vector1.z = pos.z - water_find_distance
     reused_vector2.x = pos.x + water_find_distance
-    reused_vector2.y = pos.y + plant_height
+    reused_vector2.y = pos.y
     reused_vector2.z = pos.z + water_find_distance
     return #find_nodes_in_area(
         reused_vector1,
