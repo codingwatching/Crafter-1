@@ -236,22 +236,17 @@ minetest.register_entity( "fire:fire", fire )
 
 -- Fire event handling
 
-local pool = {}
 local fire_channels = {}
-local name
-local fire_obj
 
 minetest.register_on_joinplayer(function(player)
-    name = player:get_player_name()
+    local name = player:get_player_name()
     fire_channels[name] = minetest.mod_channel_join(name..":fire_state")
 end)
 
-function is_player_on_fire(player)
-    return(pool[player:get_player_name()] ~= nil)
-end
 
+-- TODO: this is a deprectated function remove this
 function is_entity_on_fire(object)
-    return(pool[object] ~= nil)
+    return false
 end
 
 minetest.register_on_joinplayer(function(player)
@@ -260,39 +255,57 @@ minetest.register_on_joinplayer(function(player)
 
     -- Intake boolean, store as integer, return as boolean
     function metatable:set_fire_state(state)
-        player:get_meta():set_int("fire_state", state and 1 or 0)
+        local current_state = player:get_fire_state()
+
+        if current_state == state then return end
+
+        local name = player:get_player_name()
+        local meta = player:get_meta()
+
+        if state then
+            local fire_entity = minetest.add_entity( player:get_pos(), "fire:fire" )
+
+            -- A serious glitch has occured, log and keep the server running
+            if not fire_entity then
+                minetest.log("action", "A serious error has occurred attaching an entity to " .. name .. "!")
+                return
+            end
+
+            fire_entity:get_luaentity().owner = player
+            fire_entity:set_attach(player, "", vector.new( 0, 11, 0 ), vector.new( 0, 0, 0 ) )
+            fire_entity:set_properties( { visual_size = vector.new( 1, 2, 1 ) } )
+            fire_entity[name]:send_all("1")
+
+            metatable.fire_entity = fire_entity
+        else
+
+            local fire_entity = metatable.fire_entity
+
+            if fire_entity:get_luaentity() then
+                fire_entity:remove()
+            end
+            fire_channels[name]:send_all("0")
+            minetest.sound_play( "fire_extinguish", {
+                object = player,
+                gain = 0.3,
+                pitch = math.random( 80, 100 ) / 100
+            })
+
+        end
+
+        meta:set_int("fire_state", state and 1 or 0)
     end
     function metatable:get_fire_state()
         return player:get_meta():get_int("fire_state") == 1
     end
 end)
 
+local fire_obj
 
 function start_fire(object)
 
     if object:is_player() then
-
-        name = object:get_player_name()
-
-        if not pool[name] or pool[name] and not pool[name]:get_luaentity() then
-
-            fire_obj = minetest.add_entity(object:get_pos(),"fire:fire")
-
-            fire_obj:get_luaentity().owner = object
-
-            fire_obj:set_attach(object, "", vector.new(0,11,0),vector.new(0,0,0))
-
-            fire_obj:set_properties({visual_size=vector.new(1,2,1)})
-
-            pool[name] = fire_obj
-
-            fire_channels[name]:send_all("1")
-
-        elseif pool[name]:get_luaentity() then
-
-            pool[name]:get_luaentity().life = 0
-
-        end
+        object:set_fire_state(true)
 
     elseif object and object:get_luaentity() then
 
@@ -324,30 +337,7 @@ end
 function put_fire_out(object)
 
     if object:is_player() then
-
-        name = object:get_player_name()
-
-        if pool[name] then
-
-            fire_obj = pool[name]
-
-            if fire_obj:get_luaentity() then
-
-                fire_obj:remove()
-
-            end
-
-            pool[name] = nil
-
-            fire_channels[name]:send_all("0")
-            
-            minetest.sound_play( "fire_extinguish", {
-                object = object,
-                gain = 0.3,
-                pitch = math.random( 80, 100 ) / 100
-            })
-
-        end
+        object:set_fire_state(false)
 
     elseif object and object:get_luaentity() then
 
