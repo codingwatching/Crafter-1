@@ -1029,7 +1029,7 @@ end
 
 local function fireworks_spell_out_word(pos, word_string)
     local word_table = {}
-    
+
     fireworks_pop(pos)
 
     print(word_string)
@@ -1061,18 +1061,20 @@ minetest.register_entity("fireworks:rocket", {
         hp_max = 1,
         physical = true,
         collide_with_objects = false,
-        collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
-        visual = "sprite",
+        collisionbox = {-0.5, 0, -0.5, 0.5, 0.5, 0.5},
+        visual = "mesh",
+        mesh = "fire_works_rocket_model.obj",
         visual_size = {x = 1, y = 1},
-        textures = {"fireworks.png"},
+        textures = {"fire_works_rocket_model.png"},
         is_visible = true,
         pointable = true,
+        backface_culling = false
     },
 
     timer = 0,
-    
+
     on_activate = function(self, staticdata, dtime_s)
-        self.object:set_acceleration(vector.new(0,50,0))
+        -- self.object:set_acceleration(vector.new(0,50,0))
         local pos = self.object:get_pos()
         minetest.add_particlespawner({
             amount = 30,
@@ -1100,8 +1102,8 @@ minetest.register_entity("fireworks:rocket", {
     on_step = function(self, dtime)    
         self.timer = self.timer + dtime
         if self.timer >= 0.9 then
-            -- fireworks_pop(self.object:get_pos())
-            fireworks_spell_out_word(self.object:get_pos(), "abcdefghijklmnopqrstuvwxyz this is a test")
+            fireworks_pop(self.object:get_pos())
+            -- fireworks_spell_out_word(self.object:get_pos(), "abcdefghijklmnopqrstuvwxyz this is a test")
             self.object:remove()
         end
     end,
@@ -1116,6 +1118,7 @@ minetest.register_craftitem("fireworks:rocket", {
             return
         end
         
+        pointed_thing.above.y = pointed_thing.above.y - 0.5
         minetest.add_entity(pointed_thing.above, "fireworks:rocket")
 
         itemstack:take_item()
