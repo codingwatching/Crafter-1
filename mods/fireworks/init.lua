@@ -901,6 +901,15 @@ local fireworks_alphabet = {
     },
 }
 
+-- Center all of this
+for _,alphabet_object in pairs(fireworks_alphabet) do
+    for _,data_container in ipairs(alphabet_object.vertices) do
+        for _,vertices in ipairs(data_container.coords) do
+            vertices.x = vertices.x - 0.5
+        end
+    end
+end
+
 
 
 local drawing_thing = fireworks_alphabet.z
