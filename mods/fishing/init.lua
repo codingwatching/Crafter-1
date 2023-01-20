@@ -129,6 +129,12 @@ end
 
 function bobber:on_step(dtime, move_result)
 
+    -- Something is glitchy
+    if not self.player or not self.player:is_player() then
+        self.object:remove()
+        return
+    end
+
     local pos = self.object:get_pos()
     local node = minetest.get_node(pos).name
     local in_water = false
@@ -148,12 +154,6 @@ function bobber:on_step(dtime, move_result)
     -- Make the bobber appear to bob up and down
     if not in_water and self.touched_water then
         self.object:set_acceleration(vector.new(0, -1, 0))
-    end
-
-    -- Something is glitchy
-    if not self.player or not self.player:is_player() then
-        self.object:remove()
-        return
     end
 
     -- Bobber has hit something
