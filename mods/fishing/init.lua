@@ -2,7 +2,7 @@ minetest.register_on_joinplayer(function(player)
     local metatable = getmetatable(player)
 
     -- Boolean in, store as integer, boolean out
-    function metatable:set_fishing_state(state)
+    function metatable:set_fishing_state(state, silent_line_snap)
         local meta = player:get_meta()
 
         local current_state = player:get_fishing_state()
@@ -11,6 +11,21 @@ minetest.register_on_joinplayer(function(player)
 
         if state then
             -- Generate a player's casting thing here
+
+            local pos = player:get_pos()
+            -- TODO: Get camera offset
+            pos.y = pos.y + 1.625
+            local dir = player:get_look_dir()
+            local force = vector.multiply(dir,20)
+            local obj = minetest.add_entity(pos,"fishing:lure")
+            if obj then
+                minetest.sound_play("woosh",{pos=pos})
+                obj:get_luaentity().player = player
+                obj:set_velocity(force)
+            else
+                minetest.log("action", "WARNING: Failed to spawn a fishing bobber for " .. player:get_player_name())
+                return
+            end
         else
             -- Remove the player's lure and disable casting here
         end
@@ -20,43 +35,14 @@ minetest.register_on_joinplayer(function(player)
     function metatable:get_fishing_state()
         return player:get_meta():get_int("currently_fishing") == 1
     end
+
+    -- Remove the lure when a player joins
+    player:set_fishing_state(false, true)
+
 end)
 
 
-local players_fishing = {}
 
- local function do_cast(itemstack, user, pointed_thing)
-
-    local name = user:get_player_name()
-
-    if not players_fishing[name] or not players_fishing[name]:get_luaentity() then
-
-        local pos = user:get_pos()
-
-        local anchor = table.copy(pos)
-
-        pos.y = pos.y + 1.625
-
-        
-        local dir = user:get_look_dir()
-
-        local force = vector.multiply(dir,20)
-
-        local obj = minetest.add_entity(pos,"fishing:lure")
-
-        if obj then
-
-            minetest.sound_play("woosh",{pos=pos})
-
-            obj:get_luaentity().player=name
-
-            obj:set_velocity(force)
-
-            players_fishing[name] = obj
-
-        end
-    end
- end
  
  minetest.register_node("fishing:pole", {
     description = "Fishing Pole",
