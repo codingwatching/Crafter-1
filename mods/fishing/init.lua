@@ -10,7 +10,6 @@ minetest.register_on_joinplayer(function(player)
         if state == current_state then return end
 
         if state then
-            -- Generate a player's casting thing here
 
             local pos = player:get_pos()
             -- TODO: Get camera offset
@@ -39,8 +38,7 @@ minetest.register_on_joinplayer(function(player)
             local bobber = metatable.fishing_bobber_entity
 
             if bobber and bobber:get_luaentity() then
-                bobber:reel_in_action()
-                bobber:remove()
+                bobber:get_luaentity():reel_in_action()
             end
 
             metatable.fishing_bobber_entity = nil
@@ -49,7 +47,7 @@ minetest.register_on_joinplayer(function(player)
 
     end
     function metatable:get_fishing_state()
-        return player:get_meta():get_int("currently_fishing") == 1
+        return player:get_meta():get_int("fishing_state") == 1
     end
     -- Easy method for one lining the fishing state
     function metatable:toggle_fishing_state()
@@ -102,7 +100,6 @@ bobber.initial_properties = {
     collide_with_objects = false,
     collisionbox = {-0.1, 0, -0.1, 0.1, 0.2, 0.1},
     visual = "mesh",
-    visual_size = {x = 0.25, y = 0.25},
     mesh = "fishing_bobber.obj",
     textures = {"fishing_bobber.png"},
     is_visible = true,
@@ -111,12 +108,23 @@ bobber.initial_properties = {
     glow = 6
 }
 bobber.in_water = false
-bobber.interplayer = nil
 bobber.catch_timer = 0
+bobber.fish_on_the_line = false
 
 -- Bobber methods
 function bobber:on_activate()
     self.object:set_acceleration( vector.new( 0, -9.81, 0 ) )
+end
+
+function bobber:reel_in_action()
+    print("see you later")
+end
+
+function bobber:line_break()
+    minetest.sound_play("line_break", {
+        pos = self.object:get_pos()
+    })
+    self.object:remove()
 end
 
 function bobber:on_step(dtime, move_result)
@@ -125,19 +133,35 @@ function bobber:on_step(dtime, move_result)
     local node = minetest.get_node(pos).name
     local in_water = false
 
-    -- Waterflow to allow people to fish in rivers
-    if node == "main:water" or node == "main:waterflow" then
+    if node == "main:water" then
         in_water = true
         local vel = self.object:get_velocity()
-        self.object:add_velocity(vector.subtract(vel, vector.new(0,10,0)))
-    else
-        pos.y = pos.y - 0.5
-        node = minetest.get_node(pos).name
-        if node == "main:water" or node == "main:waterflow" then
-            in_water = true
+        vel = vector.subtract( vector.new( 0, 0, 0 ), vel )
+        vel.y = 1
+        self.object:set_acceleration(vel)
+        if not self.touched_water then
+            self.touched_water = true
+            self.object:set_velocity(vector.new(0,0,0))
         end
     end
 
+    -- Make the bobber appear to bob up and down
+    if not in_water and self.touched_water then
+        self.object:set_acceleration(vector.new(0, -1, 0))
+    end
+
+    -- Something is glitchy
+    if not self.player or not self.player:is_player() then
+        self.object:remove()
+        return
+    end
+
+    -- Bobber has hit something
+    if move_result and move_result.collides then
+        self.player:set_fishing_state(false)
+        self:line_break()
+        return
+    end
     --[[
         local newp = table.copy(pos)
 
