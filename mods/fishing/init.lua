@@ -15,19 +15,36 @@ minetest.register_on_joinplayer(function(player)
             local pos = player:get_pos()
             -- TODO: Get camera offset
             pos.y = pos.y + 1.625
+
             local dir = player:get_look_dir()
             local force = vector.multiply(dir,20)
-            local obj = minetest.add_entity(pos,"fishing:lure")
-            if obj then
-                minetest.sound_play("woosh",{pos=pos})
-                obj:get_luaentity().player = player
-                obj:set_velocity(force)
+            local bobber = minetest.add_entity(pos,"fishing:bobber")
+
+            if bobber then
+                minetest.sound_play( "woosh", {
+                    pos = pos
+                })
+                bobber:get_luaentity().player = player
+                bobber:set_velocity(force)
             else
                 minetest.log("action", "WARNING: Failed to spawn a fishing bobber for " .. player:get_player_name())
                 return
             end
+
+            metatable.fishing_bobber_entity = bobber
+            meta:set_int("fishing_state", 1)
+
         else
             -- Remove the player's lure and disable casting here
+            local bobber = metatable.fishing_bobber_entity
+
+            if bobber and bobber:get_luaentity() then
+                bobber:reel_in_action()
+                bobber:remove()
+            end
+
+            metatable.fishing_bobber_entity = nil
+            meta:set_int("fishing_state", 0)
         end
 
     end
@@ -160,7 +177,7 @@ lure.on_step = function(self, dtime)
         self.object:remove()
     end
 end
-minetest.register_entity("fishing:lure", lure)
+minetest.register_entity("fishing:bobber", lure)
 
 minetest.register_craft({
     type = "cooking",
