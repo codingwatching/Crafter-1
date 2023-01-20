@@ -39,9 +39,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 angle = vec2d( 0.5, 0.5 ),
                 coords = {
                     vec2d( 0,-1 ),
@@ -54,9 +54,9 @@ local fireworks_alphabet = {
             
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  0, 0 ),
                     vec2d(  1, 0 ),
@@ -69,9 +69,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 1, 1 ),
@@ -80,9 +80,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -0.1 ),
                     vec2d( 0, -0.1 ),
@@ -92,9 +92,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 0.1 ),
                     vec2d( 0, 0.1 ),
@@ -109,9 +109,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0, -1 ),
                     vec2d( 1, -1 ),
@@ -127,9 +127,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 1,  1 ),
@@ -138,9 +138,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 0.7 ),
                     vec2d( 0, 0.7 ),
@@ -155,9 +155,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 1, 1 ),
@@ -166,9 +166,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 0, -1 ),
@@ -176,9 +176,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 0 ),
                     vec2d( 0, 0 ),
@@ -186,9 +186,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 1 ),
                     vec2d( 0, 1 ),
@@ -201,9 +201,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 1, 1 ),
@@ -212,9 +212,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 0 ),
                     vec2d( 0, 0 ),
@@ -222,9 +222,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 1 ),
                     vec2d( 0, 1 ),
@@ -237,9 +237,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  0,-1 ),
                     vec2d(  1,-1 ),
@@ -249,9 +249,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0, -1 ),
                     vec2d( 0, 0 ),
@@ -265,9 +265,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  0,-1 ),
                     vec2d(  0, 1 ),
@@ -275,9 +275,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  1,-1 ),
                     vec2d(  1, 1 ),
@@ -285,9 +285,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  0, 0 ),
                     vec2d(  1, 0 ),
@@ -300,9 +300,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  0.5,-1 ),
                     vec2d(  0.5,1 ),
@@ -310,9 +310,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  0,-1 ),
                     vec2d(  1,-1 ),
@@ -320,9 +320,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  0, 1 ),
                     vec2d(  1, 1 ),
@@ -335,9 +335,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  1, -0.25),
                     vec2d(  1, -1 ),
@@ -347,9 +347,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(  0,1 ),
                     vec2d(  1,1 ),
@@ -362,9 +362,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 1, 1 ),
@@ -373,9 +373,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -0.1 ),
                     vec2d( 0, -0.1 ),
@@ -384,9 +384,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 0.1 ),
                     vec2d( 0, 0.1 ),
@@ -400,9 +400,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0, -1 ),
                     vec2d( 1, -1 ),
@@ -418,9 +418,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0, -1 ),
                     vec2d( 0, 1 ),
@@ -430,9 +430,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0.5, 1 ),
                     vec2d( 1, 1 ),
@@ -446,9 +446,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0, -1 ),
                     vec2d( 0, 1 ),
@@ -456,9 +456,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 1, 1 ),
@@ -466,9 +466,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 5,
                 coords = {
                     vec2d( 0, -0.4 ),
@@ -487,9 +487,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0, -1 ),
                     vec2d( 0, 1 ),
@@ -506,9 +506,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 1, 1 ),
@@ -524,9 +524,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0, -1 ),
                     vec2d( 0, 1 ),
@@ -537,9 +537,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 5,
                 coords = {
                     vec2d( 0, -1 ),
@@ -555,9 +555,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 1, 1 ),
@@ -566,9 +566,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -0.1 ),
                     vec2d( 0, -0.1 ),
@@ -577,9 +577,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 0.1 ),
                     vec2d( 0, 0.1 ),
@@ -594,9 +594,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, -1 ),
                     vec2d( 0, -1 ),
@@ -613,9 +613,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 1, 1 ),
                     vec2d( 0, 1 ),
@@ -623,9 +623,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0.5, 1 ),
                     vec2d( 0.5, -1 ),
@@ -638,9 +638,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(0, 1),
                     vec2d(0, -1),
@@ -655,9 +655,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(0, 1),
                     vec2d(0, 0),
@@ -665,9 +665,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d(1, 1),
                     vec2d(1, 0),
@@ -675,9 +675,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 5,
                 coords = {
                     vec2d(0, 0),
@@ -696,9 +696,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0, 1 ),
                     vec2d( 0, -1 ),
@@ -708,9 +708,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 coords = {
                     vec2d( 0.5, -1 ),
                     vec2d( 1, -1 ),
@@ -724,9 +724,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 3,
                 coords = {
                     vec2d( 1,   0.5 ),
@@ -745,9 +745,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 2,
                 coords = {
                     vec2d( 1,   -0.5 ),
@@ -766,9 +766,9 @@ local fireworks_alphabet = {
 
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 9,
                 coords = {
                     vec2d( 1,-0.5 ),
@@ -777,9 +777,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 9,
                 coords = {
                     vec2d( 1,0.5 ),
@@ -788,9 +788,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 9,
                 coords = {
                     vec2d( 0,-0.5 ),
@@ -799,9 +799,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 9,
                 coords = {
                     vec2d( 0,0.5 ),
@@ -815,9 +815,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 3,
                 coords = {
                     vec2d( 1, 1 ),
@@ -836,9 +836,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 20,
                 coords = {
                     vec2d(0.5,0.5),
@@ -852,9 +852,9 @@ local fireworks_alphabet = {
         vertices = {
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 3,
                 coords = {
                     vec2d( 1,   -0.5 ),
@@ -873,9 +873,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 12,
                 coords = {
                     vec2d( 1,-0.5 ),
@@ -886,9 +886,9 @@ local fireworks_alphabet = {
             },
             {
                 color = "red",
-                time = { min = 3, max = 3},
+                time = { min = 7, max = 9},
                 expansion = { min = -3, max = -3 },
-                expands = true,
+                expands = false,
                 amount = 12,
                 coords = {
                     vec2d( 0,0.5 ),
@@ -923,7 +923,7 @@ local test_box = {
         {
             color = "blue",
             -- Allow things to fade at different rates
-            time = { min = 3, max = 3},
+            time = { min = 7, max = 9},
             expands = false,
             coords = {
                 vector.new( -1, 0, -1 ),
@@ -978,7 +978,7 @@ local function fireworks_debug_pop(pos, mesh)
                 blend = "alpha"
             }
             -- Smoke explodes away from the center
-            --[[
+            
             if expands then
                 definition.attract = {
                     kind = "point",
@@ -987,16 +987,12 @@ local function fireworks_debug_pop(pos, mesh)
                     die_on_contact = false
                 }
             end
-            ]]
 
 
             minetest.add_particlespawner(definition)
         end
     end
 end
-
-
-
 
 local function fireworks_pop(pos)
     for _,color in ipairs(colors) do
@@ -1028,6 +1024,36 @@ local function fireworks_pop(pos)
     end
     minetest.sound_play("fireworks_pop",{pos=pos,pitch=math.random(80,100)/100,gain=6.0,max_hear_distance = 128})
 end
+
+
+
+local function fireworks_spell_out_word(pos, word_string)
+    local word_table = {}
+    
+    fireworks_pop(pos)
+
+    print(word_string)
+    word_string:gsub( ".", function(character) table.insert( word_table, character ) end )
+
+    local word_width = #word_table * 1.5
+
+    pos.x = pos.x - (word_width / 2)
+
+    for i = #word_table,1,-1 do
+
+        local character = word_table[i]
+
+        if fireworks_alphabet[character] then
+            fireworks_debug_pop(pos, fireworks_alphabet[character])
+        end
+
+        pos.x = pos.x + 1.5
+    end
+    
+end
+
+
+
 
 
 minetest.register_entity("fireworks:rocket", {
@@ -1073,9 +1099,9 @@ minetest.register_entity("fireworks:rocket", {
     sound_played = false,
     on_step = function(self, dtime)    
         self.timer = self.timer + dtime
-        if self.timer >= 0.4 then
-            fireworks_debug_pop(self.object:get_pos(), drawing_thing)
+        if self.timer >= 0.9 then
             -- fireworks_pop(self.object:get_pos())
+            fireworks_spell_out_word(self.object:get_pos(), "abcdefghijklmnopqrstuvwxyz this is a test")
             self.object:remove()
         end
     end,
