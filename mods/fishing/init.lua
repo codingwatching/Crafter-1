@@ -1,23 +1,47 @@
- local players_fishing = {}
+minetest.register_on_joinplayer(function(player)
+    local metatable = getmetatable(player)
+    
+    -- Boolean in, store as integer, boolean out
+    function metatable:set_fishing_state(state)
+        local meta = player:get_meta()
+        
+        local current_state = player:get_fishing_state()
+
+    end
+end)
+
+
+local players_fishing = {}
 
  local function do_cast(itemstack, user, pointed_thing)
 
     local name = user:get_player_name()
 
     if not players_fishing[name] or not players_fishing[name]:get_luaentity() then
+
         local pos = user:get_pos()
+
         local anchor = table.copy(pos)
+
         pos.y = pos.y + 1.625
-        --minetest.sound_play("gun_shot",{object=user, pitch = math.random(80,100)/100})
+
+        
         local dir = user:get_look_dir()
+
         local force = vector.multiply(dir,20)
+
         local obj = minetest.add_entity(pos,"fishing:lure")
+
         if obj then
+
             minetest.sound_play("woosh",{pos=pos})
+
             obj:get_luaentity().player=name
 
             obj:set_velocity(force)
+
             players_fishing[name] = obj
+
         end
     end
  end
