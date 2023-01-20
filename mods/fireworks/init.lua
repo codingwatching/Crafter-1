@@ -1079,6 +1079,7 @@ minetest.register_entity("fireworks:rocket", {
         minetest.add_particlespawner({
             amount = 50,
             drag = 1.4,
+            time = 0,
             exptime = {min = 1.1, max = 1.5},
             vel = {
                 min = vector.new(-3,-20,-3),
@@ -1098,6 +1099,7 @@ minetest.register_entity("fireworks:rocket", {
         minetest.add_particlespawner({
             amount = 50,
             drag = 1.4,
+            time = 0,
             exptime = {min = 0.25, max = 0.3},
             attached = self.object,
             vertical = true,
