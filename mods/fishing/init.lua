@@ -1,8 +1,14 @@
  local players_fishing = {}
  
- minetest.register_craftitem("fishing:pole", {
+ minetest.register_node("fishing:pole", {
     description = "Fishing Pole",
     inventory_image = "fishing_rod.png",
+    drawtype = "mesh",
+    mesh = "fishing_pole.obj",
+    tiles = {
+        "fishing_pole.png"
+    },
+
     stack_max = 1,
     range = 0,
     on_use = function(itemstack, user, pointed_thing)
