@@ -98,12 +98,13 @@ local bobber = {}
 
 -- Bobber fields
 bobber.initial_properties = {
-    physical = false,
+    physical = true,
     collide_with_objects = false,
-    collisionbox = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
-    visual = "sprite",
+    collisionbox = {-0.1, 0, -0.1, 0.1, 0.2, 0.1},
+    visual = "mesh",
     visual_size = {x = 0.25, y = 0.25},
-    textures = {"lure.png"},
+    mesh = "fishing_bobber.obj",
+    textures = {"fishing_bobber.png"},
     is_visible = true,
     pointable = false,
     -- Bobber glows in the dark, how nice
@@ -115,31 +116,51 @@ bobber.catch_timer = 0
 
 -- Bobber methods
 function bobber:on_activate()
-    self.object:set_acceleration(vector.new(0,-10,0))
+    self.object:set_acceleration( vector.new( 0, -9.81, 0 ) )
 end
-function bobber:on_step(dtime)
+
+function bobber:on_step(dtime, move_result)
+
     local pos = self.object:get_pos()
     local node = minetest.get_node(pos).name
-    if node == "main:water" then
-        self.in_water = true
-        local new_pos = vector.floor(pos)
-        new_pos.y = new_pos.y + 0.5
-        self.object:move_to(vector.new(pos.x,new_pos.y,pos.z))
-        self.object:set_acceleration(vector.new(0,0,0))
-        self.object:set_velocity(vector.new(0,0,0))
+    local in_water = false
+
+    -- Waterflow to allow people to fish in rivers
+    if node == "main:water" or node == "main:waterflow" then
+        in_water = true
+        local vel = self.object:get_velocity()
+        self.object:add_velocity(vector.subtract(vel, vector.new(0,10,0)))
     else
+        pos.y = pos.y - 0.5
+        node = minetest.get_node(pos).name
+        if node == "main:water" or node == "main:waterflow" then
+            in_water = true
+        end
+    end
+
+    --[[
         local newp = table.copy(pos)
+
         newp.y = newp.y - 0.1
+
         local node = minetest.get_node(newp).name
+
         if node ~= "air" and node ~= "main:water" and node ~= "main:waterflow" then
+
             if self.player then
+
                 players_fishing[self.player] = nil
+
             end
+            
             minetest.sound_play("line_break",{pos=pos,gain=0.3})
             self.object:remove()
         end
     end
+    ]]
+
     if self.in_water == true then
+        do return end
         if self.player then
             local p = minetest.get_player_by_name(self.player)
             if p:get_player_control().RMB then
