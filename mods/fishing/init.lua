@@ -1,12 +1,24 @@
 minetest.register_on_joinplayer(function(player)
     local metatable = getmetatable(player)
-    
+
     -- Boolean in, store as integer, boolean out
     function metatable:set_fishing_state(state)
         local meta = player:get_meta()
-        
+
         local current_state = player:get_fishing_state()
 
+        if state == current_state then return end
+
+        if state then
+            -- Generate a player's casting thing here
+        else
+            -- Remove the player's lure and disable casting here
+        end
+
+    end
+
+    function metatable:get_fishing_state()
+        return player:get_meta():get_int("currently_fishing") == 1
     end
 end)
 
