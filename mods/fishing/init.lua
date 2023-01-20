@@ -1,7 +1,7 @@
 minetest.register_on_joinplayer(function(player)
     local metatable = getmetatable(player)
 
-    -- Boolean in, store as integer, boolean out
+    -- Boolean in, store as integer, boolean out    
     function metatable:set_fishing_state(state, silent_line_snap)
         local meta = player:get_meta()
 
@@ -48,9 +48,14 @@ minetest.register_on_joinplayer(function(player)
         end
 
     end
-
     function metatable:get_fishing_state()
         return player:get_meta():get_int("currently_fishing") == 1
+    end
+    -- Easy method for one lining the fishing state
+    function metatable:toggle_fishing_state()
+        local current_state = player:get_fishing_state()
+        player:set_fishing_state(not current_state)
+
     end
 
     -- Remove the lure when a player joins
@@ -58,12 +63,8 @@ minetest.register_on_joinplayer(function(player)
 
 end)
 
-
-
- 
- minetest.register_node("fishing:pole", {
+minetest.register_node("fishing:pole", {
     description = "Fishing Pole",
-    inventory_image = "fishing_rod.png",
     drawtype = "mesh",
     mesh = "fishing_pole.obj",
     tiles = {
@@ -71,13 +72,11 @@ end)
     },
     node_placement_prediction = "",
     stack_max = 1,
-    on_place = function(itemstack, user, pointed_thing)
-        do_cast(itemstack,user, pointed_thing)
-        return
+    on_place = function(_, player)
+        player:toggle_fishing_state()
     end,
-    on_secondary_use = function(itemstack, user, pointed_thing)
-        do_cast(itemstack,user, pointed_thing)
-        return
+    on_secondary_use = function(_, player)
+        player:toggle_fishing_state()
     end,
 })
 
