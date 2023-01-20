@@ -87,15 +87,17 @@ minetest.register_node("fishing:pole", {
 minetest.register_craft({
     output = "fishing:pole",
     recipe = {
-        {"",          "",           "main:stick"},
-        {"",          "main:stick", "mob:string"},
-        {"main:stick","",           "mob:string"},
+        {"", "", "main:stick"},
+        {"", "main:stick", "mob:string"},
+        {"main:stick", "", "mob:string"},
     }
 })
 
+-- Bobber class
+local bobber = {}
 
-local lure = {}
-lure.initial_properties = {
+-- Bobber fields
+bobber.initial_properties = {
     physical = false,
     collide_with_objects = false,
     collisionbox = {-0.1, -0.1, -0.1, 0.1, 0.1, 0.1},
@@ -104,17 +106,18 @@ lure.initial_properties = {
     textures = {"lure.png"},
     is_visible = true,
     pointable = false,
-    --glow = -1,
-    --automatic_face_movement_dir = 0.0,
-    --automatic_face_movement_max_rotation_per_sec = 600,
+    -- Bobber glows in the dark, how nice
+    glow = 6
 }
-lure.on_activate = function(self)
+bobber.in_water = false
+bobber.interplayer = nil
+bobber.catch_timer = 0
+
+-- Bobber methods
+function bobber:on_activate()
     self.object:set_acceleration(vector.new(0,-10,0))
 end
-lure.in_water = false
-lure.interplayer = nil
-lure.catch_timer = 0
-lure.on_step = function(self, dtime)
+function bobber:on_step(dtime)
     local pos = self.object:get_pos()
     local node = minetest.get_node(pos).name
     if node == "main:water" then
@@ -180,7 +183,7 @@ lure.on_step = function(self, dtime)
         self.object:remove()
     end
 end
-minetest.register_entity("fishing:bobber", lure)
+minetest.register_entity("fishing:bobber", bobber)
 
 minetest.register_craft({
     type = "cooking",
