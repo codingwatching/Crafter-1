@@ -1,4 +1,26 @@
  local players_fishing = {}
+
+ local function do_cast(itemstack, user, pointed_thing)
+
+    local name = user:get_player_name()
+
+    if not players_fishing[name] or not players_fishing[name]:get_luaentity() then
+        local pos = user:get_pos()
+        local anchor = table.copy(pos)
+        pos.y = pos.y + 1.625
+        --minetest.sound_play("gun_shot",{object=user, pitch = math.random(80,100)/100})
+        local dir = user:get_look_dir()
+        local force = vector.multiply(dir,20)
+        local obj = minetest.add_entity(pos,"fishing:lure")
+        if obj then
+            minetest.sound_play("woosh",{pos=pos})
+            obj:get_luaentity().player=name
+
+            obj:set_velocity(force)
+            players_fishing[name] = obj
+        end
+    end
+ end
  
  minetest.register_node("fishing:pole", {
     description = "Fishing Pole",
@@ -8,32 +30,14 @@
     tiles = {
         "fishing_pole.png"
     },
-
+    node_placement_prediction = "",
     stack_max = 1,
-    range = 0,
-    on_use = function(itemstack, user, pointed_thing)
-        --minetest.sound_play("reload_gun",{object=user, pitch = math.random(80,100)/100})
-        --print("reload")
+    on_place = function()
+        print("do cast")
+        return
     end,
-    
     on_secondary_use = function(itemstack, user, pointed_thing)
-        local name = user:get_player_name()
-        if not players_fishing[name] or not players_fishing[name]:get_luaentity() then
-            local pos = user:get_pos()
-            local anchor = table.copy(pos)
-            pos.y = pos.y + 1.625
-            --minetest.sound_play("gun_shot",{object=user, pitch = math.random(80,100)/100})
-            local dir = user:get_look_dir()
-            local force = vector.multiply(dir,20)
-            local obj = minetest.add_entity(pos,"fishing:lure")
-            if obj then
-                minetest.sound_play("woosh",{pos=pos})
-                obj:get_luaentity().player=name
-
-                obj:set_velocity(force)
-                players_fishing[name] = obj
-            end
-        end
+        print("do cast")
     end,
 })
 
