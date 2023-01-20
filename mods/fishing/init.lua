@@ -60,7 +60,11 @@ minetest.register_on_joinplayer(function(player)
 
     -- Remove the lure when a player joins
     player:set_fishing_state(false, true)
+end)
 
+minetest.register_on_dieplayer(function(player)
+    -- Remove the lure when a player dies while fishing
+    player:set_fishing_state(false, true)
 end)
 
 minetest.register_node("fishing:pole", {
