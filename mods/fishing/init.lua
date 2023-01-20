@@ -32,12 +32,13 @@
     },
     node_placement_prediction = "",
     stack_max = 1,
-    on_place = function()
-        print("do cast")
+    on_place = function(itemstack, user, pointed_thing)
+        do_cast(itemstack,user, pointed_thing)
         return
     end,
     on_secondary_use = function(itemstack, user, pointed_thing)
-        print("do cast")
+        do_cast(itemstack,user, pointed_thing)
+        return
     end,
 })
 
