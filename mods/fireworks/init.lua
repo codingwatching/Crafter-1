@@ -1074,34 +1074,58 @@ minetest.register_entity("fireworks:rocket", {
     timer = 0,
 
     on_activate = function(self, staticdata, dtime_s)
-        -- self.object:set_acceleration(vector.new(0,50,0))
-        local pos = self.object:get_pos()
+        self.object:set_acceleration(vector.new(0,30,0))
+        -- Exhaust smoke
         minetest.add_particlespawner({
-            amount = 30,
-            time = 1,
-            minpos = pos,
-            maxpos = pos,
-            minvel = vector.new(0,-20,0),
-            maxvel = vector.new(0,-20,0),
-            minacc = {x=0, y=0, z=0},
-            maxacc = {x=0, y=0, z=0},
-            minexptime = 1.1,
-            maxexptime = 1.5,
-            minsize = 1,
-            maxsize = 2,
-            collisiondetection = false,
-            collision_removal = false,
-            vertical = false,
+            amount = 50,
+            drag = 1.4,
+            exptime = {min = 1.1, max = 1.5},
+            vel = {
+                min = vector.new(-3,-20,-3),
+                max = vector.new(3,-23,3)
+            },
             attached = self.object,
-            texture = "smoke.png",
+            texture = {
+                name = "smoke.png",
+                alpha_tween = { 1, 0 },
+                scale_tween = {
+                    {x = 1, y = 1},
+                    {x = 3, y = 3}
+                }
+            }
         })
+        -- Exhaust flames
+        minetest.add_particlespawner({
+            amount = 50,
+            drag = 1.4,
+            exptime = {min = 0.25, max = 0.3},
+            attached = self.object,
+            vertical = true,
+            vel = {
+                min = vector.new(0,1,0),
+                max = vector.new(0,2,0)
+            },
+            acc ={
+                min = vector.new(-2, 0, -2),
+                max = vector.new (2, 0, 2)
+            },
+            texture = {
+                name = "flame.png^[transformR180",
+                alpha_tween = { 1, 0 },
+                scale_tween = {
+                    {x = 1, y = 1},
+                    {x = 3, y = 3}
+                }
+            }
+        })
+
         minetest.sound_play("fireworks_launch",{object=self.object,pitch=math.random(80,100)/100})
     end,
 
     sound_played = false,
     on_step = function(self, dtime)    
         self.timer = self.timer + dtime
-        if self.timer >= 0.9 then
+        if self.timer >= 1.2 then
             fireworks_pop(self.object:get_pos())
             -- fireworks_spell_out_word(self.object:get_pos(), "abcdefghijklmnopqrstuvwxyz this is a test")
             self.object:remove()
