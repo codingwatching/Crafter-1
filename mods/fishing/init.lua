@@ -24,6 +24,7 @@ minetest.register_on_joinplayer(function(player)
                     pos = pos
                 })
                 bobber:get_luaentity().player = player
+                bobber:get_luaentity().player_wield_index = player:get_wield_index()
                 bobber:set_velocity(force)
             else
                 minetest.log("action", "WARNING: Failed to spawn a fishing bobber for " .. player:get_player_name())
@@ -112,10 +113,23 @@ bobber.catch_timer = 0
 bobber.fish_on_the_line = false
 bobber.first_water_touch = false
 bobber.particle_spawner = nil
+bobber.player_wield_index = -1
 
 -- Bobber methods
 function bobber:on_activate()
     self.object:set_acceleration( vector.new( 0, -9.81, 0 ) )
+end
+
+function bobber:check_player_wield_item()
+    local player = self.player
+    local new_wield_index = player:get_wield_index()
+
+    if new_wield_index ~= self.player_wield_index then
+        return true
+    end
+    if player:get_wielded_item():get_name() ~= "fishing:pole" then
+        return true
+    end
 end
 
 function bobber:reel_in_action()
@@ -286,6 +300,13 @@ function bobber:on_step(dtime, move_result)
     -- Player is too far away, line breaks
     if vector.distance(pos, self.player:get_pos()) > 22 then
         self.player:set_fishing_state(false)
+        return
+    end
+
+    -- If the player changes their item slot or drops the pole, line breaks
+    if self:check_player_wield_item() then
+        self.player:set_fishing_state(false)
+        return
     end
 
     local node = minetest.get_node(pos).name
@@ -359,7 +380,7 @@ function bobber:on_step(dtime, move_result)
         self:splash_effect(false)
         minetest.sound_play( "fishing_bloop", {
             pos = pos,
-            gain = 1
+            gain = 1.3
         })
         self.position_locked = false
     end
