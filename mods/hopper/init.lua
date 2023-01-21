@@ -849,6 +849,8 @@ minetest.register_abm({
     chance = 1,
     action = function(pos, node, active_object_count, active_object_count_wider)
 
+        -- Top of hopper item vacuum
+
         if active_object_count_wider == 0 then
             return
         end
@@ -874,6 +876,9 @@ minetest.register_abm({
                 end
             end
         end
+
+
+        -- Procedure to move items
 
         local source_pos, destination_pos, destination_dir
         if node.name == "hopper:hopper_side" then
