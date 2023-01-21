@@ -215,7 +215,7 @@ local send_item_to = function(hopper_pos, target_pos, target_node, target_invent
     end
 
     --hopper inventory
-    local hopper_meta = minetest.get_meta(hopper_pos);
+    hopper_meta = minetest.get_meta(hopper_pos);
     local hopper_inv = hopper_meta:get_inventory()
     if hopper_inv:is_empty("main") == true then
         return false
