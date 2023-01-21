@@ -1,3 +1,4 @@
+-- TODO: Optimize this
 local S = minetest.get_translator("hopper")
 -- Target inventory retrieval
 

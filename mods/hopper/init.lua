@@ -1,3 +1,4 @@
+-- TODO: Make this not a global
 -- define global
 hopper = {}
 
