@@ -1,5 +1,3 @@
-local mod_path = minetest.get_modpath( minetest.get_current_modname() )
-
 local formspec_bg = "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"
 
 
@@ -783,7 +781,7 @@ minetest.register_node("hopper:sorter", {
             "hopper_formspec:"..minetest.pos_to_string(pos), get_sorter_formspec(pos))
     end,
 
-    allow_metadata_inventory_put = function(pos, listname, index, stack, player)
+    allow_metadata_inventory_put = function(pos, listname, index, stack)
         if listname == "filter" then
             local inv = minetest.get_inventory({type="node", pos=pos})
             inv:set_stack(listname, index, stack:take_item(1))
@@ -792,7 +790,7 @@ minetest.register_node("hopper:sorter", {
         return stack:get_count()
     end,
 
-    allow_metadata_inventory_take = function(pos, listname, index, stack, player)
+    allow_metadata_inventory_take = function(pos, listname, index, stack)
         if listname == "filter" then
             local inv = minetest.get_inventory({type="node", pos=pos})
             inv:set_stack(listname, index, ItemStack(""))
@@ -801,7 +799,7 @@ minetest.register_node("hopper:sorter", {
         return stack:get_count()
     end,
 
-    allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
+    allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count)
         if to_list == "filter" then
             local inv = minetest.get_inventory({type="node", pos=pos})
             local stack_moved = inv:get_stack(from_list, from_index)
@@ -815,7 +813,7 @@ minetest.register_node("hopper:sorter", {
         return count
     end,
 
-    on_metadata_inventory_put = function(pos, listname, index, stack, player)
+    on_metadata_inventory_put = function(pos)
         local timer = minetest.get_node_timer(pos)
         if not timer:is_started() then
             timer:start(0.1)
