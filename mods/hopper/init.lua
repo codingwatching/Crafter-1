@@ -5,7 +5,7 @@ local neighbors = {}
 local groups = {}
 local containers = {}
 
--- global function to add new containers
+-- Local function to add new containers
 local function add_container(list)
     for _, entry in pairs(list) do
         local target_node = entry[2]
@@ -38,7 +38,7 @@ local function add_container(list)
             group_info[group_number][entry[1]] = entry[3]
             groups[group_identifier] = group_info
             neighbor_node = "group:"..group_identifier
-            -- result is a table of the form groups[group_identifier][group_number][relative_position][inventory_name]
+            -- Result is a table of the form groups[group_identifier][group_number][relative_position][inventory_name]
         else
             local node_info = containers[target_node]
             if node_info == nil then
@@ -47,9 +47,9 @@ local function add_container(list)
             node_info[entry[1]] = entry[3]
             containers[target_node] = node_info
             neighbor_node = target_node
-            -- result is a table of the form containers[target_node_name][relative_position][inventory_name]
+            -- Result is a table of the form containers[target_node_name][relative_position][inventory_name]
         end
-        
+
         local already_in_neighbors = false
         for _, value in pairs(neighbors) do
             if value == neighbor_node then
