@@ -1,3 +1,3 @@
-line_break - https://freesound.org/people/DSA98/sounds/393156/ Attribution-NonCommercial 3.0 Unported (CC BY-NC 3.0)
+line_break: https://freesound.org/people/JoshuaPomeroy/sounds/532244/ cc0
 
 fishing_loop: https://freesound.org/people/bevibeldesign/sounds/315931/ cc0
