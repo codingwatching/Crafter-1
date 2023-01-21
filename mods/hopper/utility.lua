@@ -25,7 +25,6 @@ hopper.get_registered_inventories_for = function(target_node_name)
 end
 
 hopper.get_eject_button_texts = function(pos, loc_X, loc_Y)
-    if not hopper.config.eject_button_enabled then return "" end
 
     local eject_button_text, eject_button_tooltip
     if minetest.get_meta(pos):get_string("eject") == "true" then
