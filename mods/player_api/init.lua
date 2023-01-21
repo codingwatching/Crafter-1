@@ -1,6 +1,8 @@
 local minetest,math = minetest,math
 local pool = {}
 
+-- TODO: Implement oldschool command that makes the player 2d
+
 -- player physical data constant
 local player_constant = {
     visual               = "mesh"       ,
