@@ -125,14 +125,14 @@ add_container({
 -- looks first for a registration matching the specific node name, then for a registration
 -- matching group and value, then for a registration matching a group and *any* value
 local get_registered_inventories_for = function(target_node_name)
-    local output = containers[target_node_name]
+    output = containers[target_node_name]
     if output ~= nil then return output end
 
-    local target_def = registered_nodes[target_node_name]
+    target_def = registered_nodes[target_node_name]
     if target_def == nil or target_def.groups == nil then return nil end
 
     for group, value in pairs(target_def.groups) do
-        local registered_group = groups[group]
+        registered_group = groups[group]
         if registered_group ~= nil then
             output = registered_group[value]
             if output ~= nil then return output end
@@ -146,7 +146,7 @@ end
 
 local get_eject_button_texts = function(pos, loc_X, loc_Y)
 
-    local eject_button_text, eject_button_tooltip
+    eject_button_text, eject_button_tooltip
     if get_meta(pos):get_string("eject") == "true" then
         eject_button_text = "Don't\nEject"
         eject_button_tooltip = "This hopper is currently set to eject items from its output\neven if there isn't a compatible block positioned to receive it.\nClick this button to disable this feature."
@@ -188,26 +188,26 @@ local take_item_from = function(hopper_pos, target_pos, target_node, target_inve
     if target_inventory_name == nil then
         return
     end
-    local target_def = registered_nodes[target_node.name]
+    target_def = registered_nodes[target_node.name]
     if not target_def then
         return
     end
 
     --hopper inventory
-    local hopper_meta = get_meta(hopper_pos);
-    local hopper_inv = hopper_meta:get_inventory()
-    local placer = get_placer(hopper_meta:get_string("placer"))
+    hopper_meta = get_meta(hopper_pos);
+    hopper_inv = hopper_meta:get_inventory()
+    placer = get_placer(hopper_meta:get_string("placer"))
 
     --source inventory
-    local target_inv = get_meta(target_pos):get_inventory()
-    local target_inv_size = target_inv:get_size(target_inventory_name)
+    target_inv = get_meta(target_pos):get_inventory()
+    target_inv_size = target_inv:get_size(target_inventory_name)
     if target_inv:is_empty(target_inventory_name) == false then
         for i = 1,target_inv_size do
-            local stack = target_inv:get_stack(target_inventory_name, i)
-            local item = stack:get_name()
+            stack = target_inv:get_stack(target_inventory_name, i)
+            item = stack:get_name()
             if item ~= "" then
                 if hopper_inv:room_for_item("main", item) then
-                    local stack_to_take = stack:take_item(1)
+                    stack_to_take = stack:take_item(1)
                     if target_def.allow_metadata_inventory_take == nil
                       or placer == nil -- backwards compatibility, older versions of this mod didn't record who placed the hopper
                       or target_def.allow_metadata_inventory_take(target_pos, target_inventory_name, i, stack_to_take, placer) > 0 then
@@ -227,13 +227,13 @@ end
 
 -- Used to put items from the hopper inventory into the target block
 local send_item_to = function(hopper_pos, target_pos, target_node, target_inventory_name, filtered_items)
-    local hopper_meta = get_meta(hopper_pos)
-    local target_def = registered_nodes[target_node.name]
+    hopper_meta = get_meta(hopper_pos)
+    target_def = registered_nodes[target_node.name]
     if not target_def then
         return false
     end
 
-    local eject_item = hopper_meta:get_string("eject") == "true" and target_def.buildable_to
+    eject_item = hopper_meta:get_string("eject") == "true" and target_def.buildable_to
 
     if not eject_item and not target_inventory_name then
         return false
@@ -241,23 +241,23 @@ local send_item_to = function(hopper_pos, target_pos, target_node, target_invent
 
     --hopper inventory
     hopper_meta = get_meta(hopper_pos);
-    local hopper_inv = hopper_meta:get_inventory()
+    hopper_inv = hopper_meta:get_inventory()
     if hopper_inv:is_empty("main") == true then
         return false
     end
-    local hopper_inv_size = hopper_inv:get_size("main")
-    local placer = get_placer(hopper_meta:get_string("placer"))
+    hopper_inv_size = hopper_inv:get_size("main")
+    placer = get_placer(hopper_meta:get_string("placer"))
 
     --target inventory
-    local target_inv = get_meta(target_pos):get_inventory()
+    target_inv = get_meta(target_pos):get_inventory()
 
     for i = 1,hopper_inv_size do
-        local stack = hopper_inv:get_stack("main", i)
-        local item = stack:get_name()
+        stack = hopper_inv:get_stack("main", i)
+        item = stack:get_name()
         if item ~= "" and (filtered_items == nil or filtered_items[item]) then
             if target_inventory_name then
                 if target_inv:room_for_item(target_inventory_name, item) then
-                    local stack_to_put = stack:take_item(1)
+                    stack_to_put = stack:take_item(1)
                     if target_def.allow_metadata_inventory_put == nil
                     or placer == nil -- backwards compatibility, older versions of this mod didn't record who placed the hopper
                     or target_def.allow_metadata_inventory_put(target_pos, target_inventory_name, i, stack_to_put, placer) > 0 then
@@ -271,7 +271,7 @@ local send_item_to = function(hopper_pos, target_pos, target_node, target_invent
                     end
                 end
             elseif eject_item then
-                local stack_to_put = stack:take_item(1)
+                stack_to_put = stack:take_item(1)
                 add_item(target_pos, stack_to_put)
                 hopper_inv:set_stack("main", i, stack)
                 return true
@@ -285,8 +285,8 @@ end
 
 -- formspec
 local function get_hopper_formspec(pos)
-    local spos = get_string_pos(pos)
-    local formspec =
+    spos = get_string_pos(pos)
+    formspec =
         "size[8,9]"
         .. formspec_bg
         .. "list[nodemeta:" .. spos .. ";main;2,0.3;4,4;]"
@@ -299,12 +299,12 @@ local function get_hopper_formspec(pos)
 end
 
 local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
-    local pos  = pointed_thing.under
-    local pos2 = pointed_thing.above
-    local x = pos.x - pos2.x
-    local z = pos.z - pos2.z
+    pos  = pointed_thing.under
+    pos2 = pointed_thing.above
+    x = pos.x - pos2.x
+    z = pos.z - pos2.z
 
-    local success
+    success = false
     -- unfortunately param2 overrides are needed for side hoppers even in the non-single-craftable-item case
     -- because they are literally *side* hoppers - their spouts point to the side rather than to the front, so
     -- the default item_place_node orientation code will not orient them pointing toward the selected surface.
@@ -322,7 +322,7 @@ local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
     end
 
     if success then
-        local meta = get_meta(pos2)
+        meta = get_meta(pos2)
         meta:set_string("placer", placer:get_player_name())
         if not settings:get_bool("creative_mode") then
             itemstack:take_item()
@@ -378,13 +378,13 @@ local function do_hopper_function(pos)
 
     -- Top of hopper item vacuum
 
-    local gotten_object = get_objects_inside_radius(pos, 1)
+    gotten_object = get_objects_inside_radius(pos, 1)
     if #gotten_object == 0 then goto moving end
 
     do
 
-        local inv = get_meta(pos):get_inventory()
-        local posob
+        inv = get_meta(pos):get_inventory()
+        posob
 
         for _,object in ipairs(gotten_object) do
             if not object:is_player()
@@ -409,9 +409,9 @@ local function do_hopper_function(pos)
 
     ::moving::
 
-    local node = get_node(pos)
+    node = get_node(pos)
 
-    local source_pos, destination_pos, destination_dir
+    source_pos, destination_pos, destination_dir
     if node.name == "hopper:hopper_side" then
         source_pos = vec_add(pos, directions[node.param2].src)
         destination_dir = directions[node.param2].dst
@@ -422,20 +422,20 @@ local function do_hopper_function(pos)
         destination_pos = vec_add(pos, destination_dir)
     end
 
-    local output_direction
+    output_direction
     if destination_dir.y == 0 then
         output_direction = "horizontal"
     end
 
-    local source_node = get_node(source_pos)
-    local destination_node = get_node(destination_pos)
+    source_node = get_node(source_pos)
+    destination_node = get_node(destination_pos)
 
-    local registered_source_inventories = get_registered_inventories_for(source_node.name)
+    registered_source_inventories = get_registered_inventories_for(source_node.name)
     if registered_source_inventories ~= nil then
         take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
     end
 
-    local registered_destination_inventories = get_registered_inventories_for(destination_node.name)
+    registered_destination_inventories = get_registered_inventories_for(destination_node.name)
     if registered_destination_inventories ~= nil then
         if output_direction == "horizontal" then
             send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["side"])
@@ -491,7 +491,7 @@ register_node("hopper:hopper", {
     },
 
     on_construct = function(pos)
-        local inv = get_meta(pos):get_inventory()
+        inv = get_meta(pos):get_inventory()
         inv:set_size("main", 4*4)
         get_node_timer(pos):start(0.1)
     end,
@@ -503,7 +503,7 @@ register_node("hopper:hopper", {
     end,
 
     can_dig = function(pos)
-        local inv = get_meta(pos):get_inventory()
+        inv = get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
     on_rightclick = function(pos, _, clicker)
@@ -514,11 +514,10 @@ register_node("hopper:hopper", {
     end,
 })
 
-local hopper_side_drop = "hopper:hopper"
 
 register_node("hopper:hopper_side", {
     description = "Side Hopper",
-    drop = hopper_side_drop,
+    drop = "hopper:hopper",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = metal_sounds,
     drawtype = "nodebox",
@@ -559,7 +558,7 @@ register_node("hopper:hopper_side", {
     },
 
     on_construct = function(pos)
-        local inv = get_meta(pos):get_inventory()
+        inv = get_meta(pos):get_inventory()
         inv:set_size("main", 4*4)
         get_node_timer(pos):start(0.1)
     end,
@@ -571,7 +570,7 @@ register_node("hopper:hopper_side", {
     end,
 
     can_dig = function(pos)
-        local inv = get_meta(pos):get_inventory()
+        inv = get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
 
@@ -588,8 +587,8 @@ register_node("hopper:hopper_side", {
 
 
 local function get_chute_formspec(pos)
-    local spos = get_string_pos(pos)
-    local formspec =
+    spos = get_string_pos(pos)
+    formspec =
         "size[8,7]"
         .. formspec_bg
         .. "list[nodemeta:" .. spos .. ";main;3,0.3;2,2;]"
@@ -626,26 +625,26 @@ register_node("hopper:chute", {
     },
 
     on_construct = function(pos)
-        local inv = get_meta(pos):get_inventory()
+        inv = get_meta(pos):get_inventory()
         inv:set_size("main", 2*2)
     end,
 
     on_place = function(itemstack, placer, pointed_thing)
-        local pos  = pointed_thing.under
-        local pos2 = pointed_thing.above
-        local x = pos.x - pos2.x
-        local z = pos.z - pos2.z
+        pos  = pointed_thing.under
+        pos2 = pointed_thing.above
+        x = pos.x - pos2.x
+        z = pos.z - pos2.z
 
-        local returned_stack, success = item_place_node(itemstack, placer, pointed_thing)
+        returned_stack, success = item_place_node(itemstack, placer, pointed_thing)
         if success then
-            local meta = get_meta(pos2)
+            meta = get_meta(pos2)
             meta:set_string("placer", placer:get_player_name())
         end
         return returned_stack
     end,
 
     can_dig = function(pos)
-        local inv = get_meta(pos):get_inventory()
+        inv = get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
 
@@ -657,26 +656,26 @@ register_node("hopper:chute", {
     end,
 
     on_metadata_inventory_put = function(pos)
-        local timer = get_node_timer(pos)
+        timer = get_node_timer(pos)
         if not timer:is_started() then
             timer:start(0.1)
         end
     end,
 
     on_timer = function(pos)
-        local meta = get_meta(pos);
-        local inv = meta:get_inventory()
+        meta = get_meta(pos);
+        inv = meta:get_inventory()
 
-        local node = get_node(pos)
-        local dir = facedir_to_dir(node.param2)
-        local destination_pos = vec_add(pos, dir)
-        local output_direction
+        node = get_node(pos)
+        dir = facedir_to_dir(node.param2)
+        destination_pos = vec_add(pos, dir)
+        output_direction
         if dir.y == 0 then
             output_direction = "horizontal"
         end
 
-        local destination_node = get_node(destination_pos)
-        local registered_inventories = get_registered_inventories_for(destination_node.name)
+        destination_node = get_node(destination_pos)
+        registered_inventories = get_registered_inventories_for(destination_node.name)
         if registered_inventories ~= nil then
             if output_direction == "horizontal" then
                 send_item_to(pos, destination_pos, destination_node, registered_inventories["side"])
@@ -710,11 +709,11 @@ local get_bottomdir = function(facedir)
 end
 
 local function get_sorter_formspec(pos)
-    local spos = get_string_pos(pos)
+    spos = get_string_pos(pos)
 
-    local filter_all = get_meta(pos):get_string("filter_all") == "true"
-    local y_displace = 0
-    local filter_button_text, filter_button_tooltip, filter_body
+    filter_all = get_meta(pos):get_string("filter_all") == "true"
+    y_displace = 0
+    filter_button_text, filter_button_tooltip, filter_body = "", "", ""
     if filter_all then
         filter_body = ""
         filter_button_text = "Selective\nFilter"
@@ -726,7 +725,7 @@ local function get_sorter_formspec(pos)
         y_displace = 1.6
     end
 
-    local formspec =
+    formspec =
         "size[8," .. 7 + y_displace .. "]"
         .. formspec_bg
         .. filter_body        
@@ -766,29 +765,29 @@ register_node("hopper:sorter", {
     },
 
     on_construct = function(pos)
-        local meta = get_meta(pos)
-        local inv = meta:get_inventory()
+        meta = get_meta(pos)
+        inv = meta:get_inventory()
         inv:set_size("main", 2*2)
         inv:set_size("filter", 8)
     end,
 
     on_place = function(itemstack, placer, pointed_thing)
-        local pos  = pointed_thing.under
-        local pos2 = pointed_thing.above
-        local x = pos.x - pos2.x
-        local z = pos.z - pos2.z
+        pos  = pointed_thing.under
+        pos2 = pointed_thing.above
+        x = pos.x - pos2.x
+        z = pos.z - pos2.z
 
-        local returned_stack, success = item_place_node(itemstack, placer, pointed_thing)
+        _, success = item_place_node(itemstack, placer, pointed_thing)
         if success then
-            local meta = get_meta(pos2)
+            meta = get_meta(pos2)
             meta:set_string("placer", placer:get_player_name())
         end
         return returned_stack
     end,
 
     can_dig = function(pos)
-        local meta = get_meta(pos);
-        local inv = meta:get_inventory()
+        meta = get_meta(pos);
+        inv = meta:get_inventory()
         return inv:is_empty("main")
     end,
 
@@ -801,7 +800,7 @@ register_node("hopper:sorter", {
 
     allow_metadata_inventory_put = function(pos, listname, index, stack)
         if listname == "filter" then
-            local inv = get_inventory({type="node", pos=pos})
+            inv = get_inventory({type="node", pos=pos})
             inv:set_stack(listname, index, stack:take_item(1))
             return 0
         end
@@ -810,7 +809,7 @@ register_node("hopper:sorter", {
 
     allow_metadata_inventory_take = function(pos, listname, index, stack)
         if listname == "filter" then
-            local inv = get_inventory({type="node", pos=pos})
+            inv = get_inventory({type="node", pos=pos})
             inv:set_stack(listname, index, ItemStack(""))
             return 0
         end
@@ -819,12 +818,12 @@ register_node("hopper:sorter", {
 
     allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count)
         if to_list == "filter" then
-            local inv = get_inventory({type="node", pos=pos})
-            local stack_moved = inv:get_stack(from_list, from_index)
+            inv = get_inventory({type="node", pos=pos})
+            stack_moved = inv:get_stack(from_list, from_index)
             inv:set_stack(to_list, to_index, stack_moved:take_item(1))
             return 0
         elseif from_list == "filter" then
-            local inv = get_inventory({type="node", pos=pos})
+            inv = get_inventory({type="node", pos=pos})
             inv:set_stack(from_list, from_index, ItemStack(""))
             return 0
         end
@@ -832,49 +831,49 @@ register_node("hopper:sorter", {
     end,
 
     on_metadata_inventory_put = function(pos)
-        local timer = get_node_timer(pos)
+        timer = get_node_timer(pos)
         if not timer:is_started() then
             timer:start(0.1)
         end
     end,
 
     on_timer = function(pos)
-        local meta = get_meta(pos);
-        local inv = meta:get_inventory()
+        meta = get_meta(pos);
+        inv = meta:get_inventory()
 
         -- build a filter list
-        local filter_items = nil
+        filter_items = nil
         if meta:get_string("filter_all") ~= "true" then
             filter_items = {}
-            local filter_inv_size = inv:get_size("filter")
+            filter_inv_size = inv:get_size("filter")
             for i = 1, filter_inv_size do
-                local stack = inv:get_stack("filter", i)
-                local item = stack:get_name()
+                stack = inv:get_stack("filter", i)
+                item = stack:get_name()
                 if item ~= "" then
                     filter_items[item] = true
                 end
             end
         end
 
-        local node = get_node(pos)
-        local dir = facedir_to_dir(node.param2)
-        local default_destination_pos = vec_add(pos, dir)
-        local default_output_direction
+        node = get_node(pos)
+        dir = facedir_to_dir(node.param2)
+        default_destination_pos = vec_add(pos, dir)
+        default_output_direction
         if dir.y == 0 then
             default_output_direction = "horizontal"
         end
 
         dir = get_bottomdir(node.param2)
-        local filter_destination_pos = vec_add(pos, dir)
-        local filter_output_direction
+        filter_destination_pos = vec_add(pos, dir)
+        filter_output_direction
         if dir.y == 0 then
             filter_output_direction = "horizontal"
         end
 
-        local success = false
+        success = false
 
-        local filter_destination_node = get_node(filter_destination_pos)
-        local registered_inventories = get_registered_inventories_for(filter_destination_node.name)
+        filter_destination_node = get_node(filter_destination_pos)
+        registered_inventories = get_registered_inventories_for(filter_destination_node.name)
         if registered_inventories ~= nil then
             if filter_output_direction == "horizontal" then
                 success = send_item_to(pos, filter_destination_pos, filter_destination_node, registered_inventories["side"], filter_items)
@@ -887,8 +886,8 @@ register_node("hopper:sorter", {
 
         -- Weren't able to put something in the filter destination, for whatever reason. Now we can start moving stuff forward to the default
         if not success then
-            local default_destination_node = get_node(default_destination_pos)
-            local registered_inventories = get_registered_inventories_for(default_destination_node.name)
+            default_destination_node = get_node(default_destination_pos)
+            registered_inventories = get_registered_inventories_for(default_destination_node.name)
             if registered_inventories ~= nil then
                 if default_output_direction == "horizontal" then
                     send_item_to(pos, default_destination_pos, default_destination_node, registered_inventories["side"])
@@ -939,10 +938,10 @@ register_craft({
 
 register_on_player_receive_fields(function(_, formname, fields)
     if "hopper_formspec:" == string_sub(formname, 1, 16) then
-        local pos = string_to_pos(string_sub(formname, 17, -1))
-        local meta = get_meta(pos)
-        local eject_setting = meta:get_string("eject") == "true"
-        local filter_all_setting = meta:get_string("filter_all") == "true"
+        pos = string_to_pos(string_sub(formname, 17, -1))
+        meta = get_meta(pos)
+        eject_setting = meta:get_string("eject") == "true"
+        filter_all_setting = meta:get_string("filter_all") == "true"
         if fields.eject then
             if eject_setting then
                 meta:set_string("eject", nil)
