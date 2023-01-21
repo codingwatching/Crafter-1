@@ -68,23 +68,22 @@ end
 -- "top" indicates what inventory the hopper will take items from if this node is located at the hopper's wide end
 -- "side" indicates what inventory the hopper will put items into if this node is located at the hopper's narrow end and at the same height as the hopper
 -- "bottom" indicates what inventory the hopper will put items into if this node is located at the hopper's narrow end and either above or below the hopper.
-
 add_container({
     {"top", "hopper:hopper", "main"},
     {"bottom", "hopper:hopper", "main"},
     {"side", "hopper:hopper", "main"},
     {"side", "hopper:hopper_side", "main"},
-    
+
     {"bottom", "hopper:chute", "main"},
     {"side", "hopper:chute", "main"},
-    
+
     {"bottom", "hopper:sorter", "main"},
     {"side", "hopper:sorter", "main"},
 
     {"top", "utility:chest", "main"},
     {"bottom", "utility:chest", "main"},
     {"side", "utility:chest", "main"},
-    
+
     {"top", "utility:chest_open", "main"},
     {"bottom", "utility:chest_open", "main"},
     {"side", "utility:chest_open", "main"},
