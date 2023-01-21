@@ -888,12 +888,12 @@ local function do_hopper_function(pos)
         source_pos = vector.subtract(pos, destination_dir)
         destination_pos = vector.add(pos, destination_dir)
     end
-    
+
     local output_direction
     if destination_dir.y == 0 then
         output_direction = "horizontal"
     end
-    
+
     local source_node = minetest.get_node(source_pos)
     local destination_node = minetest.get_node(destination_pos)
 
@@ -901,7 +901,7 @@ local function do_hopper_function(pos)
     if registered_source_inventories ~= nil then
         take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
     end
-    
+
     local registered_destination_inventories = get_registered_inventories_for(destination_node.name)
     if registered_destination_inventories ~= nil then
         if output_direction == "horizontal" then
@@ -912,8 +912,7 @@ local function do_hopper_function(pos)
     else
         send_item_to(pos, destination_pos, destination_node)
     end
-end--,
---})
+end
 
 
 -- Formspec handling
