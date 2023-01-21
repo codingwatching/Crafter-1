@@ -1,5 +1,3 @@
-local S = minetest.get_translator("hopper")
-
 local facedir_to_bottomdir = {
     [0]={x=0, y=-1, z=0},
     {x=0, y=0, z=-1},
@@ -21,12 +19,12 @@ local function get_sorter_formspec(pos)
     local filter_button_text, filter_button_tooltip, filter_body
     if filter_all then
         filter_body = ""
-        filter_button_text = S("Selective\nFilter")
-        filter_button_tooltip = S("This sorter is currently set to try sending all items\nin the direction of the arrow. Click this button\nto enable an item-type-specific filter.")
+        filter_button_text = "Selective\nFilter"
+        filter_button_tooltip = "This sorter is currently set to try sending all items\nin the direction of the arrow. Click this button\nto enable an item-type-specific filter."
     else
-        filter_body = "label[3.7,0;"..S("Filter").."]list[nodemeta:" .. spos .. ";filter;0,0.5;8,1;]"
-        filter_button_text = S("Filter\nAll")
-        filter_button_tooltip = S("This sorter is currently set to only send items listed\nin the filter list in the direction of the arrow.\nClick this button to set it to try sending all\nitems that way first.")
+        filter_body = "label[3.7,0;Filter]list[nodemeta:" .. spos .. ";filter;0,0.5;8,1;]"
+        filter_button_text = "Filter\nAll"
+        filter_button_tooltip = "This sorter is currently set to only send items listed\nin the filter list in the direction of the arrow.\nClick this button to set it to try sending all\nitems that way first."
         y_displace = 1.6
     end
     
@@ -46,7 +44,7 @@ end
 
 
 minetest.register_node("hopper:sorter", {
-    description = S("Sorter"),
+    description = "Sorter",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = hopper.metal_sounds,
     drawtype = "nodebox",

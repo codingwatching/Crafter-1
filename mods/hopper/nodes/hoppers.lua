@@ -1,5 +1,3 @@
-local S = minetest.get_translator("hopper")
-
 -- formspec
 local function get_hopper_formspec(pos)
     local spos = hopper.get_string_pos(pos)
@@ -53,7 +51,7 @@ end
 
 minetest.register_node("hopper:hopper", {
     drop = "hopper:hopper",
-    description = S("Hopper"),
+    description = "Hopper",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = hopper.metal_sounds,
     drawtype = "nodebox",
@@ -119,7 +117,7 @@ hopper_side_drop = "hopper:hopper"
 hopper_groups = {cracky=3, not_in_creative_inventory = 1}
 
 minetest.register_node("hopper:hopper_side", {
-    description = S("Side Hopper"),
+    description = "Side Hopper",
     drop = hopper_side_drop,
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = hopper.metal_sounds,

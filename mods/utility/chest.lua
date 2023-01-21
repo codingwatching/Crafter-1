@@ -89,7 +89,6 @@ function chest.register_chest(name, d)
     if def.protected then
         def.on_construct = function(pos)
             local meta = minetest.get_meta(pos)
-            --meta:set_string("infotext", S("Locked Chest"))
             meta:set_string("owner", "")
             local inv = meta:get_inventory()
             inv:set_size("main", 9*4)
@@ -97,7 +96,6 @@ function chest.register_chest(name, d)
         def.after_place_node = function(pos, placer)
             local meta = minetest.get_meta(pos)
             meta:set_string("owner", placer:get_player_name() or "")
-            --meta:set_string("infotext", S("Locked Chest (owned by @1)", meta:get_string("owner")))
         end
 
         def.allow_metadata_inventory_move = function(pos, from_list, from_index,
@@ -168,7 +166,6 @@ function chest.register_chest(name, d)
             -- verify placer is owner of lockable chest
             if owner ~= pn then
                 minetest.record_protection_violation(pos, pn)
-                --minetest.chat_send_player(pn, S("You do not own this chest."))
                 return nil
             end
 
@@ -177,13 +174,10 @@ function chest.register_chest(name, d)
                 secret = newsecret
                 meta:set_string("key_lock_secret", secret)
             end
-
-            --return secret, S("a locked chest"), owner
         end
     else
         def.on_construct = function(pos)
             local meta = minetest.get_meta(pos)
-            --meta:set_string("infotext", S("Chest"))
             local inv = meta:get_inventory()
             inv:set_size("main", 9*4)
         end

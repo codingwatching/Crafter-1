@@ -664,7 +664,7 @@ function signs_lib.update_sign(pos, fields)
 
     local owner = meta:get_string("owner")
     local ownstr = ""
-    if owner ~= "" then ownstr = S("Locked sign, owned by @1\n", owner) end
+    if owner ~= "" then ownstr = "Locked sign, owned by @1\n" .. owner end
 
     meta:set_string("text", text)
     meta:set_string("infotext", ownstr..make_infotext(text).." ")
@@ -676,11 +676,11 @@ function signs_lib.receive_fields(pos, formname, fields, sender)
     if not fields or not signs_lib.can_modify(pos, sender) then return end
 
     if fields.text and fields.ok then
-        minetest.log("action", S("@1 wrote \"@2\" to sign at @3",
+        minetest.log("action", "@1 wrote \"@2\" to sign at @3",
             (sender:get_player_name() or ""),
             fields.text:gsub('\\', '\\\\'):gsub("\n", "\\n"),
             minetest.pos_to_string(pos)
-        ))
+        )
         signs_lib.update_sign(pos, fields)
     elseif fields.on or fields.off then
         local node = minetest.get_node(pos)
@@ -695,11 +695,11 @@ function signs_lib.receive_fields(pos, formname, fields, sender)
             change = true
         end
         if change then
-            minetest.log("action", S("@1 flipped the wide-font switch to \"@2\" at @3",
+            minetest.log("action", "@1 flipped the wide-font switch to \"@2\" at @3",
                 (sender:get_player_name() or ""),
                 (fields.on and "off" or "on"),
                 minetest.pos_to_string(pos)
-            ))
+            )
             signs_lib.construct_sign(pos)
             signs_lib.update_sign(pos, fields)
         end
@@ -860,7 +860,7 @@ function signs_lib.after_place_node(pos, placer, itemstack, pointed_thing, locke
     if locked then
         local meta = minetest.get_meta(pos)
         meta:set_string("owner", playername)
-        meta:set_string("infotext", S("Locked sign, owned by @1\n", playername))
+        meta:set_string("infotext", "Locked sign, owned by @1\n", playername)
     end
 end
 

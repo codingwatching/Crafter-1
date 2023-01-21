@@ -4,7 +4,6 @@ hopper = {}
 
 -- internationalization boilerplate
 local mod_path = minetest.get_modpath(minetest.get_current_modname())
-local S = minetest.get_translator("hopper")
 
 hopper.formspec_bg = "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"
 

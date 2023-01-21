@@ -1,4 +1,3 @@
-local S = minetest.get_translator("hopper")
 local function get_chute_formspec(pos)
     local spos = hopper.get_string_pos(pos)
     local formspec =
@@ -14,7 +13,7 @@ local function get_chute_formspec(pos)
 end
 
 minetest.register_node("hopper:chute", {
-    description = S("Hopper Chute"),
+    description = "Hopper Chute",
     drop = "hopper:chute",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = hopper.metal_sounds,

@@ -1,5 +1,5 @@
 -- TODO: Optimize this
-local S = minetest.get_translator("hopper")
+
 -- Target inventory retrieval
 
 -- looks first for a registration matching the specific node name, then for a registration
@@ -28,11 +28,11 @@ hopper.get_eject_button_texts = function(pos, loc_X, loc_Y)
 
     local eject_button_text, eject_button_tooltip
     if minetest.get_meta(pos):get_string("eject") == "true" then
-        eject_button_text = S("Don't\nEject")
-        eject_button_tooltip = S("This hopper is currently set to eject items from its output\neven if there isn't a compatible block positioned to receive it.\nClick this button to disable this feature.")
+        eject_button_text = "Don't\nEject"
+        eject_button_tooltip = "This hopper is currently set to eject items from its output\neven if there isn't a compatible block positioned to receive it.\nClick this button to disable this feature."
     else
-        eject_button_text = S("Eject\nItems")
-        eject_button_tooltip = S("This hopper is currently set to hold on to item if there\nisn't a compatible block positioned to receive it.\nClick this button to have it eject items instead.")
+        eject_button_text = "Eject\nItems"
+        eject_button_tooltip = "This hopper is currently set to hold on to item if there\nisn't a compatible block positioned to receive it.\nClick this button to have it eject items instead."
     end
     return "button_exit["..loc_X..","..loc_Y..";1,1;eject;"..eject_button_text.."]tooltip[eject;"..eject_button_tooltip.."]"
 end
