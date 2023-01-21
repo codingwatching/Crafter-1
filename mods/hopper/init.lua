@@ -849,27 +849,27 @@ local function do_hopper_function(pos)
 
     do
 
-    local inv = minetest.get_meta(pos):get_inventory()
-    local posob
+        local inv = minetest.get_meta(pos):get_inventory()
+        local posob
 
-    for _,object in pairs(minetest.get_objects_inside_radius(pos, 1)) do
-        if not object:is_player()
-        and object:get_luaentity()
-        and object:get_luaentity().name == "__builtin:item"
-        and inv
-        and inv:room_for_item("main",
-            ItemStack(object:get_luaentity().itemstring)) then
+        for _,object in pairs(minetest.get_objects_inside_radius(pos, 1)) do
+            if not object:is_player()
+            and object:get_luaentity()
+            and object:get_luaentity().name == "__builtin:item"
+            and inv
+            and inv:room_for_item("main",
+                ItemStack(object:get_luaentity().itemstring)) then
 
-            posob = object:get_pos()
+                posob = object:get_pos()
 
-            if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
-                inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
+                if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
+                    inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
 
-                object:get_luaentity().itemstring = ""
-                object:remove()
+                    object:get_luaentity().itemstring = ""
+                    object:remove()
+                end
             end
         end
-    end
 
     end
     -- Procedure to move items
