@@ -110,6 +110,7 @@ bobber.initial_properties = {
 bobber.in_water = false
 bobber.catch_timer = 0
 bobber.fish_on_the_line = false
+bobber.first_water_touch = false
 
 -- Bobber methods
 function bobber:on_activate()
@@ -117,14 +118,34 @@ function bobber:on_activate()
 end
 
 function bobber:reel_in_action()
-    print("see you later")
+    local pos = self.object:get_pos()
+    local gain = 0.3
+
+
+
+    -- TODO: Splash particles
+    minetest.sound_play( "splash", {
+        pos = pos,
+        gain = gain
+    })
+    self.object:remove()
 end
 
 function bobber:line_break()
-    minetest.sound_play("line_break", {
+    minetest.sound_play( "line_break", {
         pos = self.object:get_pos()
     })
     self.object:remove()
+end
+
+function bobber:splash_effect()
+    local pos = self.object:get_pos()
+
+    -- TODO: particle splash effects
+    minetest.sound_play( "splash", {
+        pos = pos,
+        gain = 0.6
+    })
 end
 
 function bobber:on_step(dtime, move_result)
@@ -138,8 +159,9 @@ function bobber:on_step(dtime, move_result)
     local pos = self.object:get_pos()
     local node = minetest.get_node(pos).name
     local in_water = false
+    local position_locked = self.position_locked
 
-    if node == "main:water" then
+    if not position_locked and node == "main:water" and not self.fish_on_the_line then
         in_water = true
         local vel = self.object:get_velocity()
         vel = vector.subtract( vector.new( 0, 0, 0 ), vel )
@@ -148,40 +170,52 @@ function bobber:on_step(dtime, move_result)
         if not self.touched_water then
             self.touched_water = true
             self.object:set_velocity(vector.new(0,0,0))
+            self.origin_height = pos.y
         end
     end
 
+
+
     -- Make the bobber appear to bob up and down
-    if not in_water and self.touched_water then
+    if not position_locked and ((not in_water and self.touched_water) or self.fish_on_the_line) then
         self.object:set_acceleration(vector.new(0, -1, 0))
+        if not self.first_water_touch then
+            self.first_water_touch = true
+            --TODO: Add water particles here
+        end
+    end
+
+    -- Handle sinking state of bobber when fish on the line. Overrides two procedures above
+    if not position_locked and self.fish_on_the_line and self.origin_height - 0.5 >  pos.y then
+        self.object:set_acceleration(vector.new(0,0,0))
+        self.object:set_velocity(vector.new(0,0,0))
+        self.position_locked = true
     end
 
     -- Bobber has hit something
-    if move_result and move_result.collides then
+    if not self.fish_on_the_line and move_result and move_result.collides then
         self.player:set_fishing_state(false)
         self:line_break()
         return
     end
-    --[[
-        local newp = table.copy(pos)
 
-        newp.y = newp.y - 0.1
+    -- Bobber is in water and is doing fish biting calculations
+    if not self.touched_water then return end
 
-        local node = minetest.get_node(newp).name
-
-        if node ~= "air" and node ~= "main:water" and node ~= "main:waterflow" then
-
-            if self.player then
-
-                players_fishing[self.player] = nil
-
-            end
-            
-            minetest.sound_play("line_break",{pos=pos,gain=0.3})
-            self.object:remove()
-        end
+    -- Fish calculation check every 1.5 second
+    if self.catch_timer < 1.5 then
+        self.catch_timer = self.catch_timer + dtime
+        return
+    else
+        self.catch_timer = 0
     end
-    ]]
+
+    if not self.fish_on_the_line and math.random() > 0.195 then
+        self.fish_on_the_line = true
+        self:splash_effect()
+    end
+
+    if not self.fish_on_the_line then return end
 
     if self.in_water == true then
         do return end
@@ -223,9 +257,6 @@ function bobber:on_step(dtime, move_result)
                 end
             end
         end
-    end
-    if self.player == nil then
-        self.object:remove()
     end
 end
 minetest.register_entity("fishing:bobber", bobber)
