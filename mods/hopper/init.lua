@@ -626,14 +626,14 @@ minetest.register_node("hopper:sorter", {
             {-0.2, -0.3, -0.2, 0.2, -0.7, 0.2},
         },
     },
-    
+
     on_construct = function(pos)
         local meta = minetest.get_meta(pos)
         local inv = meta:get_inventory()
         inv:set_size("main", 2*2)
         inv:set_size("filter", 8)
     end,
-    
+
     on_place = function(itemstack, placer, pointed_thing, node_name)
         local pos  = pointed_thing.under
         local pos2 = pointed_thing.above
@@ -647,13 +647,13 @@ minetest.register_node("hopper:sorter", {
         end
         return returned_stack
     end,
-    
+
     can_dig = function(pos,player)
         local meta = minetest.get_meta(pos);
         local inv = meta:get_inventory()
         return inv:is_empty("main")
     end,
-    
+
     on_rightclick = function(pos, node, clicker, itemstack)
         if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
             return
@@ -661,7 +661,7 @@ minetest.register_node("hopper:sorter", {
         minetest.show_formspec(clicker:get_player_name(),
             "hopper_formspec:"..minetest.pos_to_string(pos), get_sorter_formspec(pos))
     end,
-    
+
     allow_metadata_inventory_put = function(pos, listname, index, stack, player)
         if listname == "filter" then
             local inv = minetest.get_inventory({type="node", pos=pos})
@@ -670,7 +670,7 @@ minetest.register_node("hopper:sorter", {
         end
         return stack:get_count()
     end,
-    
+
     allow_metadata_inventory_take = function(pos, listname, index, stack, player)
         if listname == "filter" then
             local inv = minetest.get_inventory({type="node", pos=pos})
@@ -679,7 +679,7 @@ minetest.register_node("hopper:sorter", {
         end
         return stack:get_count()
     end,
-    
+
     allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
         if to_list == "filter" then
             local inv = minetest.get_inventory({type="node", pos=pos})
@@ -693,14 +693,14 @@ minetest.register_node("hopper:sorter", {
         end
         return count
     end,
-    
+
     on_metadata_inventory_put = function(pos, listname, index, stack, player)
         local timer = minetest.get_node_timer(pos)
         if not timer:is_started() then
             timer:start(1)
         end        
     end,
-    
+
     on_timer = function(pos, elapsed)
         local meta = minetest.get_meta(pos);
         local inv = meta:get_inventory()
@@ -718,7 +718,7 @@ minetest.register_node("hopper:sorter", {
                 end
             end
         end
-        
+
         local node = minetest.get_node(pos)
         local dir = minetest.facedir_to_dir(node.param2)
         local default_destination_pos = vector.add(pos, dir)
@@ -735,7 +735,7 @@ minetest.register_node("hopper:sorter", {
         end
 
         local success = false
-        
+
         local filter_destination_node = minetest.get_node(filter_destination_pos)
         local registered_inventories = get_registered_inventories_for(filter_destination_node.name)
         if registered_inventories ~= nil then
@@ -747,8 +747,9 @@ minetest.register_node("hopper:sorter", {
         else
             success = send_item_to(pos, filter_destination_pos, filter_destination_node, nil, filter_items)
         end
-        
-        if not success then -- weren't able to put something in the filter destination, for whatever reason. Now we can start moving stuff forward to the default.
+
+        -- Weren't able to put something in the filter destination, for whatever reason. Now we can start moving stuff forward to the default
+        if not success then 
             local default_destination_node = minetest.get_node(default_destination_pos)
             local registered_inventories = get_registered_inventories_for(default_destination_node.name)
             if registered_inventories ~= nil then
