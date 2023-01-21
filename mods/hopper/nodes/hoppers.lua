@@ -62,9 +62,9 @@ minetest.register_node("hopper:hopper", {
     paramtype = "light",
     paramtype2 = "facedir",
     tiles = {
-        "hopper_top_" .. hopper.config.texture_resolution .. ".png",
-        "hopper_top_" .. hopper.config.texture_resolution .. ".png",
-        "hopper_front_" .. hopper.config.texture_resolution .. ".png"
+        "hopper_top_16.png",
+        "hopper_top_16.png",
+        "hopper_front_16.png"
     },
     node_box = {
         type = "fixed",
@@ -134,12 +134,12 @@ minetest.register_node("hopper:hopper_side", {
     paramtype = "light",
     paramtype2 = "facedir",
     tiles = {
-        "hopper_top_" .. hopper.config.texture_resolution .. ".png",
-        "hopper_bottom_" .. hopper.config.texture_resolution .. ".png",
-        "hopper_back_" .. hopper.config.texture_resolution .. ".png",
-        "hopper_side_" .. hopper.config.texture_resolution .. ".png",
-        "hopper_back_" .. hopper.config.texture_resolution .. ".png",
-        "hopper_back_" .. hopper.config.texture_resolution .. ".png"
+        "hopper_top_16.png",
+        "hopper_bottom_16.png",
+        "hopper_back_16.png",
+        "hopper_side_16.png",
+        "hopper_back_16.png",
+        "hopper_back_16.png"
     },
     node_box = {
         type = "fixed",
