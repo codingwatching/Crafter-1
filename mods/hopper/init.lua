@@ -802,13 +802,13 @@ register_node("hopper:sorter", {
     paramtype = "light",
     paramtype2 = "facedir",
     tiles = {
-            "hopper_bottom_16.png",
-            "hopper_top_16.png",
-            "hopper_bottom_16.png^hopper_sorter_arrow_16.png^[transformFX^hopper_sorter_sub_arrow_16.png^[transformFX",
-            "hopper_bottom_16.png^hopper_sorter_arrow_16.png^hopper_sorter_sub_arrow_16.png",
-            "hopper_top_16.png",
-            "hopper_bottom_16.png^hopper_sorter_arrow_16.png",
-        },
+        "hopper_bottom_16.png",
+        "hopper_top_16.png",
+        "hopper_bottom_16.png^hopper_sorter_arrow_16.png^[transformFX^hopper_sorter_sub_arrow_16.png^[transformFX",
+        "hopper_bottom_16.png^hopper_sorter_arrow_16.png^hopper_sorter_sub_arrow_16.png",
+        "hopper_top_16.png",
+        "hopper_bottom_16.png^hopper_sorter_arrow_16.png",
+    },
     node_box = {
         type = "fixed",
         fixed = {
@@ -816,6 +816,13 @@ register_node("hopper:sorter", {
             {-0.2, -0.2, 0.4, 0.2, 0.2, 0.7},
             {-0.2, -0.3, -0.2, 0.2, -0.7, 0.2},
         },
+    },
+
+    selection_box = {
+        type = "fixed",
+        fixed = {
+            {-0.4, -0.5, -0.4, 0.4, 0.5, 0.4}
+        }
     },
 
     on_construct = function(new_position)
