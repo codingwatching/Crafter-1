@@ -680,6 +680,13 @@ register_node("hopper:chute", {
         },
     },
 
+    selection_box = {
+        type = "fixed",
+        fixed = {
+            {-0.3, -0.5, -0.3, 0.3, 0.5, 0.3}
+        }
+    },
+
     on_construct = function(new_position)
         inv = get_meta(new_position):get_inventory()
         inv:set_size("main", 2*2)
