@@ -567,12 +567,12 @@ local facedir_to_bottomdir = {
     {x=0, y=1, z=0},
 }
 
-local bottomdir = function(facedir)
+local get_bottomdir = function(facedir)
     return facedir_to_bottomdir[math.floor(facedir/4)]
 end
 
 local function get_sorter_formspec(pos)
-    local spos = hopper.get_string_pos(pos)
+    local spos = get_string_pos(pos)
     
     local filter_all = minetest.get_meta(pos):get_string("filter_all") == "true"
     local y_displace = 0
@@ -590,11 +590,11 @@ local function get_sorter_formspec(pos)
     
     local formspec =
         "size[8," .. 7 + y_displace .. "]"
-        .. hopper.formspec_bg
+        .. formspec_bg
         .. filter_body        
         .. "list[nodemeta:" .. spos .. ";main;3,".. tostring(0.3 + y_displace) .. ";2,2;]"
         .. "button_exit[7,".. tostring(0.8 + y_displace) .. ";1,1;filter_all;".. filter_button_text .. "]tooltip[filter_all;" .. filter_button_tooltip.. "]"
-        .. hopper.get_eject_button_texts(pos, 6, 0.8 + y_displace)
+        .. get_eject_button_texts(pos, 6, 0.8 + y_displace)
         .. "list[current_player;main;0,".. tostring(2.85 + y_displace) .. ";8,1;]"
         .. "list[current_player;main;0,".. tostring(4.08 + y_displace) .. ";8,3;8]"
         .. "listring[nodemeta:" .. spos .. ";main]"
@@ -606,7 +606,7 @@ end
 minetest.register_node("hopper:sorter", {
     description = "Sorter",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
-    sounds = hopper.metal_sounds,
+    sounds = metal_sounds,
     drawtype = "nodebox",
     paramtype = "light",
     paramtype2 = "facedir",
@@ -727,7 +727,7 @@ minetest.register_node("hopper:sorter", {
             default_output_direction = "horizontal"
         end
 
-        dir = bottomdir(node.param2)
+        dir = get_bottomdir(node.param2)
         local filter_destination_pos = vector.add(pos, dir)
         local filter_output_direction
         if dir.y == 0 then
@@ -807,10 +807,11 @@ minetest.register_abm({
     interval = 0.1,
     chance = 1,
     action = function(pos, _, _, active_object_count_wider)
+
         if active_object_count_wider == 0 then
             return
         end
-        
+
         local inv = minetest.get_meta(pos):get_inventory()
         local posob
 
