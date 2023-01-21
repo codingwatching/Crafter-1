@@ -880,7 +880,7 @@ end
 minetest.register_abm({
     label = "Hopper transfer",
     nodenames = {"hopper:hopper", "hopper:hopper_side"},
-    neighbors = hopper.neighbors,
+    neighbors = neighbors,
     interval = 0.1,
     chance = 1,
     --catch_up = false,
@@ -905,20 +905,20 @@ minetest.register_abm({
         local source_node = minetest.get_node(source_pos)
         local destination_node = minetest.get_node(destination_pos)
 
-        local registered_source_inventories = hopper.get_registered_inventories_for(source_node.name)
+        local registered_source_inventories = get_registered_inventories_for(source_node.name)
         if registered_source_inventories ~= nil then
-            hopper.take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
+            take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
         end
         
-        local registered_destination_inventories = hopper.get_registered_inventories_for(destination_node.name)
+        local registered_destination_inventories = get_registered_inventories_for(destination_node.name)
         if registered_destination_inventories ~= nil then
             if output_direction == "horizontal" then
-                hopper.send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["side"])
+                send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["side"])
             else
-                hopper.send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["bottom"])
+                send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["bottom"])
             end
         else
-            hopper.send_item_to(pos, destination_pos, destination_node) -- for handling ejection
+            send_item_to(pos, destination_pos, destination_node) -- for handling ejection
         end
     end,
 })
