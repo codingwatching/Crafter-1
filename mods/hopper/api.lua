@@ -10,8 +10,10 @@ function hopper:add_container(list)
         local neighbor_node
         
         if string.sub(target_node, 1, 6) == "group:" then
+
             local group_identifier, group_number
             local equals_index = string.find(target_node, "=")
+
             if equals_index ~= nil then
                 group_identifier = string.sub(target_node, 7, equals_index-1)
                 -- it's possible that the string was of the form "group:blah = 1", in which case we want to trim spaces off the end of the group identifier
@@ -26,10 +28,11 @@ function hopper:add_container(list)
             end
             
             local group_info = hopper.groups[group_identifier]
+
             if group_info == nil then
                 group_info = {}
             end
-            if group_info[group_number] == nil then
+            if group_number and group_info[group_number] == nil then
                 group_info[group_number] = {}
             end
             group_info[group_number][entry[1]] = entry[3]
