@@ -49,8 +49,7 @@ local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
     return itemstack
 end
 
--------------------------------------------------------------------------------------------
--- Hoppers
+-- Hoppers - I would have never guessed
 
 minetest.register_node("hopper:hopper", {
     drop = "hopper:hopper",
