@@ -800,42 +800,6 @@ minetest.register_craft({
 
 -- TODO: Optimize and turn this into a node timer
 
--- suck in items on top of hopper
-minetest.register_abm({
-    label = "Hopper suction",
-    nodenames = {"hopper:hopper", "hopper:hopper_side"},
-    interval = 0.1,
-    chance = 1,
-    action = function(pos, _, _, active_object_count_wider)
-
-        if active_object_count_wider == 0 then
-            return
-        end
-
-        local inv = minetest.get_meta(pos):get_inventory()
-        local posob
-
-        for _,object in pairs(minetest.get_objects_inside_radius(pos, 1)) do
-            if not object:is_player()
-            and object:get_luaentity()
-            and object:get_luaentity().name == "__builtin:item"
-            and inv
-            and inv:room_for_item("main",
-                ItemStack(object:get_luaentity().itemstring)) then
-
-                posob = object:get_pos()
-
-                if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
-                    inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
-
-                    object:get_luaentity().itemstring = ""
-                    object:remove()
-                end
-            end
-        end
-    end,
-})
-
 -- Used to convert side hopper facing into source and destination relative coordinates
 -- This was tedious to populate and test
 local directions = {
@@ -877,16 +841,40 @@ local bottomdir = function(facedir)
     })[ math.floor( facedir / 4 ) ]
 end
 
--- hopper workings
+-- suck in items on top of hopper
 minetest.register_abm({
-    label = "Hopper transfer",
+    label = "Hopper suction",
     nodenames = {"hopper:hopper", "hopper:hopper_side"},
-    neighbors = neighbors,
     interval = 0.1,
     chance = 1,
-    --catch_up = false,
-
     action = function(pos, node, active_object_count, active_object_count_wider)
+
+        if active_object_count_wider == 0 then
+            return
+        end
+
+        local inv = minetest.get_meta(pos):get_inventory()
+        local posob
+
+        for _,object in pairs(minetest.get_objects_inside_radius(pos, 1)) do
+            if not object:is_player()
+            and object:get_luaentity()
+            and object:get_luaentity().name == "__builtin:item"
+            and inv
+            and inv:room_for_item("main",
+                ItemStack(object:get_luaentity().itemstring)) then
+
+                posob = object:get_pos()
+
+                if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
+                    inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
+
+                    object:get_luaentity().itemstring = ""
+                    object:remove()
+                end
+            end
+        end
+
         local source_pos, destination_pos, destination_dir
         if node.name == "hopper:hopper_side" then
             source_pos = vector.add(pos, directions[node.param2].src)
@@ -919,7 +907,7 @@ minetest.register_abm({
                 send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["bottom"])
             end
         else
-            send_item_to(pos, destination_pos, destination_node) -- for handling ejection
+            send_item_to(pos, destination_pos, destination_node)
         end
     end,
 })
