@@ -29,6 +29,63 @@ local formspec_bg = "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"
 local neighbors = {}
 local groups = {}
 local containers = {}
+local pos
+local spos
+local output
+local target_def
+local target_inv_size
+local registered_group
+local eject_button_text
+local eject_button_tooltip
+local hopper_meta
+local hopper_inv
+local placer
+local target_inv
+local stack
+local item
+local stack_to_put
+local stack_to_take
+local eject_item
+local hopper_inv_size
+local formspec
+local pos2
+local x
+local z
+local success
+local meta
+local gotten_object
+local inv
+local posob
+local node
+local source_pos
+local destination_dir
+local destination_pos
+local output_direction
+local source_node
+local destination_node
+local registered_source_inventories
+local registered_destination_inventories
+local returned_stack
+local timer
+local dir
+local registered_inventories
+local filter_all
+local y_displace
+local filter_body
+local filter_button_text
+local filter_button_tooltip
+local stack_moved
+local filter_items
+local default_output_direction
+local default_destination_pos
+local filter_inv_size
+local filter_destination_pos
+local filter_output_direction
+local filter_destination_node
+local default_destination_node
+local eject_setting
+local filter_all_setting
+
 
 -- Local function to add new containers
 local function add_container(list)
@@ -146,7 +203,7 @@ end
 
 local get_eject_button_texts = function(pos, loc_X, loc_Y)
 
-    eject_button_text, eject_button_tooltip
+    eject_button_text, eject_button_tooltip = "",""
     if get_meta(pos):get_string("eject") == "true" then
         eject_button_text = "Don't\nEject"
         eject_button_tooltip = "This hopper is currently set to eject items from its output\neven if there isn't a compatible block positioned to receive it.\nClick this button to disable this feature."
@@ -384,7 +441,6 @@ local function do_hopper_function(pos)
     do
 
         inv = get_meta(pos):get_inventory()
-        posob
 
         for _,object in ipairs(gotten_object) do
             if not object:is_player()
@@ -411,7 +467,7 @@ local function do_hopper_function(pos)
 
     node = get_node(pos)
 
-    source_pos, destination_pos, destination_dir
+    source_pos, destination_pos, destination_dir = nil, nil, nil
     if node.name == "hopper:hopper_side" then
         source_pos = vec_add(pos, directions[node.param2].src)
         destination_dir = directions[node.param2].dst
@@ -422,7 +478,7 @@ local function do_hopper_function(pos)
         destination_pos = vec_add(pos, destination_dir)
     end
 
-    output_direction
+    output_direction = nil
     if destination_dir.y == 0 then
         output_direction = "horizontal"
     end
@@ -669,7 +725,7 @@ register_node("hopper:chute", {
         node = get_node(pos)
         dir = facedir_to_dir(node.param2)
         destination_pos = vec_add(pos, dir)
-        output_direction
+        output_direction = nil
         if dir.y == 0 then
             output_direction = "horizontal"
         end
@@ -687,7 +743,7 @@ register_node("hopper:chute", {
         end
 
         if not inv:is_empty("main") then
-            get_node_timer(pos):start(1)
+            get_node_timer(pos):start(0.1)
         end
     end,
 })
@@ -815,7 +871,6 @@ register_node("hopper:sorter", {
         end
         return stack:get_count()
     end,
-
     allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count)
         if to_list == "filter" then
             inv = get_inventory({type="node", pos=pos})
@@ -858,14 +913,14 @@ register_node("hopper:sorter", {
         node = get_node(pos)
         dir = facedir_to_dir(node.param2)
         default_destination_pos = vec_add(pos, dir)
-        default_output_direction
+        default_output_direction = nil
         if dir.y == 0 then
             default_output_direction = "horizontal"
         end
 
         dir = get_bottomdir(node.param2)
         filter_destination_pos = vec_add(pos, dir)
-        filter_output_direction
+        filter_output_direction = nil
         if dir.y == 0 then
             filter_output_direction = "horizontal"
         end
@@ -900,7 +955,7 @@ register_node("hopper:sorter", {
         end
 
         if not inv:is_empty("main") then
-            get_node_timer(pos):start(1)
+            get_node_timer(pos):start(0.1)
         end
     end,
 })
