@@ -66,6 +66,7 @@ minetest.register_on_dieplayer(function(player)
     player:set_fishing_state(false, true)
 end)
 
+-- TODO: add wear when tools can have meshes
 minetest.register_node("fishing:pole", {
     description = "Fishing Pole",
     drawtype = "mesh",
@@ -77,9 +78,11 @@ minetest.register_node("fishing:pole", {
     stack_max = 1,
     on_place = function(_, player)
         player:toggle_fishing_state()
+        -- You can't wear out a node so these are infinite :(
     end,
     on_secondary_use = function(_, player)
         player:toggle_fishing_state()
+        -- You can't wear out a node so these are infinite :(
     end,
 })
 
