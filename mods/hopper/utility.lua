@@ -114,7 +114,7 @@ hopper.send_item_to = function(hopper_pos, target_pos, target_node, target_inven
         return false
     end
 
-    local eject_item = hopper.config.eject_button_enabled and hopper_meta:get_string("eject") == "true" and target_def.buildable_to
+    local eject_item = hopper_meta:get_string("eject") == "true" and target_def.buildable_to
 
     if not eject_item and not target_inventory_name then
         return false
