@@ -146,6 +146,7 @@ function bobber:delete_particle_spawner()
 end
 
 function bobber:splash_effect(heavy)
+
     self:delete_particle_spawner()
 
     local pos = self.object:get_pos()
@@ -159,7 +160,6 @@ function bobber:splash_effect(heavy)
         amount = 30
         vel = 5
     end
-    
 
     self.particle_spawner = minetest.add_particlespawner({
         pos = {
@@ -270,6 +270,17 @@ function bobber:on_step(dtime, move_result)
             pos = pos,
             gain = 0.6
         })
+        print("fish on!")
+    -- Fish has escaped!
+    elseif self.fish_on_the_line and math.random() > 0.6 then
+        self.fish_on_the_line = false
+        self:splash_effect(false)
+        minetest.sound_play( "fishing_bloop", {
+            pos = pos,
+            gain = 1
+        })
+        self.position_locked = false
+        print("fish escaped")
     end
 
     if not self.fish_on_the_line then return end
