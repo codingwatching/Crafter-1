@@ -304,21 +304,21 @@ local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
     local x = pos.x - pos2.x
     local z = pos.z - pos2.z
 
-    local returned_stack, success
+    local success
     -- unfortunately param2 overrides are needed for side hoppers even in the non-single-craftable-item case
     -- because they are literally *side* hoppers - their spouts point to the side rather than to the front, so
     -- the default item_place_node orientation code will not orient them pointing toward the selected surface.
     if x == -1 then
-        returned_stack, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 0)
+        _, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 0)
     elseif x == 1 then
-        returned_stack, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 2)
+        _, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 2)
     elseif z == -1  then
-        returned_stack, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 3)
+        _, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 3)
     elseif z == 1 then
-        returned_stack, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 1)
+        _, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 1)
     else
         node_name = "hopper:hopper" -- For cases where single_craftable_item was set on an existing world and there are still side hoppers in player inventories 
-        returned_stack, success = item_place_node(ItemStack(node_name), placer, pointed_thing)
+        _, success = item_place_node(ItemStack(node_name), placer, pointed_thing)
     end
 
     if success then
