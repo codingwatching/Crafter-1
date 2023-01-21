@@ -449,12 +449,12 @@ minetest.register_node("hopper:hopper_side", {
 
 
 local function get_chute_formspec(pos)
-    local spos = hopper.get_string_pos(pos)
+    local spos = get_string_pos(pos)
     local formspec =
         "size[8,7]"
-        .. hopper.formspec_bg
+        .. formspec_bg
         .. "list[nodemeta:" .. spos .. ";main;3,0.3;2,2;]"
-        .. hopper.get_eject_button_texts(pos, 7, 0.8)
+        .. get_eject_button_texts(pos, 7, 0.8)
         .. "list[current_player;main;0,2.85;8,1;]"
         .. "list[current_player;main;0,4.08;8,3;8]"
         .. "listring[nodemeta:" .. spos .. ";main]"
@@ -466,7 +466,7 @@ minetest.register_node("hopper:chute", {
     description = "Hopper Chute",
     drop = "hopper:chute",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
-    sounds = hopper.metal_sounds,
+    sounds = metal_sounds,
     drawtype = "nodebox",
     paramtype = "light",
     paramtype2 = "facedir",
@@ -541,12 +541,12 @@ minetest.register_node("hopper:chute", {
         local registered_inventories = hopper.get_registered_inventories_for(destination_node.name)
         if registered_inventories ~= nil then
             if output_direction == "horizontal" then
-                hopper.send_item_to(pos, destination_pos, destination_node, registered_inventories["side"])
+                send_item_to(pos, destination_pos, destination_node, registered_inventories["side"])
             else
-                hopper.send_item_to(pos, destination_pos, destination_node, registered_inventories["bottom"])
+                send_item_to(pos, destination_pos, destination_node, registered_inventories["bottom"])
             end
         else
-            hopper.send_item_to(pos, destination_pos, destination_node)
+            send_item_to(pos, destination_pos, destination_node)
         end
         
         if not inv:is_empty("main") then
