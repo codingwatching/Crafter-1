@@ -201,10 +201,10 @@ local get_registered_inventories_for = function(target_node_name)
     return nil
 end
 
-local get_eject_button_texts = function(pos, loc_X, loc_Y)
+local get_eject_button_texts = function(new_position, loc_X, loc_Y)
 
     eject_button_text, eject_button_tooltip = "",""
-    if get_meta(pos):get_string("eject") == "true" then
+    if get_meta(new_position):get_string("eject") == "true" then
         eject_button_text = "Don't\nEject"
         eject_button_tooltip = "This hopper is currently set to eject items from its output\neven if there isn't a compatible block positioned to receive it.\nClick this button to disable this feature."
     else
@@ -214,8 +214,8 @@ local get_eject_button_texts = function(pos, loc_X, loc_Y)
     return "button_exit["..loc_X..","..loc_Y..";1,1;eject;"..eject_button_text.."]tooltip[eject;"..eject_button_tooltip.."]"
 end
 
- local get_string_pos = function(pos)
-    return pos.x .. "," .. pos.y .. "," ..pos.z
+ local get_string_pos = function(new_position)
+    return new_position.x .. "," .. new_position.y .. "," ..new_position.z
 end
 
 -- Apparently node_sound_metal_defaults is a newer thing, I ran into games using an older version of the default mod without it.
@@ -341,13 +341,13 @@ end
 -- Hopper node
 
 -- formspec
-local function get_hopper_formspec(pos)
-    spos = get_string_pos(pos)
+local function get_hopper_formspec(new_position)
+    spos = get_string_pos(new_position)
     formspec =
         "size[8,9]"
         .. formspec_bg
         .. "list[nodemeta:" .. spos .. ";main;2,0.3;4,4;]"
-        .. get_eject_button_texts(pos, 7, 2)
+        .. get_eject_button_texts(new_position, 7, 2)
         .. "list[current_player;main;0,4.85;8,1;]"
         .. "list[current_player;main;0,6.08;8,3;8]"
         .. "listring[nodemeta:" .. spos .. ";main]"
@@ -431,16 +431,16 @@ local bottomdir = function(facedir)
     })[ math.floor( facedir / 4 ) ]
 end
 
-local function do_hopper_function(pos)
+local function do_hopper_function(new_position)
 
     -- Top of hopper item vacuum
 
-    gotten_object = get_objects_inside_radius(pos, 1)
+    gotten_object = get_objects_inside_radius(new_position, 1)
     if #gotten_object == 0 then goto moving end
 
     do
 
-        inv = get_meta(pos):get_inventory()
+        inv = get_meta(new_position):get_inventory()
 
         for _,object in ipairs(gotten_object) do
             if not object:is_player()
@@ -451,7 +451,7 @@ local function do_hopper_function(pos)
 
                 posob = object:get_pos()
 
-                if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
+                if math.abs(posob.x - new_position.x) <= 0.5 and posob.y - new_position.y <= 0.85 and posob.y - new_position.y >= 0.3 then
                     inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
 
                     object:get_luaentity().itemstring = ""
@@ -465,17 +465,17 @@ local function do_hopper_function(pos)
 
     ::moving::
 
-    node = get_node(pos)
+    node = get_node(new_position)
 
     source_pos, destination_pos, destination_dir = nil, nil, nil
     if node.name == "hopper:hopper_side" then
-        source_pos = vec_add(pos, directions[node.param2].src)
+        source_pos = vec_add(new_position, directions[node.param2].src)
         destination_dir = directions[node.param2].dst
-        destination_pos = vec_add(pos, destination_dir)
+        destination_pos = vec_add(new_position, destination_dir)
     else
         destination_dir = bottomdir(node.param2)
-        source_pos = vec_subtract(pos, destination_dir)
-        destination_pos = vec_add(pos, destination_dir)
+        source_pos = vec_subtract(new_position, destination_dir)
+        destination_pos = vec_add(new_position, destination_dir)
     end
 
     output_direction = nil
@@ -488,21 +488,21 @@ local function do_hopper_function(pos)
 
     registered_source_inventories = get_registered_inventories_for(source_node.name)
     if registered_source_inventories ~= nil then
-        take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
+        take_item_from(new_position, source_pos, source_node, registered_source_inventories["top"])
     end
 
     registered_destination_inventories = get_registered_inventories_for(destination_node.name)
     if registered_destination_inventories ~= nil then
         if output_direction == "horizontal" then
-            send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["side"])
+            send_item_to(new_position, destination_pos, destination_node, registered_destination_inventories["side"])
         else
-            send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["bottom"])
+            send_item_to(new_position, destination_pos, destination_node, registered_destination_inventories["bottom"])
         end
     else
-        send_item_to(pos, destination_pos, destination_node)
+        send_item_to(new_position, destination_pos, destination_node)
     end
 
-    get_node_timer(pos):start(0.1)
+    get_node_timer(new_position):start(0.1)
 end
 
 -- Hoppers - I would have never guessed
@@ -546,10 +546,10 @@ register_node("hopper:hopper", {
         },
     },
 
-    on_construct = function(pos)
-        inv = get_meta(pos):get_inventory()
+    on_construct = function(new_position)
+        inv = get_meta(new_position):get_inventory()
         inv:set_size("main", 4*4)
-        get_node_timer(pos):start(0.1)
+        get_node_timer(new_position):start(0.1)
     end,
 
     on_timer = do_hopper_function,
@@ -558,15 +558,15 @@ register_node("hopper:hopper", {
         return hopper_on_place(itemstack, placer, pointed_thing, "hopper:hopper")
     end,
 
-    can_dig = function(pos)
-        inv = get_meta(pos):get_inventory()
+    can_dig = function(new_position)
+        inv = get_meta(new_position):get_inventory()
         return inv:is_empty("main")
     end,
-    on_rightclick = function(pos, _, clicker)
-        if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
+    on_rightclick = function(new_position, _, clicker)
+        if is_protected(new_position, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(pos), get_hopper_formspec(pos))
+        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(new_position), get_hopper_formspec(new_position))
     end,
 })
 
@@ -613,10 +613,10 @@ register_node("hopper:hopper_side", {
         },
     },
 
-    on_construct = function(pos)
-        inv = get_meta(pos):get_inventory()
+    on_construct = function(new_position)
+        inv = get_meta(new_position):get_inventory()
         inv:set_size("main", 4*4)
-        get_node_timer(pos):start(0.1)
+        get_node_timer(new_position):start(0.1)
     end,
 
     on_timer = do_hopper_function,
@@ -625,16 +625,16 @@ register_node("hopper:hopper_side", {
         return hopper_on_place(itemstack, placer, pointed_thing, "hopper:hopper_side")
     end,
 
-    can_dig = function(pos)
-        inv = get_meta(pos):get_inventory()
+    can_dig = function(new_position)
+        inv = get_meta(new_position):get_inventory()
         return inv:is_empty("main")
     end,
 
-    on_rightclick = function(pos, _, clicker)
-        if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
+    on_rightclick = function(new_position, _, clicker)
+        if is_protected(new_position, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(pos), get_hopper_formspec(pos))
+        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(new_position), get_hopper_formspec(new_position))
     end,
 })
 
@@ -642,13 +642,13 @@ register_node("hopper:hopper_side", {
 -- The chute node
 
 
-local function get_chute_formspec(pos)
-    spos = get_string_pos(pos)
+local function get_chute_formspec(new_position)
+    spos = get_string_pos(new_position)
     formspec =
         "size[8,7]"
         .. formspec_bg
         .. "list[nodemeta:" .. spos .. ";main;3,0.3;2,2;]"
-        .. get_eject_button_texts(pos, 7, 0.8)
+        .. get_eject_button_texts(new_position, 7, 0.8)
         .. "list[current_player;main;0,2.85;8,1;]"
         .. "list[current_player;main;0,4.08;8,3;8]"
         .. "listring[nodemeta:" .. spos .. ";main]"
@@ -680,8 +680,8 @@ register_node("hopper:chute", {
         },
     },
 
-    on_construct = function(pos)
-        inv = get_meta(pos):get_inventory()
+    on_construct = function(new_position)
+        inv = get_meta(new_position):get_inventory()
         inv:set_size("main", 2*2)
     end,
 
@@ -699,32 +699,32 @@ register_node("hopper:chute", {
         return returned_stack
     end,
 
-    can_dig = function(pos)
-        inv = get_meta(pos):get_inventory()
+    can_dig = function(new_position)
+        inv = get_meta(new_position):get_inventory()
         return inv:is_empty("main")
     end,
 
-    on_rightclick = function(pos, _, clicker)
-        if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
+    on_rightclick = function(new_position, _, clicker)
+        if is_protected(new_position, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(pos), get_chute_formspec(pos))
+        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(new_position), get_chute_formspec(new_position))
     end,
 
-    on_metadata_inventory_put = function(pos)
-        timer = get_node_timer(pos)
+    on_metadata_inventory_put = function(new_position)
+        timer = get_node_timer(new_position)
         if not timer:is_started() then
             timer:start(0.1)
         end
     end,
 
-    on_timer = function(pos)
-        meta = get_meta(pos);
+    on_timer = function(new_position)
+        meta = get_meta(new_position);
         inv = meta:get_inventory()
 
-        node = get_node(pos)
+        node = get_node(new_position)
         dir = facedir_to_dir(node.param2)
-        destination_pos = vec_add(pos, dir)
+        destination_pos = vec_add(new_position, dir)
         output_direction = nil
         if dir.y == 0 then
             output_direction = "horizontal"
@@ -734,16 +734,16 @@ register_node("hopper:chute", {
         registered_inventories = get_registered_inventories_for(destination_node.name)
         if registered_inventories ~= nil then
             if output_direction == "horizontal" then
-                send_item_to(pos, destination_pos, destination_node, registered_inventories["side"])
+                send_item_to(new_position, destination_pos, destination_node, registered_inventories["side"])
             else
-                send_item_to(pos, destination_pos, destination_node, registered_inventories["bottom"])
+                send_item_to(new_position, destination_pos, destination_node, registered_inventories["bottom"])
             end
         else
-            send_item_to(pos, destination_pos, destination_node)
+            send_item_to(new_position, destination_pos, destination_node)
         end
 
         if not inv:is_empty("main") then
-            get_node_timer(pos):start(0.1)
+            get_node_timer(new_position):start(0.1)
         end
     end,
 })
@@ -764,10 +764,10 @@ local get_bottomdir = function(facedir)
     return facedir_to_bottomdir[math.floor(facedir/4)]
 end
 
-local function get_sorter_formspec(pos)
-    spos = get_string_pos(pos)
+local function get_sorter_formspec(new_position)
+    spos = get_string_pos(new_position)
 
-    filter_all = get_meta(pos):get_string("filter_all") == "true"
+    filter_all = get_meta(new_position):get_string("filter_all") == "true"
     y_displace = 0
     filter_button_text, filter_button_tooltip, filter_body = "", "", ""
     if filter_all then
@@ -787,7 +787,7 @@ local function get_sorter_formspec(pos)
         .. filter_body        
         .. "list[nodemeta:" .. spos .. ";main;3,".. tostring(0.3 + y_displace) .. ";2,2;]"
         .. "button_exit[7,".. tostring(0.8 + y_displace) .. ";1,1;filter_all;".. filter_button_text .. "]tooltip[filter_all;" .. filter_button_tooltip.. "]"
-        .. get_eject_button_texts(pos, 6, 0.8 + y_displace)
+        .. get_eject_button_texts(new_position, 6, 0.8 + y_displace)
         .. "list[current_player;main;0,".. tostring(2.85 + y_displace) .. ";8,1;]"
         .. "list[current_player;main;0,".. tostring(4.08 + y_displace) .. ";8,3;8]"
         .. "listring[nodemeta:" .. spos .. ";main]"
@@ -820,8 +820,8 @@ register_node("hopper:sorter", {
         },
     },
 
-    on_construct = function(pos)
-        meta = get_meta(pos)
+    on_construct = function(new_position)
+        meta = get_meta(new_position)
         inv = meta:get_inventory()
         inv:set_size("main", 2*2)
         inv:set_size("filter", 8)
@@ -841,59 +841,59 @@ register_node("hopper:sorter", {
         return returned_stack
     end,
 
-    can_dig = function(pos)
-        meta = get_meta(pos);
+    can_dig = function(new_position)
+        meta = get_meta(new_position);
         inv = meta:get_inventory()
         return inv:is_empty("main")
     end,
 
-    on_rightclick = function(pos, _, clicker)
-        if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
+    on_rightclick = function(new_position, _, clicker)
+        if is_protected(new_position, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(pos), get_sorter_formspec(pos))
+        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(new_position), get_sorter_formspec(new_position))
     end,
 
-    allow_metadata_inventory_put = function(pos, listname, index, stack)
+    allow_metadata_inventory_put = function(new_position, listname, index, stack)
         if listname == "filter" then
-            inv = get_inventory({type="node", pos=pos})
+            inv = get_inventory({type="node", pos=new_position})
             inv:set_stack(listname, index, stack:take_item(1))
             return 0
         end
         return stack:get_count()
     end,
 
-    allow_metadata_inventory_take = function(pos, listname, index, stack)
+    allow_metadata_inventory_take = function(new_position, listname, index, stack)
         if listname == "filter" then
-            inv = get_inventory({type="node", pos=pos})
+            inv = get_inventory({type="node", pos=new_position})
             inv:set_stack(listname, index, ItemStack(""))
             return 0
         end
         return stack:get_count()
     end,
-    allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count)
+    allow_metadata_inventory_move = function(new_position, from_list, from_index, to_list, to_index, count)
         if to_list == "filter" then
-            inv = get_inventory({type="node", pos=pos})
+            inv = get_inventory({type="node", pos=new_position})
             stack_moved = inv:get_stack(from_list, from_index)
             inv:set_stack(to_list, to_index, stack_moved:take_item(1))
             return 0
         elseif from_list == "filter" then
-            inv = get_inventory({type="node", pos=pos})
+            inv = get_inventory({type="node", pos=new_position})
             inv:set_stack(from_list, from_index, ItemStack(""))
             return 0
         end
         return count
     end,
 
-    on_metadata_inventory_put = function(pos)
-        timer = get_node_timer(pos)
+    on_metadata_inventory_put = function(new_position)
+        timer = get_node_timer(new_position)
         if not timer:is_started() then
             timer:start(0.1)
         end
     end,
 
-    on_timer = function(pos)
-        meta = get_meta(pos);
+    on_timer = function(new_position)
+        meta = get_meta(new_position);
         inv = meta:get_inventory()
 
         -- build a filter list
@@ -910,16 +910,16 @@ register_node("hopper:sorter", {
             end
         end
 
-        node = get_node(pos)
+        node = get_node(new_position)
         dir = facedir_to_dir(node.param2)
-        default_destination_pos = vec_add(pos, dir)
+        default_destination_pos = vec_add(new_position, dir)
         default_output_direction = nil
         if dir.y == 0 then
             default_output_direction = "horizontal"
         end
 
         dir = get_bottomdir(node.param2)
-        filter_destination_pos = vec_add(pos, dir)
+        filter_destination_pos = vec_add(new_position, dir)
         filter_output_direction = nil
         if dir.y == 0 then
             filter_output_direction = "horizontal"
@@ -931,12 +931,12 @@ register_node("hopper:sorter", {
         registered_inventories = get_registered_inventories_for(filter_destination_node.name)
         if registered_inventories ~= nil then
             if filter_output_direction == "horizontal" then
-                success = send_item_to(pos, filter_destination_pos, filter_destination_node, registered_inventories["side"], filter_items)
+                success = send_item_to(new_position, filter_destination_pos, filter_destination_node, registered_inventories["side"], filter_items)
             else
-                success = send_item_to(pos, filter_destination_pos, filter_destination_node, registered_inventories["bottom"], filter_items)
+                success = send_item_to(new_position, filter_destination_pos, filter_destination_node, registered_inventories["bottom"], filter_items)
             end
         else
-            success = send_item_to(pos, filter_destination_pos, filter_destination_node, nil, filter_items)
+            success = send_item_to(new_position, filter_destination_pos, filter_destination_node, nil, filter_items)
         end
 
         -- Weren't able to put something in the filter destination, for whatever reason. Now we can start moving stuff forward to the default
@@ -945,17 +945,17 @@ register_node("hopper:sorter", {
             registered_inventories = get_registered_inventories_for(default_destination_node.name)
             if registered_inventories ~= nil then
                 if default_output_direction == "horizontal" then
-                    send_item_to(pos, default_destination_pos, default_destination_node, registered_inventories["side"])
+                    send_item_to(new_position, default_destination_pos, default_destination_node, registered_inventories["side"])
                 else
-                    send_item_to(pos, default_destination_pos, default_destination_node, registered_inventories["bottom"])
+                    send_item_to(new_position, default_destination_pos, default_destination_node, registered_inventories["bottom"])
                 end
             else
-                send_item_to(pos, default_destination_pos, default_destination_node)
+                send_item_to(new_position, default_destination_pos, default_destination_node)
             end
         end
 
         if not inv:is_empty("main") then
-            get_node_timer(pos):start(0.1)
+            get_node_timer(new_position):start(0.1)
         end
     end,
 })
