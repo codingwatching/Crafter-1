@@ -19,6 +19,8 @@ local facedir_to_dir = minetest.facedir_to_dir
 local get_inventory = minetest.get_inventory
 local register_craft = minetest.register_craft
 local register_on_player_receive_fields = minetest.register_on_player_receive_fields
+local string_sub = string.sub
+local string_find = string.find
 
 local formspec_bg = "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"
 
@@ -31,21 +33,21 @@ local function add_container(list)
     for _, entry in pairs(list) do
         local target_node = entry[2]
         local neighbor_node
-        if string.sub(target_node, 1, 6) == "group:" then
+        if string_sub(target_node, 1, 6) == "group:" then
 
             local group_identifier, group_number
-            local equals_index = string.find(target_node, "=")
+            local equals_index = string_find(target_node, "=")
 
             if equals_index ~= nil then
-                group_identifier = string.sub(target_node, 7, equals_index-1)
+                group_identifier = string_sub(target_node, 7, equals_index-1)
                 -- it's possible that the string was of the form "group:blah = 1", in which case we want to trim spaces off the end of the group identifier
-                local space_index = string.find(group_identifier, " ")
+                local space_index = string_find(group_identifier, " ")
                 if space_index ~= nil then
-                    group_identifier = string.sub(group_identifier, 1, space_index-1)
+                    group_identifier = string_sub(group_identifier, 1, space_index-1)
                 end
-                group_number = tonumber(string.sub(target_node, equals_index+1, -1))
+                group_number = tonumber(string_sub(target_node, equals_index+1, -1))
             else
-                group_identifier = string.sub(target_node, 7, -1)
+                group_identifier = string_sub(target_node, 7, -1)
                 group_number = "all" -- special value to indicate no number was provided
             end
             local group_info = groups[group_identifier]
@@ -938,8 +940,8 @@ register_craft({
 -- Formspec handling
 
 register_on_player_receive_fields(function(_, formname, fields)
-    if "hopper_formspec:" == string.sub(formname, 1, 16) then
-        local pos = string_to_pos(string.sub(formname, 17, -1))
+    if "hopper_formspec:" == string_sub(formname, 1, 16) then
+        local pos = string_to_pos(string_sub(formname, 17, -1))
         local meta = get_meta(pos)
         local eject_setting = meta:get_string("eject") == "true"
         local filter_all_setting = meta:get_string("filter_all") == "true"
