@@ -66,7 +66,7 @@ minetest.register_on_dieplayer(function(player)
     player:set_fishing_state(false, true)
 end)
 
--- TODO: add wear when tools can have meshes
+-- TODO: add wear when tools can have meshes or make fishing poles have a hud element for wear
 minetest.register_node("fishing:pole", {
     description = "Fishing Pole",
     drawtype = "mesh",
