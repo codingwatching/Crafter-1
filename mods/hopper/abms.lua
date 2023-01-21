@@ -24,12 +24,8 @@ minetest.register_abm({
 
                 posob = object:get_pos()
 
-                if math.abs(posob.x - pos.x) <= 0.5
-                and posob.y - pos.y <= 0.85
-                and posob.y - pos.y >= 0.3 then
-
-                    inv:add_item("main",
-                        ItemStack(object:get_luaentity().itemstring))
+                if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
+                    inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
 
                     object:get_luaentity().itemstring = ""
                     object:remove()
