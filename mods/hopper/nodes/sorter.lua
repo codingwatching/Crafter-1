@@ -47,8 +47,6 @@ end
 
 minetest.register_node("hopper:sorter", {
     description = S("Sorter"),
-    _doc_items_longdesc = hopper.doc.sorter_long_desc,
-    _doc_items_usagehelp = hopper.doc.sorter_usage,
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = hopper.metal_sounds,
     drawtype = "nodebox",

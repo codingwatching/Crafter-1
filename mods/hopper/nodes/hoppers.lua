@@ -56,8 +56,6 @@ end
 minetest.register_node("hopper:hopper", {
     drop = "hopper:hopper",
     description = S("Hopper"),
-    _doc_items_longdesc = hopper.doc.hopper_long_desc,
-    _doc_items_usagehelp = hopper.doc.hopper_usage,
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = hopper.metal_sounds,
     drawtype = "nodebox",
@@ -129,8 +127,6 @@ end
 
 minetest.register_node("hopper:hopper_side", {
     description = S("Side Hopper"),
-    _doc_items_longdesc = hopper.doc.hopper_long_desc,
-    _doc_items_usagehelp = hopper.doc.hopper_usage,
     drop = hopper_side_drop,
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = hopper.metal_sounds,

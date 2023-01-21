@@ -3,20 +3,19 @@
 hopper = {}
 
 -- internationalization boilerplate
-local MP = minetest.get_modpath(minetest.get_current_modname())
+local mod_path = minetest.get_modpath(minetest.get_current_modname())
 local S = minetest.get_translator("hopper")
 
 hopper.formspec_bg = "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"
 
-dofile(MP.."/config.lua")
-dofile(MP.."/api.lua")
-dofile(MP.."/utility.lua")
-dofile(MP.."/doc.lua")
-dofile(MP.."/nodes/hoppers.lua")
-dofile(MP.."/nodes/chute.lua")
-dofile(MP.."/nodes/sorter.lua")
-dofile(MP.."/crafts.lua")
-dofile(MP.."/abms.lua")
+dofile( mod_path .. "/config.lua" )
+dofile( mod_path .. "/api.lua" )
+dofile( mod_path .. "/utility.lua" )
+dofile( mod_path .. "/nodes/hoppers.lua" )
+dofile( mod_path .. "/nodes/chute.lua" )
+dofile( mod_path .. "/nodes/sorter.lua" )
+dofile( mod_path .. "/crafts.lua" )
+dofile( mod_path .. "/abms.lua" )
 
 
 -------------------------------------------------------------------------------------------

@@ -15,8 +15,6 @@ end
 
 minetest.register_node("hopper:chute", {
     description = S("Hopper Chute"),
-    _doc_items_longdesc = hopper.doc.chute_long_desc,
-    _doc_items_usagehelp = hopper.doc.chute_usage,
     drop = "hopper:chute",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = hopper.metal_sounds,
