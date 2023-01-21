@@ -845,14 +845,15 @@ local function do_hopper_function(pos)
 
     -- Top of hopper item vacuum
 
-    if #minetest.get_objects_inside_radius(pos, 1) == 0 then goto moving end
+    local gotten_object = minetest.get_objects_inside_radius(pos, 1)
+    if #gotten_object == 0 then goto moving end
 
     do
 
         local inv = minetest.get_meta(pos):get_inventory()
         local posob
 
-        for _,object in pairs(minetest.get_objects_inside_radius(pos, 1)) do
+        for _,object in pairs(gotten_object) do
             if not object:is_player()
             and object:get_luaentity()
             and object:get_luaentity().name == "__builtin:item"
