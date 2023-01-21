@@ -185,13 +185,6 @@ function bobber:reel_in_action()
     self.object:remove()
 end
 
-function bobber:line_break()
-    minetest.sound_play( "line_break", {
-        pos = self.object:get_pos()
-    })
-    self:delete_particle_spawner()
-    self.object:remove()
-end
 
 function bobber:delete_particle_spawner()
     if self.particle_spawner then
@@ -302,10 +295,10 @@ function bobber:on_step(dtime, move_result)
         self.position_locked = true
     end
 
-    -- Bobber has hit something
+    -- Bobber has hit something, this function is automatically inferred because the player
+    -- function automatically tells it to call self:reel_in_action()
     if not self.fish_on_the_line and move_result and move_result.collides then
         self.player:set_fishing_state(false)
-        self:line_break()
         return
     end
 
@@ -328,7 +321,6 @@ function bobber:on_step(dtime, move_result)
             pos = pos,
             gain = 0.6
         })
-        print("fish on!")
     -- Fish has escaped!
     elseif self.fish_on_the_line and math.random() > 0.6 then
         self.fish_on_the_line = false
@@ -338,51 +330,6 @@ function bobber:on_step(dtime, move_result)
             gain = 1
         })
         self.position_locked = false
-        print("fish escaped")
-    end
-
-    if not self.fish_on_the_line then return end
-
-    if self.in_water == true then
-        do return end
-        if self.player then
-            local p = minetest.get_player_by_name(self.player)
-            if p:get_player_control().RMB then
-                local pos2 = p:get_pos()
-                local vel = vector.direction(vector.new(pos.x,0,pos.z),vector.new(pos2.x,0,pos2.z))
-                self.object:set_velocity(vector.multiply(vel,2))
-
-
-                self.catch_timer = self.catch_timer + dtime
-
-                if self.catch_timer >= 0.5 then
-                    self.catch_timer = 0
-                    if math.random() > 0.94 then
-                        local obj = minetest.add_item(pos, "fishing:fish")
-                        if obj then
-                            local distance = vector.distance(pos,pos2)
-                            local dir = vector.direction(pos,pos2)
-                            local force = vector.multiply(dir,distance)
-                            force.y = 6
-                            obj:set_velocity(force)
-                            minetest.sound_play("splash",{pos=obj:get_pos(),gain=0.25})
-                        end
-                        players_fishing[self.player] = nil
-                        self.object:remove()
-                    end
-                end
-            else
-                self.object:set_velocity(vector.new(0,0,0))
-            end
-            if p then
-                local pos2 = p:get_pos()
-                if vector.distance(vector.new(pos.x,0,pos.z),vector.new(pos2.x,0,pos2.z)) < 1 then
-                    players_fishing[self.player] = nil
-                    minetest.sound_play("line_break",{pos=pos,gain=0.3,pitch=0.5})
-                    self.object:remove()
-                end
-            end
-        end
     end
 end
 minetest.register_entity("fishing:bobber", bobber)
