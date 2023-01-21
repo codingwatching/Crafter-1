@@ -67,7 +67,7 @@ end
 
 -- "top" indicates what inventory the hopper will take items from if this node is located at the hopper's wide end
 -- "side" indicates what inventory the hopper will put items into if this node is located at the hopper's narrow end and at the same height as the hopper
--- "bottom" indicates what inventory the hopper will put items into if this node is located at the hopper's narrow end and either above or below the hopper.
+-- "bottom" indicates what inventory the hopper will put items into if this node is located at the hopper's narrow end and either above or below the 
 add_container({
     {"top", "hopper:hopper", "main"},
     {"bottom", "hopper:hopper", "main"},
@@ -102,14 +102,14 @@ add_container({
 -- looks first for a registration matching the specific node name, then for a registration
 -- matching group and value, then for a registration matching a group and *any* value
 local get_registered_inventories_for = function(target_node_name)
-    local output = hopper.containers[target_node_name]
+    local output = containers[target_node_name]
     if output ~= nil then return output end
 
     local target_def = minetest.registered_nodes[target_node_name]
     if target_def == nil or target_def.groups == nil then return nil end
 
     for group, value in pairs(target_def.groups) do
-        local registered_group = hopper.groups[group]
+        local registered_group = groups[group]
         if registered_group ~= nil then
             output = registered_group[value]
             if output ~= nil then return output end
@@ -538,7 +538,7 @@ minetest.register_node("hopper:chute", {
         end
         
         local destination_node = minetest.get_node(destination_pos)
-        local registered_inventories = hopper.get_registered_inventories_for(destination_node.name)
+        local registered_inventories = get_registered_inventories_for(destination_node.name)
         if registered_inventories ~= nil then
             if output_direction == "horizontal" then
                 send_item_to(pos, destination_pos, destination_node, registered_inventories["side"])
@@ -737,28 +737,28 @@ minetest.register_node("hopper:sorter", {
         local success = false
         
         local filter_destination_node = minetest.get_node(filter_destination_pos)
-        local registered_inventories = hopper.get_registered_inventories_for(filter_destination_node.name)
+        local registered_inventories = get_registered_inventories_for(filter_destination_node.name)
         if registered_inventories ~= nil then
             if filter_output_direction == "horizontal" then
-                success = hopper.send_item_to(pos, filter_destination_pos, filter_destination_node, registered_inventories["side"], filter_items)
+                success = send_item_to(pos, filter_destination_pos, filter_destination_node, registered_inventories["side"], filter_items)
             else
-                success = hopper.send_item_to(pos, filter_destination_pos, filter_destination_node, registered_inventories["bottom"], filter_items)
+                success = send_item_to(pos, filter_destination_pos, filter_destination_node, registered_inventories["bottom"], filter_items)
             end
         else
-            success = hopper.send_item_to(pos, filter_destination_pos, filter_destination_node, nil, filter_items)
+            success = send_item_to(pos, filter_destination_pos, filter_destination_node, nil, filter_items)
         end
         
         if not success then -- weren't able to put something in the filter destination, for whatever reason. Now we can start moving stuff forward to the default.
             local default_destination_node = minetest.get_node(default_destination_pos)
-            local registered_inventories = hopper.get_registered_inventories_for(default_destination_node.name)
+            local registered_inventories = get_registered_inventories_for(default_destination_node.name)
             if registered_inventories ~= nil then
                 if default_output_direction == "horizontal" then
-                    hopper.send_item_to(pos, default_destination_pos, default_destination_node, registered_inventories["side"])
+                    send_item_to(pos, default_destination_pos, default_destination_node, registered_inventories["side"])
                 else
-                    hopper.send_item_to(pos, default_destination_pos, default_destination_node, registered_inventories["bottom"])
+                    send_item_to(pos, default_destination_pos, default_destination_node, registered_inventories["bottom"])
                 end
             else
-                hopper.send_item_to(pos, default_destination_pos, default_destination_node)
+                send_item_to(pos, default_destination_pos, default_destination_node)
             end
         end
         
