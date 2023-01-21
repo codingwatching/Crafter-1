@@ -53,12 +53,12 @@ minetest.register_node("hopper:sorter", {
     paramtype = "light",
     paramtype2 = "facedir",
     tiles = {
-            "hopper_bottom_" .. hopper.config.texture_resolution .. ".png",
-            "hopper_top_" .. hopper.config.texture_resolution .. ".png",
-            "hopper_bottom_" .. hopper.config.texture_resolution .. ".png^hopper_sorter_arrow_" .. hopper.config.texture_resolution .. ".png^[transformFX^hopper_sorter_sub_arrow_" .. hopper.config.texture_resolution .. ".png^[transformFX",
-            "hopper_bottom_" .. hopper.config.texture_resolution .. ".png^hopper_sorter_arrow_" .. hopper.config.texture_resolution .. ".png^hopper_sorter_sub_arrow_" .. hopper.config.texture_resolution .. ".png",
-            "hopper_top_" .. hopper.config.texture_resolution .. ".png",
-            "hopper_bottom_" .. hopper.config.texture_resolution .. ".png^hopper_sorter_arrow_" .. hopper.config.texture_resolution .. ".png",
+            "hopper_bottom_16.png",
+            "hopper_top_16.png",
+            "hopper_bottom_16.png^hopper_sorter_arrow_16.png^[transformFX^hopper_sorter_sub_arrow_16.png^[transformFX",
+            "hopper_bottom_16.png^hopper_sorter_arrow_16.png^hopper_sorter_sub_arrow_16.png",
+            "hopper_top_16.png",
+            "hopper_bottom_16.png^hopper_sorter_arrow_16.png",
         },
     node_box = {
         type = "fixed",
