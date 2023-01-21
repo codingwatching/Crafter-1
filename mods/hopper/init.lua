@@ -542,7 +542,10 @@ minetest.register_node("hopper:hopper_side", {
     on_construct = function(pos)
         local inv = minetest.get_meta(pos):get_inventory()
         inv:set_size("main", 4*4)
+        minetest.get_node_timer(pos):start(0.1)
     end,
+
+    on_timer = do_hopper_function,
 
     on_place = function(itemstack, placer, pointed_thing)
         return hopper_on_place(itemstack, placer, pointed_thing, "hopper:hopper_side")
