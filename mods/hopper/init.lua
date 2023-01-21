@@ -1,5 +1,26 @@
-local formspec_bg = "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"
+local ipairs = ipairs
+local ItemStack = ItemStack
+local registered_nodes = minetest.registered_nodes
+local get_meta = minetest.get_meta
+local get_player_by_name = minetest.get_player_by_name
+local item_place_node = minetest.item_place_node
+local get_node = minetest.get_node
+local get_node_timer = minetest.get_node_timer
+local settings = minetest.settings
+local get_objects_inside_radius = minetest.get_objects_inside_radius
+local is_protected = minetest.is_protected
+local check_player_privs = minetest.check_player_privs
+local show_formspec = minetest.show_formspec
+local pos_to_string = minetest.pos_to_string
+local string_to_pos = minetest.string_to_pos
+local add_item = minetest.add_item
+local register_node = minetest.register_node
+local facedir_to_dir = minetest.facedir_to_dir
+local get_inventory = minetest.get_inventory
+local register_craft = minetest.register_craft
+local register_on_player_receive_fields = minetest.register_on_player_receive_fields
 
+local formspec_bg = "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"
 
 local neighbors = {}
 local groups = {}
@@ -103,7 +124,7 @@ local get_registered_inventories_for = function(target_node_name)
     local output = containers[target_node_name]
     if output ~= nil then return output end
 
-    local target_def = minetest.registered_nodes[target_node_name]
+    local target_def = registered_nodes[target_node_name]
     if target_def == nil or target_def.groups == nil then return nil end
 
     for group, value in pairs(target_def.groups) do
@@ -122,7 +143,7 @@ end
 local get_eject_button_texts = function(pos, loc_X, loc_Y)
 
     local eject_button_text, eject_button_tooltip
-    if minetest.get_meta(pos):get_string("eject") == "true" then
+    if get_meta(pos):get_string("eject") == "true" then
         eject_button_text = "Don't\nEject"
         eject_button_tooltip = "This hopper is currently set to eject items from its output\neven if there isn't a compatible block positioned to receive it.\nClick this button to disable this feature."
     else
@@ -148,7 +169,7 @@ end
 
 local get_placer = function(player_name)
     if player_name ~= "" then
-        return minetest.get_player_by_name(player_name) or {
+        return get_player_by_name(player_name) or {
             is_player = delay(true),
             get_player_name = delay(player_name),
             is_fake_player = ":hopper",
@@ -163,18 +184,18 @@ local take_item_from = function(hopper_pos, target_pos, target_node, target_inve
     if target_inventory_name == nil then
         return
     end
-    local target_def = minetest.registered_nodes[target_node.name]
+    local target_def = registered_nodes[target_node.name]
     if not target_def then
         return
     end
 
     --hopper inventory
-    local hopper_meta = minetest.get_meta(hopper_pos);
+    local hopper_meta = get_meta(hopper_pos);
     local hopper_inv = hopper_meta:get_inventory()
     local placer = get_placer(hopper_meta:get_string("placer"))
 
     --source inventory
-    local target_inv = minetest.get_meta(target_pos):get_inventory()
+    local target_inv = get_meta(target_pos):get_inventory()
     local target_inv_size = target_inv:get_size(target_inventory_name)
     if target_inv:is_empty(target_inventory_name) == false then
         for i = 1,target_inv_size do
@@ -202,8 +223,8 @@ end
 
 -- Used to put items from the hopper inventory into the target block
 local send_item_to = function(hopper_pos, target_pos, target_node, target_inventory_name, filtered_items)
-    local hopper_meta = minetest.get_meta(hopper_pos)
-    local target_def = minetest.registered_nodes[target_node.name]
+    local hopper_meta = get_meta(hopper_pos)
+    local target_def = registered_nodes[target_node.name]
     if not target_def then
         return false
     end
@@ -215,7 +236,7 @@ local send_item_to = function(hopper_pos, target_pos, target_node, target_invent
     end
 
     --hopper inventory
-    hopper_meta = minetest.get_meta(hopper_pos);
+    hopper_meta = get_meta(hopper_pos);
     local hopper_inv = hopper_meta:get_inventory()
     if hopper_inv:is_empty("main") == true then
         return false
@@ -224,7 +245,7 @@ local send_item_to = function(hopper_pos, target_pos, target_node, target_invent
     local placer = get_placer(hopper_meta:get_string("placer"))
 
     --target inventory
-    local target_inv = minetest.get_meta(target_pos):get_inventory()
+    local target_inv = get_meta(target_pos):get_inventory()
 
     for i = 1,hopper_inv_size do
         local stack = hopper_inv:get_stack("main", i)
@@ -247,7 +268,7 @@ local send_item_to = function(hopper_pos, target_pos, target_node, target_invent
                 end
             elseif eject_item then
                 local stack_to_put = stack:take_item(1)
-                minetest.add_item(target_pos, stack_to_put)
+                add_item(target_pos, stack_to_put)
                 hopper_inv:set_stack("main", i, stack)
                 return true
             end
@@ -284,22 +305,22 @@ local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
     -- because they are literally *side* hoppers - their spouts point to the side rather than to the front, so
     -- the default item_place_node orientation code will not orient them pointing toward the selected surface.
     if x == -1 then
-        returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 0)
+        returned_stack, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 0)
     elseif x == 1 then
-        returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 2)
+        returned_stack, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 2)
     elseif z == -1  then
-        returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 3)
+        returned_stack, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 3)
     elseif z == 1 then
-        returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 1)
+        returned_stack, success = item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 1)
     else
         node_name = "hopper:hopper" -- For cases where single_craftable_item was set on an existing world and there are still side hoppers in player inventories 
-        returned_stack, success = minetest.item_place_node(ItemStack(node_name), placer, pointed_thing)
+        returned_stack, success = item_place_node(ItemStack(node_name), placer, pointed_thing)
     end
 
     if success then
-        local meta = minetest.get_meta(pos2)
+        local meta = get_meta(pos2)
         meta:set_string("placer", placer:get_player_name())
-        if not minetest.settings:get_bool("creative_mode") then
+        if not settings:get_bool("creative_mode") then
             itemstack:take_item()
         end
     end
@@ -353,12 +374,12 @@ local function do_hopper_function(pos)
 
     -- Top of hopper item vacuum
 
-    local gotten_object = minetest.get_objects_inside_radius(pos, 1)
+    local gotten_object = get_objects_inside_radius(pos, 1)
     if #gotten_object == 0 then goto moving end
 
     do
 
-        local inv = minetest.get_meta(pos):get_inventory()
+        local inv = get_meta(pos):get_inventory()
         local posob
 
         for _,object in ipairs(gotten_object) do
@@ -384,7 +405,7 @@ local function do_hopper_function(pos)
 
     ::moving::
 
-    local node = minetest.get_node(pos)
+    local node = get_node(pos)
 
     local source_pos, destination_pos, destination_dir
     if node.name == "hopper:hopper_side" then
@@ -402,8 +423,8 @@ local function do_hopper_function(pos)
         output_direction = "horizontal"
     end
 
-    local source_node = minetest.get_node(source_pos)
-    local destination_node = minetest.get_node(destination_pos)
+    local source_node = get_node(source_pos)
+    local destination_node = get_node(destination_pos)
 
     local registered_source_inventories = get_registered_inventories_for(source_node.name)
     if registered_source_inventories ~= nil then
@@ -421,12 +442,12 @@ local function do_hopper_function(pos)
         send_item_to(pos, destination_pos, destination_node)
     end
 
-    minetest.get_node_timer(pos):start(0.1)
+    get_node_timer(pos):start(0.1)
 end
 
 -- Hoppers - I would have never guessed
 
-minetest.register_node("hopper:hopper", {
+register_node("hopper:hopper", {
     drop = "hopper:hopper",
     description = "Hopper",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
@@ -466,9 +487,9 @@ minetest.register_node("hopper:hopper", {
     },
 
     on_construct = function(pos)
-        local inv = minetest.get_meta(pos):get_inventory()
+        local inv = get_meta(pos):get_inventory()
         inv:set_size("main", 4*4)
-        minetest.get_node_timer(pos):start(0.1)
+        get_node_timer(pos):start(0.1)
     end,
 
     on_timer = do_hopper_function,
@@ -478,22 +499,21 @@ minetest.register_node("hopper:hopper", {
     end,
 
     can_dig = function(pos)
-        local inv = minetest.get_meta(pos):get_inventory()
+        local inv = get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
-
     on_rightclick = function(pos, _, clicker)
-        if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
+        if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        minetest.show_formspec(clicker:get_player_name(),
-            "hopper_formspec:"..minetest.pos_to_string(pos), get_hopper_formspec(pos))
+        show_formspec(clicker:get_player_name(),
+            "hopper_formspec:"..pos_to_string(pos), get_hopper_formspec(pos))
     end,
 })
 
 local hopper_side_drop = "hopper:hopper"
 
-minetest.register_node("hopper:hopper_side", {
+register_node("hopper:hopper_side", {
     description = "Side Hopper",
     drop = hopper_side_drop,
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
@@ -536,9 +556,9 @@ minetest.register_node("hopper:hopper_side", {
     },
 
     on_construct = function(pos)
-        local inv = minetest.get_meta(pos):get_inventory()
+        local inv = get_meta(pos):get_inventory()
         inv:set_size("main", 4*4)
-        minetest.get_node_timer(pos):start(0.1)
+        get_node_timer(pos):start(0.1)
     end,
 
     on_timer = do_hopper_function,
@@ -548,16 +568,16 @@ minetest.register_node("hopper:hopper_side", {
     end,
 
     can_dig = function(pos)
-        local inv = minetest.get_meta(pos):get_inventory()
+        local inv = get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
 
     on_rightclick = function(pos, _, clicker)
-        if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
+        if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        minetest.show_formspec(clicker:get_player_name(),
-            "hopper_formspec:"..minetest.pos_to_string(pos), get_hopper_formspec(pos))
+        show_formspec(clicker:get_player_name(),
+            "hopper_formspec:"..pos_to_string(pos), get_hopper_formspec(pos))
     end,
 })
 
@@ -579,7 +599,7 @@ local function get_chute_formspec(pos)
     return formspec
 end
 
-minetest.register_node("hopper:chute", {
+register_node("hopper:chute", {
     description = "Hopper Chute",
     drop = "hopper:chute",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
@@ -604,7 +624,7 @@ minetest.register_node("hopper:chute", {
     },
 
     on_construct = function(pos)
-        local inv = minetest.get_meta(pos):get_inventory()
+        local inv = get_meta(pos):get_inventory()
         inv:set_size("main", 2*2)
     end,
 
@@ -614,47 +634,47 @@ minetest.register_node("hopper:chute", {
         local x = pos.x - pos2.x
         local z = pos.z - pos2.z
 
-        local returned_stack, success = minetest.item_place_node(itemstack, placer, pointed_thing)
+        local returned_stack, success = item_place_node(itemstack, placer, pointed_thing)
         if success then
-            local meta = minetest.get_meta(pos2)
+            local meta = get_meta(pos2)
             meta:set_string("placer", placer:get_player_name())
         end
         return returned_stack
     end,
 
     can_dig = function(pos)
-        local inv = minetest.get_meta(pos):get_inventory()
+        local inv = get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
 
     on_rightclick = function(pos, _, clicker)
-        if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
+        if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        minetest.show_formspec(clicker:get_player_name(),
-            "hopper_formspec:"..minetest.pos_to_string(pos), get_chute_formspec(pos))
+        show_formspec(clicker:get_player_name(),
+            "hopper_formspec:"..pos_to_string(pos), get_chute_formspec(pos))
     end,
 
     on_metadata_inventory_put = function(pos)
-        local timer = minetest.get_node_timer(pos)
+        local timer = get_node_timer(pos)
         if not timer:is_started() then
             timer:start(0.1)
         end
     end,
 
     on_timer = function(pos)
-        local meta = minetest.get_meta(pos);
+        local meta = get_meta(pos);
         local inv = meta:get_inventory()
 
-        local node = minetest.get_node(pos)
-        local dir = minetest.facedir_to_dir(node.param2)
+        local node = get_node(pos)
+        local dir = facedir_to_dir(node.param2)
         local destination_pos = vector.add(pos, dir)
         local output_direction
         if dir.y == 0 then
             output_direction = "horizontal"
         end
 
-        local destination_node = minetest.get_node(destination_pos)
+        local destination_node = get_node(destination_pos)
         local registered_inventories = get_registered_inventories_for(destination_node.name)
         if registered_inventories ~= nil then
             if output_direction == "horizontal" then
@@ -667,7 +687,7 @@ minetest.register_node("hopper:chute", {
         end
 
         if not inv:is_empty("main") then
-            minetest.get_node_timer(pos):start(1)
+            get_node_timer(pos):start(1)
         end
     end,
 })
@@ -691,7 +711,7 @@ end
 local function get_sorter_formspec(pos)
     local spos = get_string_pos(pos)
 
-    local filter_all = minetest.get_meta(pos):get_string("filter_all") == "true"
+    local filter_all = get_meta(pos):get_string("filter_all") == "true"
     local y_displace = 0
     local filter_button_text, filter_button_tooltip, filter_body
     if filter_all then
@@ -720,7 +740,7 @@ local function get_sorter_formspec(pos)
 end
 
 
-minetest.register_node("hopper:sorter", {
+register_node("hopper:sorter", {
     description = "Sorter",
     groups = {stone = 1, hard = 1, pickaxe = 1, hand = 4,pathable = 1},
     sounds = metal_sounds,
@@ -745,7 +765,7 @@ minetest.register_node("hopper:sorter", {
     },
 
     on_construct = function(pos)
-        local meta = minetest.get_meta(pos)
+        local meta = get_meta(pos)
         local inv = meta:get_inventory()
         inv:set_size("main", 2*2)
         inv:set_size("filter", 8)
@@ -757,31 +777,31 @@ minetest.register_node("hopper:sorter", {
         local x = pos.x - pos2.x
         local z = pos.z - pos2.z
 
-        local returned_stack, success = minetest.item_place_node(itemstack, placer, pointed_thing)
+        local returned_stack, success = item_place_node(itemstack, placer, pointed_thing)
         if success then
-            local meta = minetest.get_meta(pos2)
+            local meta = get_meta(pos2)
             meta:set_string("placer", placer:get_player_name())
         end
         return returned_stack
     end,
 
     can_dig = function(pos)
-        local meta = minetest.get_meta(pos);
+        local meta = get_meta(pos);
         local inv = meta:get_inventory()
         return inv:is_empty("main")
     end,
 
     on_rightclick = function(pos, _, clicker)
-        if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
+        if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        minetest.show_formspec(clicker:get_player_name(),
-            "hopper_formspec:"..minetest.pos_to_string(pos), get_sorter_formspec(pos))
+        show_formspec(clicker:get_player_name(),
+            "hopper_formspec:"..pos_to_string(pos), get_sorter_formspec(pos))
     end,
 
     allow_metadata_inventory_put = function(pos, listname, index, stack)
         if listname == "filter" then
-            local inv = minetest.get_inventory({type="node", pos=pos})
+            local inv = get_inventory({type="node", pos=pos})
             inv:set_stack(listname, index, stack:take_item(1))
             return 0
         end
@@ -790,7 +810,7 @@ minetest.register_node("hopper:sorter", {
 
     allow_metadata_inventory_take = function(pos, listname, index, stack)
         if listname == "filter" then
-            local inv = minetest.get_inventory({type="node", pos=pos})
+            local inv = get_inventory({type="node", pos=pos})
             inv:set_stack(listname, index, ItemStack(""))
             return 0
         end
@@ -799,12 +819,12 @@ minetest.register_node("hopper:sorter", {
 
     allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count)
         if to_list == "filter" then
-            local inv = minetest.get_inventory({type="node", pos=pos})
+            local inv = get_inventory({type="node", pos=pos})
             local stack_moved = inv:get_stack(from_list, from_index)
             inv:set_stack(to_list, to_index, stack_moved:take_item(1))
             return 0
         elseif from_list == "filter" then
-            local inv = minetest.get_inventory({type="node", pos=pos})
+            local inv = get_inventory({type="node", pos=pos})
             inv:set_stack(from_list, from_index, ItemStack(""))
             return 0
         end
@@ -812,14 +832,14 @@ minetest.register_node("hopper:sorter", {
     end,
 
     on_metadata_inventory_put = function(pos)
-        local timer = minetest.get_node_timer(pos)
+        local timer = get_node_timer(pos)
         if not timer:is_started() then
             timer:start(0.1)
         end
     end,
 
     on_timer = function(pos)
-        local meta = minetest.get_meta(pos);
+        local meta = get_meta(pos);
         local inv = meta:get_inventory()
 
         -- build a filter list
@@ -836,8 +856,8 @@ minetest.register_node("hopper:sorter", {
             end
         end
 
-        local node = minetest.get_node(pos)
-        local dir = minetest.facedir_to_dir(node.param2)
+        local node = get_node(pos)
+        local dir = facedir_to_dir(node.param2)
         local default_destination_pos = vector.add(pos, dir)
         local default_output_direction
         if dir.y == 0 then
@@ -853,7 +873,7 @@ minetest.register_node("hopper:sorter", {
 
         local success = false
 
-        local filter_destination_node = minetest.get_node(filter_destination_pos)
+        local filter_destination_node = get_node(filter_destination_pos)
         local registered_inventories = get_registered_inventories_for(filter_destination_node.name)
         if registered_inventories ~= nil then
             if filter_output_direction == "horizontal" then
@@ -867,7 +887,7 @@ minetest.register_node("hopper:sorter", {
 
         -- Weren't able to put something in the filter destination, for whatever reason. Now we can start moving stuff forward to the default
         if not success then
-            local default_destination_node = minetest.get_node(default_destination_pos)
+            local default_destination_node = get_node(default_destination_pos)
             local registered_inventories = get_registered_inventories_for(default_destination_node.name)
             if registered_inventories ~= nil then
                 if default_output_direction == "horizontal" then
@@ -881,7 +901,7 @@ minetest.register_node("hopper:sorter", {
         end
 
         if not inv:is_empty("main") then
-            minetest.get_node_timer(pos):start(1)
+            get_node_timer(pos):start(1)
         end
     end,
 })
@@ -889,7 +909,7 @@ minetest.register_node("hopper:sorter", {
 
 -- Craft recipes
 
-minetest.register_craft({
+register_craft({
     output = "hopper:hopper",
     recipe = {
         {"main:iron","utility:chest","main:iron"},
@@ -897,14 +917,14 @@ minetest.register_craft({
     }
 })
 
-minetest.register_craft({
+register_craft({
     output = "hopper:chute",
     recipe = {
         {"main:iron","utility:chest","main:iron"},
     }
 })
 
-minetest.register_craft({
+register_craft({
     output = "hopper:sorter",
     recipe = {
         {"","main:gold",""},
@@ -917,10 +937,10 @@ minetest.register_craft({
 
 -- Formspec handling
 
-minetest.register_on_player_receive_fields(function(_, formname, fields)
+register_on_player_receive_fields(function(_, formname, fields)
     if "hopper_formspec:" == string.sub(formname, 1, 16) then
-        local pos = minetest.string_to_pos(string.sub(formname, 17, -1))
-        local meta = minetest.get_meta(pos)
+        local pos = string_to_pos(string.sub(formname, 17, -1))
+        local meta = get_meta(pos)
         local eject_setting = meta:get_string("eject") == "true"
         local filter_all_setting = meta:get_string("filter_all") == "true"
         if fields.eject then
