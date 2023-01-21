@@ -21,25 +21,3 @@ minetest.register_craft({
         {"","main:iron",""},
     }
 })
-
-if not hopper.config.single_craftable_item then
-    minetest.register_craft({
-        output = "hopper:hopper_side",
-        recipe = {
-            {"main:iron","utility:chest","main:iron"},
-            {"","","main:iron"},
-        }
-    })
-    
-    minetest.register_craft({
-        output = "hopper:hopper_side",
-        type="shapeless",
-        recipe = {"hopper:hopper"},
-    })
-
-    minetest.register_craft({
-        output = "hopper:hopper",
-        type="shapeless",
-        recipe = {"hopper:hopper_side"},
-    })
-end
