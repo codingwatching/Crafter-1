@@ -294,11 +294,10 @@ local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
     elseif z == 1 then
         returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 1)
     else
-        node_name = "hopper:hopper" -- For cases where single_craftable_item was set on an existing world and there are still side hoppers in player inventories
-        
+        node_name = "hopper:hopper" -- For cases where single_craftable_item was set on an existing world and there are still side hoppers in player inventories 
         returned_stack, success = minetest.item_place_node(ItemStack(node_name), placer, pointed_thing)
     end
-    
+
     if success then
         local meta = minetest.get_meta(pos2)
         meta:set_string("placer", placer:get_player_name())
@@ -307,6 +306,126 @@ local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
         end
     end
     return itemstack
+end
+
+-- TODO: Optimize
+
+-- Hopper timer procedure
+
+-- Used to convert side hopper facing into source and destination relative coordinates
+-- This was tedious to populate and test
+local directions = {
+    [0] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = -1, y = 0, z = 0 } },
+    [1] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
+    [2] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = 1, y = 0, z = 0 } },
+    [3] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = 0, y = 0, z = -1 } },
+    [4] = { ["src"] = { x = 0, y = 0, z = 1 }, ["dst"] = { x = -1, y = 0, z = 0 } },
+    [5] = { ["src"] = { x = 0, y = 0, z = 1 }, ["dst"] = { x = 0, y = -1, z = 0 } },
+    [6] = { ["src"] = { x = 0, y = 0, z = 1 }, ["dst"] = { x = 1, y = 0, z = 0 } },
+    [7] = { ["src"] = { x = 0, y = 0, z = 1 }, ["dst"] = { x = 0, y = 1, z = 0 } },
+    [8] = { ["src"] = { x = 0, y = 0, z = -1 }, ["dst"] = { x = -1, y = 0, z = 0 } },
+    [9] = { ["src"] = { x = 0, y = 0, z = -1 }, ["dst"] = { x = 0, y = 1, z = 0 } },
+    [10] = { ["src"] = { x = 0, y = 0, z = -1 }, ["dst"] = { x = 1, y = 0, z = 0 } },
+    [11] = { ["src"] = { x = 0, y = 0, z = -1 }, ["dst"] = { x = 0, y = -1, z = 0 } },
+    [12] = { ["src"] = { x = 1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 1, z = 0 } },
+    [13] = { ["src"] = { x = 1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
+    [14] = { ["src"] = { x = 1, y = 0, z = 0 }, ["dst"] = { x = 0, y = -1, z = 0 } },
+    [15] = { ["src"] = { x = 1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 0, z = -1 } },
+    [16] = { ["src"] = { x = -1, y = 0, z = 0 }, ["dst"] = { x = 0, y = -1, z = 0 } },
+    [17] = { ["src"] = { x = -1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
+    [18] = { ["src"] = { x = -1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 1, z = 0 } },
+    [19] = { ["src"] = { x = -1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 0, z = -1 } },
+    [20] = { ["src"] = { x = 0, y = -1, z = 0 }, ["dst"] = { x = 1, y = 0, z = 0 } },
+    [21] = { ["src"] = { x = 0, y = -1, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
+    [22] = { ["src"] = { x = 0, y = -1, z = 0 }, ["dst"] = { x = -1, y = 0, z = 0 } },
+    [23] = { ["src"] = { x = 0, y = -1, z = 0 }, ["dst"] = { x = 0, y = 0, z = -1 } },
+}
+
+local bottomdir = function(facedir)
+    return (
+    { [0] =
+        { x = 0, y = -1, z = 0 },
+        { x = 0, y = 0, z = -1 },
+        { x = 0, y = 0, z = 1 },
+        { x = -1, y = 0, z = 0 },
+        { x = 1, y = 0, z = 0 },
+        { x = 0, y = 1, z = 0 }
+    })[ math.floor( facedir / 4 ) ]
+end
+
+local function do_hopper_function(pos)
+
+    -- Top of hopper item vacuum
+
+    local gotten_object = minetest.get_objects_inside_radius(pos, 1)
+    if #gotten_object == 0 then goto moving end
+
+    do
+
+        local inv = minetest.get_meta(pos):get_inventory()
+        local posob
+
+        for _,object in ipairs(gotten_object) do
+            if not object:is_player()
+            and object:get_luaentity()
+            and object:get_luaentity().name == "__builtin:item"
+            and inv
+            and inv:room_for_item("main", ItemStack( object:get_luaentity().itemstring ) ) then
+
+                posob = object:get_pos()
+
+                if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
+                    inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
+
+                    object:get_luaentity().itemstring = ""
+                    object:remove()
+                end
+            end
+        end
+
+    end
+    -- Procedure to move items
+
+    ::moving::
+
+    local node = minetest.get_node(pos)
+
+    local source_pos, destination_pos, destination_dir
+    if node.name == "hopper:hopper_side" then
+        source_pos = vector.add(pos, directions[node.param2].src)
+        destination_dir = directions[node.param2].dst
+        destination_pos = vector.add(pos, destination_dir)
+    else
+        destination_dir = bottomdir(node.param2)
+        source_pos = vector.subtract(pos, destination_dir)
+        destination_pos = vector.add(pos, destination_dir)
+    end
+
+    local output_direction
+    if destination_dir.y == 0 then
+        output_direction = "horizontal"
+    end
+
+    local source_node = minetest.get_node(source_pos)
+    local destination_node = minetest.get_node(destination_pos)
+
+    local registered_source_inventories = get_registered_inventories_for(source_node.name)
+    if registered_source_inventories ~= nil then
+        take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
+    end
+
+    local registered_destination_inventories = get_registered_inventories_for(destination_node.name)
+    if registered_destination_inventories ~= nil then
+        if output_direction == "horizontal" then
+            send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["side"])
+        else
+            send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["bottom"])
+        end
+    else
+        send_item_to(pos, destination_pos, destination_node)
+    end
+
+    minetest.get_node_timer(pos):start(0.1)
 end
 
 -- Hoppers - I would have never guessed
@@ -353,7 +472,10 @@ minetest.register_node("hopper:hopper", {
     on_construct = function(pos)
         local inv = minetest.get_meta(pos):get_inventory()
         inv:set_size("main", 4*4)
+        minetest.get_node_timer(pos):start(0.1)
     end,
+
+    on_timer = do_hopper_function,
 
     on_place = function(itemstack, placer, pointed_thing)
         return hopper_on_place(itemstack, placer, pointed_thing, "hopper:hopper")
@@ -685,7 +807,7 @@ minetest.register_node("hopper:sorter", {
         elseif from_list == "filter" then
             local inv = minetest.get_inventory({type="node", pos=pos})
             inv:set_stack(from_list, from_index, ItemStack(""))
-            return 0            
+            return 0
         end
         return count
     end,
@@ -758,7 +880,7 @@ minetest.register_node("hopper:sorter", {
                 send_item_to(pos, default_destination_pos, default_destination_node)
             end
         end
-        
+
         if not inv:is_empty("main") then
             minetest.get_node_timer(pos):start(1)
         end
@@ -792,124 +914,6 @@ minetest.register_craft({
     }
 })
 
-
--- THESE NEED TO BE NODE TIMER FUNCTIONS!!!!!
-
--- TODO: Optimize and turn this into a node timer
-
--- Used to convert side hopper facing into source and destination relative coordinates
--- This was tedious to populate and test
-local directions = {
-    [0] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = -1, y = 0, z = 0 } },
-    [1] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
-    [2] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = 1, y = 0, z = 0 } },
-    [3] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = 0, y = 0, z = -1 } },
-    [4] = { ["src"] = { x = 0, y = 0, z = 1 }, ["dst"] = { x = -1, y = 0, z = 0 } },
-    [5] = { ["src"] = { x = 0, y = 0, z = 1 }, ["dst"] = { x = 0, y = -1, z = 0 } },
-    [6] = { ["src"] = { x = 0, y = 0, z = 1 }, ["dst"] = { x = 1, y = 0, z = 0 } },
-    [7] = { ["src"] = { x = 0, y = 0, z = 1 }, ["dst"] = { x = 0, y = 1, z = 0 } },
-    [8] = { ["src"] = { x = 0, y = 0, z = -1 }, ["dst"] = { x = -1, y = 0, z = 0 } },
-    [9] = { ["src"] = { x = 0, y = 0, z = -1 }, ["dst"] = { x = 0, y = 1, z = 0 } },
-    [10] = { ["src"] = { x = 0, y = 0, z = -1 }, ["dst"] = { x = 1, y = 0, z = 0 } },
-    [11] = { ["src"] = { x = 0, y = 0, z = -1 }, ["dst"] = { x = 0, y = -1, z = 0 } },
-    [12] = { ["src"] = { x = 1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 1, z = 0 } },
-    [13] = { ["src"] = { x = 1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
-    [14] = { ["src"] = { x = 1, y = 0, z = 0 }, ["dst"] = { x = 0, y = -1, z = 0 } },
-    [15] = { ["src"] = { x = 1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 0, z = -1 } },
-    [16] = { ["src"] = { x = -1, y = 0, z = 0 }, ["dst"] = { x = 0, y = -1, z = 0 } },
-    [17] = { ["src"] = { x = -1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
-    [18] = { ["src"] = { x = -1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 1, z = 0 } },
-    [19] = { ["src"] = { x = -1, y = 0, z = 0 }, ["dst"] = { x = 0, y = 0, z = -1 } },
-    [20] = { ["src"] = { x = 0, y = -1, z = 0 }, ["dst"] = { x = 1, y = 0, z = 0 } },
-    [21] = { ["src"] = { x = 0, y = -1, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
-    [22] = { ["src"] = { x = 0, y = -1, z = 0 }, ["dst"] = { x = -1, y = 0, z = 0 } },
-    [23] = { ["src"] = { x = 0, y = -1, z = 0 }, ["dst"] = { x = 0, y = 0, z = -1 } },
-}
-
-local bottomdir = function(facedir)
-    return (
-    { [0] =
-        { x = 0, y = -1, z = 0 },
-        { x = 0, y = 0, z = -1 },
-        { x = 0, y = 0, z = 1 },
-        { x = -1, y = 0, z = 0 },
-        { x = 1, y = 0, z = 0 },
-        { x = 0, y = 1, z = 0 }
-    })[ math.floor( facedir / 4 ) ]
-end
-
-local function do_hopper_function(pos)
-
-    -- Top of hopper item vacuum
-
-    local gotten_object = minetest.get_objects_inside_radius(pos, 1)
-    if #gotten_object == 0 then goto moving end
-
-    do
-
-        local inv = minetest.get_meta(pos):get_inventory()
-        local posob
-
-        for _,object in ipairs(gotten_object) do
-            if not object:is_player()
-            and object:get_luaentity()
-            and object:get_luaentity().name == "__builtin:item"
-            and inv
-            and inv:room_for_item("main", ItemStack( object:get_luaentity().itemstring ) ) then
-
-                posob = object:get_pos()
-
-                if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
-                    inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
-
-                    object:get_luaentity().itemstring = ""
-                    object:remove()
-                end
-            end
-        end
-
-    end
-    -- Procedure to move items
-
-    ::moving::
-
-    local node = minetest.get_node(pos)
-
-    local source_pos, destination_pos, destination_dir
-    if node.name == "hopper:hopper_side" then
-        source_pos = vector.add(pos, directions[node.param2].src)
-        destination_dir = directions[node.param2].dst
-        destination_pos = vector.add(pos, destination_dir)
-    else
-        destination_dir = bottomdir(node.param2)
-        source_pos = vector.subtract(pos, destination_dir)
-        destination_pos = vector.add(pos, destination_dir)
-    end
-
-    local output_direction
-    if destination_dir.y == 0 then
-        output_direction = "horizontal"
-    end
-
-    local source_node = minetest.get_node(source_pos)
-    local destination_node = minetest.get_node(destination_pos)
-
-    local registered_source_inventories = get_registered_inventories_for(source_node.name)
-    if registered_source_inventories ~= nil then
-        take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
-    end
-
-    local registered_destination_inventories = get_registered_inventories_for(destination_node.name)
-    if registered_destination_inventories ~= nil then
-        if output_direction == "horizontal" then
-            send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["side"])
-        else
-            send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["bottom"])
-        end
-    else
-        send_item_to(pos, destination_pos, destination_node)
-    end
-end
 
 
 -- Formspec handling
