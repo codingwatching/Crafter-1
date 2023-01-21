@@ -510,8 +510,7 @@ register_node("hopper:hopper", {
         if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        show_formspec(clicker:get_player_name(),
-            "hopper_formspec:"..pos_to_string(pos), get_hopper_formspec(pos))
+        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(pos), get_hopper_formspec(pos))
     end,
 })
 
@@ -580,8 +579,7 @@ register_node("hopper:hopper_side", {
         if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        show_formspec(clicker:get_player_name(),
-            "hopper_formspec:"..pos_to_string(pos), get_hopper_formspec(pos))
+        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(pos), get_hopper_formspec(pos))
     end,
 })
 
@@ -655,8 +653,7 @@ register_node("hopper:chute", {
         if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        show_formspec(clicker:get_player_name(),
-            "hopper_formspec:"..pos_to_string(pos), get_chute_formspec(pos))
+        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(pos), get_chute_formspec(pos))
     end,
 
     on_metadata_inventory_put = function(pos)
@@ -799,8 +796,7 @@ register_node("hopper:sorter", {
         if is_protected(pos, clicker:get_player_name()) and not check_player_privs(clicker, "protection_bypass") then
             return
         end
-        show_formspec(clicker:get_player_name(),
-            "hopper_formspec:"..pos_to_string(pos), get_sorter_formspec(pos))
+        show_formspec(clicker:get_player_name(), "hopper_formspec:"..pos_to_string(pos), get_sorter_formspec(pos))
     end,
 
     allow_metadata_inventory_put = function(pos, listname, index, stack)
