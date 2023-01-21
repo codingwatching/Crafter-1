@@ -688,8 +688,6 @@ register_node("hopper:chute", {
     on_place = function(itemstack, placer, pointed_thing)
         pos  = pointed_thing.under
         pos2 = pointed_thing.above
-        x = pos.x - pos2.x
-        z = pos.z - pos2.z
 
         returned_stack, success = item_place_node(itemstack, placer, pointed_thing)
         if success then
@@ -830,8 +828,6 @@ register_node("hopper:sorter", {
     on_place = function(itemstack, placer, pointed_thing)
         pos  = pointed_thing.under
         pos2 = pointed_thing.above
-        x = pos.x - pos2.x
-        z = pos.z - pos2.z
 
         _, success = item_place_node(itemstack, placer, pointed_thing)
         if success then
