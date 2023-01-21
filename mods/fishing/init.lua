@@ -119,15 +119,69 @@ function bobber:on_activate()
 end
 
 function bobber:reel_in_action()
-    local pos = self.object:get_pos()
-    local gain = 0.3
 
-    -- TODO: Splash particles
-    minetest.sound_play( "splash", {
-        pos = pos,
-        gain = gain
-    })
     self:delete_particle_spawner()
+
+    local pos = self.object:get_pos()
+
+    -- Only do splash and sound if the thing hit the water
+    if self.origin_height then
+        -- Have the particles spawn on the surface of the water
+        pos.y = math.ceil(self.origin_height) - 0.5
+
+        local amount = 10
+
+        if self.fish_on_the_line then
+            amount = 40
+        end
+
+        minetest.add_particlespawner({
+            time = 0.0001,
+            pos = {
+                min = vector.subtract(pos, vector.new(0.5,0,0.5)),
+                max = vector.add(pos, vector.new(0.5,0,0.5))
+            },
+            acc = vector.new(0,-9.81, 0),
+            vel = {
+                min = vector.new(0, 7, 0),
+                max = vector.new(0, 8, 0),
+            },
+            attract = {
+                kind = "point",
+                strength = {
+                    min = -2,
+                    max = -2
+                },
+                origin = pos
+            },
+            drag = 1.5,
+            amount = amount,
+            exptime = {
+                min = 0.8,
+                max = 1.2
+            },
+            collisiondetection = false,
+            collision_removal = false,
+            object_collision = false,
+            texture = {
+                name = "bubble.png",
+                alpha_tween = {0.6,0},
+                scale_tween = {
+                    {x = 1, y = 1},
+                    {x = 0, y = 0}
+                }
+            }
+        })
+        minetest.sound_play( "splash", {
+            pos = pos,
+            gain = 1
+        })
+    else
+        minetest.sound_play( "line_break", {
+            pos = pos,
+            gain = 1
+        })
+    end
     self.object:remove()
 end
 
@@ -145,7 +199,7 @@ function bobber:delete_particle_spawner()
     end
 end
 
-function bobber:splash_effect(heavy)
+function bobber:splash_effect(heavy, extreme)
 
     self:delete_particle_spawner()
 
@@ -156,7 +210,7 @@ function bobber:splash_effect(heavy)
 
     local amount = 5
     local vel = 2
-    if heavy then
+    if heavy and not extreme then
         amount = 30
         vel = 5
     end
@@ -216,8 +270,7 @@ function bobber:on_step(dtime, move_result)
     if not position_locked and node == "main:water" and not self.fish_on_the_line then
         in_water = true
         local vel = self.object:get_velocity()
-        vel = vector.subtract( vector.new( 0, 0, 0 ), vel )
-        vel.y = 1
+        vel = vector.subtract( vector.new( 0, 1, 0 ), vel )
         self.object:set_acceleration(vel)
         if not self.touched_water then
             self.touched_water = true
@@ -226,11 +279,16 @@ function bobber:on_step(dtime, move_result)
         end
     end
 
-
-
     -- Make the bobber appear to bob up and down
     if not position_locked and ((not in_water and self.touched_water) or self.fish_on_the_line) then
-        self.object:set_acceleration(vector.new(0, -1, 0))
+        local vel = self.object:get_velocity()
+        if self.fish_on_the_line then
+            vel = vector.subtract( vector.new( 0, -3, 0 ), vel )
+        else
+            vel = vector.subtract( vector.new( 0, -1, 0 ), vel )
+        end
+        
+        self.object:set_acceleration(vel)
         if not self.first_water_touch then
             self.first_water_touch = true
             self:splash_effect(false)
@@ -263,7 +321,7 @@ function bobber:on_step(dtime, move_result)
     end
 
     -- Player has a fish on the line
-    if not self.fish_on_the_line and math.random() > 0.195 then
+    if not self.fish_on_the_line and math.random() > 0.65 then
         self.fish_on_the_line = true
         self:splash_effect(true)
         minetest.sound_play( "splash", {
