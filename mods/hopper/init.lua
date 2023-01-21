@@ -853,7 +853,7 @@ local function do_hopper_function(pos)
         local inv = minetest.get_meta(pos):get_inventory()
         local posob
 
-        for _,object in pairs(gotten_object) do
+        for _,object in ipairs(gotten_object) do
             if not object:is_player()
             and object:get_luaentity()
             and object:get_luaentity().name == "__builtin:item"
