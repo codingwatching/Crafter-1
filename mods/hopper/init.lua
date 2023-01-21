@@ -311,7 +311,7 @@ end
 -- Hopper timer procedure
 
 -- Used to convert side hopper facing into source and destination relative coordinates
--- This was tedious to populate and test
+-- This was tedious to populate and test, I'm not going to turn this into a linear list just yet, easier to read
 local directions = {
     [0] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = -1, y = 0, z = 0 } },
     [1] = { ["src"] = { x = 0, y = 1, z = 0 }, ["dst"] = { x = 0, y = 0, z = 1 } },
