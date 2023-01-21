@@ -373,11 +373,7 @@ minetest.register_node("hopper:hopper", {
     end,
 })
 
-local hopper_side_drop
-local hopper_groups
-hopper_side_drop = "hopper:hopper"
-
-hopper_groups = {cracky=3, not_in_creative_inventory = 1}
+local hopper_side_drop = "hopper:hopper"
 
 minetest.register_node("hopper:hopper_side", {
     description = "Side Hopper",
@@ -420,7 +416,7 @@ minetest.register_node("hopper:hopper_side", {
             {-0.7, -0.3, -0.15, 0.15, 0.0, 0.15},
         },
     },
-    
+
     on_construct = function(pos)
         local inv = minetest.get_meta(pos):get_inventory()
         inv:set_size("main", 4*4)
@@ -429,7 +425,7 @@ minetest.register_node("hopper:hopper_side", {
     on_place = function(itemstack, placer, pointed_thing)
         return hopper_on_place(itemstack, placer, pointed_thing, "hopper:hopper_side")
     end,
-    
+
     can_dig = function(pos,player)
         local inv = minetest.get_meta(pos):get_inventory()
         return inv:is_empty("main")
@@ -485,7 +481,7 @@ minetest.register_node("hopper:chute", {
             {-0.2, -0.2, 0.3, 0.2, 0.2, 0.7},
         },
     },
-    
+
     on_construct = function(pos)
         local inv = minetest.get_meta(pos):get_inventory()
         inv:set_size("main", 2*2)
@@ -504,7 +500,7 @@ minetest.register_node("hopper:chute", {
         end
         return returned_stack
     end,
-    
+
     can_dig = function(pos,player)
         local inv = minetest.get_meta(pos):get_inventory()
         return inv:is_empty("main")
@@ -536,7 +532,7 @@ minetest.register_node("hopper:chute", {
         if dir.y == 0 then
             output_direction = "horizontal"
         end
-        
+
         local destination_node = minetest.get_node(destination_pos)
         local registered_inventories = get_registered_inventories_for(destination_node.name)
         if registered_inventories ~= nil then
@@ -548,7 +544,7 @@ minetest.register_node("hopper:chute", {
         else
             send_item_to(pos, destination_pos, destination_node)
         end
-        
+
         if not inv:is_empty("main") then
             minetest.get_node_timer(pos):start(1)
         end
@@ -573,7 +569,7 @@ end
 
 local function get_sorter_formspec(pos)
     local spos = get_string_pos(pos)
-    
+
     local filter_all = minetest.get_meta(pos):get_string("filter_all") == "true"
     local y_displace = 0
     local filter_button_text, filter_button_tooltip, filter_body
@@ -587,7 +583,7 @@ local function get_sorter_formspec(pos)
         filter_button_tooltip = "This sorter is currently set to only send items listed\nin the filter list in the direction of the arrow.\nClick this button to set it to try sending all\nitems that way first."
         y_displace = 1.6
     end
-    
+
     local formspec =
         "size[8," .. 7 + y_displace .. "]"
         .. formspec_bg
@@ -698,7 +694,7 @@ minetest.register_node("hopper:sorter", {
         local timer = minetest.get_node_timer(pos)
         if not timer:is_started() then
             timer:start(1)
-        end        
+        end
     end,
 
     on_timer = function(pos, elapsed)
