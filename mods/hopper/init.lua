@@ -32,7 +32,7 @@ local containers = {}
 
 -- Local function to add new containers
 local function add_container(list)
-    for _, entry in pairs(list) do
+    for _, entry in ipairs(list) do
         local target_node = entry[2]
         local neighbor_node
         if string_sub(target_node, 1, 6) == "group:" then
@@ -76,7 +76,7 @@ local function add_container(list)
         end
 
         local already_in_neighbors = false
-        for _, value in pairs(neighbors) do
+        for _, value in ipairs(neighbors) do
             if value == neighbor_node then
                 already_in_neighbors = true
                 break
