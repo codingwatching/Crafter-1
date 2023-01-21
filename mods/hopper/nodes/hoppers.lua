@@ -25,18 +25,17 @@ local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
     -- unfortunately param2 overrides are needed for side hoppers even in the non-single-craftable-item case
     -- because they are literally *side* hoppers - their spouts point to the side rather than to the front, so
     -- the default item_place_node orientation code will not orient them pointing toward the selected surface.
-    if x == -1 and (hopper.config.single_craftable_item or node_name == "hopper:hopper_side") then
+    if x == -1 then
         returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 0)
-    elseif x == 1 and (hopper.config.single_craftable_item or node_name == "hopper:hopper_side") then
+    elseif x == 1 then
         returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 2)
-    elseif z == -1 and (hopper.config.single_craftable_item or node_name == "hopper:hopper_side")  then
+    elseif z == -1  then
         returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 3)
-    elseif z == 1 and (hopper.config.single_craftable_item or node_name == "hopper:hopper_side") then
+    elseif z == 1 then
         returned_stack, success = minetest.item_place_node(ItemStack("hopper:hopper_side"), placer, pointed_thing, 1)
     else
-        if hopper.config.single_craftable_item then
-            node_name = "hopper:hopper" -- For cases where single_craftable_item was set on an existing world and there are still side hoppers in player inventories
-        end
+        node_name = "hopper:hopper" -- For cases where single_craftable_item was set on an existing world and there are still side hoppers in player inventories
+        
         returned_stack, success = minetest.item_place_node(ItemStack(node_name), placer, pointed_thing)
     end
     
@@ -117,13 +116,8 @@ minetest.register_node("hopper:hopper", {
 
 local hopper_side_drop
 local hopper_groups
-if hopper.config.single_craftable_item then
-    hopper_side_drop = "hopper:hopper"
-    hopper_groups = {cracky=3, not_in_creative_inventory = 1}
-else
-    hopper_side_drop = "hopper:hopper_side"
-    hopper_groups = {cracky=3}
-end
+hopper_side_drop = "hopper:hopper"
+hopper_groups = {cracky=3, not_in_creative_inventory = 1}
 
 minetest.register_node("hopper:hopper_side", {
     description = S("Side Hopper"),
