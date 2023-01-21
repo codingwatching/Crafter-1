@@ -36,7 +36,7 @@ minetest.register_node("hand:player", {
     wield_scale = { x = 1, y = 1, z = 1 },
     paramtype = "light",
     drawtype = "mesh",
-    mesh = "hand.b3d",
+    mesh = "wield_hand.obj",
     -- Prevent construction
     node_placement_prediction = "",
     -- I could be a lot meaner than this but I think this is good enough
@@ -84,7 +84,7 @@ minetest.register_node("hand:creative", {
     wield_scale = {x=1,y=1,z=1},
     paramtype = "light",
     drawtype = "mesh",
-    mesh = "hand.b3d",
+    mesh = "wield_hand.obj",
     -- Prevent construction
     node_placement_prediction = "",
     -- I could be a lot meaner than this but I think this is good enough
