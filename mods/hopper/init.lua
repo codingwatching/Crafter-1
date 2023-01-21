@@ -769,7 +769,33 @@ minetest.register_node("hopper:sorter", {
 })
 
 
-dofile( mod_path .. "/crafts.lua" )
+-- Craft recipes
+
+minetest.register_craft({
+    output = "hopper:hopper",
+    recipe = {
+        {"main:iron","utility:chest","main:iron"},
+        {"","main:iron",""},
+    }
+})
+
+minetest.register_craft({
+    output = "hopper:chute",
+    recipe = {
+        {"main:iron","utility:chest","main:iron"},
+    }
+})
+
+minetest.register_craft({
+    output = "hopper:sorter",
+    recipe = {
+        {"","main:gold",""},
+        {"main:iron","utility:chest","main:iron"},
+        {"","main:iron",""},
+    }
+})
+
+
 dofile( mod_path .. "/abms.lua" )
 
 
