@@ -126,6 +126,14 @@ function bobber:reel_in_action()
 
     -- Only do splash and sound if the thing hit the water
     if self.origin_height then
+
+        -- Something has gone EXTREMELY wrong, this is supposed to take place in the same server step the player reeled in!
+        if not self.player or not self.player:is_player() then
+            minetest.log("action", "A lure has encountered a null player when reeling in their bobber!")
+            self.object:remove()
+            return
+        end
+
         -- Have the particles spawn on the surface of the water
         pos.y = math.ceil(self.origin_height) - 0.5
 
@@ -136,7 +144,7 @@ function bobber:reel_in_action()
         end
 
         minetest.add_particlespawner({
-            time = 0.0001,
+            time = 0.2,
             pos = {
                 min = vector.subtract(pos, vector.new(0.5,0,0.5)),
                 max = vector.add(pos, vector.new(0.5,0,0.5))
@@ -176,6 +184,24 @@ function bobber:reel_in_action()
             pos = pos,
             gain = 1
         })
+
+        -- Finally, throw a fish at the player
+        if self.fish_on_the_line then
+            local fish = minetest.add_item(pos, "fishing:fish")
+            local player_position = self.player:get_pos()
+
+            local fish_throw_velocity = vector.direction(pos, player_position)
+            local distance = vector.distance(pos, player_position)
+            fish_throw_velocity = vector.multiply(fish_throw_velocity, distance)
+            -- 22 is the max distance
+            fish_throw_velocity.y = fish_throw_velocity.y + 5 + (distance / 22)
+            if fish then
+                fish:set_velocity(fish_throw_velocity)
+            else
+                minetest.log("action", "There was an error adding in the fish " .. self.player:get_player_name() .. " caught!")
+            end
+        end
+
     else
         minetest.sound_play( "line_break", {
             pos = pos,
@@ -256,6 +282,12 @@ function bobber:on_step(dtime, move_result)
     end
 
     local pos = self.object:get_pos()
+
+    -- Player is too far away, line breaks
+    if vector.distance(pos, self.player:get_pos()) > 22 then
+        self.player:set_fishing_state(false)
+    end
+
     local node = minetest.get_node(pos).name
     local in_water = false
     local position_locked = self.position_locked
@@ -280,7 +312,7 @@ function bobber:on_step(dtime, move_result)
         else
             vel = vector.subtract( vector.new( 0, -1, 0 ), vel )
         end
-        
+
         self.object:set_acceleration(vel)
         if not self.first_water_touch then
             self.first_water_touch = true
