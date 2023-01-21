@@ -249,7 +249,7 @@ IDEAS:
 > use for better item magnet?
 ```
 if object:is_player() and object:get_player_name() ~= self.rider then
-      local player_pos = object:getpos()
+      local player_pos = object:get_pos()
       pos.y = 0
       player_pos.y = 0
       

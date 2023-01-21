@@ -74,7 +74,7 @@ minetest.register_abm({
     action = function(pos, node, active_object_count, active_object_count_wider)
         local found_player = false
         for _,object in ipairs(minetest.get_objects_inside_radius(pos, check_radius)) do
-            local pos2 = object:getpos()
+            local pos2 = object:get_pos()
             if object:is_player() then
                 found_player = true
             end

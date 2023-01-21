@@ -66,7 +66,7 @@ end
 local function furnace_remove(pos)
     for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+fuel_height,pos.z), 0.1)) do
         if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:fuel" then
-            local pos = object:getpos()
+            local pos = object:get_pos()
             local item = object:get_luaentity().itemstring
             if item ~= "utility:nothing" then
                 local obj = minetest.add_item(pos,item)                
@@ -76,7 +76,7 @@ local function furnace_remove(pos)
     end
     for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+cook_height,pos.z), 0.1)) do
         if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:cook" then
-            local pos = object:getpos()
+            local pos = object:get_pos()
             local item = object:get_luaentity().itemstring
             if item ~= "utility:nothing" then
                 local obj = minetest.add_item(pos,item)
@@ -86,7 +86,7 @@ local function furnace_remove(pos)
     end
     for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+output_height,pos.z), 0.1)) do
         if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:output" then
-            local pos = object:getpos()
+            local pos = object:get_pos()
             local item = object:get_luaentity().itemstring
             if item ~= "utility:nothing" then
                 local obj = minetest.add_item(pos,item)
@@ -233,8 +233,8 @@ minetest.register_entity("utility:fuel", {
         
         --shoot out existing item
         if self.itemstring ~= item.." "..count and self.itemstring ~= "utility:nothing" then
-            local pos = self.object:getpos()
-            local pos2 = clicker:getpos()
+            local pos = self.object:get_pos()
+            local pos2 = clicker:get_pos()
             pos2.y = pos2.y + 1.25
             local obj = minetest.add_item(pos,self.itemstring)
             local dir = vector.subtract(pos2,pos)
@@ -276,8 +276,8 @@ minetest.register_entity("utility:fuel", {
             return
         end
         
-        local pos = self.object:getpos()
-        local pos2 = puncher:getpos()
+        local pos = self.object:get_pos()
+        local pos2 = puncher:get_pos()
         pos2.y = pos2.y + 1.25
                 
         local obj = minetest.add_item(pos,self.itemstring)
@@ -298,7 +298,7 @@ minetest.register_entity("utility:fuel", {
     end,
 
     check_cook = function(self)
-        local pos = self.object:getpos()
+        local pos = self.object:get_pos()
         --check the cook timer
         for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+0.55,pos.z), 0.1)) do
             if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:cook" then
@@ -309,7 +309,7 @@ minetest.register_entity("utility:fuel", {
     end,
     
     cook_item = function(self)
-        local pos = self.object:getpos()
+        local pos = self.object:get_pos()
         for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+0.55,pos.z), 0.1)) do
             if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:cook" then
                 local item = ItemStack(object:get_luaentity().itemstring)
@@ -328,7 +328,7 @@ minetest.register_entity("utility:fuel", {
                 
                 object:get_luaentity().count = count
                 
-                local pos = self.object:getpos()
+                local pos = self.object:get_pos()
                 
                 --add to output
                 for _,object2 in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+1.10,pos.z), 0.1)) do
@@ -387,7 +387,7 @@ minetest.register_entity("utility:fuel", {
     
     spawn_particles = function(self,time)
         --print("time:"..time)
-        local pos = self.object:getpos()
+        local pos = self.object:get_pos()
         minetest.add_particlespawner({
             amount = math.floor(10*time),
             time = time,
@@ -596,8 +596,8 @@ minetest.register_entity("utility:cook", {
         
         --shoot out existing item
         if self.itemstring ~= item.." "..count and self.itemstring ~= "utility:nothing" then
-            local pos = self.object:getpos()
-            local pos2 = clicker:getpos()
+            local pos = self.object:get_pos()
+            local pos2 = clicker:get_pos()
             pos2.y = pos2.y + 1.25
             local obj = minetest.add_item(pos,self.itemstring)
             local dir = vector.subtract(pos2,pos)
@@ -639,8 +639,8 @@ minetest.register_entity("utility:cook", {
             return
         end
         
-        local pos = self.object:getpos()
-        local pos2 = puncher:getpos()
+        local pos = self.object:get_pos()
+        local pos2 = puncher:get_pos()
         pos2.y = pos2.y + 1.25
                 
         local obj = minetest.add_item(pos,self.itemstring)
@@ -758,8 +758,8 @@ minetest.register_entity("utility:output", {
         
         self.count = 0
         
-        local pos = self.object:getpos()
-        local pos2 = puncher:getpos()
+        local pos = self.object:get_pos()
+        local pos2 = puncher:get_pos()
         pos2.y = pos2.y + 1.25
                 
         local obj = minetest.add_item(pos,self.itemstring)
