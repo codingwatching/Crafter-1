@@ -642,8 +642,8 @@ minetest.register_node("hopper:chute", {
     on_metadata_inventory_put = function(pos, listname, index, stack, player)
         local timer = minetest.get_node_timer(pos)
         if not timer:is_started() then
-            timer:start(1)
-        end        
+            timer:start(0.1)
+        end
     end,
 
     on_timer = function(pos, elapsed)
@@ -818,7 +818,7 @@ minetest.register_node("hopper:sorter", {
     on_metadata_inventory_put = function(pos, listname, index, stack, player)
         local timer = minetest.get_node_timer(pos)
         if not timer:is_started() then
-            timer:start(1)
+            timer:start(0.1)
         end
     end,
 
@@ -827,7 +827,7 @@ minetest.register_node("hopper:sorter", {
         local inv = meta:get_inventory()
 
         -- build a filter list
-        local filter_items = nil        
+        local filter_items = nil
         if meta:get_string("filter_all") ~= "true" then
             filter_items = {}
             local filter_inv_size = inv:get_size("filter")
