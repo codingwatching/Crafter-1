@@ -800,8 +800,6 @@ minetest.register_craft({
 
 -- TODO: Optimize and turn this into a node timer
 
--- I just wanted to make a note here: These are the same timer for the same blocks in the same interval yet they're different abms
-
 -- suck in items on top of hopper
 minetest.register_abm({
     label = "Hopper suction",
