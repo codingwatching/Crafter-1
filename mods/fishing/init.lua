@@ -370,7 +370,7 @@ function bobber:on_step(dtime, move_result)
     end
 
     -- Player has a fish on the line
-    if not self.fish_on_the_line and math.random() > 0.65 then
+    if not self.fish_on_the_line and math.random() > 0.95 then
         self.fish_on_the_line = true
         self:splash_effect(true)
         minetest.sound_play( "splash", {
@@ -378,7 +378,7 @@ function bobber:on_step(dtime, move_result)
             gain = 0.6
         })
     -- Fish has escaped!
-    elseif self.fish_on_the_line and math.random() > 0.6 then
+    elseif self.fish_on_the_line and math.random() > 0.7 then
         self.fish_on_the_line = false
         self:splash_effect(false)
         minetest.sound_play( "fishing_bloop", {
