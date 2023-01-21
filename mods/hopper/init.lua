@@ -21,6 +21,8 @@ local register_craft = minetest.register_craft
 local register_on_player_receive_fields = minetest.register_on_player_receive_fields
 local string_sub = string.sub
 local string_find = string.find
+local vec_add = vector.add
+local vec_subtract = vector.subtract
 
 local formspec_bg = "background[-0.19,-0.25;9.41,9.49;gui_hb_bg.png]"
 
@@ -411,13 +413,13 @@ local function do_hopper_function(pos)
 
     local source_pos, destination_pos, destination_dir
     if node.name == "hopper:hopper_side" then
-        source_pos = vector.add(pos, directions[node.param2].src)
+        source_pos = vec_add(pos, directions[node.param2].src)
         destination_dir = directions[node.param2].dst
-        destination_pos = vector.add(pos, destination_dir)
+        destination_pos = vec_add(pos, destination_dir)
     else
         destination_dir = bottomdir(node.param2)
-        source_pos = vector.subtract(pos, destination_dir)
-        destination_pos = vector.add(pos, destination_dir)
+        source_pos = vec_subtract(pos, destination_dir)
+        destination_pos = vec_add(pos, destination_dir)
     end
 
     local output_direction
@@ -670,7 +672,7 @@ register_node("hopper:chute", {
 
         local node = get_node(pos)
         local dir = facedir_to_dir(node.param2)
-        local destination_pos = vector.add(pos, dir)
+        local destination_pos = vec_add(pos, dir)
         local output_direction
         if dir.y == 0 then
             output_direction = "horizontal"
@@ -860,14 +862,14 @@ register_node("hopper:sorter", {
 
         local node = get_node(pos)
         local dir = facedir_to_dir(node.param2)
-        local default_destination_pos = vector.add(pos, dir)
+        local default_destination_pos = vec_add(pos, dir)
         local default_output_direction
         if dir.y == 0 then
             default_output_direction = "horizontal"
         end
 
         dir = get_bottomdir(node.param2)
-        local filter_destination_pos = vector.add(pos, dir)
+        local filter_destination_pos = vec_add(pos, dir)
         local filter_output_direction
         if dir.y == 0 then
             filter_output_direction = "horizontal"
