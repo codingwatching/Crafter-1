@@ -842,80 +842,86 @@ local bottomdir = function(facedir)
 end
 
 -- suck in items on top of hopper
+
+--[[
 minetest.register_abm({
     label = "Hopper suction",
     nodenames = {"hopper:hopper", "hopper:hopper_side"},
     interval = 0.1,
     chance = 1,
-    action = function(pos, node, active_object_count, active_object_count_wider)
+    action = function(pos, node, active_object_count, active_object_count_wider)]]
 
-        -- Top of hopper item vacuum
+local function do_hopper_function(pos)
 
-        if active_object_count_wider == 0 then
-            return
-        end
+    -- Top of hopper item vacuum
 
-        local inv = minetest.get_meta(pos):get_inventory()
-        local posob
+    if #minetest.get_objects_inside_radius(pos, 1) == 0 then goto moving end
 
-        for _,object in pairs(minetest.get_objects_inside_radius(pos, 1)) do
-            if not object:is_player()
-            and object:get_luaentity()
-            and object:get_luaentity().name == "__builtin:item"
-            and inv
-            and inv:room_for_item("main",
-                ItemStack(object:get_luaentity().itemstring)) then
+    do
 
-                posob = object:get_pos()
+    local inv = minetest.get_meta(pos):get_inventory()
+    local posob
 
-                if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
-                    inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
+    for _,object in pairs(minetest.get_objects_inside_radius(pos, 1)) do
+        if not object:is_player()
+        and object:get_luaentity()
+        and object:get_luaentity().name == "__builtin:item"
+        and inv
+        and inv:room_for_item("main",
+            ItemStack(object:get_luaentity().itemstring)) then
 
-                    object:get_luaentity().itemstring = ""
-                    object:remove()
-                end
+            posob = object:get_pos()
+
+            if math.abs(posob.x - pos.x) <= 0.5 and posob.y - pos.y <= 0.85 and posob.y - pos.y >= 0.3 then
+                inv:add_item("main", ItemStack(object:get_luaentity().itemstring))
+
+                object:get_luaentity().itemstring = ""
+                object:remove()
             end
         end
+    end
 
+    end
+    -- Procedure to move items
 
-        -- Procedure to move items
+    ::moving::
 
-        local source_pos, destination_pos, destination_dir
-        if node.name == "hopper:hopper_side" then
-            source_pos = vector.add(pos, directions[node.param2].src)
-            destination_dir = directions[node.param2].dst
-            destination_pos = vector.add(pos, destination_dir)
+    local source_pos, destination_pos, destination_dir
+    if node.name == "hopper:hopper_side" then
+        source_pos = vector.add(pos, directions[node.param2].src)
+        destination_dir = directions[node.param2].dst
+        destination_pos = vector.add(pos, destination_dir)
+    else
+        destination_dir = bottomdir(node.param2)
+        source_pos = vector.subtract(pos, destination_dir)
+        destination_pos = vector.add(pos, destination_dir)
+    end
+    
+    local output_direction
+    if destination_dir.y == 0 then
+        output_direction = "horizontal"
+    end
+    
+    local source_node = minetest.get_node(source_pos)
+    local destination_node = minetest.get_node(destination_pos)
+
+    local registered_source_inventories = get_registered_inventories_for(source_node.name)
+    if registered_source_inventories ~= nil then
+        take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
+    end
+    
+    local registered_destination_inventories = get_registered_inventories_for(destination_node.name)
+    if registered_destination_inventories ~= nil then
+        if output_direction == "horizontal" then
+            send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["side"])
         else
-            destination_dir = bottomdir(node.param2)
-            source_pos = vector.subtract(pos, destination_dir)
-            destination_pos = vector.add(pos, destination_dir)
+            send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["bottom"])
         end
-        
-        local output_direction
-        if destination_dir.y == 0 then
-            output_direction = "horizontal"
-        end
-        
-        local source_node = minetest.get_node(source_pos)
-        local destination_node = minetest.get_node(destination_pos)
-
-        local registered_source_inventories = get_registered_inventories_for(source_node.name)
-        if registered_source_inventories ~= nil then
-            take_item_from(pos, source_pos, source_node, registered_source_inventories["top"])
-        end
-        
-        local registered_destination_inventories = get_registered_inventories_for(destination_node.name)
-        if registered_destination_inventories ~= nil then
-            if output_direction == "horizontal" then
-                send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["side"])
-            else
-                send_item_to(pos, destination_pos, destination_node, registered_destination_inventories["bottom"])
-            end
-        else
-            send_item_to(pos, destination_pos, destination_node)
-        end
-    end,
-})
+    else
+        send_item_to(pos, destination_pos, destination_node)
+    end
+end--,
+--})
 
 
 -- Formspec handling
