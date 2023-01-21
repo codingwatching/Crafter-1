@@ -306,8 +306,6 @@ local hopper_on_place = function(itemstack, placer, pointed_thing, node_name)
     return itemstack
 end
 
--- TODO: Optimize
-
 -- Hopper timer procedure
 
 -- Used to convert side hopper facing into source and destination relative coordinates
