@@ -479,12 +479,12 @@ minetest.register_node("hopper:hopper", {
         return hopper_on_place(itemstack, placer, pointed_thing, "hopper:hopper")
     end,
 
-    can_dig = function(pos, player)
+    can_dig = function(pos)
         local inv = minetest.get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
 
-    on_rightclick = function(pos, node, clicker, itemstack)
+    on_rightclick = function(pos, _, clicker)
         if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
             return
         end
@@ -549,12 +549,12 @@ minetest.register_node("hopper:hopper_side", {
         return hopper_on_place(itemstack, placer, pointed_thing, "hopper:hopper_side")
     end,
 
-    can_dig = function(pos,player)
+    can_dig = function(pos)
         local inv = minetest.get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
 
-    on_rightclick = function(pos, node, clicker, itemstack)
+    on_rightclick = function(pos, _, clicker)
         if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
             return
         end
@@ -610,7 +610,7 @@ minetest.register_node("hopper:chute", {
         inv:set_size("main", 2*2)
     end,
 
-    on_place = function(itemstack, placer, pointed_thing, node_name)
+    on_place = function(itemstack, placer, pointed_thing)
         local pos  = pointed_thing.under
         local pos2 = pointed_thing.above
         local x = pos.x - pos2.x
@@ -624,12 +624,12 @@ minetest.register_node("hopper:chute", {
         return returned_stack
     end,
 
-    can_dig = function(pos,player)
+    can_dig = function(pos)
         local inv = minetest.get_meta(pos):get_inventory()
         return inv:is_empty("main")
     end,
 
-    on_rightclick = function(pos, node, clicker, itemstack)
+    on_rightclick = function(pos, _, clicker)
         if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
             return
         end
@@ -637,14 +637,14 @@ minetest.register_node("hopper:chute", {
             "hopper_formspec:"..minetest.pos_to_string(pos), get_chute_formspec(pos))
     end,
 
-    on_metadata_inventory_put = function(pos, listname, index, stack, player)
+    on_metadata_inventory_put = function(pos)
         local timer = minetest.get_node_timer(pos)
         if not timer:is_started() then
             timer:start(0.1)
         end
     end,
 
-    on_timer = function(pos, elapsed)
+    on_timer = function(pos)
         local meta = minetest.get_meta(pos);
         local inv = meta:get_inventory()
 
@@ -753,7 +753,7 @@ minetest.register_node("hopper:sorter", {
         inv:set_size("filter", 8)
     end,
 
-    on_place = function(itemstack, placer, pointed_thing, node_name)
+    on_place = function(itemstack, placer, pointed_thing)
         local pos  = pointed_thing.under
         local pos2 = pointed_thing.above
         local x = pos.x - pos2.x
@@ -767,13 +767,13 @@ minetest.register_node("hopper:sorter", {
         return returned_stack
     end,
 
-    can_dig = function(pos,player)
+    can_dig = function(pos)
         local meta = minetest.get_meta(pos);
         local inv = meta:get_inventory()
         return inv:is_empty("main")
     end,
 
-    on_rightclick = function(pos, node, clicker, itemstack)
+    on_rightclick = function(pos, _, clicker)
         if minetest.is_protected(pos, clicker:get_player_name()) and not minetest.check_player_privs(clicker, "protection_bypass") then
             return
         end
@@ -820,7 +820,7 @@ minetest.register_node("hopper:sorter", {
         end
     end,
 
-    on_timer = function(pos, elapsed)
+    on_timer = function(pos)
         local meta = minetest.get_meta(pos);
         local inv = meta:get_inventory()
 
@@ -868,7 +868,7 @@ minetest.register_node("hopper:sorter", {
         end
 
         -- Weren't able to put something in the filter destination, for whatever reason. Now we can start moving stuff forward to the default
-        if not success then 
+        if not success then
             local default_destination_node = minetest.get_node(default_destination_pos)
             local registered_inventories = get_registered_inventories_for(default_destination_node.name)
             if registered_inventories ~= nil then
@@ -919,7 +919,7 @@ minetest.register_craft({
 
 -- Formspec handling
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+minetest.register_on_player_receive_fields(function(_, formname, fields)
     if "hopper_formspec:" == string.sub(formname, 1, 16) then
         local pos = minetest.string_to_pos(string.sub(formname, 17, -1))
         local meta = minetest.get_meta(pos)
