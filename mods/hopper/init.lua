@@ -841,16 +841,6 @@ local bottomdir = function(facedir)
     })[ math.floor( facedir / 4 ) ]
 end
 
--- suck in items on top of hopper
-
---[[
-minetest.register_abm({
-    label = "Hopper suction",
-    nodenames = {"hopper:hopper", "hopper:hopper_side"},
-    interval = 0.1,
-    chance = 1,
-    action = function(pos, node, active_object_count, active_object_count_wider)]]
-
 local function do_hopper_function(pos)
 
     -- Top of hopper item vacuum
@@ -885,6 +875,8 @@ local function do_hopper_function(pos)
     -- Procedure to move items
 
     ::moving::
+
+    local node = minetest.get_node(pos)
 
     local source_pos, destination_pos, destination_dir
     if node.name == "hopper:hopper_side" then
