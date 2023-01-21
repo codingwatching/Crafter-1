@@ -1,3 +1,4 @@
+-- TODO: Optimize and turn this into a node timer
 
 -- suck in items on top of hopper
 minetest.register_abm({
