@@ -858,8 +858,7 @@ local function do_hopper_function(pos)
             and object:get_luaentity()
             and object:get_luaentity().name == "__builtin:item"
             and inv
-            and inv:room_for_item("main",
-                ItemStack(object:get_luaentity().itemstring)) then
+            and inv:room_for_item("main", ItemStack( object:get_luaentity().itemstring ) ) then
 
                 posob = object:get_pos()
 
