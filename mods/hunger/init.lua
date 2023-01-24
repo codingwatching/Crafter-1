@@ -266,18 +266,11 @@ minetest.register_on_dignode(function(_, _, digger)
     pool[name].exhaustion = pool[name].exhaustion + math.random(0,2)
 end)
 
--- Take away the food that the player ate
-local item
-local take_food = function(player)
-    item = player:get_wielded_item()
-    item:take_item()
-    player:set_wielded_item(item)
-end
 
 -- players eat food
 local satiation
 local hunger
-player_eat_food = function(player,item)
+minetest.player_eat_food = function(player,item)
     name = player:get_player_name()
     data_container = pool[name]
     if type(item) == "string" then
@@ -300,7 +293,10 @@ player_eat_food = function(player,item)
     -- this makes the game easier
     data_container.satiation = data_container.satiation + satiation
 
-    take_food(player)
+    -- Take away the eaten food
+    item = player:get_wielded_item()
+    item:take_item()
+    player:set_wielded_item(item)
 
     player:change_hud( "hunger", {
         element   = "number",
