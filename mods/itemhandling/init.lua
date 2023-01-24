@@ -18,13 +18,20 @@ local object
 if not creative_mode then
     function minetest.handle_node_drops(pos, drops, digger)
         meta = digger:get_wielded_item():get_meta()
-        --careful = meta:get_int("careful")
-        fortune = 1--meta:get_int("fortune") + 1
+        careful = meta:get_int("careful")
+        fortune = meta:get_int("fortune") + 1
         autorepair = meta:get_int("autorepair")
-        --if careful > 0 then
-        --    drops = {minetest.get_node(pos).name}
-        --end
-        for i = 1,fortune do
+
+        if careful > 0 then
+            drops = {
+                minetest.get_node(pos).name
+            }
+        end
+
+        local experience_amount = minetest.get_item_group(minetest.get_node(pos).name,"experience")
+
+        for _ = 1,fortune do
+
             for _,item in ipairs(drops) do
 
                 if type(item) == "string" then
@@ -34,7 +41,8 @@ if not creative_mode then
                     count = item:get_count()
                     name = item:get_name()
                 end
-                for i=1,count do
+
+                for _ = 1, count do
                     object = minetest.add_item(pos, name)
                     if object ~= nil then
                         object:set_velocity({
@@ -45,7 +53,6 @@ if not creative_mode then
                     end
                 end
             end
-            local experience_amount = minetest.get_item_group(minetest.get_node(pos).name,"experience")
             if experience_amount > 0 then
                 minetest.throw_experience(pos, experience_amount)
             end
@@ -57,7 +64,7 @@ if not creative_mode then
             digger:set_wielded_item(itemstack)
         end
     end
---creative
+-- Creative
 else
     function minetest.handle_node_drops(pos, drops, digger)
     end
