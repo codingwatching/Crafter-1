@@ -35,7 +35,6 @@ local update_breath_bar = function(player,breath)
             offset = { x = 24 * 10, y = - ( 48 + 52 + 39 ) },
         })
         player:change_hud( "breath", {
-            player    =  player ,
             element   = "number",
             data      =  breath
         })

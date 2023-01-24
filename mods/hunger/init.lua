@@ -133,7 +133,6 @@ minetest.register_on_respawnplayer(function(player)
     temp_pool.regeneration_interval = 0
     temp_pool.exhaustion            = 0
     player:change_hud( "hunger", {
-        player    =  player ,
         element   = "number",
         data      =  temp_pool.hunger
     })
@@ -196,7 +195,6 @@ hunger_update = function()
                     end
 
                     player:change_hud( "hunger", {
-                        player    =  player ,
                         element   = "number",
                         data      =  temp_pool.hunger
                     })
@@ -300,7 +298,6 @@ player_eat_food = function(player,item)
     take_food(player)
 
     player:change_hud( "hunger", {
-        player    =  player ,
         element   = "number",
         data      =  temp_pool.hunger
     })

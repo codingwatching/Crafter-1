@@ -110,13 +110,11 @@ function set_player_xp_level( player, level )
     pool[name].xp_level = level
 
     player:change_hud( "xp_level_fg", {
-        player   = player,
         element  = "text",
         data     = tostring(level)
     })
 
     player:change_hud( "xp_level_bg", {
-        player   = player,
         element  = "text",
         data     = tostring(level)
     })
@@ -202,12 +200,10 @@ local function level_up_experience(player)
     temp_pool.xp_level = temp_pool.xp_level + 1
 
     player:change_hud( "xp_level_fg", {
-        player   = player,
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
     player:change_hud( "xp_level_bg", {
-        player   = player,
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
@@ -233,7 +229,6 @@ local function add_experience(player,experience)
         end
     end
     player:change_hud( "experience_bar", {
-        player   = player,
         element  = "number",
         data     = temp_pool.xp_bar
     })
@@ -249,18 +244,15 @@ minetest.register_on_dieplayer(function(player)
     temp_pool.xp_level = 0
 
     player:change_hud( "xp_level_fg", {
-        player   = player,
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
     player:change_hud( "xp_level_bg", {
-        player   = player,
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
 
     player:change_hud( "experience_bar", {
-        player   = player,
         element  = "number",
         data     = temp_pool.xp_bar
     })
