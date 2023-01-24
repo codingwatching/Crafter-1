@@ -77,8 +77,8 @@ else
         --    end
         --end
     end)
-    minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing)
-        return(itemstack:get_name())
+    minetest.register_on_placenode(function(_, _, _, _, itemstack)
+        return itemstack
     end)
 end
 
