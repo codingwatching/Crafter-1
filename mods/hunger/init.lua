@@ -99,8 +99,9 @@ end)
 local name
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
+    minetest.after(0,function()
     load_data(player)
-    hud_manager.add_hud(player,"hunger_bg",{
+    player:add_hud( "hunger_bg", {
         hud_elem_type = "statbar",
         position      = {x = 0.5, y = 1},
         text          = "hunger_icon_bg.png",
@@ -109,7 +110,7 @@ minetest.register_on_joinplayer(function(player)
         size          = {x = 24, y = 24},
         offset        = {x = 24*10, y= -(48 + 24 + 39)},
     })
-    hud_manager.add_hud(player,"hunger",{
+    player:add_hud( "hunger", {
         hud_elem_type = "statbar",
         position      = {x = 0.5, y = 1},
         text          = "hunger_icon.png",
@@ -118,6 +119,7 @@ minetest.register_on_joinplayer(function(player)
         size          = {x = 24, y = 24},
         offset        = {x = 24*10, y= -(48 + 24 + 39)},
     })
+    end)
 end)
 
 -- resets the players hunger settings to max
@@ -130,9 +132,8 @@ minetest.register_on_respawnplayer(function(player)
     temp_pool.satiation             = 20
     temp_pool.regeneration_interval = 0
     temp_pool.exhaustion            = 0
-    hud_manager.change_hud({
+    player:change_hud( "hunger", {
         player    =  player ,
-        hud_name  = "hunger",
         element   = "number",
         data      =  temp_pool.hunger
     })
@@ -194,14 +195,12 @@ hunger_update = function()
 
                     end
 
-                    hud_manager.change_hud({
+                    player:change_hud( "hunger", {
                         player    =  player ,
-                        hud_name  = "hunger",
                         element   = "number",
                         data      =  temp_pool.hunger
                     })
                 end
-                
             -- hurt the player if hunger bar empty
             elseif temp_pool.hunger <= 0 then
 
@@ -300,9 +299,8 @@ player_eat_food = function(player,item)
     
     take_food(player)
 
-    hud_manager.change_hud({
+    player:change_hud( "hunger", {
         player    =  player ,
-        hud_name  = "hunger",
         element   = "number",
         data      =  temp_pool.hunger
     })
@@ -332,9 +330,8 @@ minetest.register_chatcommand("hungry", {
         temp_pool.exhaustion = 0
         temp_pool.hunger     = 1
         temp_pool.satiation  = 0
-        hud_manager.change_hud({
-            player    =  minetest.get_player_by_name(name) ,
-            hud_name  = "hunger",
+        local player = minetest.get_player_by_name(name)
+        player:change_hud( "hunger", {
             element   = "number",
             data      =  temp_pool.hunger
         })
