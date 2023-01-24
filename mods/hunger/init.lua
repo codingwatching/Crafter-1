@@ -60,38 +60,36 @@ end
 -- An easy translation pool
 local satiation_pool = {
     -- Standing still
-    [0]   = 1,
+    [0]   = 4,
     -- Normal movement
-    [0.5] = 3,
+    [0.5] = 16,
     -- Running
-    [1]   = 6,
+    [1]   = 48,
     -- Bunny hopping
-    [2]   = 8,
+    [2]   = 64,
     -- Sneaking
-    [3]   = 1
+    [3]   = 2
 }
 -- Ticks up the exhaustion when counting down satiation
 local tick_up_satiation = function( state, exhaustion )
-    print("satiation: " .. state .. " " .. exhaustion)
     return( exhaustion + satiation_pool[ state ] )
 end
 
 -- An easy translation pool
 local hunger_pool = {
     -- Standing still
-    [0]   = 1,
+    [0]   = 2,
     -- Normal movement
-    [0.5] = 2,
+    [0.5] = 8,
     -- Running
-    [1]   = 3,
+    [1]   = 18,
     -- Bunny hopping
-    [2]   = 4,
+    [2]   = 30,
     -- Sneaking
     [3]   = 1
 }
--- ticks up the exhaustion when counting down hunger
+-- Ticks up the exhaustion when counting down hunger
 local tick_up_hunger = function( state, exhaustion )
-    print("hunger: " .. state .. " " .. exhaustion)
     return(exhaustion + hunger_pool[state])
 end
 
@@ -149,8 +147,8 @@ minetest.register_on_respawnplayer(function(player)
 end)
 
 
-local exhaustion_peak  = 512
-local hunger_peak      = 128
+local exhaustion_peak  = 384
+local hunger_peak      = 256
 local state
 local input
 local hp
@@ -181,24 +179,22 @@ local hunger_update = function()
 
             data_container.exhaustion = tick_up_satiation(state, data_container.exhaustion)
 
-            print(data_container.exhaustion)
-
             if data_container.exhaustion > exhaustion_peak then
 
                 data_container.satiation = data_container.satiation - 1
 
                 data_container.exhaustion = data_container.exhaustion - exhaustion_peak
-                
-                --reset this to use for the hunger tick
+
+                -- Reset this to use for the hunger tick
                 if data_container.satiation == 0 then
                     data_container.exhaustion = 0
                 end
             end
-        -- count down hunger bars
+        -- Count down hunger bars
         elseif data_container.hunger > 0 then
 
             data_container.exhaustion = tick_up_hunger(state,data_container.exhaustion)
-            
+
             if data_container.exhaustion >= hunger_peak then
                 --don't allow hunger to go negative
                 if data_container.hunger > 0 then
