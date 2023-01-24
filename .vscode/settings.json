@@ -22,6 +22,8 @@
         "is_player_on_fire",
         "is_entity_on_fire",
         "start_fire",
-        "put_fire_out"
+        "put_fire_out",
+        "set_armor_gui",
+        "damage_armor"
     ]
 }
