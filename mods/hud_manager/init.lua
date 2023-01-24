@@ -5,8 +5,8 @@ local player_huds = {}
 -- Set up initial data container
 minetest.register_on_joinplayer(function(player)
     local metatable = getmetatable(player)
-    player_huds[name] = {}
     local name = player:get_player_name()
+    player_huds[name] = {}
     -- Heap pointer object becomes bound to this player's methods
     local data_container = player_huds[name]
 
