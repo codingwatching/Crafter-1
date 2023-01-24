@@ -4,6 +4,7 @@ local remove_node = minetest.remove_node
 local get_node_timer = minetest.get_node_timer
 local math_random = math.random
 local player_eat_food = minetest.player_eat_food
+local get_player_hunger = minetest.get_player_hunger
 
 -- TODO: make cake be made with sugar and milk not snow
 
@@ -55,6 +56,8 @@ for i = 0,13 do
             end
         end,
         on_rightclick = function(pos, _, clicker)
+
+            if get_player_hunger(clicker) >= 20 then return end
 
             player_eat_food(clicker, "cake:cake_item_placeholder" )
 
