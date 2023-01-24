@@ -13,16 +13,6 @@ local register_node                          = minetest.register_node
 local remove_node                            = minetest.remove_node
 local register_craft                         = minetest.register_craft
 local register_tool                          = minetest.register_tool
-local register_on_mods_loaded                = minetest.register_on_mods_loaded
-local change_hud
-local add_hud
-
-register_on_mods_loaded(function()
-    after(0,function()
-        change_hud = hud_manager.change_hud
-        add_hud = hud_manager.add_hud
-    end)
-end)
 
 -- These three lists are synchronized to use ipairs
 local armor_inventories = {
@@ -108,9 +98,8 @@ end
 function set_armor_gui(player)
     if not player or (player and not player:is_player()) then return end
     level = calculate_armor_absorbtion(player)
-    change_hud({
+    player:change_hud( "armor_fg", {
         player    =  player ,
-        hud_name  = "armor_fg",
         element   = "number",
         data      =  level
     })
@@ -154,27 +143,29 @@ function damage_armor(player,damage)
 end
 
 register_on_joinplayer(function(player)
-    add_hud(player,"armor_bg",{
-        hud_elem_type = "statbar",
-        position = {x = 0.5, y = 1},
-        text = "armor_icon_bg.png",
-        number = 20,
-        size = {x = 24, y = 24},
-        offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
-    })
-    add_hud(player,"armor_fg",{
-        hud_elem_type = "statbar",
-        position = {x = 0.5, y = 1},
-        text = "armor_icon.png",
-        number = calculate_armor_absorbtion(player),
-        size = {x = 24, y = 24},
-        offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
-    })
+    minetest.after(0,function()
+        player:add_hud(player,"armor_bg",{
+            hud_elem_type = "statbar",
+            position = {x = 0.5, y = 1},
+            text = "armor_icon_bg.png",
+            number = 20,
+            size = {x = 24, y = 24},
+            offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
+        })
+        player:add_hud(player,"armor_fg",{
+            hud_elem_type = "statbar",
+            position = {x = 0.5, y = 1},
+            text = "armor_icon.png",
+            number = calculate_armor_absorbtion(player),
+            size = {x = 24, y = 24},
+            offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
+        })
 
-    inv = player:get_inventory()
-    for _,inventory_name in ipairs(armor_inventories) do
-        inv:set_size(inventory_name,1)
-    end
+        inv = player:get_inventory()
+        for _,inventory_name in ipairs(armor_inventories) do
+            inv:set_size(inventory_name,1)
+        end
+    end)
 end)
 
 register_on_dieplayer(function(player)
