@@ -48,8 +48,8 @@ end)
 
 -- Used for shutdowns to save all data
 local save_all = function()
-    for player_name,_ in pairs(pool) do
-        save_data(player_name)
+    for _,player in ipairs(minetest.get_connected_players()) do
+        save_data(player:get_player_name())
     end
 end
 
