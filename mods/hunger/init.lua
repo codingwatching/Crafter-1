@@ -6,8 +6,8 @@ local pool = {}
 
 
 -- Loads data from mod storage
--- local name
--- local data_container
+local name
+local data_container
 
 local load_data = function(player_name)
 
@@ -24,6 +24,8 @@ local load_data = function(player_name)
         data_container.regeneration_interval = 0
         data_container.exhaustion = 0
     end
+
+    print(dump(data_container))
 end
 
 -- Saves data to be utilized on next login
@@ -81,7 +83,8 @@ end
 
 -- allows other mods to set hunger data
 get_player_hunger = function(player_name)
-    return( pool[ player_name ].hunger )
+    data_container = pool[player_name]
+    return (data_container and data_container.hunger) or 0
 end
 
 -- save all data to mod storage on shutdown
@@ -89,12 +92,12 @@ minetest.register_on_shutdown(function()
     save_all()
 end)
 
--- create new data for hunger per player
-local name
+-- Create new data for hunger per player
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
     pool[name] = {}
-    load_data(player:get_player_name())
+    load_data(name)
+
     minetest.after(0,function()
     player:add_hud( "hunger_bg", {
         hud_elem_type = "statbar",
@@ -134,7 +137,6 @@ end)
 
 local exhaustion_peak  = 512
 local hunger_peak      = 128
-local temp_pool
 local state
 local input
 local hp
@@ -142,16 +144,18 @@ local drowning
 local hunger_update = function()
 
     for _,player in ipairs(minetest.get_connected_players()) do
-        --do not regen player's health if dead - this will be reused for 1up apples
+
+        -- Do not regen player's health if dead - this will be reused for 1up apples
         if player:get_hp() <= 0 then goto continue end
 
         name = player:get_player_name()
-        temp_pool = pool[name]
 
-        --movement state
+        data_container = pool[name]
+
+        -- Player's movement state
         state = get_player_state(player)
 
-        -- if player is moving in state 0 add 0.5
+        -- If player is moving in state 0 add 0.5
         if state == 0 then
             input = player:get_player_control()
             if input.jump or input.right or input.left or input.down or input.up then
@@ -159,51 +163,51 @@ local hunger_update = function()
             end
         end
         -- count down invisible satiation bar
-        if temp_pool.satiation > 0 and temp_pool.hunger >= 20 then
+        if data_container.satiation > 0 and data_container.hunger >= 20 then
 
-            temp_pool.exhaustion = tick_up_satiation(state, temp_pool.exhaustion)
+            data_container.exhaustion = tick_up_satiation(state, data_container.exhaustion)
 
-            if temp_pool.exhaustion > exhaustion_peak then
+            if data_container.exhaustion > exhaustion_peak then
 
-                temp_pool.satiation = temp_pool.satiation - 1
+                data_container.satiation = data_container.satiation - 1
 
-                temp_pool.exhaustion = temp_pool.exhaustion - exhaustion_peak
+                data_container.exhaustion = data_container.exhaustion - exhaustion_peak
                 
                 --reset this to use for the hunger tick
-                if temp_pool.satiation == 0 then
-                    temp_pool.exhaustion = 0
+                if data_container.satiation == 0 then
+                    data_container.exhaustion = 0
                 end
             end
         -- count down hunger bars
-        elseif temp_pool.hunger > 0 then
+        elseif data_container.hunger > 0 then
 
-            temp_pool.exhaustion = tick_up_hunger(state,temp_pool.exhaustion)
+            data_container.exhaustion = tick_up_hunger(state,data_container.exhaustion)
             
-            if temp_pool.exhaustion >= hunger_peak then
+            if data_container.exhaustion >= hunger_peak then
                 --don't allow hunger to go negative
-                if temp_pool.hunger > 0 then
+                if data_container.hunger > 0 then
 
-                    temp_pool.exhaustion = temp_pool.exhaustion - hunger_peak
+                    data_container.exhaustion = data_container.exhaustion - hunger_peak
 
-                    temp_pool.hunger = temp_pool.hunger - 1
+                    data_container.hunger = data_container.hunger - 1
 
                 end
 
                 player:change_hud( "hunger", {
                     element   = "number",
-                    data      =  temp_pool.hunger
+                    data      =  data_container.hunger
                 })
             end
         -- hurt the player if hunger bar empty
-        elseif temp_pool.hunger <= 0 then
+        elseif data_container.hunger <= 0 then
 
-            temp_pool.exhaustion = temp_pool.exhaustion + 1
+            data_container.exhaustion = data_container.exhaustion + 1
 
             hp = player:get_hp()
 
-            if hp > 0 and temp_pool.exhaustion >= 2 then
+            if hp > 0 and data_container.exhaustion >= 2 then
                 player:set_hp( hp - 1 )
-                temp_pool.exhaustion = 0
+                data_container.exhaustion = 0
             end
         end
         
@@ -213,22 +217,22 @@ local hunger_update = function()
         drowning = is_player_drowning(player)
 
         --make regeneration happen every second
-        if not player:get_fire_state() and drowning == 0 and temp_pool.hunger >= 20 and hp < 20 then
+        if not player:get_fire_state() and drowning == 0 and data_container.hunger >= 20 and hp < 20 then
 
-            temp_pool.regeneration_interval = temp_pool.regeneration_interval + 1
+            data_container.regeneration_interval = data_container.regeneration_interval + 1
 
-            if temp_pool.regeneration_interval >= 2 then
+            if data_container.regeneration_interval >= 2 then
 
                 player:set_hp( hp + 1 )
 
-                temp_pool.exhaustion = temp_pool.exhaustion + 32
+                data_container.exhaustion = data_container.exhaustion + 32
 
-                temp_pool.regeneration_interval = 0
+                data_container.regeneration_interval = 0
 
             end
         --reset the regen interval
         else
-            temp_pool.regeneration_interval = 0
+            data_container.regeneration_interval = 0
         end
 
         ::continue::
@@ -259,14 +263,11 @@ local take_food = function(player)
 end
 
 -- players eat food
-local name
-local temp_pool
-local item
 local satiation
 local hunger
 player_eat_food = function(player,item)
     name = player:get_player_name()
-    temp_pool = pool[name]
+    data_container = pool[name]
     if type(item) == "string" then
         item = ItemStack(item)
     elseif type(item) == "table" then
@@ -277,21 +278,21 @@ player_eat_food = function(player,item)
     satiation = minetest.get_item_group( item, "satiation" )
     hunger    = minetest.get_item_group( item, "hunger"    )
     
-    temp_pool.hunger = temp_pool.hunger + hunger
+    data_container.hunger = data_container.hunger + hunger
 
-    if temp_pool.hunger > 20 then
-        temp_pool.hunger = 20
+    if data_container.hunger > 20 then
+        data_container.hunger = 20
     end
-    
+
     -- unlimited
     -- this makes the game easier
-    temp_pool.satiation = temp_pool.satiation + satiation
-    
+    data_container.satiation = data_container.satiation + satiation
+
     take_food(player)
 
     player:change_hud( "hunger", {
         element   = "number",
-        data      =  temp_pool.hunger
+        data      =  data_container.hunger
     })
 end
 
@@ -315,14 +316,14 @@ minetest.register_chatcommand("hungry", {
     description = "A debug command to test food",
     privs = {server = true},
     func = function(name)
-        local temp_pool = pool[name]
-        temp_pool.exhaustion = 0
-        temp_pool.hunger     = 1
-        temp_pool.satiation  = 0
+        local data_container = pool[name]
+        data_container.exhaustion = 0
+        data_container.hunger     = 1
+        data_container.satiation  = 0
         local player = minetest.get_player_by_name(name)
         player:change_hud( "hunger", {
             element   = "number",
-            data      =  temp_pool.hunger
+            data      =  data_container.hunger
         })
     end
 })

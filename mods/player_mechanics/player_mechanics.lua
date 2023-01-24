@@ -104,8 +104,8 @@ local control_state = function(player)
     if get_if_player_attached(player) then
         return
     end
-    hunger    = get_player_hunger(player)
     name      = player:get_player_name()
+    hunger    = get_player_hunger(name)
     temp_pool = pool[name]
 
 
