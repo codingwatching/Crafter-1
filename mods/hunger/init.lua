@@ -243,13 +243,11 @@ minetest.register_globalstep(function(dtime)
     hunger_update()
 end)
 
---take away hunger and satiation randomly while mining
-local name
-minetest.register_on_dignode(function(pos, oldnode, digger)
-    if digger and digger:is_player() then
-        name = digger:get_player_name()
-        pool[name].exhaustion = pool[name].exhaustion + math.random(0,2)
-    end
+-- Take away hunger and satiation randomly while mining
+minetest.register_on_dignode(function(_, _, digger)
+    if not digger or not digger:is_player() then return end
+    name = digger:get_player_name()
+    pool[name].exhaustion = pool[name].exhaustion + math.random(0,2)
 end)
 
 -- take the eaten food
