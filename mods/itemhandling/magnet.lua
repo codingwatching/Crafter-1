@@ -7,7 +7,6 @@ minetest.register_on_joinplayer(function(player)
     pool[name] = 0
 end)
 
-local name
 minetest.register_on_leaveplayer(function(player)
     name = player:get_player_name()
     pool[name] = nil
