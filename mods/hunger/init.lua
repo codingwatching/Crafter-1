@@ -8,16 +8,21 @@ local pool = {}
 -- Loads data from mod storage
 local name
 local data_container
+local hunger_keyset = {
+    "hunger",
+    "satiation",
+    "exhaustion",
+    "regeneration_interval"
+}
 
 local load_data = function(player_name)
 
     data_container = pool[player_name]
 
     if mod_storage:get_int( player_name .. "h_save" ) > 0 then
-        data_container.hunger = mod_storage:get_int( player_name .. "hunger" )
-        data_container.satiation = mod_storage:get_int( player_name .. "satiation" )
-        data_container.exhaustion = mod_storage:get_int( player_name .. "exhaustion" )
-        data_container.regeneration_interval = mod_storage:get_int( player_name .. "regeneration_interval" )
+        for _,key in ipairs(hunger_keyset) do
+            data_container[key] = mod_storage:get_int( player_name .. key )
+        end
     else
         data_container.hunger = 20
         data_container.satiation = 20
@@ -31,10 +36,9 @@ local save_data = function(player_name)
 
     data_container = pool[player_name]
 
-    mod_storage:set_int( player_name .. "hunger", data_container.hunger )
-    mod_storage:set_int( player_name .. "satiation", data_container.satiation )
-    mod_storage:set_int( player_name .. "exhaustion", data_container.exhaustion )
-    mod_storage:set_int( player_name .. "regeneration_interval",data_container.regeneration_interval )
+    for _,key in ipairs(hunger_keyset) do
+        mod_storage:set_int( player_name .. key, data_container[key])
+    end
 
     mod_storage:set_int( player_name .. "h_save", 1 )
 
