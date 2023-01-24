@@ -267,22 +267,23 @@ minetest.register_on_dignode(function(_, _, digger)
 end)
 
 
--- players eat food
+-- Player finishes eating food
 local satiation
 local hunger
 minetest.player_eat_food = function(player,item)
     name = player:get_player_name()
     data_container = pool[name]
+
     if type(item) == "string" then
         item = ItemStack(item)
     elseif type(item) == "table" then
         item = ItemStack(item.name)
     end
     item = item:get_name()
-    
+
     satiation = minetest.get_item_group( item, "satiation" )
-    hunger    = minetest.get_item_group( item, "hunger"    )
-    
+    hunger    = minetest.get_item_group( item, "hunger" )
+
     data_container.hunger = data_container.hunger + hunger
 
     if data_container.hunger > 20 then
@@ -302,6 +303,11 @@ minetest.player_eat_food = function(player,item)
         element   = "number",
         data      =  data_container.hunger
     })
+end
+
+-- Allows mods to access the player hunger
+function minetest.get_player_hunger(player)
+    return pool[player:get_player_name()].hunger
 end
 
 -- easily allows mods to register food
