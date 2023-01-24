@@ -7,6 +7,14 @@ local player_eat_food = minetest.player_eat_food
 
 -- TODO: make cake be made with sugar and milk not snow
 
+-- This is being used as a custom integration into the on_rightclick action for eating
+minetest.register_food("cake:cake_item_placeholder",{
+	description = "",
+	texture = "nothing.png",
+	satiation=25,
+	hunger=3,
+})
+
 for i = 0,13 do
 
     local missing_slice
@@ -48,7 +56,7 @@ for i = 0,13 do
         end,
         on_rightclick = function(pos, _, clicker)
 
-            player_eat_food(clicker,"cake:cake_item_placeholder")
+            player_eat_food(clicker, "cake:cake_item_placeholder" )
 
             if i == 13 then
                 play_sound( "eat_finish", {
