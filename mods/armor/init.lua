@@ -99,7 +99,6 @@ function set_armor_gui(player)
     if not player or (player and not player:is_player()) then return end
     level = calculate_armor_absorbtion(player)
     player:change_hud( "armor_fg", {
-        player    =  player ,
         element   = "number",
         data      =  level
     })
@@ -144,7 +143,7 @@ end
 
 register_on_joinplayer(function(player)
     minetest.after(0,function()
-        player:add_hud(player,"armor_bg",{
+        player:add_hud( "armor_bg", {
             hud_elem_type = "statbar",
             position = {x = 0.5, y = 1},
             text = "armor_icon_bg.png",
@@ -152,7 +151,7 @@ register_on_joinplayer(function(player)
             size = {x = 24, y = 24},
             offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
         })
-        player:add_hud(player,"armor_fg",{
+        player:add_hud( "armor_fg", {
             hud_elem_type = "statbar",
             position = {x = 0.5, y = 1},
             text = "armor_icon.png",
