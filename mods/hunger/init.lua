@@ -1,5 +1,5 @@
-
-
+local ipairs = ipairs
+local type = type
 local mod_storage = minetest.get_mod_storage()
 
 local pool = {}
