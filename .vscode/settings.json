@@ -24,6 +24,7 @@
         "start_fire",
         "put_fire_out",
         "set_armor_gui",
-        "damage_armor"
+        "damage_armor",
+        "calculate_armor_absorbtion"
     ]
 }
