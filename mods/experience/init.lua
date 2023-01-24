@@ -127,6 +127,7 @@ minetest.hud_replace_builtin("health",{
     number = minetest.PLAYER_MAX_HP_DEFAULT,
     direction = 0,
     size = { x = 24, y = 24 },
+    z_index = 1,
     offset = {x = ( -10 * 24 ) - 25, y = - ( 48 + 24 + 38 ) },
 })
 
@@ -144,6 +145,7 @@ minetest.register_on_joinplayer(function(player)
         text = "heart_bg.png",
         number = minetest.PLAYER_MAX_HP_DEFAULT,
         direction = 0,
+        z_index = 0,
         size = { x = 24, y = 24 },
         offset = { x = ( -10 * 24 ) - 25, y = - ( 48 + 24 + 38 ) },
     })

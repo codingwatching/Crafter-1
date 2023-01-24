@@ -22,6 +22,7 @@ local update_breath_bar = function(player,breath)
             text = "bubble_bg.png",
             number = 20,
             direction = 1,
+            z_index = 0,
             size = { x = 24, y = 24 },
             offset = { x = 24 * 10, y = - ( 48 + 52 + 39 ) },
         })
@@ -31,6 +32,7 @@ local update_breath_bar = function(player,breath)
             text = "bubble.png",
             number = breath,
             direction = 1,
+            z_index = 1,
             size = { x = 24, y = 24 },
             offset = { x = 24 * 10, y = - ( 48 + 52 + 39 ) },
         })

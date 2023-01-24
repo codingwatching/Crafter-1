@@ -148,6 +148,7 @@ register_on_joinplayer(function(player)
             position = {x = 0.5, y = 1},
             text = "armor_icon_bg.png",
             number = 20,
+            z_index = 0,
             size = {x = 24, y = 24},
             offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
         })
@@ -156,6 +157,7 @@ register_on_joinplayer(function(player)
             position = {x = 0.5, y = 1},
             text = "armor_icon.png",
             number = calculate_armor_absorbtion(player),
+            z_index = 1,
             size = {x = 24, y = 24},
             offset = {x = (-10 * 24) - 25, y = -(48 + 50 + 39)},
         })
