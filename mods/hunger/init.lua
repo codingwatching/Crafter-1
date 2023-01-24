@@ -1,57 +1,59 @@
-local minetest,math = minetest,math
+
 
 local mod_storage = minetest.get_mod_storage()
-local pool        = {}
+
+local pool = {}
 
 
--- loads data from mod storage
-local name
-local temp_pool
-local load_data = function(player)
-    name = player:get_player_name()
-    pool[name] = {}
-    temp_pool = pool[name]
-    if mod_storage:get_int(name.."h_save") > 0 then
-        temp_pool.hunger                = mod_storage:get_int(name.."hunger"               )
-        temp_pool.satiation             = mod_storage:get_int(name.."satiation"            )
-        temp_pool.exhaustion            = mod_storage:get_int(name.."exhaustion"           )
-        temp_pool.regeneration_interval = mod_storage:get_int(name.."regeneration_interval")
+-- Loads data from mod storage
+-- local name
+-- local data_container
+
+local load_data = function(player_name)
+
+    data_container = pool[player_name]
+
+    if mod_storage:get_int( player_name .. "h_save" ) > 0 then
+        data_container.hunger = mod_storage:get_int( player_name .. "hunger" )
+        data_container.satiation = mod_storage:get_int( player_name .. "satiation" )
+        data_container.exhaustion = mod_storage:get_int( player_name .. "exhaustion" )
+        data_container.regeneration_interval = mod_storage:get_int( player_name .. "regeneration_interval" )
     else
-        temp_pool.hunger                = 20
-        temp_pool.satiation             = 20
-        temp_pool.regeneration_interval = 0
-        temp_pool.exhaustion            = 0
+        data_container.hunger = 20
+        data_container.satiation = 20
+        data_container.regeneration_interval = 0
+        data_container.exhaustion = 0
     end
 end
 
--- saves data to be utilized on next login
-local name
-local temp_pool
-local save_data = function(name)
-    if type(name) ~= "string" and name:is_player() then
-        name = name:get_player_name()
-    end
-    temp_pool = pool[name]
-    
-    mod_storage:set_int(name.."hunger",               temp_pool.hunger               )
-    mod_storage:set_int(name.."satiation",            temp_pool.satiation            )
-    mod_storage:set_int(name.."exhaustion",           temp_pool.exhaustion           )
-    mod_storage:set_int(name.."regeneration_interval",temp_pool.regeneration_interval)
+-- Saves data to be utilized on next login
+local save_data = function(player_name)
 
-    mod_storage:set_int(name.."h_save",1)
+    data_container = pool[player_name]
 
-    pool[name] = nil
+    mod_storage:set_int( player_name .. "hunger", data_container.hunger )
+    mod_storage:set_int( player_name .. "satiation", data_container.satiation )
+    mod_storage:set_int( player_name .. "exhaustion", data_container.exhaustion )
+    mod_storage:set_int( player_name .. "regeneration_interval",data_container.regeneration_interval )
+
+    mod_storage:set_int( player_name .. "h_save", 1 )
+
+    pool[player_name] = nil
 end
 
+-- Saves specific users data for when they relog
+minetest.register_on_leaveplayer(function(player)
+    save_data(player:get_player_name())
+end)
 
--- is used for shutdowns to save all data
+-- Used for shutdowns to save all data
 local save_all = function()
-    for name,_ in pairs(pool) do
-        save_data(name)
+    for player_name,_ in pairs(pool) do
+        save_data(player_name)
     end
 end
 
--- an easy translation pool
+-- An easy translation pool
 local satiation_pool = {
     [0]   = 1,
     [0.5] = 3,
@@ -59,12 +61,12 @@ local satiation_pool = {
     [2]   = 8,
     [3]   = 1
 }
--- ticks up the exhaustion when counting down satiation
-local tick_up_satiation = function(state,exhaustion)
-    return(exhaustion + satiation_pool[state])
+-- Ticks up the exhaustion when counting down satiation
+local tick_up_satiation = function( state,exhaustion )
+    return( exhaustion + satiation_pool[ state ] )
 end
 
--- an easy translation pool
+-- An easy translation pool
 local hunger_pool = {
     [0]   = 1,
     [0.5] = 2,
@@ -78,17 +80,9 @@ local tick_up_hunger = function(state,exhaustion)
 end
 
 -- allows other mods to set hunger data
-local name
-get_player_hunger = function(player)
-    name = player:get_player_name()
-    return(pool[name].hunger)
+get_player_hunger = function(player_name)
+    return( pool[ player_name ].hunger )
 end
-
-
--- saves specific users data for when they relog
-minetest.register_on_leaveplayer(function(player)
-    save_data(player)
-end)
 
 -- save all data to mod storage on shutdown
 minetest.register_on_shutdown(function()
@@ -99,8 +93,9 @@ end)
 local name
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
+    pool[name] = {}
+    load_data(player:get_player_name())
     minetest.after(0,function()
-    load_data(player)
     player:add_hud( "hunger_bg", {
         hud_elem_type = "statbar",
         position      = {x = 0.5, y = 1},
@@ -122,19 +117,17 @@ minetest.register_on_joinplayer(function(player)
     end)
 end)
 
--- resets the players hunger settings to max
-local name
-local temp_pool
+-- Resets the players hunger settings to max
 minetest.register_on_respawnplayer(function(player)
     name = player:get_player_name()
-    temp_pool = pool[name]
-    temp_pool.hunger                = 20
-    temp_pool.satiation             = 20
-    temp_pool.regeneration_interval = 0
-    temp_pool.exhaustion            = 0
+    data_container = pool[name]
+    data_container.hunger                = 20
+    data_container.satiation             = 20
+    data_container.regeneration_interval = 0
+    data_container.exhaustion            = 0
     player:change_hud( "hunger", {
         element   = "number",
-        data      =  temp_pool.hunger
+        data      =  data_container.hunger
     })
 end)
 
