@@ -24,8 +24,6 @@ local load_data = function(player_name)
         data_container.regeneration_interval = 0
         data_container.exhaustion = 0
     end
-
-    print(dump(data_container))
 end
 
 -- Saves data to be utilized on next login
