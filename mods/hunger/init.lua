@@ -59,27 +59,39 @@ end
 
 -- An easy translation pool
 local satiation_pool = {
+    -- Standing still
     [0]   = 1,
+    -- Normal movement
     [0.5] = 3,
+    -- Running
     [1]   = 6,
+    -- Bunny hopping
     [2]   = 8,
+    -- Sneaking
     [3]   = 1
 }
 -- Ticks up the exhaustion when counting down satiation
-local tick_up_satiation = function( state,exhaustion )
+local tick_up_satiation = function( state, exhaustion )
+    print("satiation: " .. state .. " " .. exhaustion)
     return( exhaustion + satiation_pool[ state ] )
 end
 
 -- An easy translation pool
 local hunger_pool = {
+    -- Standing still
     [0]   = 1,
+    -- Normal movement
     [0.5] = 2,
+    -- Running
     [1]   = 3,
+    -- Bunny hopping
     [2]   = 4,
+    -- Sneaking
     [3]   = 1
 }
 -- ticks up the exhaustion when counting down hunger
-local tick_up_hunger = function(state,exhaustion)
+local tick_up_hunger = function( state, exhaustion )
+    print("hunger: " .. state .. " " .. exhaustion)
     return(exhaustion + hunger_pool[state])
 end
 
@@ -147,7 +159,7 @@ local hunger_update = function()
 
     for _,player in ipairs(minetest.get_connected_players()) do
 
-        -- Do not regen player's health if dead - this will be reused for 1up apples
+        -- Do not regen player's health if dead - this will be reused for emerald apples
         if player:get_hp() <= 0 then goto continue end
 
         name = player:get_player_name()
@@ -164,10 +176,12 @@ local hunger_update = function()
                 state = 0.5
             end
         end
-        -- count down invisible satiation bar
+        -- Count down invisible satiation bar
         if data_container.satiation > 0 and data_container.hunger >= 20 then
 
             data_container.exhaustion = tick_up_satiation(state, data_container.exhaustion)
+
+            print(data_container.exhaustion)
 
             if data_container.exhaustion > exhaustion_peak then
 
