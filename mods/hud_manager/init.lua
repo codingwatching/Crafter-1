@@ -11,6 +11,8 @@ minetest.register_on_joinplayer(function(player)
     local data_container = player_huds[name]
 
     function metatable:add_hud( hud_name, def )
+        local gotten_id = data_container[hud_name]
+        if gotten_id ~= nil then return end
         -- The value gets stored as so: table["key"] = 1 -- or whatever the number is
         data_container[hud_name] = player:hud_add({
             hud_elem_type = def.hud_elem_type,
