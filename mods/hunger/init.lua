@@ -250,7 +250,7 @@ minetest.register_on_dignode(function(_, _, digger)
     pool[name].exhaustion = pool[name].exhaustion + math.random(0,2)
 end)
 
--- take the eaten food
+-- Take away the food that the player ate
 local item
 local take_food = function(player)
     item = player:get_wielded_item()
