@@ -79,12 +79,6 @@ local tick_up_hunger = function(state,exhaustion)
     return(exhaustion + hunger_pool[state])
 end
 
--- allows other mods to set hunger data
-get_player_hunger = function(player_name)
-    data_container = pool[player_name]
-    return (data_container and data_container.hunger) or 0
-end
-
 -- save all data to mod storage on shutdown
 minetest.register_on_shutdown(function()
     save_all()
@@ -95,6 +89,12 @@ minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
     pool[name] = {}
     load_data(name)
+
+    local metatable = getmetatable(player)
+    function metatable:get_hunger()
+        data_container = pool[name]
+        return (data_container and data_container.hunger) or 0
+    end
 
     minetest.after(0,function()
     player:add_hud( "hunger_bg", {
