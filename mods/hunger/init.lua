@@ -1,9 +1,15 @@
 local ipairs = ipairs
 local type = type
 local mod_storage = minetest.get_mod_storage()
+local get_connected_players = minetest.get_connected_players
+local after = minetest.after
+local register_craftitem = minetest.register_craftitem
+local register_node = minetest.register_node
+local get_item_group = minetest.get_item_group
+local get_player_by_name = minetest.get_player_by_name
+local math_random = math.random
 
 local pool = {}
-
 
 -- Loads data from mod storage
 local name
@@ -52,7 +58,7 @@ end)
 
 -- Used for shutdowns to save all data
 local save_all = function()
-    for _,player in ipairs(minetest.get_connected_players()) do
+    for _,player in ipairs(get_connected_players()) do
         save_data(player:get_player_name())
     end
 end
@@ -110,7 +116,7 @@ minetest.register_on_joinplayer(function(player)
         return (data_container and data_container.hunger) or 0
     end
 
-    minetest.after(0,function()
+    after(0,function()
     player:add_hud( "hunger_bg", {
         hud_elem_type = "statbar",
         position      = {x = 0.5, y = 1},
@@ -155,7 +161,7 @@ local hp
 local drowning
 local hunger_update = function()
 
-    for _,player in ipairs(minetest.get_connected_players()) do
+    for _,player in ipairs(get_connected_players()) do
 
         -- Do not regen player's health if dead - this will be reused for emerald apples
         if player:get_hp() <= 0 then goto continue end
@@ -263,7 +269,7 @@ end)
 minetest.register_on_dignode(function(_, _, digger)
     if not digger or not digger:is_player() then return end
     name = digger:get_player_name()
-    pool[name].exhaustion = pool[name].exhaustion + math.random(0,2)
+    pool[name].exhaustion = pool[name].exhaustion + math_random(0,2)
 end)
 
 
@@ -281,8 +287,8 @@ minetest.player_eat_food = function(player,item)
     end
     item = item:get_name()
 
-    satiation = minetest.get_item_group( item, "satiation" )
-    hunger    = minetest.get_item_group( item, "hunger" )
+    satiation = get_item_group( item, "satiation" )
+    hunger    = get_item_group( item, "hunger" )
 
     data_container.hunger = data_container.hunger + hunger
 
@@ -312,13 +318,13 @@ end
 
 -- easily allows mods to register food
 minetest.register_food = function(name,def)
-    minetest.register_craftitem(":"..name, {
+    register_craftitem(":"..name, {
         description = def.description,
         inventory_image = def.texture,
         groups = {satiation=def.satiation,hunger=def.hunger},
     })
 
-    minetest.register_node(":"..name.."node", {
+    register_node(":"..name.."node", {
         tiles = {def.texture},
         drawtype = "allfaces",
     })
@@ -334,7 +340,7 @@ minetest.register_chatcommand("hungry", {
         data_container.exhaustion = 0
         data_container.hunger     = 1
         data_container.satiation  = 0
-        local player = minetest.get_player_by_name(name)
+        local player = get_player_by_name(name)
         player:change_hud( "hunger", {
             element   = "number",
             data      =  data_container.hunger
