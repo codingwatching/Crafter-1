@@ -9,7 +9,7 @@ local vec_multiply          = vector.multiply
 local math_random           = math.random
 
 -- This is pulled from mods/hunger/init.lua
-local eat_food = player_eat_food
+local player_eat_food = minetest.player_eat_food
 
 local name
 local eating_step = {}
@@ -92,7 +92,7 @@ local finish_eating = function(player,timer)
 
     item = player:get_wielded_item()
 
-    eat_food(player,item)
+    player_eat_food(player,item)
 
     sound_play( "eat_finish", {
         object = player,

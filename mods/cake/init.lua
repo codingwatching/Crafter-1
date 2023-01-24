@@ -3,6 +3,7 @@ local set_node   = minetest.set_node
 local remove_node = minetest.remove_node
 local get_node_timer = minetest.get_node_timer
 local math_random = math.random
+local player_eat_food = minetest.player_eat_food
 
 -- TODO: make cake be made with sugar and milk not snow
 
