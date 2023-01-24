@@ -1,8 +1,4 @@
 local ipairs = ipairs
-local hud_exists = hud_manager.hud_exists
-local remove_hud = hud_manager.remove_hud
-local add_hud    = hud_manager.add_hud
-local change_hud = hud_manager.change_hud
 local get_item_group = minetest.get_item_group
 local get_connected_players = minetest.get_connected_players
 
@@ -17,38 +13,29 @@ local hp
 -- Update bubble bar
 local update_breath_bar = function(player,breath)
     if breath > 20 then
-        if hud_exists(player,"breath_bg") then
-            remove_hud(player,"breath_bg")
-        end
-        if hud_exists(player,"breath") then
-            remove_hud(player,"breath")
-        end
+        player:remove_hud("breath_bg")
+        player:remove_hud("breath")
     else
-        if not hud_exists(player,"breath_bg") then
-            add_hud( player,"breath_bg", {
-                hud_elem_type = "statbar",
-                position = { x = 0.5, y = 1 },
-                text = "bubble_bg.png",
-                number = 20,
-                direction = 1,
-                size = { x = 24, y = 24 },
-                offset = { x = 24 * 10, y = - ( 48 + 52 + 39 ) },
-            })
-        end
-        if not hud_exists(player,"breath") then
-            add_hud( player,"breath", {
-                hud_elem_type = "statbar",
-                position = { x = 0.5, y = 1 },
-                text = "bubble.png",
-                number = breath,
-                direction = 1,
-                size = { x = 24, y = 24 },
-                offset = { x = 24 * 10, y = - ( 48 + 52 + 39 ) },
-            })
-        end
-        change_hud({
+        player:add_hud( "breath_bg", {
+            hud_elem_type = "statbar",
+            position = { x = 0.5, y = 1 },
+            text = "bubble_bg.png",
+            number = 20,
+            direction = 1,
+            size = { x = 24, y = 24 },
+            offset = { x = 24 * 10, y = - ( 48 + 52 + 39 ) },
+        })
+        player:add_hud( "breath", {
+            hud_elem_type = "statbar",
+            position = { x = 0.5, y = 1 },
+            text = "bubble.png",
+            number = breath,
+            direction = 1,
+            size = { x = 24, y = 24 },
+            offset = { x = 24 * 10, y = - ( 48 + 52 + 39 ) },
+        })
+        player:change_hud( "breath", {
             player    =  player ,
-            hud_name  = "breath",
             element   = "number",
             data      =  breath
         })
