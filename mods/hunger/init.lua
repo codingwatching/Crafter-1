@@ -139,11 +139,12 @@ local state
 local input
 local hp
 local drowning
-hunger_update = function()
+local hunger_update = function()
+
     for _,player in ipairs(minetest.get_connected_players()) do
         --do not regen player's health if dead - this will be reused for 1up apples
         if player:get_hp() <= 0 then goto continue end
-        
+
         name = player:get_player_name()
         temp_pool = pool[name]
 
@@ -203,16 +204,16 @@ hunger_update = function()
             if hp > 0 and temp_pool.exhaustion >= 2 then
                 player:set_hp( hp - 1 )
                 temp_pool.exhaustion = 0
-            end                
+            end
         end
         
         
         hp = player:get_hp()
 
-        drowning = is_player_drowning(player)        
+        drowning = is_player_drowning(player)
 
         --make regeneration happen every second
-        if not player:get_fire_state() and drowning == 0 and temp_pool.hunger >= 20 and hp < 20 then --  meta:get_int("on_fire") == 0 
+        if not player:get_fire_state() and drowning == 0 and temp_pool.hunger >= 20 and hp < 20 then
 
             temp_pool.regeneration_interval = temp_pool.regeneration_interval + 1
 
@@ -232,16 +233,14 @@ hunger_update = function()
 
         ::continue::
     end
-    
-    minetest.after(0.5, function()
-        hunger_update()
-    end)
 end
 
-minetest.register_on_mods_loaded(function()
-    minetest.after(0.5,function()
-        hunger_update()
-    end)
+local hunger_tick = 0
+minetest.register_globalstep(function(dtime)
+    hunger_tick = hunger_tick + dtime
+    if hunger_tick < 0.5 then return end
+    hunger_tick = 0
+    hunger_update()
 end)
 
 --take away hunger and satiation randomly while mining
