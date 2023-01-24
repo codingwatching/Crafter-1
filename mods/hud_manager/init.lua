@@ -35,6 +35,7 @@ minetest.register_on_joinplayer(function(player)
     function metatable:change_hud(hud_name, data)
         local gotten_id = data_container[hud_name]
         if not gotten_id then return end
+        assert(data.player == nil, "you need to remove this unused data from the mods!")
         player:hud_change( data_container[hud_name], data.element, data.data )
     end
 
