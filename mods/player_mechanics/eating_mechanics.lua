@@ -121,7 +121,7 @@ local manage_eating = function(player,dtime)
     end
 
     -- Can't eat
-    if get_player_hunger(name) >= 20 then
+    if player:get_hunger() >= 20 then
         eating_step[name] = 0
         eating_timer[name] = 0
         return

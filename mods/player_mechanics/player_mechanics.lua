@@ -105,7 +105,7 @@ local control_state = function(player)
         return
     end
     name      = player:get_player_name()
-    hunger    = get_player_hunger(name)
+    hunger    = player:get_hunger()
     temp_pool = pool[name]
 
 
