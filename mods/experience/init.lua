@@ -14,8 +14,6 @@ local vec_distance  = vector.distance
 local add_vec       = vector.add
 local multiply_vec  = vector.multiply
 local vec_direction = vector.direction
-local add_hud = hud_manager.add_hud
-local change_hud = hud_manager.change_hud
 local get_liquid_flow_direction = get_liquid_flow_direction
 
 local math_pi     = math.pi
@@ -110,15 +108,15 @@ end
 function set_player_xp_level( player, level )
     name = player:get_player_name()
     pool[name].xp_level = level
-    change_hud({
+
+    player:change_hud( "xp_level_fg", {
         player   = player,
-        hud_name = "xp_level_fg",
         element  = "text",
         data     = tostring(level)
     })
-    change_hud({
+
+    player:change_hud( "xp_level_bg", {
         player   = player,
-        hud_name = "xp_level_bg",
         element  = "text",
         data     = tostring(level)
     })
@@ -136,12 +134,13 @@ minetest.hud_replace_builtin("health",{
 
 minetest.register_on_joinplayer(function(player)
 
+    minetest.after(0,function()
     load_data(player)
 
     name = player:get_player_name()
     temp_pool = pool[name]
 
-    add_hud(player,"heart_bar_bg",{
+    player:add_hud( "heart_bar_bg", {
         hud_elem_type = "statbar",
         position = {x = 0.5, y = 1},
         text = "heart_bg.png",
@@ -151,7 +150,7 @@ minetest.register_on_joinplayer(function(player)
         offset = { x = ( -10 * 24 ) - 25, y = - ( 48 + 24 + 38 ) },
     })
 
-    add_hud(player,"experience_bar_background",{
+    player:add_hud( "experience_bar_background", {
         hud_elem_type = "statbar",
         position = { x = 0.5, y = 1 },
         name = "experience bar background",
@@ -163,7 +162,7 @@ minetest.register_on_joinplayer(function(player)
         z_index = 0,
     })
 
-    add_hud(player,"experience_bar",{
+    player:add_hud( "experience_bar", {
         hud_elem_type = "statbar",
         position = { x = 0.5, y = 1 },
         name = "experience bar",
@@ -175,7 +174,7 @@ minetest.register_on_joinplayer(function(player)
         z_index = 0,
     })
 
-    add_hud(player,"xp_level_bg",{
+    player:add_hud( "xp_level_bg", {
         hud_elem_type = "text",
         position = { x = 0.5, y = 1 },
         name = "xp_level_bg",
@@ -184,7 +183,7 @@ minetest.register_on_joinplayer(function(player)
         offset = { x = 0, y = - ( 48 + 24 + 24 ) },
         z_index = 0,
     })
-    add_hud(player,"xp_level_fg",{
+    player:add_hud( "xp_level_fg", {
         hud_elem_type = "text",
         position = { x = 0.5, y = 1 },
         name = "xp_level_fg",
@@ -193,6 +192,7 @@ minetest.register_on_joinplayer(function(player)
         offset = { x = -1, y = - ( 48 + 24 + 25 ) },
         z_index = 0,
     })
+    end)
 end)
 
 local function level_up_experience(player)
@@ -201,15 +201,13 @@ local function level_up_experience(player)
 
     temp_pool.xp_level = temp_pool.xp_level + 1
 
-    change_hud({
+    player:change_hud( "xp_level_fg", {
         player   = player,
-        hud_name = "xp_level_fg",
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
-    change_hud({
+    player:change_hud( "xp_level_bg", {
         player   = player,
-        hud_name = "xp_level_bg",
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
@@ -234,9 +232,8 @@ local function add_experience(player,experience)
             play_sound("experience",{gain=0.1,to_player = name,pitch=math_random(75,99)/100})
         end
     end
-    change_hud({
+    player:change_hud( "experience_bar", {
         player   = player,
-        hud_name = "experience_bar",
         element  = "number",
         data     = temp_pool.xp_bar
     })
@@ -251,23 +248,19 @@ minetest.register_on_dieplayer(function(player)
     temp_pool.xp_bar   = 0
     temp_pool.xp_level = 0
 
-
-    change_hud({
+    player:change_hud( "xp_level_fg", {
         player   = player,
-        hud_name = "xp_level_fg",
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
-    change_hud({
+    player:change_hud( "xp_level_bg", {
         player   = player,
-        hud_name = "xp_level_bg",
         element  = "text",
         data     = tostring(temp_pool.xp_level)
     })
 
-    change_hud({
+    player:change_hud( "experience_bar", {
         player   = player,
-        hud_name = "experience_bar",
         element  = "number",
         data     = temp_pool.xp_bar
     })
