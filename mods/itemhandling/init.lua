@@ -188,17 +188,15 @@ end
 
 local object
 function minetest.throw_experience(pos, amount)
-    for i = 1,amount do
+    for _ = 1,amount do
         object = minetest.add_entity(pos, "experience:orb")
-        if object then
-            object:set_velocity({
-                x=math.random(-2,2)*math.random(),
-                y=math.random(2,5),
-                z=math.random(-2,2)*math.random()
-            })
-        end
+        if not object then return end
+        object:set_velocity({
+            x=math.random(-2,2)*math.random(),
+            y=math.random(2,5),
+            z=math.random(-2,2)*math.random()
+        })
     end
-    --return obj
 end
 
 --override drops
