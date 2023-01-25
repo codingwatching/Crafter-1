@@ -21,6 +21,10 @@ Nodebox creator: https://lunasqu.ee/apps/3d/nodebox/
 
 ---
 
+Formspec creator: https://luk3yx.gitlab.io/minetest-formspec-editor/
+
+---
+
 If you want to run this on a server you might want to add this to your server minetest.conf:
 Don't be afraid to experiment with it!
 
