@@ -351,7 +351,6 @@ local cnode
 local cdef
 local fpos
 local vel
-local def
 local slip_factor
 local change
 local slippery
@@ -425,11 +424,6 @@ local item_step = function(self, dtime, moveresult)
             self.poll_timer = 0
         end
         return
-    end
-
-    node = nil
-    if moveresult and moveresult.touching_ground and #moveresult.collisions > 0 then
-        node = minetest.get_node_or_nil(moveresult.collisions[1].node_pos)
     end
     
 
@@ -525,11 +519,16 @@ local item_step = function(self, dtime, moveresult)
         return
     end
 
+    node = nil
+    if moveresult and moveresult.touching_ground and #moveresult.collisions > 0 then
+        node = minetest.get_node_or_nil(moveresult.collisions[1].node_pos)
+    end
+
     change = false
     -- Slide on slippery nodes
     def = node and minetest.registered_nodes[node.name]
     vel = self.object:get_velocity()
-    if def and def.walkable then
+    if node and def and def.walkable then
         slippery = minetest.get_item_group(node.name, "slippery")
         if slippery ~= 0 then
             if math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2 then
