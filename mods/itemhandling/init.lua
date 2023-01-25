@@ -174,7 +174,7 @@ local object
 function minetest.throw_item(pos, item)
     -- Take item in any format
     stack = item
-    object = minetest.add_entity(pos, "__builtin:item")    
+    object = minetest.add_entity(pos, "__builtin:item")
     if object then
         object:get_luaentity():set_item(stack)
         object:set_velocity({
@@ -192,8 +192,8 @@ function minetest.throw_experience(pos, amount)
         object = minetest.add_entity(pos, "experience:orb")
         if object then
             object:set_velocity({
-                x=math.random(-2,2)*math.random(), 
-                y=math.random(2,5), 
+                x=math.random(-2,2)*math.random(),
+                y=math.random(2,5),
                 z=math.random(-2,2)*math.random()
             })
         end
@@ -203,7 +203,6 @@ end
 
 --override drops
 local dropper_is_player
-local c_pos
 local count
 local sneak
 local item
@@ -211,10 +210,9 @@ local object
 local dir
 function minetest.item_drop(itemstack, dropper, pos)
     dropper_is_player = dropper and dropper:is_player()
-    c_pos = table.copy(pos)
     if dropper_is_player then
         sneak = dropper:get_player_control().sneak
-        c_pos.y = c_pos.y + 1.2
+        pos.y = pos.y + 1.2
         if not sneak then
             count = itemstack:get_count()
         else
@@ -225,7 +223,7 @@ function minetest.item_drop(itemstack, dropper, pos)
     end
 
     item = itemstack:take_item(count)
-    object = minetest.add_item(c_pos, item)
+    object = minetest.add_item(pos, item)
     if object then
         if dropper_is_player then
             dir = dropper:get_look_dir()
