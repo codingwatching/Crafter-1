@@ -1,5 +1,19 @@
 local ipairs = ipairs
 local ItemStack = ItemStack
+local settings = minetest.settings
+local sound_play = minetest.sound_play
+local get_node = minetest.get_node
+local get_node_or_nil = minetest.get_node_or_nil
+local get_objects_inside_radius = minetest.get_objects_inside_radius
+local get_connected_players = minetest.get_connected_players
+local get_item_group = minetest.get_item_group
+local add_item = minetest.add_item
+local add_entity = minetest.add_entity
+local registered_nodes = minetest.registered_nodes
+local serialize = minetest.serialize
+local deserialize = minetest.deserialize
+local get_player_by_name = minetest.get_player_by_name
+local add_particlespawner = minetest.add_particlespawner
 
 
 local burn_nodes = {
@@ -63,7 +77,7 @@ local dir
 local itemname
 local def
 local data
-local creative_mode = minetest.settings:get_bool("creative_mode")
+local creative_mode = settings:get_bool("creative_mode")
 
 
 local pool = {}
@@ -93,7 +107,7 @@ local function magnet(player)
 
     if not tick or pool[name] <= 0 then goto skip_playing_sound end
 
-    minetest.sound_play("pickup", {
+    sound_play("pickup", {
         to_player = player:get_player_name(),
         gain = 0.4,
         pitch = math.random(60,100)/100
@@ -108,7 +122,7 @@ local function magnet(player)
     ::skip_playing_sound::
 
     -- Radial magnet detection
-    for _,this_object in ipairs(minetest.get_objects_inside_radius({x=pos.x,y=pos.y+0.5,z=pos.z}, 2)) do
+    for _,this_object in ipairs(get_objects_inside_radius({x=pos.x,y=pos.y+0.5,z=pos.z}, 2)) do
         if this_object:is_player() then goto continue end
 
         entity = this_object:get_luaentity()
@@ -142,7 +156,7 @@ end
 
 minetest.register_globalstep(function()
     tick = not tick
-    for _,player in ipairs(minetest.get_connected_players()) do
+    for _,player in ipairs(get_connected_players()) do
         magnet(player)
     end
 end)
@@ -158,11 +172,11 @@ if not creative_mode then
 
         if careful > 0 then
             drops = {
-                minetest.get_node(this_pos).name
+                get_node(this_pos).name
             }
         end
 
-        local experience_amount = minetest.get_item_group(minetest.get_node(this_pos).name,"experience")
+        local experience_amount = get_item_group(get_node(this_pos).name,"experience")
 
         for _ = 1,fortune do
 
@@ -177,7 +191,7 @@ if not creative_mode then
                 end
 
                 for _ = 1, count do
-                    object = minetest.add_item(this_pos, name)
+                    object = add_item(this_pos, name)
                     if object ~= nil then
                         object:set_velocity({
                             x=math.random(-2,2)*math.random(),
@@ -217,7 +231,8 @@ else
 end
 
 function minetest.throw_item(this_pos, this_item)
-    object = minetest.add_entity(this_pos, "__builtin:item")
+    print("THROW")
+    object = add_entity(this_pos, "__builtin:item")
     if object then
         object:get_luaentity():set_item(this_item)
         object:set_velocity({
@@ -231,7 +246,7 @@ end
 
 function minetest.throw_experience(this_pos, amount)
     for _ = 1,amount do
-        object = minetest.add_entity(this_pos, "experience:orb")
+        object = add_entity(this_pos, "experience:orb")
         if not object then return end
         object:set_velocity({
             x=math.random(-2,2)*math.random(),
@@ -257,7 +272,7 @@ function minetest.item_drop(itemstack, dropper, this_pos)
     end
 
     item = itemstack:take_item(count)
-    object = minetest.add_item(this_pos, item)
+    object = add_item(this_pos, item)
     if object then
         if dropper_is_player then
             dir = dropper:get_look_dir()
@@ -321,7 +336,7 @@ function item_entity:set_item(this_item)
 
     itemname = stack:is_known() and stack:get_name() or "unknown"
 
-    def = minetest.registered_nodes[itemname]
+    def = registered_nodes[itemname]
 
     self.object:set_properties({
         textures = {itemname},
@@ -332,7 +347,7 @@ end
 
 
 function item_entity:get_staticdata()
-    return minetest.serialize({
+    return serialize({
         itemstring = self.itemstring,
         age = self.age,
         dropped_by = self.dropped_by,
@@ -348,7 +363,7 @@ end
 
 function item_entity:on_activate(staticdata, dtime_s)
     if string.sub(staticdata, 1, string.len("return")) == "return" then
-        data = minetest.deserialize(staticdata)
+        data = deserialize(staticdata)
         if data and type(data) == "table" then
             self.itemstring = data.itemstring
             self.age = (data.age or 0) + dtime_s
@@ -406,7 +421,7 @@ function item_entity:on_step(dtime, moveresult)
             return
         end
 
-        collector = minetest.get_player_by_name(self.collector)
+        collector = get_player_by_name(self.collector)
 
         if collector then
 
@@ -463,7 +478,7 @@ function item_entity:on_step(dtime, moveresult)
         return
     end
 
-    i_node = minetest.get_node_or_nil(pos)
+    i_node = get_node_or_nil(pos)
 
     -- Remove nodes in 'ignore' and burns items
     if i_node then
@@ -471,7 +486,7 @@ function item_entity:on_step(dtime, moveresult)
             self.object:remove()
             return
         elseif burn_nodes[i_node.name] then
-            minetest.add_particlespawner({
+            add_particlespawner({
                 amount = 6,
                 time = 0.001,
                 minpos = pos,
@@ -488,7 +503,7 @@ function item_entity:on_step(dtime, moveresult)
                 vertical = false,
                 texture = "smoke.png",
             })
-            minetest.sound_play("fire_extinguish", {pos=pos,gain=0.3,pitch=math.random(80,100)/100})
+            sound_play("fire_extinguish", {pos=pos,gain=0.3,pitch=math.random(80,100)/100})
             self.object:remove()
             return
         end
@@ -496,9 +511,9 @@ function item_entity:on_step(dtime, moveresult)
 
 
     is_stuck = false
-    snode = minetest.get_node_or_nil(pos)
+    snode = get_node_or_nil(pos)
     if snode and snode ~= "air" then
-        snode = minetest.registered_nodes[snode.name] or {}
+        snode = registered_nodes[snode.name] or {}
         is_stuck = (snode.walkable == nil or snode.walkable == true)
             and (snode.collision_box == nil or snode.collision_box.type == "regular")
             and (snode.node_box == nil or snode.node_box.type == "regular")
@@ -512,8 +527,8 @@ function item_entity:on_step(dtime, moveresult)
         shootdir = nil
         -- Check which one of the 4 sides is free
         for o = 1, #order do
-            cnode = minetest.get_node(vector.add(pos, order[o])).name
-            cdef = minetest.registered_nodes[cnode] or {}
+            cnode = get_node(vector.add(pos, order[o])).name
+            cdef = registered_nodes[cnode] or {}
             if cnode ~= "ignore" and cdef.walkable == false then
                 shootdir = order[o]
                 break
@@ -523,7 +538,7 @@ function item_entity:on_step(dtime, moveresult)
         -- If none of the 4 sides is free, check upwards
         if not shootdir then
             shootdir = {x=0, y=1, z=0}
-            cnode = minetest.get_node(vector.add(pos, shootdir)).name
+            cnode = get_node(vector.add(pos, shootdir)).name
             if cnode == "ignore" then
                 shootdir = nil -- Do not push into ignore
                 change = false
@@ -563,14 +578,14 @@ function item_entity:on_step(dtime, moveresult)
 
     node = nil
     if moveresult and moveresult.touching_ground and #moveresult.collisions > 0 then
-        node = minetest.get_node_or_nil(moveresult.collisions[1].node_pos)
+        node = get_node_or_nil(moveresult.collisions[1].node_pos)
     end
 
     -- Slide on slippery nodes
-    def = node and minetest.registered_nodes[node.name]
+    def = node and registered_nodes[node.name]
     vel = self.object:get_velocity()
     if node and def and def.walkable then
-        slippery = minetest.get_item_group(node.name, "slippery")
+        slippery = get_item_group(node.name, "slippery")
         if slippery ~= 0 then
             if math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2 then
                 -- Horizontal deceleration
@@ -616,7 +631,7 @@ minetest.register_chatcommand("gimme", {
     description = "Spawn x amount of a mob, used as /spawn 'mob' 10 or /spawn 'mob' for one",
     privs = {server=true},
     func = function(player_name)
-        local player = minetest.get_player_by_name(player_name)
+        local player = get_player_by_name(player_name)
         pos = player:get_pos()
         pos.y = pos.y + 5
         pos.x = pos.x + 8
