@@ -65,15 +65,17 @@ local function magnet(player)
             diff = vector.subtract(pos2,pos).y
 
             if diff < 0 or not inv:room_for_item("main", entity.itemstring) then goto continue end
-            
+
             pool[name] = pool[name] + 1
             inv:add_item("main", entity.itemstring)
             entity.collector = player:get_player_name()
             entity.collected = true
-            
+
         elseif entity.name == "experience:orb" then
+
             entity.collector = player:get_player_name()
             entity.collected = true
+
         end
 
         ::continue::
