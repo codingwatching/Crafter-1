@@ -426,10 +426,9 @@ local item_step = function(self, dtime, moveresult)
         return
     end
 
-    if moveresult and moveresult.touching_ground and table.getn(moveresult.collisions) > 0 then
+    node = nil
+    if moveresult and moveresult.touching_ground and #moveresult.collisions > 0 then
         node = minetest.get_node_or_nil(moveresult.collisions[1].node_pos)
-    else
-        node = nil
     end
     
 
