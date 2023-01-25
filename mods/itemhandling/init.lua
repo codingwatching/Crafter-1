@@ -242,7 +242,6 @@ function minetest.item_drop(itemstack, dropper, pos)
 end
 
 
-local stack
 local itemname
 local def
 local set_item = function(self, item)
@@ -330,13 +329,15 @@ local burn_nodes = {
     ["main:lava"]       = true,
     ["main:lavaflow"]   = true
 }
+
 local order = {
-    {x=1, y=0, z=0}, {x=-1, y=0, z= 0},
-    {x=0, y=0, z=1}, {x= 0, y=0, z=-1},
+    { x = 1, y = 0, z = 0 },
+    { x =-1, y = 0, z = 0 },
+    { x = 0, y = 0, z = 1 },
+    { x = 0, y = 0, z =-1 },
 }
+
 local collector
-local pos
-local pos2
 local player_velocity
 local direction
 local distance
