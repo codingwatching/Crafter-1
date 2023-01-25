@@ -108,16 +108,16 @@ local function magnet(player)
     ::skip_playing_sound::
 
     -- Radial magnet detection
-    for _,object in ipairs(minetest.get_objects_inside_radius({x=pos.x,y=pos.y+0.5,z=pos.z}, 2)) do
-        if object:is_player() then goto continue end
+    for _,this_object in ipairs(minetest.get_objects_inside_radius({x=pos.x,y=pos.y+0.5,z=pos.z}, 2)) do
+        if this_object:is_player() then goto continue end
 
-        entity = object:get_luaentity()
+        entity = this_object:get_luaentity()
 
         if not entity then goto continue end
 
         if entity.name == "__builtin:item" and entity.collectable == true and entity.collected == false then
 
-            pos2 = object:get_pos()
+            pos2 = this_object:get_pos()
 
             diff = vector.subtract(pos2,pos).y
 
@@ -140,7 +140,7 @@ local function magnet(player)
 end
 
 
-minetest.register_globalstep(function(dtime)
+minetest.register_globalstep(function()
     tick = not tick
     for _,player in ipairs(minetest.get_connected_players()) do
         magnet(player)
@@ -150,7 +150,7 @@ end)
 --handle node drops
 --survival
 if not creative_mode then
-    function minetest.handle_node_drops(pos, drops, digger)
+    function minetest.handle_node_drops(this_pos, drops, digger)
         meta = digger:get_wielded_item():get_meta()
         careful = meta:get_int("careful")
         fortune = meta:get_int("fortune") + 1
@@ -158,29 +158,29 @@ if not creative_mode then
 
         if careful > 0 then
             drops = {
-                minetest.get_node(pos).name
+                minetest.get_node(this_pos).name
             }
         end
 
-        local experience_amount = minetest.get_item_group(minetest.get_node(pos).name,"experience")
+        local experience_amount = minetest.get_item_group(minetest.get_node(this_pos).name,"experience")
 
         for _ = 1,fortune do
 
-            for _,item in ipairs(drops) do
+            for _,this_item in ipairs(drops) do
 
-                if type(item) == "string" then
+                if type(this_item) == "string" then
                     count = 1
-                    name = item
+                    name = this_item
                 else
-                    count = item:get_count()
-                    name = item:get_name()
+                    count = this_item:get_count()
+                    name = this_item:get_name()
                 end
 
                 for _ = 1, count do
-                    object = minetest.add_item(pos, name)
+                    object = minetest.add_item(this_pos, name)
                     if object ~= nil then
                         object:set_velocity({
-                            x=math.random(-2,2)*math.random(), 
+                            x=math.random(-2,2)*math.random(),
                             y=math.random(2,5),
                             z=math.random(-2,2)*math.random()
                         })
@@ -188,7 +188,7 @@ if not creative_mode then
                 end
             end
             if experience_amount > 0 then
-                minetest.throw_experience(pos, experience_amount)
+                minetest.throw_experience(this_pos, experience_amount)
             end
         end
         --auto repair the item
@@ -200,9 +200,9 @@ if not creative_mode then
     end
 -- Creative
 else
-    function minetest.handle_node_drops(pos, drops, digger)
+    function minetest.handle_node_drops(this_pos, drops, digger)
     end
-    minetest.register_on_dignode(function(pos, oldnode, digger)
+    minetest.register_on_dignode(function(this_pos, oldnode, digger)
         
         --if digger and digger:is_player() then
         --    local inv = digger:get_inventory()
@@ -216,10 +216,10 @@ else
     end)
 end
 
-function minetest.throw_item(pos, item)
-    object = minetest.add_entity(pos, "__builtin:item")
+function minetest.throw_item(this_pos, this_item)
+    object = minetest.add_entity(this_pos, "__builtin:item")
     if object then
-        object:get_luaentity():set_item(item)
+        object:get_luaentity():set_item(this_item)
         object:set_velocity({
             x=math.random(-2,2)*math.random(),
             y=math.random(2,5),
@@ -229,9 +229,9 @@ function minetest.throw_item(pos, item)
     return object
 end
 
-function minetest.throw_experience(pos, amount)
+function minetest.throw_experience(this_pos, amount)
     for _ = 1,amount do
-        object = minetest.add_entity(pos, "experience:orb")
+        object = minetest.add_entity(this_pos, "experience:orb")
         if not object then return end
         object:set_velocity({
             x=math.random(-2,2)*math.random(),
@@ -242,11 +242,11 @@ function minetest.throw_experience(pos, amount)
 end
 
 -- Override drops
-function minetest.item_drop(itemstack, dropper, pos)
+function minetest.item_drop(itemstack, dropper, this_pos)
     dropper_is_player = dropper and dropper:is_player()
     if dropper_is_player then
         sneak = dropper:get_player_control().sneak
-        pos.y = pos.y + 1.2
+        this_pos.y = this_pos.y + 1.2
         if not sneak then
             count = itemstack:get_count()
         else
@@ -257,7 +257,7 @@ function minetest.item_drop(itemstack, dropper, pos)
     end
 
     item = itemstack:take_item(count)
-    object = minetest.add_item(pos, item)
+    object = minetest.add_item(this_pos, item)
     if object then
         if dropper_is_player then
             dir = dropper:get_look_dir()
@@ -311,10 +311,8 @@ item_entity.magnet_timer = 0
 item_entity.poll_timer = 0
 
 -- Item entity methods
-
-
-function item_entity:set_item(item)
-    stack = ItemStack(item or self.itemstring)
+function item_entity:set_item(this_item)
+    stack = ItemStack(this_item or self.itemstring)
     self.itemstring = stack:to_string()
     if self.itemstring == "" then
         -- item not yet known
@@ -422,7 +420,7 @@ function item_entity:on_step(dtime, moveresult)
 
             distance = vector.distance(pos2,pos)
 
-            if distance > 2 or distance < 0.3 or self.magnet_timer > 0.2 or self.old_magnet_distance and self.old_magnet_distance < distance then
+            if distance > 2 or distance < 0.3 or self.magnet_timer > 0.2 or (self.old_magnet_distance and self.old_magnet_distance < distance) then
                 self.object:remove()
                 return
             end
@@ -533,7 +531,7 @@ function item_entity:on_step(dtime, moveresult)
         end
 
         if shootdir then
-            -- shove that thing outta there
+            -- Shove that thing outta there
             fpos = vector.round(pos)
             if shootdir.x ~= 0 then
                 shootdir = vector.multiply(shootdir,0.74)
@@ -617,12 +615,12 @@ minetest.register_chatcommand("gimme", {
     params = "nil",
     description = "Spawn x amount of a mob, used as /spawn 'mob' 10 or /spawn 'mob' for one",
     privs = {server=true},
-    func = function(name)
-        local player = minetest.get_player_by_name(name)
-        local pos = player:get_pos()
+    func = function(player_name)
+        local player = minetest.get_player_by_name(player_name)
+        pos = player:get_pos()
         pos.y = pos.y + 5
         pos.x = pos.x + 8
-        for i = 1,1000 do
+        for _ = 1,1000 do
             minetest.throw_item(pos, "main:dirt")
         end
     end,
