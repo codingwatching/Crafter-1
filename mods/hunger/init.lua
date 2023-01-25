@@ -228,8 +228,7 @@ local hunger_update = function()
                 data_container.exhaustion = 0
             end
         end
-        
-        
+
         hp = player:get_hp()
 
         drowning = is_player_drowning(player)
@@ -269,6 +268,13 @@ end)
 minetest.register_on_dignode(function(_, _, digger)
     if not digger or not digger:is_player() then return end
     name = digger:get_player_name()
+    pool[name].exhaustion = pool[name].exhaustion + math_random(0,2)
+end)
+
+-- Take away hunger and satiation random while placing
+minetest.register_on_placenode(function(_, _, placer)
+    if not placer or not placer:is_player() then return end
+    name = placer:get_player_name()
     pool[name].exhaustion = pool[name].exhaustion + math_random(0,2)
 end)
 
