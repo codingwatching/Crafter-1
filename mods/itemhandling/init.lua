@@ -21,6 +21,8 @@ local vec_distance = vector.distance
 local vec_normalize = vector.normalize
 local vec_round = vector.round
 local vec_multiply = vector.multiply
+local math_random = math.random
+local math_abs = math.abs
 
 
 local burn_nodes = {
@@ -117,7 +119,7 @@ local function magnet(player)
     sound_play("pickup", {
         to_player = player:get_player_name(),
         gain = 0.4,
-        pitch = math.random(60,100)/100
+        pitch = math_random(60,100)/100
     })
 
     if pool[name] > 6 then
@@ -201,9 +203,9 @@ if not creative_mode then
                     object = add_item(this_pos, name)
                     if object ~= nil then
                         object:set_velocity({
-                            x=math.random(-2,2)*math.random(),
-                            y=math.random(2,5),
-                            z=math.random(-2,2)*math.random()
+                            x=math_random(-2,2)*math_random(),
+                            y=math_random(2,5),
+                            z=math_random(-2,2)*math_random()
                         })
                     end
                 end
@@ -213,7 +215,7 @@ if not creative_mode then
             end
         end
         --auto repair the item
-        if autorepair > 0 and math.random(0,1000) < autorepair then
+        if autorepair > 0 and math_random(0,1000) < autorepair then
             local itemstack = digger:get_wielded_item()
             itemstack:add_wear(autorepair*-100)
             digger:set_wielded_item(itemstack)
@@ -243,9 +245,9 @@ function minetest.throw_item(this_pos, this_item)
     if object then
         object:get_luaentity():set_item(this_item)
         object:set_velocity({
-            x=math.random(-2,2)*math.random(),
-            y=math.random(2,5),
-            z=math.random(-2,2)*math.random()
+            x=math_random(-2,2)*math_random(),
+            y=math_random(2,5),
+            z=math_random(-2,2)*math_random()
         })
     end
     return object
@@ -256,9 +258,9 @@ function minetest.throw_experience(this_pos, amount)
         object = add_entity(this_pos, "experience:orb")
         if not object then return end
         object:set_velocity({
-            x=math.random(-2,2)*math.random(),
-            y=math.random(2,5),
-            z=math.random(-2,2)*math.random()
+            x=math_random(-2,2)*math_random(),
+            y=math_random(2,5),
+            z=math_random(-2,2)*math_random()
         })
     end
 end
@@ -510,7 +512,7 @@ function item_entity:on_step(dtime, moveresult)
                 vertical = false,
                 texture = "smoke.png",
             })
-            sound_play("fire_extinguish", {pos=pos,gain=0.3,pitch=math.random(80,100)/100})
+            sound_play("fire_extinguish", {pos=pos,gain=0.3,pitch=math_random(80,100)/100})
             self.object:remove()
             return
         end
@@ -594,7 +596,7 @@ function item_entity:on_step(dtime, moveresult)
     if node and def and def.walkable then
         slippery = get_item_group(node.name, "slippery")
         if slippery ~= 0 then
-            if math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2 then
+            if math_abs(vel.x) > 0.2 or math_abs(vel.z) > 0.2 then
                 -- Horizontal deceleration
                 slip_factor = 4.0 / (slippery + 4)
                 self.object:set_acceleration({
@@ -603,19 +605,19 @@ function item_entity:on_step(dtime, moveresult)
                     z = -vel.z * slip_factor
                 })
                 change = true
-            elseif (vel.x ~= 0 or vel.z ~= 0) and math.abs(vel.x) <= 0.2 and math.abs(vel.z) <= 0.2 then
+            elseif (vel.x ~= 0 or vel.z ~= 0) and math_abs(vel.x) <= 0.2 and math_abs(vel.z) <= 0.2 then
                 self.object:set_velocity(vec_new(0,vel.y,0))
                 self.object:set_acceleration(vec_new(0,-9.81,0))
             end
         elseif node then
-            if math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2 then
+            if math_abs(vel.x) > 0.2 or math_abs(vel.z) > 0.2 then
                 self.object:add_velocity({
                     x = -vel.x * 0.15,
                     y = 0,
                     z = -vel.z * 0.15
                 })
                 change = true
-            elseif (vel.x ~= 0 or vel.z ~= 0) and math.abs(vel.x) <= 0.2 and math.abs(vel.z) <= 0.2 then
+            elseif (vel.x ~= 0 or vel.z ~= 0) and math_abs(vel.x) <= 0.2 and math_abs(vel.z) <= 0.2 then
                 self.object:set_velocity(vec_new(0,vel.y,0))
                 self.object:set_acceleration(vec_new(0,-9.81,0))
             end
