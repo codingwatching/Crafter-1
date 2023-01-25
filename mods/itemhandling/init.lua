@@ -1,9 +1,6 @@
-local minetest,math,vector,pairs,ItemStack,ipairs = minetest,math,vector,pairs,ItemStack,ipairs
+local ipairs = ipairs
+local ItemStack = ItemStack
 
-local path = minetest.get_modpath("itemhandling")
-dofile(path.."/magnet.lua")
-
-local minetest,math,vector,ipairs = minetest,math,vector,ipairs
 local pool = {}
 
 local name
@@ -18,7 +15,6 @@ minetest.register_on_leaveplayer(function(player)
 end)
 
 --The item collection magnet
-local name
 local pos
 local pos2
 local diff
