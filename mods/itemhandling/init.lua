@@ -407,7 +407,7 @@ function item_entity:on_step(dtime, moveresult)
         return
     end
 
-    --if item set to be collected then only execute go to player
+    -- If item set to be collected then only execute go to player
     if self.collected == true then
 
         if not self.collector then
@@ -450,7 +450,7 @@ function item_entity:on_step(dtime, moveresult)
         return
     end
 
-    --allow entity to be collected after timer
+    -- Allow entity to be collected after timer
     if self.collectable == false and self.collection_timer >= 2.5 then
         self.collectable = true
     elseif self.collectable == false then
@@ -556,7 +556,7 @@ function item_entity:on_step(dtime, moveresult)
         end
     end
 
-
+    -- Items flow in water
     if snode and water_nodes[snode.name] then
         flow_dir = get_liquid_flow_direction(pos)
 
