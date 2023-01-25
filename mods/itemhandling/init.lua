@@ -443,13 +443,11 @@ function item_entity:on_step(dtime, moveresult)
             self.object:set_velocity(velocity)
 
             self.old_magnet_distance = distance
-
-            return
         else
             -- the collector doesn't exist
             self.object:remove()
-            return
         end
+        return
     end
 
     --allow entity to be collected after timer
