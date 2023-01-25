@@ -134,7 +134,7 @@ if not creative_mode then
                     if object ~= nil then
                         object:set_velocity({
                             x=math.random(-2,2)*math.random(), 
-                            y=math.random(2,5), 
+                            y=math.random(2,5),
                             z=math.random(-2,2)*math.random()
                         })
                     end
@@ -169,17 +169,16 @@ else
     end)
 end
 
+
 local stack
 local object
 function minetest.throw_item(pos, item)
-    -- Take item in any format
-    stack = item
     object = minetest.add_entity(pos, "__builtin:item")
     if object then
-        object:get_luaentity():set_item(stack)
+        object:get_luaentity():set_item(item)
         object:set_velocity({
-            x=math.random(-2,2)*math.random(), 
-            y=math.random(2,5), 
+            x=math.random(-2,2)*math.random(),
+            y=math.random(2,5),
             z=math.random(-2,2)*math.random()
         })
     end
@@ -238,9 +237,48 @@ function minetest.item_drop(itemstack, dropper, pos)
 end
 
 
+-- Item entity class
+local item_entity = {}
+
+-- Item entity fields
+item_entity.initial_properties = {
+    hp_max = 1,
+    visual = "wielditem",
+    physical = true,
+    textures = {""},
+    automatic_rotate = 1.5,
+    is_visible = true,
+    pointable = false,
+    collide_with_objects = false,
+    collisionbox = {-0.21, -0.21, -0.21, 0.21, 0.21, 0.21},
+    selectionbox = {-0.21, -0.21, -0.21, 0.21, 0.21, 0.21},
+    visual_size  = {x = 0.21, y = 0.21},
+}
+item_entity.itemstring = ""
+item_entity.moving_state = true
+item_entity.slippery_state = false
+item_entity.physical_state = true
+-- Item expiry
+item_entity.age = 0
+-- Pushing item out of solid nodes
+item_entity.force_out = nil
+item_entity.force_out_start = nil
+-- Collection Variables
+item_entity.collection_timer = 2
+item_entity.collectable = false
+item_entity.try_timer = 0
+item_entity.collected = false
+item_entity.delete_timer = 0
+-- Used for server delay
+item_entity.magnet_timer = 0
+item_entity.poll_timer = 0
+
+-- Item entity methods
+
+
 local itemname
 local def
-local set_item = function(self, item)
+function item_entity:set_item(item)
     stack = ItemStack(item or self.itemstring)
     self.itemstring = stack:to_string()
     if self.itemstring == "" then
@@ -260,7 +298,7 @@ local set_item = function(self, item)
 end
 
 
-local get_staticdata = function(self)
+function item_entity:get_staticdata()
     return minetest.serialize({
         itemstring = self.itemstring,
         age = self.age,
@@ -276,7 +314,7 @@ local get_staticdata = function(self)
 end
 
 local data
-local on_activate = function(self, staticdata, dtime_s)
+function item_entity:on_activate(staticdata, dtime_s)
     if string.sub(staticdata, 1, string.len("return")) == "return" then
         data = minetest.deserialize(staticdata)
         if data and type(data) == "table" then
@@ -297,10 +335,10 @@ local on_activate = function(self, staticdata, dtime_s)
     self.object:set_armor_groups({immortal = 1})
     self.object:set_velocity({x = 0, y = 2, z = 0})
     self.object:set_acceleration({x = 0, y = -9.81, z = 0})
-    set_item(self,self.itemstring)
+    self:set_item(self.itemstring)
 end
 
-local enable_physics = function(self)
+function item_entity:enable_physics()
     if not self.physical_state then
         self.physical_state = true
         self.object:set_properties({physical = true})
@@ -309,7 +347,7 @@ local enable_physics = function(self)
     end
 end
 
-local disable_physics = function(self)
+function item_entity:disable_physics()
     if self.physical_state then
         self.physical_state = false
         self.object:set_properties({physical = false})
@@ -324,6 +362,11 @@ local burn_nodes = {
     ["nether:lavaflow"] = true,
     ["main:lava"]       = true,
     ["main:lavaflow"]   = true
+}
+
+local water_nodes = {
+    ["main:water"] = true,
+    ["main:waterflow"] = true
 }
 
 local order = {
@@ -352,30 +395,37 @@ local change
 local slippery
 local i_node
 local flow_dir
-local item_step = function(self, dtime, moveresult)
+local acceleration
+
+function item_entity:on_step(dtime, moveresult)
+
     pos = self.object:get_pos()
+    
     if not pos then
+        self.object:remove()
         return
     end
 
     --if item set to be collected then only execute go to player
     if self.collected == true then
+
         if not self.collector then
             self.object:remove()
             return
         end
 
         collector = minetest.get_player_by_name(self.collector)
+
         if collector then
-            self.magnet_timer = self.magnet_timer + dtime    
 
-            disable_physics(self)
+            self.magnet_timer = self.magnet_timer + dtime
 
-            --get the variables
+            self:disable_physics()
+
             pos2 = collector:get_pos()
             player_velocity = collector:get_velocity()
             pos2.y = pos2.y + 0.5
-                            
+
             distance = vector.distance(pos2,pos)
 
             if distance > 2 or distance < 0.3 or self.magnet_timer > 0.2 or self.old_magnet_distance and self.old_magnet_distance < distance then
@@ -388,9 +438,9 @@ local item_step = function(self, dtime, moveresult)
             multiplier = 10 - distance -- changed
 
             velocity = vector.add(player_velocity,vector.multiply(direction,multiplier))
-                        
+
             self.object:set_velocity(velocity)
-            
+
             self.old_magnet_distance = distance
 
             return
@@ -400,20 +450,21 @@ local item_step = function(self, dtime, moveresult)
             return
         end
     end
-    
+
     --allow entity to be collected after timer
     if self.collectable == false and self.collection_timer >= 2.5 then
         self.collectable = true
     elseif self.collectable == false then
         self.collection_timer = self.collection_timer + dtime
     end
-            
+
     self.age = self.age + dtime
     if self.age > 300 then
         self.object:remove()
         return
     end
-    -- polling eases the server load
+
+    -- Polling eases the server load
     if self.poll_timer > 0 then
         self.poll_timer = self.poll_timer - dtime
         if self.poll_timer <= 0 then
@@ -421,7 +472,6 @@ local item_step = function(self, dtime, moveresult)
         end
         return
     end
-    
 
     i_node = minetest.get_node_or_nil(pos)
 
@@ -430,7 +480,7 @@ local item_step = function(self, dtime, moveresult)
         if i_node.name == "ignore" then
             self.object:remove()
             return
-        elseif i_node and burn_nodes[i_node.name] then
+        elseif burn_nodes[i_node.name] then
             minetest.add_particlespawner({
                 amount = 6,
                 time = 0.001,
@@ -465,7 +515,10 @@ local item_step = function(self, dtime, moveresult)
     end
 
     -- Push item out when stuck inside solid node
+    change = false
+
     if is_stuck then
+        change = true
         shootdir = nil
         -- Check which one of the 4 sides is free
         for o = 1, #order do
@@ -483,6 +536,7 @@ local item_step = function(self, dtime, moveresult)
             cnode = minetest.get_node(vector.add(pos, shootdir)).name
             if cnode == "ignore" then
                 shootdir = nil -- Do not push into ignore
+                change = false
             end
         end
 
@@ -504,15 +558,17 @@ local item_step = function(self, dtime, moveresult)
     end
 
 
-    flow_dir = get_liquid_flow_direction(pos)
-    
-    if flow_dir then
-        flow_dir = vector.multiply(flow_dir,10)
-        local vel = self.object:get_velocity()
-        local acceleration = vector.new(flow_dir.x-vel.x,flow_dir.y-vel.y,flow_dir.z-vel.z)
-        acceleration = vector.multiply(acceleration, 0.01)
-        self.object:add_velocity(acceleration)
-        return
+    if snode and water_nodes[snode.name] then
+        flow_dir = get_liquid_flow_direction(pos)
+
+        if flow_dir then
+            flow_dir = vector.multiply(flow_dir,10)
+            vel = self.object:get_velocity()
+            acceleration = vector.new(flow_dir.x-vel.x,flow_dir.y-vel.y,flow_dir.z-vel.z)
+            acceleration = vector.multiply(acceleration, 0.01)
+            self.object:add_velocity(acceleration)
+            return
+        end
     end
 
     node = nil
@@ -520,7 +576,6 @@ local item_step = function(self, dtime, moveresult)
         node = minetest.get_node_or_nil(moveresult.collisions[1].node_pos)
     end
 
-    change = false
     -- Slide on slippery nodes
     def = node and minetest.registered_nodes[node.name]
     vel = self.object:get_velocity()
@@ -563,53 +618,7 @@ local item_step = function(self, dtime, moveresult)
 end
 
 
-minetest.register_entity(":__builtin:item", {
-    initial_properties = {
-        hp_max           = 1,
-        visual           = "wielditem",
-        physical         = true,
-        textures         = {""},
-        automatic_rotate = 1.5,
-        is_visible       = true,
-        pointable        = false,
-
-        collide_with_objects = false,
-        collisionbox = {-0.21, -0.21, -0.21, 0.21, 0.21, 0.21},
-        selectionbox = {-0.21, -0.21, -0.21, 0.21, 0.21, 0.21},
-        visual_size  = {x = 0.21, y = 0.21},
-    },
-    itemstring = "",
-    moving_state = true,
-    slippery_state = false,
-    physical_state = true,
-    -- Item expiry
-    age = 0,
-    -- Pushing item out of solid nodes
-    force_out       = nil,
-    force_out_start = nil,
-    -- Collection Variables
-    collection_timer = 2,
-    collectable      = false,
-    try_timer        = 0,
-    collected        = false,
-    delete_timer     = 0,
-    -- Used for server delay
-    magnet_timer = 0,
-    poll_timer = 0,
-
-    set_item = set_item,
-
-    get_staticdata = function(self)
-        return(get_staticdata(self))
-    end,
-    on_activate    = function(self, staticdata, dtime_s)
-        on_activate(self, staticdata, dtime_s)
-    end,
-
-    on_step = function(self, dtime, moveresult)
-        item_step(self, dtime, moveresult)
-    end,
-})
+minetest.register_entity(":__builtin:item", item_entity)
 
 
 minetest.register_chatcommand("gimme", {
