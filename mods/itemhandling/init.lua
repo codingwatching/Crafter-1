@@ -79,7 +79,6 @@ minetest.register_on_leaveplayer(function(player)
 end)
 
 --The item collection magnet
--- TODO: switch this to DTIME
 local function magnet(player)
 
     -- Don't magnetize to dead players
