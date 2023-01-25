@@ -14,6 +14,13 @@ local serialize = minetest.serialize
 local deserialize = minetest.deserialize
 local get_player_by_name = minetest.get_player_by_name
 local add_particlespawner = minetest.add_particlespawner
+local vec_new = vector.new
+local vec_subtract = vector.subtract
+local vec_add = vector.add
+local vec_distance = vector.distance
+local vec_normalize = vector.normalize
+local vec_round = vector.round
+local vec_multiply = vector.multiply
 
 
 local burn_nodes = {
@@ -133,7 +140,7 @@ local function magnet(player)
 
             pos2 = this_object:get_pos()
 
-            diff = vector.subtract(pos2,pos).y
+            diff = vec_subtract(pos2,pos).y
 
             if diff < 0 or not inv:room_for_item("main", entity.itemstring) then goto continue end
 
@@ -279,7 +286,7 @@ function minetest.item_drop(itemstack, dropper, this_pos)
             dir.x = dir.x * 2.9
             dir.y = dir.y * 2.9 + 2
             dir.z = dir.z * 2.9
-            dir = vector.add(dir,dropper:get_velocity())
+            dir = vec_add(dir,dropper:get_velocity())
             object:set_velocity(dir)
             object:get_luaentity().dropped_by = dropper:get_player_name()
             object:get_luaentity().collection_timer = 0
@@ -433,18 +440,18 @@ function item_entity:on_step(dtime, moveresult)
             player_velocity = collector:get_velocity()
             pos2.y = pos2.y + 0.5
 
-            distance = vector.distance(pos2,pos)
+            distance = vec_distance(pos2,pos)
 
             if distance > 2 or distance < 0.3 or self.magnet_timer > 0.2 or (self.old_magnet_distance and self.old_magnet_distance < distance) then
                 self.object:remove()
                 return
             end
 
-            direction = vector.normalize(vector.subtract(pos2,pos))
+            direction = vec_normalize(vec_subtract(pos2,pos))
 
             multiplier = 10 - distance -- changed
 
-            velocity = vector.add(player_velocity,vector.multiply(direction,multiplier))
+            velocity = vec_add(player_velocity,vec_multiply(direction,multiplier))
 
             self.object:set_velocity(velocity)
 
@@ -491,8 +498,8 @@ function item_entity:on_step(dtime, moveresult)
                 time = 0.001,
                 minpos = pos,
                 maxpos = pos,
-                minvel = vector.new(-1,0.5,-1),
-                maxvel = vector.new(1,1,1),
+                minvel = vec_new(-1,0.5,-1),
+                maxvel = vec_new(1,1,1),
                 minacc = {x=0, y=1, z=0},
                 maxacc = {x=0, y=2, z=0},
                 minexptime = 1.1,
@@ -527,7 +534,7 @@ function item_entity:on_step(dtime, moveresult)
         shootdir = nil
         -- Check which one of the 4 sides is free
         for o = 1, #order do
-            cnode = get_node(vector.add(pos, order[o])).name
+            cnode = get_node(vec_add(pos, order[o])).name
             cdef = registered_nodes[cnode] or {}
             if cnode ~= "ignore" and cdef.walkable == false then
                 shootdir = order[o]
@@ -538,7 +545,7 @@ function item_entity:on_step(dtime, moveresult)
         -- If none of the 4 sides is free, check upwards
         if not shootdir then
             shootdir = {x=0, y=1, z=0}
-            cnode = get_node(vector.add(pos, shootdir)).name
+            cnode = get_node(vec_add(pos, shootdir)).name
             if cnode == "ignore" then
                 shootdir = nil -- Do not push into ignore
                 change = false
@@ -547,16 +554,16 @@ function item_entity:on_step(dtime, moveresult)
 
         if shootdir then
             -- Shove that thing outta there
-            fpos = vector.round(pos)
+            fpos = vec_round(pos)
             if shootdir.x ~= 0 then
-                shootdir = vector.multiply(shootdir,0.74)
-                self.object:move_to(vector.new(fpos.x+shootdir.x,pos.y,pos.z))
+                shootdir = vec_multiply(shootdir,0.74)
+                self.object:move_to(vec_new(fpos.x+shootdir.x,pos.y,pos.z))
             elseif shootdir.y ~= 0 then
-                shootdir = vector.multiply(shootdir,0.72)
-                self.object:move_to(vector.new(pos.x,fpos.y+shootdir.y,pos.z))
+                shootdir = vec_multiply(shootdir,0.72)
+                self.object:move_to(vec_new(pos.x,fpos.y+shootdir.y,pos.z))
             elseif shootdir.z ~= 0 then
-                shootdir = vector.multiply(shootdir,0.74)
-                self.object:move_to(vector.new(pos.x,pos.y,fpos.z+shootdir.z))
+                shootdir = vec_multiply(shootdir,0.74)
+                self.object:move_to(vec_new(pos.x,pos.y,fpos.z+shootdir.z))
             end
             return
         end
@@ -567,10 +574,10 @@ function item_entity:on_step(dtime, moveresult)
         flow_dir = get_liquid_flow_direction(pos)
 
         if flow_dir then
-            flow_dir = vector.multiply(flow_dir,10)
+            flow_dir = vec_multiply(flow_dir,10)
             vel = self.object:get_velocity()
-            acceleration = vector.new(flow_dir.x-vel.x,flow_dir.y-vel.y,flow_dir.z-vel.z)
-            acceleration = vector.multiply(acceleration, 0.01)
+            acceleration = vec_new(flow_dir.x-vel.x,flow_dir.y-vel.y,flow_dir.z-vel.z)
+            acceleration = vec_multiply(acceleration, 0.01)
             self.object:add_velocity(acceleration)
             return
         end
@@ -597,8 +604,8 @@ function item_entity:on_step(dtime, moveresult)
                 })
                 change = true
             elseif (vel.x ~= 0 or vel.z ~= 0) and math.abs(vel.x) <= 0.2 and math.abs(vel.z) <= 0.2 then
-                self.object:set_velocity(vector.new(0,vel.y,0))
-                self.object:set_acceleration(vector.new(0,-9.81,0))
+                self.object:set_velocity(vec_new(0,vel.y,0))
+                self.object:set_acceleration(vec_new(0,-9.81,0))
             end
         elseif node then
             if math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2 then
@@ -609,8 +616,8 @@ function item_entity:on_step(dtime, moveresult)
                 })
                 change = true
             elseif (vel.x ~= 0 or vel.z ~= 0) and math.abs(vel.x) <= 0.2 and math.abs(vel.z) <= 0.2 then
-                self.object:set_velocity(vector.new(0,vel.y,0))
-                self.object:set_acceleration(vector.new(0,-9.81,0))
+                self.object:set_velocity(vec_new(0,vel.y,0))
+                self.object:set_acceleration(vec_new(0,-9.81,0))
             end
         end
     elseif vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0 then
