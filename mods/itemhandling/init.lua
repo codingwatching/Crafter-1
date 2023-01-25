@@ -1,9 +1,73 @@
 local ipairs = ipairs
 local ItemStack = ItemStack
 
+
+local burn_nodes = {
+    ["fire:fire"]       = true,
+    ["nether:lava"]     = true,
+    ["nether:lavaflow"] = true,
+    ["main:lava"]       = true,
+    ["main:lavaflow"]   = true
+}
+
+local water_nodes = {
+    ["main:water"] = true,
+    ["main:waterflow"] = true
+}
+
+local order = {
+    { x = 1, y = 0, z = 0 },
+    { x =-1, y = 0, z = 0 },
+    { x = 0, y = 0, z = 1 },
+    { x = 0, y = 0, z =-1 },
+}
+
+local collector
+local player_velocity
+local direction
+local distance
+local multiplier
+local velocity
+local node
+local is_stuck
+local snode
+local shootdir
+local cnode
+local cdef
+local fpos
+local vel
+local slip_factor
+local change
+local slippery
+local i_node
+local flow_dir
+local acceleration
+local pos
+local pos2
+local diff
+local inv
+local entity
+local tick = false
+local meta
+local careful
+local fortune
+local autorepair
+local count
+local name
+local object
+local stack
+local dropper_is_player
+local sneak
+local item
+local dir
+local itemname
+local def
+local data
+local creative_mode = minetest.settings:get_bool("creative_mode")
+
+
 local pool = {}
 
-local name
 minetest.register_on_joinplayer(function(player)
     name = player:get_player_name()
     pool[name] = 0
@@ -15,12 +79,6 @@ minetest.register_on_leaveplayer(function(player)
 end)
 
 --The item collection magnet
-local pos
-local pos2
-local diff
-local inv
-local entity
-local tick = false
 -- TODO: switch this to DTIME
 local function magnet(player)
 
@@ -90,18 +148,8 @@ minetest.register_globalstep(function(dtime)
     end
 end)
 
-
-local creative_mode = minetest.settings:get_bool("creative_mode")
-
 --handle node drops
 --survival
-local meta
-local careful
-local fortune
-local autorepair
-local count
-local name
-local object
 if not creative_mode then
     function minetest.handle_node_drops(pos, drops, digger)
         meta = digger:get_wielded_item():get_meta()
@@ -169,9 +217,6 @@ else
     end)
 end
 
-
-local stack
-local object
 function minetest.throw_item(pos, item)
     object = minetest.add_entity(pos, "__builtin:item")
     if object then
@@ -185,7 +230,6 @@ function minetest.throw_item(pos, item)
     return object
 end
 
-local object
 function minetest.throw_experience(pos, amount)
     for _ = 1,amount do
         object = minetest.add_entity(pos, "experience:orb")
@@ -198,13 +242,7 @@ function minetest.throw_experience(pos, amount)
     end
 end
 
---override drops
-local dropper_is_player
-local count
-local sneak
-local item
-local object
-local dir
+-- Override drops
 function minetest.item_drop(itemstack, dropper, pos)
     dropper_is_player = dropper and dropper:is_player()
     if dropper_is_player then
@@ -276,8 +314,6 @@ item_entity.poll_timer = 0
 -- Item entity methods
 
 
-local itemname
-local def
 function item_entity:set_item(item)
     stack = ItemStack(item or self.itemstring)
     self.itemstring = stack:to_string()
@@ -313,7 +349,6 @@ function item_entity:get_staticdata()
     })
 end
 
-local data
 function item_entity:on_activate(staticdata, dtime_s)
     if string.sub(staticdata, 1, string.len("return")) == "return" then
         data = minetest.deserialize(staticdata)
@@ -355,47 +390,6 @@ function item_entity:disable_physics()
         self.object:set_acceleration({x=0, y=0, z=0})
     end
 end
-
-local burn_nodes = {
-    ["fire:fire"]       = true,
-    ["nether:lava"]     = true,
-    ["nether:lavaflow"] = true,
-    ["main:lava"]       = true,
-    ["main:lavaflow"]   = true
-}
-
-local water_nodes = {
-    ["main:water"] = true,
-    ["main:waterflow"] = true
-}
-
-local order = {
-    { x = 1, y = 0, z = 0 },
-    { x =-1, y = 0, z = 0 },
-    { x = 0, y = 0, z = 1 },
-    { x = 0, y = 0, z =-1 },
-}
-
-local collector
-local player_velocity
-local direction
-local distance
-local multiplier
-local velocity
-local node
-local is_stuck
-local snode
-local shootdir
-local cnode
-local cdef
-local fpos
-local vel
-local slip_factor
-local change
-local slippery
-local i_node
-local flow_dir
-local acceleration
 
 function item_entity:on_step(dtime, moveresult)
 
