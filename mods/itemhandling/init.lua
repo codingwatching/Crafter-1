@@ -400,7 +400,8 @@ local acceleration
 function item_entity:on_step(dtime, moveresult)
 
     pos = self.object:get_pos()
-    
+
+    -- I'm not sure why this is here, but I'm too scared to remove it
     if not pos then
         self.object:remove()
         return
