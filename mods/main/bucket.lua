@@ -96,6 +96,38 @@ local function do_lava_effect(pos)
     })
 end
 
+local function do_evaporation_effects(pos)
+
+    minetest.sound_play( "fire_extinguish", {
+        pos = pos,
+        gain = 0.3,
+        pitch = math.random( 80, 100 ) / 100
+    })
+    minetest.add_particlespawner({
+        pos = {
+            min = vector.add(pos, vector.new( -0.5, -0.5, -0.5 ) ),
+            max = vector.add(pos, vector.new( 0.5, -0.5, 0.5 ) )
+        },
+        acc = vector.new(0, 2, 0),
+        vel = vector.new(0,0,0),
+        drag = 7,
+        amount = 20,
+        exptime = {
+            min = 0.8,
+            max = 1.2
+        },
+        time = 0.3,
+        collisiondetection = false,
+        collision_removal = false,
+        object_collision = false,
+        texture = {
+            name = "smoke.png",
+            alpha_tween = {1,0},
+            scale = 1
+        }
+    })
+end
+
 local function take_function(itemstack, placer)
     local pointed_thing = bucket_raycast(placer)
     if not pointed_thing then return end
@@ -144,18 +176,24 @@ local function place_function(itemstack, placer)
     if not buildable_above and not buildable_under then return end
 
     local pos_storage = { pos_above, pos_under }
-    
+
     local new_position = pos_storage[ bool_to_int( buildable_under ) ]
 
     if bucket_type == "main:water" then
         -- If you place water in the nether, it's going to evaporate
-        if new_position.y < -10033 then goto empty end
+        if new_position.y < -10033 then
+            do_evaporation_effects(new_position)
+            goto empty
+        end
         -- Set it to water
         set_node( new_position, {name="main:water"})
         do_water_effect(new_position)
     elseif bucket_type == "main:lava" then
         -- If you place lava in the aether you're going to be disappointed
-        if new_position.y >= 20000 then goto empty end
+        if new_position.y >= 20000 then
+            do_evaporation_effects(new_position)
+            goto empty
+        end
         -- Set it to lava
         set_node(new_position, {name=lava_type[bool_to_int(pos_under.y < -10033)]})
         do_lava_effect(new_position)
