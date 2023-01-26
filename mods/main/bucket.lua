@@ -1,20 +1,33 @@
+local next = next
 
-local function bucket_raycast(user,type)
+local function bucket_raycast(user)
     local pos = user:get_pos()
     pos.y = pos.y + user:get_properties().eye_height
     local look_dir = user:get_look_dir()
     look_dir = vector.multiply(look_dir,4)
     local pos2 = vector.add(pos,look_dir)
-    
-    local ray = minetest.raycast(pos, pos2, false, true)        
+
+    local ray = minetest.raycast(pos, pos2, false, true)
     if ray then
-        for pointed_thing in ray do
-            if pointed_thing then
-                return({under=pointed_thing.under,above=pointed_thing.above})
-            end
-        end
+        local pointed_thing = next(ray)
+        return( { under = pointed_thing.under, above = pointed_thing.above } )
     end
-    return(nil)
+end
+
+local function take_function(itemstack, placer)
+    local pointed_thing = bucket_raycast(placer)
+    if not pointed_thing then return end
+    local pos_under = pointed_thing.under
+    local node = minetest.get_node(pos_under).name
+    if node == "main:water" then
+        itemstack:replace(ItemStack("main:bucket_water"))
+        minetest.remove_node(pos_under)
+        return(itemstack)
+    elseif node == "main:lava" or node == "nether:lava" then
+        itemstack:replace(ItemStack("main:bucket_lava"))
+        minetest.remove_node(pos_under)
+        return(itemstack)
+    end
 end
 
 -- Item definitions
@@ -23,47 +36,8 @@ minetest.register_craftitem("main:bucket", {
     inventory_image = "bucket.png",
     stack_max = 1,
     --wield_image = "bucket.png",
-    --liquids_pointable = true,
-    on_place = function(itemstack, placer, pointed_thing)        
-        local pos = bucket_raycast(placer)
-        
-        if not pos then
-            return
-        end
-        
-        local pos_under = pos.under
-        
-        local node = minetest.get_node(pos_under).name
-    
-        if node == "main:water" then
-            itemstack:replace(ItemStack("main:bucket_water"))
-            minetest.remove_node(pos_under)
-            return(itemstack)
-        elseif node == "main:lava" or node == "nether:lava" then
-            itemstack:replace(ItemStack("main:bucket_lava"))
-            minetest.remove_node(pos_under)
-            return(itemstack)
-        end
-    end,
-    on_secondary_use = function(itemstack, user, pointed_thing)
-        local pos = bucket_raycast(user)
-        if not pos then
-            return
-        end
-        local pos_under = pos.under
-        
-        local node = minetest.get_node(pos_under).name
-        
-        if node == "main:water" then
-            itemstack:replace(ItemStack("main:bucket_water"))
-            minetest.remove_node(pos_under)
-            return(itemstack)
-        elseif node == "main:lava" or node == "nether:lava" then
-            itemstack:replace(ItemStack("main:bucket_lava"))
-            minetest.remove_node(pos_under)
-            return(itemstack)
-        end
-    end,
+    on_place = take_function,
+    on_secondary_use = take_function,
 })
 
 
