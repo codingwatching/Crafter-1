@@ -40,66 +40,34 @@ minetest.register_craftitem("main:bucket", {
     on_secondary_use = take_function,
 })
 
+local function place_function(itemstack, placer, pointed_thing)
+    local pos = bucket_raycast(placer)
+    if not pos then return end
+    local pos_under = pos.under
+    local pos_above = pos.above
+    local node_under = minetest.get_node(pos_under).name
+    local node_above = minetest.get_node(pos_above).name
+    local buildable_under = (minetest.registered_nodes[node_under].buildable_to == true)
+    local buildable_above = (minetest.registered_nodes[node_above].buildable_to == true)
+    -- Set it to water
+    if buildable_under == true then
+        minetest.set_node(pos_under,{name="main:water"})
+        itemstack:replace(ItemStack("main:bucket"))
+        return(itemstack)
+    elseif buildable_above then
+        minetest.set_node(pos_above,{name="main:water"})
+        itemstack:replace(ItemStack("main:bucket"))
+        return(itemstack)
+    end
+end
+
 
 minetest.register_craftitem("main:bucket_water", {
     description = "Bucket of Water",
     inventory_image = "bucket_water.png",
     stack_max = 1,
-    --liquids_pointable = false,
-    on_place = function(itemstack, placer, pointed_thing)
-        local pos = bucket_raycast(placer)
-        
-        if not pos then
-            return
-        end
-        
-        local pos_under = pos.under
-        local pos_above = pos.above
-        
-        local node_under = minetest.get_node(pos_under).name
-        local node_above = minetest.get_node(pos_above).name
-        
-        local buildable_under = (minetest.registered_nodes[node_under].buildable_to == true)
-        local buildable_above = (minetest.registered_nodes[node_above].buildable_to == true)
-        
-        --set it to water
-        if buildable_under == true then
-            minetest.set_node(pos_under,{name="main:water"})
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
-        elseif buildable_above then
-            minetest.set_node(pos_above,{name="main:water"})
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
-        end
-    end,
-    on_secondary_use = function(itemstack, user, pointed_thing)
-        local pos = bucket_raycast(user)
-        
-        if not pos then
-            return
-        end
-        
-        local pos_under = pos.under
-        local pos_above = pos.above
-        
-        local node_under = minetest.get_node(pos_under).name
-        local node_above = minetest.get_node(pos_above).name
-        
-        local buildable_under = (minetest.registered_nodes[node_under].buildable_to == true)
-        local buildable_above = (minetest.registered_nodes[node_above].buildable_to == true)
-        
-        --set it to water
-        if buildable_under == true then
-            minetest.add_node(pos_under,{name="main:water"})
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
-        elseif buildable_above then
-            minetest.add_node(pos_above,{name="main:water"})
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
-        end
-    end,
+    on_place = place_function,
+    on_secondary_use = place_function,
 })
 
 
