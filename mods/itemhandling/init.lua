@@ -240,7 +240,6 @@ else
 end
 
 function minetest.throw_item(this_pos, this_item)
-    print("THROW")
     object = add_entity(this_pos, "__builtin:item")
     if object then
         object:get_luaentity():set_item(this_item)
