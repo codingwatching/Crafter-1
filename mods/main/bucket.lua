@@ -40,6 +40,12 @@ minetest.register_craftitem("main:bucket", {
     on_secondary_use = take_function,
 })
 
+local function bool_to_int(boolean)
+    return boolean and 2 or 1
+end
+
+local lava_type = { "main:lava", "nether:lava" }
+
 local function place_function(itemstack, placer)
     local pos = bucket_raycast(placer)
     if not pos then return end
@@ -48,40 +54,43 @@ local function place_function(itemstack, placer)
     local pos_above = pos.above
     local node_under = minetest.get_node(pos_under).name
     local node_above = minetest.get_node(pos_above).name
-    local buildable_under = (minetest.registered_nodes[node_under].buildable_to == true)
-    local buildable_above = (minetest.registered_nodes[node_above].buildable_to == true)
+    local buildable_under = minetest.registered_nodes[node_under].buildable_to
+    local buildable_above = minetest.registered_nodes[node_above].buildable_to
+
+    -- No position found
+    if not buildable_above and not buildable_under then return end
+
+    local pos_storage = { pos_above, pos_under }
 
     if bucket_type == "main:water" then
         -- Set it to water
-        if buildable_under == true then
-            minetest.set_node(pos_under,{name="main:water"})
-        elseif buildable_above then
-            minetest.set_node(pos_above,{name="main:water"})
-        end
+        minetest.set_node( pos_storage[ bool_to_int( buildable_under ) ],{name="main:water"})
         itemstack:replace(ItemStack("main:bucket"))
         return(itemstack)
     elseif bucket_type == "main:lava" then
+        -- If you place lava in the aether you're going to be dissapointed
+        if pos_under.y >= 20000 then
+            itemstack:replace(ItemStack("main:bucket"))
+            return(itemstack)
+        end
         -- Set it to lava
         if buildable_under == true then
-            if pos_under.y < 20000 then
-                if pos_under.y > -10033 then
-                    minetest.add_node(pos_under,{name="main:lava"})
-                else
-                    minetest.add_node(pos_under,{name="nether:lava"})
-                end
-                itemstack:replace(ItemStack("main:bucket"))
-                return(itemstack)
+            -- Nether check
+            if pos_under.y > -10033 then
+                minetest.add_node(pos_under,{name="main:lava"})
+            else
+                minetest.add_node(pos_under,{name="nether:lava"})
             end
+            itemstack:replace(ItemStack("main:bucket"))
+            return(itemstack)
         elseif buildable_above then
-            if pos_above.y < 20000 then
-                if pos_above.y > -10033 then
-                    minetest.add_node(pos_above,{name="main:lava"})
-                else
-                    minetest.add_node(pos_above,{name="nether:lava"})
-                end
-                itemstack:replace(ItemStack("main:bucket"))
-                return(itemstack)
+            if pos_above.y > -10033 then
+                minetest.add_node(pos_above,{name="main:lava"})
+            else
+                minetest.add_node(pos_above,{name="nether:lava"})
             end
+            itemstack:replace(ItemStack("main:bucket"))
+            return(itemstack)
         end
     end
 end
