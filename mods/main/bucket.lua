@@ -9,7 +9,7 @@ local function bucket_raycast(user)
 
     local ray = minetest.raycast(pos, pos2, false, true)
     if ray then
-        local pointed_thing = next(ray)
+        local pointed_thing = ray:next()
         return( { under = pointed_thing.under, above = pointed_thing.above } )
     end
 end
@@ -40,9 +40,10 @@ minetest.register_craftitem("main:bucket", {
     on_secondary_use = take_function,
 })
 
-local function place_function(itemstack, placer, pointed_thing)
+local function place_function(itemstack, placer)
     local pos = bucket_raycast(placer)
     if not pos then return end
+    print(itemstack:get_name())
     local pos_under = pos.under
     local pos_above = pos.above
     local node_under = minetest.get_node(pos_under).name
