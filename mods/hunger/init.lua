@@ -153,8 +153,8 @@ minetest.register_on_respawnplayer(function(player)
 end)
 
 
-local exhaustion_peak  = 384
-local hunger_peak      = 256
+local exhaustion_peak  = 484
+local hunger_peak      = 312
 local state
 local input
 local hp
