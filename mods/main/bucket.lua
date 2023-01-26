@@ -55,13 +55,11 @@ local function place_function(itemstack, placer)
         -- Set it to water
         if buildable_under == true then
             minetest.set_node(pos_under,{name="main:water"})
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
         elseif buildable_above then
             minetest.set_node(pos_above,{name="main:water"})
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
         end
+        itemstack:replace(ItemStack("main:bucket"))
+        return(itemstack)
     elseif bucket_type == "main:lava" then
         -- Set it to lava
         if buildable_under == true then
