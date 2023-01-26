@@ -1,13 +1,19 @@
-local next = next
+local raycast = minetest.raycast
+local remove_node = minetest.remove_node
+local get_node = minetest.get_node
+local registered_nodes = minetest.registered_nodes
+local set_node = minetest.set_node
+local vec_multiply = vector.multiply
+local vec_add = vector.add
 
 local function bucket_raycast(user)
     local pos = user:get_pos()
     pos.y = pos.y + user:get_properties().eye_height
     local look_dir = user:get_look_dir()
-    look_dir = vector.multiply(look_dir,4)
-    local pos2 = vector.add(pos,look_dir)
+    look_dir = vec_multiply(look_dir,4)
+    local pos2 = vec_add(pos,look_dir)
 
-    local ray = minetest.raycast(pos, pos2, false, true)
+    local ray = raycast(pos, pos2, false, true)
     if ray then
         local pointed_thing = ray:next()
         if pointed_thing then
@@ -16,18 +22,63 @@ local function bucket_raycast(user)
     end
 end
 
+local function do_water_particles(pos)
+    minetest.add_particlespawner({
+        pos = {
+            min = vector.subtract(pos, vector.new(0.5,0,0.5)),
+            max = vector.add(pos, vector.new(0.5,0,0.5))
+        },
+        acc = vector.new(0,-9.81, 0),
+        vel = {
+            min = vector.new(0, 4, 0),
+            max = vector.new(0, 6, 0),
+        },
+        attract = {
+            kind = "point",
+            strength = {
+                min = -2,
+                max = -2
+            },
+            origin = pos
+        },
+        drag = 1.5,
+        amount = 20,
+        exptime = {
+            min = 0.8,
+            max = 1.2
+        },
+        time = 0.01,
+        collisiondetection = false,
+        collision_removal = false,
+        object_collision = false,
+        texture = {
+            name = "bubble.png",
+            alpha_tween = {0.6,0},
+            scale_tween = {
+                {x = 1, y = 1},
+                {x = 0, y = 0}
+            }
+        }
+    })
+
+end
+
 local function take_function(itemstack, placer)
     local pointed_thing = bucket_raycast(placer)
     if not pointed_thing then return end
     local pos_under = pointed_thing.under
-    local node = minetest.get_node(pos_under).name
+    local node = get_node(pos_under).name
     if node == "main:water" then
         itemstack:replace(ItemStack("main:bucket_water"))
-        minetest.remove_node(pos_under)
+        minetest.sound_play( "splash", {
+            pos = pos_under
+        })
+        do_water_particles(pos_under)
+        remove_node(pos_under)
         return(itemstack)
     elseif node == "main:lava" or node == "nether:lava" then
         itemstack:replace(ItemStack("main:bucket_lava"))
-        minetest.remove_node(pos_under)
+        remove_node(pos_under)
         return(itemstack)
     end
 end
@@ -37,7 +88,6 @@ minetest.register_craftitem("main:bucket", {
     description = "Bucket",
     inventory_image = "bucket.png",
     stack_max = 1,
-    --wield_image = "bucket.png",
     on_place = take_function,
     on_secondary_use = take_function,
 })
@@ -54,26 +104,32 @@ local function place_function(itemstack, placer)
     local bucket_type = itemstack:get_name():gsub("bucket_", "")
     local pos_under = pos.under
     local pos_above = pos.above
-    local node_under = minetest.get_node(pos_under).name
-    local node_above = minetest.get_node(pos_above).name
-    local buildable_under = minetest.registered_nodes[node_under].buildable_to
-    local buildable_above = minetest.registered_nodes[node_above].buildable_to
+    local node_under = get_node(pos_under).name
+    local node_above = get_node(pos_above).name
+    local buildable_under = registered_nodes[node_under].buildable_to
+    local buildable_above = registered_nodes[node_above].buildable_to
 
     -- No position found
     if not buildable_above and not buildable_under then return end
 
     local pos_storage = { pos_above, pos_under }
+    
+    local new_position = pos_storage[ bool_to_int( buildable_under ) ]
 
     if bucket_type == "main:water" then
         -- If you place water in the nether, it's going to evaporate
         if pos.under.y < -10033 then goto empty end
         -- Set it to water
-        minetest.set_node( pos_storage[ bool_to_int( buildable_under ) ],{name="main:water"})
+        set_node( new_position, {name="main:water"})
+        minetest.sound_play( "splash", {
+            pos = new_position
+        })
+        do_water_particles(new_position)
     elseif bucket_type == "main:lava" then
         -- If you place lava in the aether you're going to be disappointed
         if pos_under.y >= 20000 then goto empty end
         -- Set it to lava
-        minetest.add_node(pos_storage[ bool_to_int( buildable_under ) ],{name=lava_type[bool_to_int(pos_under.y < -10033)]})
+        set_node(new_position, {name=lava_type[bool_to_int(pos_under.y < -10033)]})
     end
 
     ::empty::
