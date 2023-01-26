@@ -86,20 +86,19 @@ minetest.register_globalstep(function()
 
             ]]
 
-            stack:add_wear(5)
+            stack:add_wear(4)
             inv:set_stack("armor_torso", 1, stack)
 
             if not sound_handling_loop[player_name] then
                 sound_handling_loop[player_name] = minetest.sound_play( "jetpack", { object = player, loop = true, gain = 0.3 } )
             end
 
-            if inv:get_stack("armor_torso",1):get_name() == "" then
+            if stack:get_name() == "" then
                 update_armor_visual(player)
                 set_armor_gui(player)
                 player:set_physics_override({gravity=1.25})
                 if sound_handling_loop[player_name] then
-                    --minetest.sound_play("armor_break",{to_player=player:get_player_name(),gain=1,pitch=math.random(80,100)/100})
-                    --minetest.sound_stop(sound_handling_loop[player_name])
+                    minetest.sound_play( "armor_break", { object = player, gain = 1, pitch = math.random( 80, 100 ) / 100 } )
                     minetest.sound_fade(sound_handling_loop[player_name], -1, 0)
                     sound_handling_loop[player_name] = nil
                 end
