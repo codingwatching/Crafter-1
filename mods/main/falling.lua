@@ -66,7 +66,7 @@ function minetest.check_for_falling(this_pos)
     check_single_for_falling(this_pos)
 
     -- Distribute the server load more evenly
-    after(1, function()
+    after(0.2, function()
         for _,additive_position in ipairs(neighbor_check) do
             local new_pos = vec_add(this_pos, additive_position)
             if check_single_for_falling(new_pos) then
