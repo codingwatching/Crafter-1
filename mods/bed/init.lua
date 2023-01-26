@@ -267,13 +267,12 @@ register_node("bed:bed", {
         sneak = placer:get_player_control().sneak
         nodedef = registered_nodes[get_node(pointed_thing.under).name]
 
-        if nodedef.on_rightclick then return minetest.item_place(itemstack, placer, pointed_thing) end
-
-        if not sneak then
-            item_place(itemstack, placer, pointed_thing)
-            return
+        if nodedef.on_rightclick and not sneak then 
+            return minetest.item_place(itemstack, placer, pointed_thing)
         end
+
         local _,pos = item_place_node(ItemStack("bed:bed_front"), placer, pointed_thing)
+
         if pos then
             param2 = get_node(pos).param2
             pos2 = vec_add(pos, vec_multiply(facedir_to_dir(param2),-1))
