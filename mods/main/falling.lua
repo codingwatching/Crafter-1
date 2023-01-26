@@ -26,6 +26,22 @@ local param_translation = {
     [1] = math_pi*1.5,
 }
 
+local ds
+local pos
+local bcp
+local bcn
+local bcd
+local acceleration
+local def
+local addlevel
+local np
+local n2
+local npos
+local nd
+local drops
+local meta
+local vel
+
 -- Falling node class
 local falling_node = {}
 
@@ -75,7 +91,7 @@ function falling_node:set_node( node, meta )
 end
 
 function falling_node:get_staticdata()
-    local ds = {
+    ds = {
         node = self.node,
         meta = self.meta,
     }
@@ -85,7 +101,7 @@ end
 function falling_node:on_activate( staticdata )
     self.object:set_armor_groups({immortal = 1})
 
-    local ds = deserialize(staticdata)
+    ds = deserialize(staticdata)
     if ds and ds.node then
         self:set_node(ds.node, ds.meta)
     elseif ds then
@@ -97,29 +113,29 @@ end
 
 function falling_node:on_step( dtime )
     -- Set gravity
-    local acceleration = self.object:get_acceleration()
+    acceleration = self.object:get_acceleration()
     if not vec_equals(acceleration, {x = 0, y = -10, z = 0}) then
         self.object:set_acceleration({x = 0, y = -10, z = 0})
     end
     -- Turn to actual node when colliding with ground, or continue to move
-    local pos = self.object:get_pos()
+    pos = self.object:get_pos()
     -- Position of bottom center point
-    local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
+    bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
     -- 'bcn' is nil for unloaded nodes
-    local bcn = get_node_or_nil(bcp)
+    bcn = get_node_or_nil(bcp)
     -- Delete on contact with ignore at world edges
     if bcn and bcn.name == "ignore" then
         self.object:remove()
         return
     end
-    local bcd = bcn and registered_nodes[bcn.name]
+    bcd = bcn and registered_nodes[bcn.name]
     if bcn and
             (not bcd or bcd.walkable or
             (get_item_group(self.node.name, "float") ~= 0 and
             bcd.liquidtype ~= "none")) then
         if bcd and bcd.leveled and
                 bcn.name == self.node.name then
-            local addlevel = self.node.level
+            addlevel = self.node.level
             if not addlevel or addlevel <= 0 then
                 addlevel = bcd.leveled
             end
@@ -133,14 +149,14 @@ function falling_node:on_step( dtime )
             remove_node(bcp)
             return
         end
-        local np = {x = bcp.x, y = bcp.y + 1, z = bcp.z}
+        np = {x = bcp.x, y = bcp.y + 1, z = bcp.z}
         -- Check what's here
-        local n2 = get_node(np)
-        local nd = registered_nodes[n2.name]
+        n2 = get_node(np)
+        nd = registered_nodes[n2.name]
         -- If it's not air or liquid, remove node and replace it with
         -- it's drops
         if n2.name ~= "air" and (not nd or nd.liquidtype == "none") and not nd.buildable_to then
-            local drops = get_node_drops(self.node.name, "")
+            drops = get_node_drops(self.node.name, "")
             if drops and #drops > 0 then
                 for _,droppy in pairs(drops) do
                     throw_item(np,droppy)
@@ -152,13 +168,13 @@ function falling_node:on_step( dtime )
             return
         end
         -- Create node and remove entity
-        local def = registered_nodes[self.node.name]
+        def = registered_nodes[self.node.name]
         if def then
             -- Trigger drops
             dig_node(np)
             set_node(np, self.node)
             if self.meta then
-                local meta = get_meta(np)
+                meta = get_meta(np)
                 meta:from_table(self.meta)
             end
             if def.sounds and def.sounds.fall then
@@ -170,12 +186,29 @@ function falling_node:on_step( dtime )
         return
     end
 
-    local vel = self.object:get_velocity()
+    vel = self.object:get_velocity()
     if vec_equals(vel, {x = 0, y = 0, z = 0}) then
-        local npos = self.object:get_pos()
+        npos = self.object:get_pos()
         self.object:set_pos(vec_round(npos))
     end
 end
 
-
 minetest.register_entity( ":__builtin:falling_node", falling_node  )
+
+
+minetest.register_chatcommand("sandme", {
+    params = "<mob>",
+    description = "Spawn x amount of a mob, used as /spawn 'mob' 10 or /spawn 'mob' for one",
+    privs = {server = true},
+    func = function(name)
+        local player = minetest.get_player_by_name(name)
+        pos = player:get_pos()
+        pos.y = pos.y + 5
+
+        for x = -20,20 do
+            for z = -20,20 do
+                minetest.set_node(vector.add(pos, vector.new(x,0,z)), {name = "main:sand"})
+            end
+        end
+    end,
+})
