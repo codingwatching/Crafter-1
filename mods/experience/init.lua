@@ -434,12 +434,12 @@ function xp_orb:on_step(dtime)
 
     local current_node = get_node_or_nil(pos)
 
-    def = node and registered_nodes[current_node.name]
+    def = current_node and registered_nodes[current_node.name]
 
     local in_water = false
 
     -- XP flowing or floating in water
-    if def and type(def) == "table" and def.name == "main:water" or def.name == "main:waterflow" then
+    if def and (def.name == "main:water" or def.name == "main:waterflow") then
 
         in_water = true
 
