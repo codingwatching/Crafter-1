@@ -4,7 +4,6 @@ local serialize = minetest.serialize
 local deserialize = minetest.deserialize
 local sound_play = minetest.sound_play
 local set_node = minetest.set_node
-local check_for_falling = minetest.check_for_falling
 local registered_nodes = minetest.registered_nodes
 local get_item_group = minetest.get_item_group
 local add_node_level = minetest.add_node_level
@@ -46,6 +45,39 @@ local meta
 local vel
 
 -- TODO: sound queue
+
+-- Only check direct neighbors
+local neighbor_check = {
+	vec_new( 0, -1,  0),
+    vec_new( 0,  1,  0),
+	vec_new(-1,  0,  0),
+	vec_new( 1,  0,  0),
+    vec_new( 0,  0, -1),
+	vec_new( 0,  0,  1)
+}
+
+
+function minetest.check_for_falling(this_pos)
+
+	-- Round p to prevent falling entities to get stuck.
+	this_pos = vec_round(this_pos)
+
+    -- Update current position first
+    check_single_for_falling(this_pos)
+
+    -- Distribute the server load more evenly
+    after(1, function()
+        for _,additive_position in ipairs(neighbor_check) do
+            local new_pos = vec_add(this_pos, additive_position)
+            if check_single_for_falling(new_pos) then
+                minetest.check_for_falling(new_pos)
+            end
+        end
+    end)
+end
+
+-- Localized to ensure the pointer gets passed to this new function
+local check_for_falling = minetest.check_for_falling
 
 -- Falling node class
 local falling_node = {}
@@ -219,38 +251,3 @@ minetest.register_chatcommand("sand", {
         end
     end,
 })
-
-
--- Only check direct neighbors
-local neighbor_check = {
-	vec_new( 0, -1,  0),
-    vec_new( 0,  1,  0),
-	vec_new(-1,  0,  0),
-	vec_new( 1,  0,  0),
-    vec_new( 0,  0, -1),
-	vec_new( 0,  0,  1)
-}
-
--- Localize into a delegate pointer
-local function delayed_falling(position)
-    for _,additive_position in ipairs(neighbor_check) do
-        local new_pos = vec_add(position, additive_position)
-        if check_single_for_falling(new_pos) then
-            minetest.check_for_falling(new_pos)
-        end
-    end
-end
-
-function minetest.check_for_falling(this_pos)
-
-	-- Round p to prevent falling entities to get stuck.
-	this_pos = vec_round(this_pos)
-
-    -- Update current position first
-    check_single_for_falling(this_pos)
-
-    -- Distribute the server load more evenly
-    after(1, function()
-        delayed_falling(this_pos)
-    end)
-end
