@@ -115,7 +115,7 @@ minetest.register_entity(":__builtin:falling_node", {
             -- it's drops
             if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
                 local drops = minetest.get_node_drops(self.node.name, "")
-                if drops and table.getn(drops) > 0 then
+                if drops and #drops > 0 then
                     for _,droppy in pairs(drops) do
                         minetest.throw_item(np,droppy)
                     end
