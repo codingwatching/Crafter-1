@@ -22,7 +22,11 @@ local function bucket_raycast(user)
     end
 end
 
-local function do_water_particles(pos)
+local function do_water_effect(pos)
+    minetest.sound_play( "splash", {
+        pos = pos,
+        gain = 0.2,
+    })
     minetest.add_particlespawner({
         pos = {
             min = vector.subtract(pos, vector.new(0.5,0,0.5)),
@@ -60,7 +64,36 @@ local function do_water_particles(pos)
             }
         }
     })
+end
 
+local function do_lava_effect(pos)
+    minetest.sound_play( "lava_gloop", {
+        pos = pos,
+        gain = 1.5,
+    })
+    minetest.add_particlespawner({
+        pos = {
+            min = vector.add(pos, vector.new( -0.5, 0.5, -0.5 ) ),
+            max = vector.add(pos, vector.new( 0.5, 0.5, 0.5 ) )
+        },
+        acc = vector.new(0, 3, 0),
+        vel = vector.new(0,0,0),
+        drag = 7,
+        amount = 20,
+        exptime = {
+            min = 0.8,
+            max = 1.2
+        },
+        time = 0.3,
+        collisiondetection = false,
+        collision_removal = false,
+        object_collision = false,
+        texture = {
+            name = "bubble.png^[colorize:red:215",
+            alpha_tween = {1,0},
+            scale = 1
+        }
+    })
 end
 
 local function take_function(itemstack, placer)
@@ -70,14 +103,12 @@ local function take_function(itemstack, placer)
     local node = get_node(pos_under).name
     if node == "main:water" then
         itemstack:replace(ItemStack("main:bucket_water"))
-        minetest.sound_play( "splash", {
-            pos = pos_under
-        })
-        do_water_particles(pos_under)
+        do_water_effect(pos_under)
         remove_node(pos_under)
         return(itemstack)
     elseif node == "main:lava" or node == "nether:lava" then
         itemstack:replace(ItemStack("main:bucket_lava"))
+        do_lava_effect(pos_under)
         remove_node(pos_under)
         return(itemstack)
     end
@@ -118,18 +149,16 @@ local function place_function(itemstack, placer)
 
     if bucket_type == "main:water" then
         -- If you place water in the nether, it's going to evaporate
-        if pos.under.y < -10033 then goto empty end
+        if new_position.y < -10033 then goto empty end
         -- Set it to water
         set_node( new_position, {name="main:water"})
-        minetest.sound_play( "splash", {
-            pos = new_position
-        })
-        do_water_particles(new_position)
+        do_water_effect(new_position)
     elseif bucket_type == "main:lava" then
         -- If you place lava in the aether you're going to be disappointed
-        if pos_under.y >= 20000 then goto empty end
+        if new_position.y >= 20000 then goto empty end
         -- Set it to lava
         set_node(new_position, {name=lava_type[bool_to_int(pos_under.y < -10033)]})
+        do_lava_effect(new_position)
     end
 
     ::empty::
