@@ -78,7 +78,10 @@ minetest.register_globalstep(function()
                         min = vector.new(-3,-20,-3),
                         max = vector.new(3,-23,3)
                     },
-                    pos = vector.new(0,1,-0.2),
+                    pos = {
+                        min = vector.new( -0.2, 1, -0.2 ),
+                        max = vector.new( 0.2, 1, -0.2 ),
+                    },
                     attached = player,
                     texture = {
                         name = "smoke.png",
