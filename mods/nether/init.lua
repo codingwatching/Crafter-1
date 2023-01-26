@@ -1,3 +1,5 @@
+-- TODO: fix obsidian having no hand group
+
 local nether_channels = {}
 
 minetest.register_on_joinplayer(function(player)
