@@ -1,8 +1,3 @@
---[[
-BEFORE YOU ASK WHY ARE YOU DOING THIS!
-
-It works better and doesn't block digging with a bucket through water
-]]--
 
 local function bucket_raycast(user,type)
     local pos = user:get_pos()
