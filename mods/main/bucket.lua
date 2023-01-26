@@ -10,7 +10,9 @@ local function bucket_raycast(user)
     local ray = minetest.raycast(pos, pos2, false, true)
     if ray then
         local pointed_thing = ray:next()
-        return( { under = pointed_thing.under, above = pointed_thing.above } )
+        if pointed_thing then
+            return( { under = pointed_thing.under, above = pointed_thing.above } )
+        end
     end
 end
 
@@ -24,7 +26,6 @@ local function take_function(itemstack, placer)
         minetest.remove_node(pos_under)
         return(itemstack)
     elseif node == "main:lava" or node == "nether:lava" then
-        print(node)
         itemstack:replace(ItemStack("main:bucket_lava"))
         minetest.remove_node(pos_under)
         return(itemstack)
