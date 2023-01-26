@@ -3,8 +3,12 @@ local remove_node = minetest.remove_node
 local get_node = minetest.get_node
 local registered_nodes = minetest.registered_nodes
 local set_node = minetest.set_node
+local sound_play = minetest.sound_play
 local vec_multiply = vector.multiply
 local vec_add = vector.add
+local vec_new = vector.new
+local vec_subtract = vector.subtract
+local add_particlespawner = minetest.add_particlespawner
 
 local function bucket_raycast(user)
     local pos = user:get_pos()
@@ -23,19 +27,19 @@ local function bucket_raycast(user)
 end
 
 local function do_water_effect(pos)
-    minetest.sound_play( "splash", {
+    sound_play( "splash", {
         pos = pos,
         gain = 0.2,
     })
-    minetest.add_particlespawner({
+    add_particlespawner({
         pos = {
-            min = vector.subtract(pos, vector.new(0.5,0,0.5)),
-            max = vector.add(pos, vector.new(0.5,0,0.5))
+            min = vec_subtract(pos, vec_new(0.5,0,0.5)),
+            max = vec_add(pos, vec_new(0.5,0,0.5))
         },
-        acc = vector.new(0,-9.81, 0),
+        acc = vec_new(0,-9.81, 0),
         vel = {
-            min = vector.new(0, 4, 0),
-            max = vector.new(0, 6, 0),
+            min = vec_new(0, 4, 0),
+            max = vec_new(0, 6, 0),
         },
         attract = {
             kind = "point",
@@ -67,17 +71,17 @@ local function do_water_effect(pos)
 end
 
 local function do_lava_effect(pos)
-    minetest.sound_play( "lava_gloop", {
+    sound_play( "lava_gloop", {
         pos = pos,
         gain = 0.5,
     })
-    minetest.add_particlespawner({
+    add_particlespawner({
         pos = {
-            min = vector.add(pos, vector.new( -0.5, 0.5, -0.5 ) ),
-            max = vector.add(pos, vector.new( 0.5, 0.5, 0.5 ) )
+            min = vec_add(pos, vec_new( -0.5, 0.5, -0.5 ) ),
+            max = vec_add(pos, vec_new( 0.5, 0.5, 0.5 ) )
         },
-        acc = vector.new(0, 3, 0),
-        vel = vector.new(0,0,0),
+        acc = vec_new(0, 3, 0),
+        vel = vec_new(0,0,0),
         drag = 7,
         amount = 20,
         exptime = {
@@ -98,18 +102,18 @@ end
 
 local function do_evaporation_effects(pos)
 
-    minetest.sound_play( "fire_extinguish", {
+    sound_play( "fire_extinguish", {
         pos = pos,
         gain = 0.3,
         pitch = math.random( 80, 100 ) / 100
     })
-    minetest.add_particlespawner({
+    add_particlespawner({
         pos = {
-            min = vector.add(pos, vector.new( -0.5, -0.5, -0.5 ) ),
-            max = vector.add(pos, vector.new( 0.5, -0.5, 0.5 ) )
+            min = vec_add(pos, vec_new( -0.5, -0.5, -0.5 ) ),
+            max = vec_add(pos, vec_new( 0.5, -0.5, 0.5 ) )
         },
-        acc = vector.new(0, 2, 0),
-        vel = vector.new(0,0,0),
+        acc = vec_new(0, 2, 0),
+        vel = vec_new(0,0,0),
         drag = 7,
         amount = 20,
         exptime = {
