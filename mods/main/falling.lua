@@ -1,10 +1,3 @@
-local
-minetest,vector,table,pairs,type,math
-=
-minetest,vector,table,pairs,type,math
---
--- Falling entity ("rewrite"")
---
 
 local param_translation = {
     [0] = 0,
