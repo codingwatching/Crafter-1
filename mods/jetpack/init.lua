@@ -20,6 +20,7 @@ minetest.register_tool("jetpack:jetpack",{
 })
 
 local sound_handling_loop = {}
+local particlespawner_handler = {}
 
 local player_name
 local inv
@@ -28,7 +29,6 @@ local name
 local controls
 local additive_height_velocity = vector.new(0,1,0)
 local currentvel
-local goal
 local acceleration
 
 minetest.register_globalstep(function()
@@ -67,6 +67,30 @@ minetest.register_globalstep(function()
                 player:set_physics_override( { gravity = 0 } )
             end
 
+            if not particlespawner_handler[player_name] then
+                -- Exhaust smoke
+                particlespawner_handler[player_name] = minetest.add_particlespawner({
+                    amount = 50,
+                    drag = 1.4,
+                    time = 0,
+                    exptime = {min = 1.1, max = 1.5},
+                    vel = {
+                        min = vector.new(-3,-20,-3),
+                        max = vector.new(3,-23,3)
+                    },
+                    pos = vector.new(0,1,-0.2),
+                    attached = player,
+                    texture = {
+                        name = "smoke.png",
+                        alpha_tween = { 1, 0 },
+                        scale_tween = {
+                            {x = 1, y = 1},
+                            {x = 3, y = 3}
+                        }
+                    }
+                })
+
+            end
             --[[ TODO: replace this with attached particle spawner
             local particle_pos = player:get_pos()
             local yaw = player:get_look_horizontal()
@@ -93,6 +117,7 @@ minetest.register_globalstep(function()
                 sound_handling_loop[player_name] = minetest.sound_play( "jetpack", { object = player, loop = true, gain = 0.3 } )
             end
 
+            -- The jetpack broke
             if stack:get_name() == "" then
                 update_armor_visual(player)
                 set_armor_gui(player)
@@ -108,6 +133,8 @@ minetest.register_globalstep(function()
             player:set_physics_override( { gravity = 1.25 } )
             minetest.sound_stop(sound_handling_loop[player_name])
             sound_handling_loop[player_name] = nil
+            minetest.delete_particlespawner(particlespawner_handler[player_name])
+            particlespawner_handler[player_name] = nil
         end
 
         ::continue::
