@@ -1,10 +1,28 @@
 local ipairs = ipairs
+local get_node_or_nil = minetest.get_node_or_nil
+local serialize = minetest.serialize
+local deserialize = minetest.deserialize
+local sound_play = minetest.sound_play
+local set_node = minetest.set_node
+local check_for_falling = minetest.check_for_falling
+local registered_nodes = minetest.registered_nodes
+local get_item_group = minetest.get_item_group
+local add_node_level = minetest.add_node_level
+local get_node = minetest.get_node
+local remove_node = minetest.remove_node
+local get_node_drops = minetest.get_node_drops
+local throw_item = minetest.throw_item
+local get_meta = minetest.get_meta
+local vec_equals = vector.equals
+local vec_new = vector.new
+local vec_round = vector.round
+local math_pi = math.pi
 
 local param_translation = {
     [0] = 0,
-    [3] = math.pi/2,
-    [2] = math.pi,
-    [1] = math.pi*1.5,
+    [3] = math_pi/2,
+    [2] = math_pi,
+    [1] = math_pi*1.5,
 }
 
 -- Falling node class
@@ -51,7 +69,7 @@ function falling_node:set_node( node, meta )
     })
 
     if node.param2 then
-        self.object:set_rotation(vector.new(0,param_translation[node.param2],0))
+        self.object:set_rotation(vec_new(0,param_translation[node.param2],0))
     end
 end
 
@@ -60,13 +78,13 @@ function falling_node:get_staticdata()
         node = self.node,
         meta = self.meta,
     }
-    return minetest.serialize(ds)
+    return serialize(ds)
 end
 
 function falling_node:on_activate( staticdata )
     self.object:set_armor_groups({immortal = 1})
 
-    local ds = minetest.deserialize(staticdata)
+    local ds = deserialize(staticdata)
     if ds and ds.node then
         self:set_node(ds.node, ds.meta)
     elseif ds then
@@ -79,7 +97,7 @@ end
 function falling_node:on_step( dtime )
     -- Set gravity
     local acceleration = self.object:get_acceleration()
-    if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
+    if not vec_equals(acceleration, {x = 0, y = -10, z = 0}) then
         self.object:set_acceleration({x = 0, y = -10, z = 0})
     end
     -- Turn to actual node when colliding with ground, or continue to move
@@ -87,16 +105,16 @@ function falling_node:on_step( dtime )
     -- Position of bottom center point
     local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
     -- 'bcn' is nil for unloaded nodes
-    local bcn = minetest.get_node_or_nil(bcp)
+    local bcn = get_node_or_nil(bcp)
     -- Delete on contact with ignore at world edges
     if bcn and bcn.name == "ignore" then
         self.object:remove()
         return
     end
-    local bcd = bcn and minetest.registered_nodes[bcn.name]
+    local bcd = bcn and registered_nodes[bcn.name]
     if bcn and
             (not bcd or bcd.walkable or
-            (minetest.get_item_group(self.node.name, "float") ~= 0 and
+            (get_item_group(self.node.name, "float") ~= 0 and
             bcd.liquidtype ~= "none")) then
         if bcd and bcd.leveled and
                 bcn.name == self.node.name then
@@ -104,55 +122,55 @@ function falling_node:on_step( dtime )
             if not addlevel or addlevel <= 0 then
                 addlevel = bcd.leveled
             end
-            if minetest.add_node_level(bcp, addlevel) == 0 then
+            if add_node_level(bcp, addlevel) == 0 then
                 self.object:remove()
                 return
             end
         elseif bcd and bcd.buildable_to and
-                (minetest.get_item_group(self.node.name, "float") == 0 or
+                (get_item_group(self.node.name, "float") == 0 or
                 bcd.liquidtype == "none") then
-            minetest.remove_node(bcp)
+            remove_node(bcp)
             return
         end
         local np = {x = bcp.x, y = bcp.y + 1, z = bcp.z}
         -- Check what's here
-        local n2 = minetest.get_node(np)
-        local nd = minetest.registered_nodes[n2.name]
+        local n2 = get_node(np)
+        local nd = registered_nodes[n2.name]
         -- If it's not air or liquid, remove node and replace it with
         -- it's drops
         if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
-            local drops = minetest.get_node_drops(self.node.name, "")
+            local drops = get_node_drops(self.node.name, "")
             if drops and #drops > 0 then
                 for _,droppy in pairs(drops) do
-                    minetest.throw_item(np,droppy)
+                    throw_item(np,droppy)
                 end
             else
-                minetest.throw_item(np,self.node)
+                throw_item(np,self.node)
             end
             self.object:remove()
             return
         end
         -- Create node and remove entity
-        local def = minetest.registered_nodes[self.node.name]
+        local def = registered_nodes[self.node.name]
         if def then
-            minetest.add_node(np, self.node)
+            set_node(np, self.node)
             if self.meta then
-                local meta = minetest.get_meta(np)
+                local meta = get_meta(np)
                 meta:from_table(self.meta)
             end
             if def.sounds and def.sounds.fall then
-                minetest.sound_play(def.sounds.fall, {pos = np}, true)
+                sound_play(def.sounds.fall, {pos = np}, true)
             end
         end
         self.object:remove()
-        minetest.check_for_falling(np)
+        check_for_falling(np)
         return
     end
 
     local vel = self.object:get_velocity()
-    if vector.equals(vel, {x = 0, y = 0, z = 0}) then
+    if vec_equals(vel, {x = 0, y = 0, z = 0}) then
         local npos = self.object:get_pos()
-        self.object:set_pos(vector.round(npos))
+        self.object:set_pos(vec_round(npos))
     end
 end
 
