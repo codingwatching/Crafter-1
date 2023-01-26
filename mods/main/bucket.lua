@@ -24,6 +24,7 @@ local function take_function(itemstack, placer)
         minetest.remove_node(pos_under)
         return(itemstack)
     elseif node == "main:lava" or node == "nether:lava" then
+        print(node)
         itemstack:replace(ItemStack("main:bucket_lava"))
         minetest.remove_node(pos_under)
         return(itemstack)
@@ -63,36 +64,20 @@ local function place_function(itemstack, placer)
     local pos_storage = { pos_above, pos_under }
 
     if bucket_type == "main:water" then
+        -- If you place water in the nether, it's going to evaporate
+        if pos.under.y < -10033 then goto empty end
         -- Set it to water
         minetest.set_node( pos_storage[ bool_to_int( buildable_under ) ],{name="main:water"})
-        itemstack:replace(ItemStack("main:bucket"))
-        return(itemstack)
     elseif bucket_type == "main:lava" then
-        -- If you place lava in the aether you're going to be dissapointed
-        if pos_under.y >= 20000 then
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
-        end
+        -- If you place lava in the aether you're going to be disappointed
+        if pos_under.y >= 20000 then goto empty end
         -- Set it to lava
-        if buildable_under == true then
-            -- Nether check
-            if pos_under.y > -10033 then
-                minetest.add_node(pos_under,{name="main:lava"})
-            else
-                minetest.add_node(pos_under,{name="nether:lava"})
-            end
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
-        elseif buildable_above then
-            if pos_above.y > -10033 then
-                minetest.add_node(pos_above,{name="main:lava"})
-            else
-                minetest.add_node(pos_above,{name="nether:lava"})
-            end
-            itemstack:replace(ItemStack("main:bucket"))
-            return(itemstack)
-        end
+        minetest.add_node(pos_storage[ bool_to_int( buildable_under ) ],{name=lava_type[bool_to_int(pos_under.y < -10033)]})
     end
+
+    ::empty::
+    itemstack:replace(ItemStack("main:bucket"))
+    return(itemstack)
 end
 
 
