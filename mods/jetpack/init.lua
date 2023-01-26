@@ -79,8 +79,8 @@ minetest.register_globalstep(function()
                         max = vector.new(3,-23,3)
                     },
                     pos = {
-                        min = vector.new( -0.2, 1, -0.2 ),
-                        max = vector.new( 0.2, 1, -0.2 ),
+                        min = vector.new( -0.2, 0.8, -0.2 ),
+                        max = vector.new( 0.2, 0.8, -0.2 ),
                     },
                     attached = player,
                     texture = {
