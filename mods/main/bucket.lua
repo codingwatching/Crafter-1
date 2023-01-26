@@ -69,7 +69,7 @@ end
 local function do_lava_effect(pos)
     minetest.sound_play( "lava_gloop", {
         pos = pos,
-        gain = 1.5,
+        gain = 0.5,
     })
     minetest.add_particlespawner({
         pos = {
