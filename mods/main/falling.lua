@@ -1,3 +1,4 @@
+local ipairs = ipairs
 
 local param_translation = {
     [0] = 0,
@@ -24,15 +25,18 @@ falling_node.node = {}
 falling_node.meta = {}
 
 -- Falling node methods
+function falling_node:set_node( node, meta )
 
-falling_node.set_node = function(self, node, meta)
     self.node = node
+
     meta = meta or {}
+
     if type(meta.to_table) == "function" then
         meta = meta:to_table()
     end
-    for _, list in pairs(meta.inventory or {}) do
-        for i, stack in pairs(list) do
+
+    for _, list in ipairs(meta.inventory or {}) do
+        for i, stack in ipairs(list) do
             if type(stack) == "userdata" then
                 list[i] = stack:to_string()
             end
@@ -59,7 +63,7 @@ function falling_node:get_staticdata()
     return minetest.serialize(ds)
 end
 
-function falling_node:on_activate(staticdata)
+function falling_node:on_activate( staticdata )
     self.object:set_armor_groups({immortal = 1})
 
     local ds = minetest.deserialize(staticdata)
@@ -72,7 +76,7 @@ function falling_node:on_activate(staticdata)
     end
 end
 
-function falling_node:on_step(dtime)
+function falling_node:on_step( dtime )
     -- Set gravity
     local acceleration = self.object:get_acceleration()
     if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
