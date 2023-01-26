@@ -6,21 +6,26 @@ local param_translation = {
     [1] = math.pi*1.5,
 }
 
+-- Falling node class
+local falling_node = {}
 
+-- Falling node fields
+falling_node.initial_properties = {
+    visual = "wielditem",
+    visual_size = {x = 0.667, y = 0.667},
+    textures = {},
+    physical = true,
+    is_visible = false,
+    collide_with_objects = false,
+    collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+}
 
+falling_node.node = {}
+falling_node.meta = {}
+
+-- Falling node methods
 minetest.register_entity(":__builtin:falling_node", {
-    initial_properties = {
-        visual = "wielditem",
-        visual_size = {x = 0.667, y = 0.667},
-        textures = {},
-        physical = true,
-        is_visible = false,
-        collide_with_objects = false,
-        collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
-    },
-
-    node = {},
-    meta = {},
+    
 
     set_node = function(self, node, meta)
         self.node = node
