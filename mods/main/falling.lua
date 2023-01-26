@@ -13,6 +13,7 @@ local remove_node = minetest.remove_node
 local get_node_drops = minetest.get_node_drops
 local throw_item = minetest.throw_item
 local get_meta = minetest.get_meta
+local dig_node = minetest.dig_node
 local vec_equals = vector.equals
 local vec_new = vector.new
 local vec_round = vector.round
@@ -138,7 +139,7 @@ function falling_node:on_step( dtime )
         local nd = registered_nodes[n2.name]
         -- If it's not air or liquid, remove node and replace it with
         -- it's drops
-        if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
+        if n2.name ~= "air" and (not nd or nd.liquidtype == "none") and not nd.buildable_to then
             local drops = get_node_drops(self.node.name, "")
             if drops and #drops > 0 then
                 for _,droppy in pairs(drops) do
@@ -153,6 +154,8 @@ function falling_node:on_step( dtime )
         -- Create node and remove entity
         local def = registered_nodes[self.node.name]
         if def then
+            -- Trigger drops
+            dig_node(np)
             set_node(np, self.node)
             if self.meta then
                 local meta = get_meta(np)
