@@ -40,12 +40,12 @@ local experience
 for ore,tool_required in pairs(ores) do
     level = levels[ore]
 
-    if ore == "iron" or ore == "gold" then 
+    if ore == "iron" or ore == "gold" then
         experience = 0
     else
         experience = level
     end
-    
+
     minetest.register_node("main:"..ore.."block", {
         description = ore:gsub("^%l", string.upper).." Block",
         tiles = {ore.."block.png"},
@@ -229,8 +229,8 @@ minetest.register_node("main:ice", {
     --alpha = 100,
     drop = "",
     after_destruct = function(pos, oldnode)
-       minetest.set_node(pos, {name="main:water"})                            
-    end                
+       minetest.set_node(pos, {name="main:water"})
+    end
 })
 minetest.register_node("main:ice_mapgen", {
     description = "Ice",
@@ -341,25 +341,12 @@ minetest.register_node("main:gravel", {
         max_items = 1,
         items= {
          {
-            -- Only drop if using a tool whose name is identical to one
-            -- of these.
             rarity = 10,
             items = {"main:flint"},
-            -- Whether all items in the dropped item list inherit the
-            -- hardware coloring palette color from the dug node.
-            -- Default is 'false'.
-            --inherit_color = true,
         },
         {
-            -- Only drop if using a tool whose name is identical to one
-            -- of these.
-            --tools = {"main:shears"},
             rarity = 0,
             items = {"main:gravel"},
-            -- Whether all items in the dropped item list inherit the
-            -- hardware coloring palette color from the dug node.
-            -- Default is 'false'.
-            --inherit_color = true,
         },
     }},
 })
@@ -380,14 +367,14 @@ minetest.register_node("main:tree", {
         if not pointed_thing.type == "node" then
             return
         end
-        
+
         local sneak = placer:get_player_control().sneak
         local noddef = minetest.registered_nodes[minetest.get_node(pointed_thing.under).name]
         if not sneak and noddef.on_rightclick then
             minetest.item_place(itemstack, placer, pointed_thing)
             return
         end
-        
+
         local pos = pointed_thing.above
         minetest.item_place_node(itemstack, placer, pointed_thing)
         local meta = minetest.get_meta(pos)
@@ -404,7 +391,7 @@ minetest.register_node("main:tree", {
         --if tool_meta:get_int("treecapitator") > 0 then
         if not meta:contains("placed") and string.match(digger:get_wielded_item():get_name(), "axe") then
             local tool_capabilities = digger:get_wielded_item():get_tool_capabilities()
-            
+
             local wear = minetest.get_dig_params({wood=1}, tool_capabilities).wear
 
             local wield_stack = digger:get_wielded_item()
@@ -433,7 +420,7 @@ minetest.register_node("main:tree", {
                         vertical = false,
                         node = {name= name},
                     })
-                    
+
                     local name2 = minetest.get_node(vector.new(pos.x,pos.y+y-1,pos.z)).name
                     if acceptable_soil[name2] then
                         minetest.add_node(vector.new(pos.x,pos.y+y,pos.z),{name="main:sapling"})
@@ -444,7 +431,6 @@ minetest.register_node("main:tree", {
         else
             minetest.node_dig(pos, node, digger)
         end
-        
     end
 })
 
@@ -492,7 +478,7 @@ minetest.register_node("main:dropped_leaves", {
     walkable = false,
     climbable = false,
     paramtype = "light",
-    is_ground_content = false,    
+    is_ground_content = false,
     tiles = {"leaves.png"},
     groups = {leaves = 1, flammable=1},
     sounds = main.grassSound(),
@@ -506,10 +492,6 @@ minetest.register_node("main:dropped_leaves", {
     },
     },
 })
-
-
-
-
 
 
 minetest.register_node("main:water", {
@@ -553,16 +535,11 @@ minetest.register_node("main:water", {
     liquid_viscosity = 0,
     post_effect_color = {a = 103, r = 30, g = 60, b = 90},
     groups = {water = 1, liquid = 1, cools_lava = 1, bucket = 1, source = 1,pathable = 1,drowning=1,disable_fall_damage=1,extinguish=1},
-    --sounds = default.node_sound_water_defaults(),
-    --water explodes in the nether
     on_construct = function(pos)
         local under = minetest.get_node(vector.new(pos.x,pos.y-1,pos.z)).name
         if under == "nether:glowstone" then
             minetest.remove_node(pos)
             create_aether_portal(pos)
-        elseif pos.y <= -10033 then
-            minetest.remove_node(pos)
-            tnt(pos,10)
         end
     end,
 })
@@ -616,7 +593,6 @@ minetest.register_node("main:waterflow", {
     liquid_viscosity = 0,
     post_effect_color = {a = 103, r = 30, g = 60, b = 90},
     groups = {water = 1, liquid = 1, notInCreative = 1, cools_lava = 1,pathable = 1,drowning=1,disable_fall_damage=1,extinguish=1},
-    --sounds = default.node_sound_water_defaults(),
 })
 
 minetest.register_node("main:lava", {
@@ -731,9 +707,6 @@ minetest.register_node("main:ladder", {
     node_placement_prediction = "",
     selection_box = {
         type = "wallmounted",
-        --wall_top = = <default>
-        --wall_bottom = = <default>
-        --wall_side = = <default>
     },
     groups = {wood = 1, flammable = 1, attached_node=1},
     sounds = main.woodSound(),
@@ -742,7 +715,7 @@ minetest.register_node("main:ladder", {
         if pointed_thing.type ~= "node" then
             return itemstack
         end
-        
+
         local wdir = minetest.dir_to_wallmounted(vector.subtract(pointed_thing.under,pointed_thing.above))
 
         local fakestack = itemstack
@@ -752,17 +725,17 @@ minetest.register_node("main:ladder", {
         else
             return itemstack
         end
-        
+
         if not retval then
             return itemstack
         end
-        
+
         itemstack, retval = minetest.item_place(fakestack, placer, pointed_thing, wdir)
-        
+
         if retval then
             minetest.sound_play("wood", {pos=pointed_thing.above, gain = 1.0})
         end
-        
+
         print(itemstack, retval)
         itemstack:set_name("main:ladder")
 
