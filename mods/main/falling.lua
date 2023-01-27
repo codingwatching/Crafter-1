@@ -44,8 +44,6 @@ local drops
 local meta
 local vel
 
--- TODO: sound queue
-
 -- Only check direct neighbors
 local neighbor_check = {
 	vec_new( 0, -1,  0),
@@ -55,7 +53,6 @@ local neighbor_check = {
     vec_new( 0,  0, -1),
 	vec_new( 0,  0,  1)
 }
-
 
 function minetest.check_for_falling(this_pos)
 
@@ -242,9 +239,9 @@ minetest.register_chatcommand("sand", {
         pos = player:get_pos()
         pos.y = pos.y + 3
 
-        for x = -30,30 do
-        for y = 0,7 do
-        for z = -30,30 do
+        for x = -1,1 do
+        for y = 0,200 do
+        for z = -1,1 do
             minetest.set_node(vector.add(pos, vector.new(x,y,z)), {name = "main:sand"})
         end
         end
