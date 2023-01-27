@@ -1,3 +1,9 @@
+local function is_number_whole(input)
+    return math.floor(input) == input
+end
+local function is_vec_whole(input)
+    return is_number_whole(input.x) and is_number_whole(input.y) and is_number_whole(input.z)
+end
 minetest.register_abm({
     label = "Lava source cooling",
     nodenames = {"main:lava"},
@@ -8,9 +14,8 @@ minetest.register_abm({
     action = function(pos)
         local water = minetest.find_node_near(pos, 0.5, {"main:waterflow", "main:water"})
         if not water then return end
-        local dir = vector.direction(pos, water)
         -- Only allow direct contact
-        if math.abs(dir.x) == 1 or math.abs(dir.z) == 1 then
+        if is_vec_whole(vector.direction(pos, water)) then
             minetest.set_node(pos,{name="nether:obsidian"})
         end
     end,
@@ -27,9 +32,8 @@ minetest.register_abm({
     action = function(pos)
         local water = minetest.find_node_near(pos, 1, {"main:waterflow", "main:water"})
         if not water then return end
-        local dir = vector.direction(pos, water)
         -- Only allow direct contact
-        if math.abs(dir.x) == 1 or math.abs(dir.z) == 1 then
+        if is_vec_whole(vector.direction(pos, water)) then
             minetest.set_node(pos,{name="main:cobble"})
             minetest.get_meta(pos):set_int("lava_cooled", 1)
         end
