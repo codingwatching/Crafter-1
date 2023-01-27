@@ -13,10 +13,11 @@ minetest.register_abm({
     label = "Lava cooling",
     nodenames = {"main:lavaflow"},
     neighbors = {"main:water", "main:waterflow"},
-    interval = 1,
+    interval = 3,
     chance = 1,
     catch_up = false,
     action = function(pos)
         minetest.set_node(pos,{name="main:cobble"})
+        minetest.get_meta(pos):set_int("lava_cooled", 1)
     end,
 })
