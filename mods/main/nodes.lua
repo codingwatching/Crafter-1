@@ -144,7 +144,7 @@ minetest.register_node("main:cobble", {
     on_destruct = function(pos)
         local meta = minetest.get_meta(pos)
         if meta:get_int("lava_cooled") == 1 then
-            local lava = minetest.find_node_near(pos, 1, {"main:lavaflow"})
+            local lava = minetest.find_node_near(pos, 1, {"main:lavaflow", "main:lava"})
             local water = minetest.find_node_near(pos, 1, {"main:waterflow", "main:water"})
 
             if lava and water then
