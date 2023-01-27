@@ -22,7 +22,7 @@ local function sapling_grow(pos)
 
     if get_item_group(get_node(vec_new(pos.x,pos.y-1,pos.z)).name, "soil") > 0 then
         local good_to_grow = true
-        --check if room to grow (leaves or air)
+        -- Check if room to grow (leaves or air)
         for i = 1,4 do
             local node_name = get_node(vec_new(pos.x,pos.y+i,pos.z)).name
             if node_name ~= "air" and node_name ~= "main:leaves" then
