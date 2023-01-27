@@ -180,7 +180,6 @@ minetest.register_node("main:ice", {
     drawtype = "normal",
     paramtype = "light",
     sunlight_propagates = true,
-    sunlight_propagates = true,
     is_ground_content = false,
     groups = {glass = 1, pathable = 1,slippery=3},
     sounds = main.stoneSound({
@@ -209,9 +208,10 @@ minetest.register_node("main:ice_mapgen", {
     drop = "",
 })
 
-
+local grass_react_min = 10
+local grass_react_max = 120
 local function get_grass_spread_timer()
-    return math.random(10,120) + math.random()
+    return math.random(grass_react_min,grass_react_max) + math.random()
 end
 local function found_grass(pos)
     return minetest.find_node_near(pos, 1, {"main:grass"}) ~= nil
@@ -238,6 +238,7 @@ minetest.register_node("main:dirt", {
     end,
     on_timer = function(pos)
         if not found_grass(pos) then return end
+        if minetest.registered_nodes[minetest.get_node(vector.new(pos.x, pos.y+1,pos.z)).name].drawtype == "normal" then return end
         minetest.set_node(pos, {name="main:grass"})
     end
 })
@@ -250,6 +251,11 @@ minetest.register_node("main:grass", {
     drop="main:dirt",
     after_destruct = function(pos)
         dispatch_timers(pos)
+    end,
+    on_timer = function(pos)
+        -- Grass dies when covered
+        if minetest.registered_nodes[minetest.get_node(vector.new(pos.x, pos.y+1,pos.z)).name].drawtype ~= "normal" then return end
+        minetest.set_node(pos, {name = "main:dirt"})
     end
 })
 -- Turns grass back into dirt when covered
@@ -257,7 +263,9 @@ minetest.register_on_placenode(function(pos,newnode)
     if not minetest.registered_nodes[newnode.name].drawtype == "normal" then return end
     pos.y = pos.y - 1
     if minetest.get_node(pos).name ~= "main:grass" then return end
-    minetest.set_node(pos, {name = "main:dirt"})
+    local timer = minetest.get_node_timer(pos)
+    if timer:is_started() then return end
+    timer:start(get_grass_spread_timer() / 2)
 end)
 
 minetest.register_node("main:sand", {
