@@ -138,8 +138,8 @@ minetest.register_node("main:cobble", {
                 tools = tool,
                 items = {"main:cobble"},
             },
-            },
         },
+    },
 })
 
 minetest.register_node("main:mossy_cobble", {
