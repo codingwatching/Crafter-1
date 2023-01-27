@@ -11,18 +11,10 @@ local sound_play = minetest.sound_play
 local vec_new = vector.new
 local math_random = math.random
 
---saplings
---
---
---local sapling_min = 120
---local sapling_max = 720
---make sapling grow
+
 local function sapling_grow(pos)
-    if get_node_light(pos, nil) < 10 then
-        --print("failed to grow at "..dump(pos))
-        return
-    end
-    --print("growing at "..dump(pos))
+    if get_node_light(pos, nil) < 10 then return end
+
     if get_item_group(get_node(vec_new(pos.x,pos.y-1,pos.z)).name, "soil") > 0 then
         local good_to_grow = true
         --check if room to grow (leaves or air)
@@ -74,15 +66,15 @@ register_node("main:sapling", {
         if not pointed_thing.type == "node" then
             return
         end
-        
+
         local sneak = placer:get_player_control().sneak
         local noddef = registered_nodes[get_node(pointed_thing.under).name]
-        
+
         if not sneak and noddef.on_rightclick then
             item_place(itemstack, placer, pointed_thing)
             return
         end
-        
+
         local buildable = registered_nodes[get_node(pointed_thing.under).name].buildable_to
         --replace buildable
         if buildable and get_item_group(get_node(vec_new(pointed_thing.under.x,pointed_thing.under.y-1,pointed_thing.under.z)).name, "soil") > 0 then
@@ -102,7 +94,6 @@ register_node("main:sapling", {
         end
     end,
 })
-
 
 --growing abm for sapling
 register_abm({
