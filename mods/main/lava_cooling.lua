@@ -9,6 +9,8 @@ minetest.register_abm({
         minetest.set_node(pos,{name="nether:obsidian"})
     end,
 })
+
+-- This sets up the initial cobblestone generator, there is no on_flow function in the api at the current moment
 minetest.register_abm({
     label = "Lava cooling",
     nodenames = {"main:lavaflow"},
