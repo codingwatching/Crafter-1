@@ -125,6 +125,12 @@ minetest.register_node("main:stone", {
     },
 })
 
+local function is_number_whole(input)
+    return math.floor(input) == input
+end
+local function is_vec_whole(input)
+    return is_number_whole(input.x) and is_number_whole(input.y) and is_number_whole(input.z)
+end
 minetest.register_node("main:cobble", {
     description = "Cobblestone",
     tiles = {"cobble.png"},
@@ -148,11 +154,11 @@ minetest.register_node("main:cobble", {
             local water = minetest.find_node_near(pos, 1, {"main:waterflow", "main:water"})
 
             if lava and water then
-                local dir1 = vector.direction(pos, lava)
-                local dir2 = vector.direction(pos, water)
+                local dir1 = is_vec_whole(vector.direction(pos, lava))
+                local dir2 = is_vec_whole(vector.direction(pos, water))
 
                 -- Brute force override the abm
-                if (math.abs(dir1.x) == 1 or math.abs(dir1.z) == 1) and (math.abs(dir2.x) == 1 or math.abs(dir2.z) == 1) then
+                if dir1 and dir2 then
                     minetest.after(0.15, function()
                         minetest.set_node(pos, {name="main:cobble"})
                         minetest.get_meta(pos):set_int("lava_cooled", 1)
