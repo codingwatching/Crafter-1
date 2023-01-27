@@ -408,7 +408,7 @@ register_node("main:tree", {
         local pos = pointed_thing.above
         item_place_node(itemstack, placer, pointed_thing)
         local meta = get_meta(pos)
-        meta:set_string("placed", "true")    
+        meta:set_string("placed", "true")
         return(itemstack)
     end,
     --treecapitator - move treecapitator into own file using override
