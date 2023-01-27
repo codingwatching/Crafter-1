@@ -121,9 +121,9 @@ minetest.register_node("main:stone", {
                 tools = tool,
                 items = {"main:cobble"},
             },
-            },
         },
-    })
+    },
+})
 
 minetest.register_node("main:cobble", {
     description = "Cobblestone",
@@ -140,6 +140,39 @@ minetest.register_node("main:cobble", {
             },
         },
     },
+    -- Makes cobblestone generators able to be continuously mined
+    on_destruct = function(pos)
+        local meta = minetest.get_meta(pos)
+        if meta:get_int("lava_cooled") == 1 then
+            local lava = minetest.find_node_near(pos, 1, {"main:lavaflow", "main:lava"})
+            local water = minetest.find_node_near(pos, 1, {"main:waterflow", "main:water"})
+
+            if lava and water then
+                local dir1 = vector.direction(pos, lava)
+                local dir2 = vector.direction(pos, water)
+
+                -- Brute force override the abm
+                if (math.abs(dir1.x) == 1 or math.abs(dir1.z) == 1) and (math.abs(dir2.x) == 1 or math.abs(dir2.z) == 1) then
+                    minetest.after(0.15, function()
+                        minetest.set_node(pos, {name="main:cobble"})
+                        minetest.get_meta(pos):set_int("lava_cooled", 1)
+                    end)
+
+                    -- Moves the item out of the way of the lava to avoid annoying item destruction
+                    for _,object in ipairs(minetest.get_objects_inside_radius(pos, 0.25)) do
+                        if not object:is_player() then
+                            local lua_entity = object:get_luaentity()
+                            if lua_entity and lua_entity.itemstring and lua_entity.itemstring == "main:cobble" then
+                                local new_pos = vector.new(pos)
+                                new_pos.y = new_pos.y + 0.55
+                                object:set_pos(new_pos)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
 })
 
 minetest.register_node("main:mossy_cobble", {
