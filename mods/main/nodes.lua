@@ -268,6 +268,24 @@ minetest.register_on_placenode(function(pos,newnode)
     timer:start(get_grass_spread_timer() / 2)
 end)
 
+minetest.register_chatcommand("dirt", {
+    params = "<mob>",
+    description = "Debug for pushing falling entities to the extreme",
+    privs = {server = true},
+    func = function(name)
+        local player = minetest.get_player_by_name(name)
+        local pos = player:get_pos()
+        local queue = {}
+        for x = -120,120 do
+        for z = -120,120 do
+            table.insert(queue, vector.add(pos, vector.new(x,0,z)))
+        end
+        end
+        minetest.bulk_set_node(queue, {name = "main:dirt"})
+    end,
+})
+
+
 minetest.register_node("main:sand", {
     description = "Sand",
     tiles = {"sand.png"},
