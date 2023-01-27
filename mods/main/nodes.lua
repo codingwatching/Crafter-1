@@ -199,7 +199,6 @@ minetest.register_node("main:ice_mapgen", {
     tiles = {"ice.png"},
     drawtype = "normal",
     sunlight_propagates = true,
-    sunlight_propagates = true,
     is_ground_content = false,
     groups = {glass = 1, pathable = 1,slippery=3},
     sounds = main.stoneSound({
@@ -207,15 +206,40 @@ minetest.register_node("main:ice_mapgen", {
         dug =  {name = "break_glass", gain = 0.4},
     }),
     use_texture_alpha = false,
-    drop = "",           
+    drop = "",
 })
 
+
+local function get_grass_spread_timer()
+    return math.random(10,120) + math.random()
+end
+local function found_grass(pos)
+    return minetest.find_node_near(pos, 1, {"main:grass"}) ~= nil
+end
+local function dispatch_timers(pos)
+    for _,new_position in ipairs(minetest.find_nodes_in_area_under_air(vector.add(pos, -1), vector.add(pos, 1), {"main:dirt"})) do
+        local timer = minetest.get_node_timer(new_position)
+        if timer:is_started() then goto continue end
+        timer:start(get_grass_spread_timer())
+        ::continue::
+    end
+end
 minetest.register_node("main:dirt", {
     description = "Dirt",
     tiles = {"dirt.png"},
     groups = {dirt = 1, soil=1,pathable = 1, farm_tillable=1},
     sounds = main.dirtSound(),
     paramtype = "light",
+    on_construct = function(pos)
+        minetest.get_node_timer(pos):start(get_grass_spread_timer())
+    end,
+    after_destruct = function(pos)
+        dispatch_timers(pos)
+    end,
+    on_timer = function(pos)
+        if not found_grass(pos) then return end
+        minetest.set_node(pos, {name="main:grass"})
+    end
 })
 
 minetest.register_node("main:grass", {
@@ -224,7 +248,17 @@ minetest.register_node("main:grass", {
     groups = {grass = 1, soil=1,pathable = 1, farm_tillable=1},
     sounds = main.dirtSound(),
     drop="main:dirt",
+    after_destruct = function(pos)
+        dispatch_timers(pos)
+    end
 })
+-- Turns grass back into dirt when covered
+minetest.register_on_placenode(function(pos,newnode)
+    if not minetest.registered_nodes[newnode.name].drawtype == "normal" then return end
+    pos.y = pos.y - 1
+    if minetest.get_node(pos).name ~= "main:grass" then return end
+    minetest.set_node(pos, {name = "main:dirt"})
+end)
 
 minetest.register_node("main:sand", {
     description = "Sand",
