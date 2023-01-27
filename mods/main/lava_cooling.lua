@@ -12,7 +12,7 @@ minetest.register_abm({
     chance = 1,
     catch_up = false,
     action = function(pos)
-        local water = minetest.find_node_near(pos, 0.5, {"main:waterflow", "main:water"})
+        local water = minetest.find_node_near(pos, 1, {"main:waterflow", "main:water"})
         if not water then return end
         -- Only allow direct contact
         if is_vec_whole(vector.direction(pos, water)) then
