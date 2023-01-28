@@ -50,7 +50,7 @@ local get_mobs_in_radius = function(pos)
     object_list = minetest.get_objects_inside_radius(pos, outer)
     for _,object in ipairs(object_list) do
         if not object:is_player() then
-            if object:get_luaentity().mobname then
+            if object:get_luaentity() and object:get_luaentity().mobname then
                 counter = counter + 1
             end
         end

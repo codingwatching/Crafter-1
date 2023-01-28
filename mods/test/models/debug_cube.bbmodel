@@ -1,0 +1,124 @@
+{
+	"meta": {
+		"format_version": "4.5",
+		"model_format": "free",
+		"box_uv": false
+	},
+	"name": "debug_cube",
+	"model_identifier": "",
+	"visible_box": [1, 1, 0],
+	"variable_placeholders": "",
+	"variable_placeholder_buttons": [],
+	"timeline_setups": [],
+	"unhandled_root_fields": {},
+	"resolution": {
+		"width": 128,
+		"height": 128
+	},
+	"elements": [
+		{
+			"name": "cube",
+			"color": 5,
+			"origin": [0, 0, 0],
+			"rotation": [0, 0, 0],
+			"visibility": true,
+			"locked": false,
+			"vertices": {
+				"dsXV": [16, 32, 16],
+				"MlwU": [16, 32, -16],
+				"43yF": [16, 0, 16],
+				"1VGd": [16, 0, -16],
+				"O2yF": [-16, 32, 16],
+				"xeot": [-16, 32, -16],
+				"9bvk": [-16, 0, 16],
+				"CkFI": [-16, 0, -16]
+			},
+			"faces": {
+				"F0aGmall": {
+					"uv": {
+						"dsXV": [0, 0],
+						"43yF": [0, 32],
+						"MlwU": [32, 0],
+						"1VGd": [32, 32]
+					},
+					"vertices": ["dsXV", "43yF", "MlwU", "1VGd"],
+					"texture": 0
+				},
+				"rGNpYPUE": {
+					"uv": {
+						"O2yF": [32, 32],
+						"xeot": [0, 32],
+						"9bvk": [32, 64],
+						"CkFI": [0, 64]
+					},
+					"vertices": ["O2yF", "xeot", "9bvk", "CkFI"],
+					"texture": 0
+				},
+				"nzvTRkzR": {
+					"uv": {
+						"dsXV": [64, 32],
+						"MlwU": [64, 0],
+						"O2yF": [32, 32],
+						"xeot": [32, 0]
+					},
+					"vertices": ["dsXV", "MlwU", "O2yF", "xeot"],
+					"texture": 0
+				},
+				"ME4CQLoY": {
+					"uv": {
+						"43yF": [64, 32],
+						"9bvk": [32, 32],
+						"1VGd": [64, 64],
+						"CkFI": [32, 64]
+					},
+					"vertices": ["43yF", "9bvk", "1VGd", "CkFI"],
+					"texture": 0
+				},
+				"8QagonPo": {
+					"uv": {
+						"dsXV": [32, 64],
+						"O2yF": [0, 64],
+						"43yF": [32, 96],
+						"9bvk": [0, 96]
+					},
+					"vertices": ["dsXV", "O2yF", "43yF", "9bvk"],
+					"texture": 0
+				},
+				"PpHPNGpF": {
+					"uv": {
+						"MlwU": [64, 0],
+						"1VGd": [64, 32],
+						"xeot": [96, 0],
+						"CkFI": [96, 32]
+					},
+					"vertices": ["MlwU", "1VGd", "xeot", "CkFI"],
+					"texture": 0
+				}
+			},
+			"type": "mesh",
+			"uuid": "515e9395-5b69-8075-0989-6f7dd3d30766"
+		}
+	],
+	"outliner": ["515e9395-5b69-8075-0989-6f7dd3d30766"],
+	"textures": [
+		{
+			"path": "/home/jordan/Desktop/minetest/games/Crafter/mods/test/textures/debug_cube.png",
+			"name": "debug_cube.png",
+			"folder": "block",
+			"namespace": "",
+			"id": "0",
+			"particle": false,
+			"render_mode": "default",
+			"render_sides": "auto",
+			"frame_time": 1,
+			"frame_order_type": "loop",
+			"frame_order": "",
+			"frame_interpolate": false,
+			"visible": true,
+			"mode": "link",
+			"saved": true,
+			"uuid": "0e9b04a3-2c2a-e95d-a83e-c014cbe2507f",
+			"relative_path": "../../textures/debug_cube.png"
+		}
+	]
+}
