@@ -1,6 +1,6 @@
 local creative_mode = minetest.settings:get_bool("creative_mode")
 
---make stack max 64 for everything
+-- Make stack max 64 for everything
 minetest.register_on_mods_loaded(function()
     for name,def in pairs(minetest.registered_nodes) do
         if creative_mode == true then
