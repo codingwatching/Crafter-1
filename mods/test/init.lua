@@ -2,7 +2,7 @@
 minetest.register_entity("test:snowman", {initial_properties = {
     visual = "mesh",
     mesh = "snow_man.gltf",
-    textures = {"snow_man.png"}
+    textures = {"test_snow_man.png"}
 }})
 
 minetest.register_entity("test:cube", {initial_properties = {
