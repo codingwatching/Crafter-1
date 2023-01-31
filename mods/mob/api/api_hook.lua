@@ -3,7 +3,7 @@ function minetest.register_mob(definition)
 
 local mob = {}
 
-register_mob_spawner(definition.mobname,definition.textures,definition.mesh)
+register_mob_spawner(definition.name,definition.textures,definition.mesh)
 
 mob.initial_properties = {
     physical = definition.physical,
@@ -39,7 +39,7 @@ mob.hurt_inside_timer = 0
 mob.death_animation_timer = 0
 mob.dead = false
 mob.mob = true
-mob.mobname = definition.mobname
+mob.name = definition.name
 mob.hostile = definition.hostile
 mob.friendly_in_daylight = definition.friendly_in_daylight
 mob.friendly_in_daylight_timer = 0
@@ -216,6 +216,6 @@ mob.on_step = function(self, dtime,moveresult)
     ]]
 end
 
-minetest.register_entity("mob:"..definition.mobname, mob)
+minetest.register_entity("mob:"..definition.name, mob)
 
 end

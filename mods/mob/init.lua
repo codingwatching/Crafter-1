@@ -8,10 +8,10 @@ dofile(path.."/api/api_hook.lua")
 dofile(path.."/items.lua")
 dofile(path.."/chatcommands.lua")
 
---[[
+
 mobs.register_mob(
     {
-     mobname = "pig",
+     name = "pig",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
@@ -76,10 +76,10 @@ mobs.register_mob(
     }
     }
 )
-
+--[[
 mobs.register_mob(
     {
-     mobname = "sheep",
+     name = "sheep",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
@@ -162,7 +162,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-     mobname = "chicken",
+     name = "chicken",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.225, 0, -0.225, 0.225, 0.675, 0.225},
@@ -241,7 +241,7 @@ local node
 local def
 mobs.register_mob(
     {
-     mobname = "snowman",
+     name = "snowman",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37, 0, -0.37, 0.37, 1.75, 0.37},
@@ -339,7 +339,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-     mobname = "phyg",
+     name = "phyg",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
@@ -411,7 +411,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-    mobname = "big_slime",
+    name = "big_slime",
     physical = true,
      collide_with_objects = false,
      collisionbox = {-1.25, 0, -1.25, 1.25, 2.5, 1.25},
@@ -460,7 +460,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-    mobname = "medium_slime",
+    name = "medium_slime",
     physical = true,
      collide_with_objects = false,
      collisionbox = {-0.625, 0, -0.625, 0.625, 1.25, 0.625},
@@ -508,7 +508,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-    mobname = "small_slime",
+    name = "small_slime",
     physical = true,
      collide_with_objects = false,
      collisionbox = {-0.3, 0, -0.3, 0.3, 0.6, 0.3},
@@ -550,7 +550,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-     mobname = "creepig",
+     name = "creepig",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37, -0.4, -0.37, 0.37, 0.5, 0.37},
@@ -608,7 +608,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-     mobname = "zombie",
+     name = "zombie",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.23,0, -0.23, 0.23, 1.7, 0.23},
@@ -675,7 +675,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-     mobname = "creeper",
+     name = "creeper",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37,0, -0.37, 0.37, 1.5, 0.37},
@@ -742,7 +742,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-     mobname = "sneeper",
+     name = "sneeper",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37,0, -0.37, 0.37, 1.5, 0.37},
@@ -812,7 +812,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-     mobname = "nitro_creeper",
+     name = "nitro_creeper",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37,0, -0.37, 0.37, 1.5, 0.37},
@@ -903,7 +903,7 @@ minetest.register_entity("mob:spider_eyes",spider_eyes)
 
 mobs.register_mob(
     {
-     mobname = "spider",
+     name = "spider",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
@@ -993,7 +993,7 @@ mobs.register_mob(
 
 mobs.register_mob(
     {
-     mobname = "snoider",
+     name = "snoider",
      physical = true,
      collide_with_objects = false,
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
