@@ -29,8 +29,9 @@ mob.jump_timer = 0
 mob.movement_timer = 0
 mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
---[[
 
+mob.gravity = definition.gravity or -9.81
+--[[
 mob.hp = definition.hp
 
 mob.head_bone = definition.head_bone

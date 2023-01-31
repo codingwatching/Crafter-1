@@ -28,7 +28,7 @@ minetest.register_mob(
      automatic_face_movement_max_rotation_per_sec = 300,
      makes_footstep_sound = false,
      hp = 10,
-     gravity = {x = 0, y = -9.81, z = 0},
+     gravity = -9.81,
      movement_type = "walk",
      -- Wandering speeds
      min_speed = 3,
