@@ -107,10 +107,6 @@ mobs.create_timer_functions = function(def,mob_register)
     end
 
     --this stops the pig from flying into the air
-    mob_register.manage_jump_timer = function(self,dtime)
-        if self.jump_timer > 0 then
-            self.jump_timer = self.jump_timer - dtime
-        end
-    end
+    
     return(mob_register)
 end
