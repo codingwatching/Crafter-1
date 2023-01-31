@@ -21,6 +21,18 @@ minetest.register_mob(
          --blank out the first two to create adult pig
         "pig.png"
      },
+
+     is_visible = true,
+     pointable = true,
+     automatic_face_movement_dir = 0,
+     automatic_face_movement_max_rotation_per_sec = 300,
+     makes_footstep_sound = false,
+     hp = 10,
+     gravity = {x = 0, y = -9.81, z = 0},
+     movement_type = "walk",
+     max_speed = 5,
+     state = 0,
+     view_distance = 15,
      
      --these are used to anchor a point to the head position
 
@@ -36,17 +48,6 @@ minetest.register_mob(
      head_coord = "horizontal",
      -----
      
-     is_visible = true,
-     pointable = true,
-     automatic_face_movement_dir = 0,
-     automatic_face_movement_max_rotation_per_sec = 300,
-     makes_footstep_sound = false,
-     hp = 10,
-     gravity = {x = 0, y = -9.81, z = 0},
-     movement_type = "walk",
-     max_speed = 5,
-     state = 0,
-     view_distance = 15,
      
      item_drop = "mob:raw_porkchop", 
      standing_frame = {x=0,y=0},
