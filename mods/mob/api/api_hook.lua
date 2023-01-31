@@ -1,7 +1,6 @@
 function minetest.register_mob(definition)
 
 
-
 local mob_register = {}
 
 register_mob_spawner(definition.mobname,definition.textures,definition.mesh)
@@ -21,6 +20,8 @@ mob_register.initial_properties = {
     makes_footstep_sound = definition.makes_footstep_sound,
     static_save = false,
 }
+
+--[[
 mob_register.is_mob = true
 mob_register.hp = definition.hp
 mob_register.max_speed = definition.max_speed
