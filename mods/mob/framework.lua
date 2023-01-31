@@ -153,6 +153,11 @@ mobs.create_timer_functions(definition,mob)
 
 function mob:on_activate(staticdata, dtime_s)
     print("hi")
+    self.object:set_acceleration(vector.new(0,self.gravity,0))
+end
+
+function mob:on_deactivate()
+    print("bye")
 end
 
 -- Handles the jumping timer - TODO: make this handle jumping too!
