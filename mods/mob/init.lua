@@ -9,11 +9,10 @@ dofile(path.."/items.lua")
 dofile(path.."/chatcommands.lua")
 
 
-mobs.register_mob(
+minetest.register_mob(
     {
      name = "pig",
      physical = true,
-     collide_with_objects = false,
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
      visual = "mesh",
      visual_size = {x = 3, y = 3},
@@ -81,7 +80,7 @@ mobs.register_mob(
     {
      name = "sheep",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
      visual = "mesh",
      visual_size = {x = 3, y = 3},
@@ -164,7 +163,7 @@ mobs.register_mob(
     {
      name = "chicken",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.225, 0, -0.225, 0.225, 0.675, 0.225},
      visual = "mesh",
      visual_size = {x = 3, y = 3},
@@ -243,7 +242,7 @@ mobs.register_mob(
     {
      name = "snowman",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37, 0, -0.37, 0.37, 1.75, 0.37},
      visual = "mesh",
      visual_size = {x = 9, y = 9},
@@ -341,7 +340,7 @@ mobs.register_mob(
     {
      name = "phyg",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
      visual = "mesh",
      visual_size = {x = 3, y = 3},
@@ -413,7 +412,7 @@ mobs.register_mob(
     {
     name = "big_slime",
     physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-1.25, 0, -1.25, 1.25, 2.5, 1.25},
       visual = "mesh",
     visual_size = {x = 15, y = 15},
@@ -462,7 +461,7 @@ mobs.register_mob(
     {
     name = "medium_slime",
     physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.625, 0, -0.625, 0.625, 1.25, 0.625},
       visual = "mesh",
     visual_size = {x = 7.5, y = 7.5},
@@ -510,7 +509,7 @@ mobs.register_mob(
     {
     name = "small_slime",
     physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.3, 0, -0.3, 0.3, 0.6, 0.3},
       visual = "mesh",
     visual_size = {x = 3.7, y = 3.7},
@@ -552,7 +551,7 @@ mobs.register_mob(
     {
      name = "creepig",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37, -0.4, -0.37, 0.37, 0.5, 0.37},
      visual = "mesh",
      visual_size = {x = 3, y = 3},
@@ -610,7 +609,7 @@ mobs.register_mob(
     {
      name = "zombie",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.23,0, -0.23, 0.23, 1.7, 0.23},
      visual = "mesh",
      visual_size = {x = 3.2, y = 3.2},
@@ -677,7 +676,7 @@ mobs.register_mob(
     {
      name = "creeper",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37,0, -0.37, 0.37, 1.5, 0.37},
      visual = "mesh",
      visual_size = {x = 3.2, y = 3.2},
@@ -744,7 +743,7 @@ mobs.register_mob(
     {
      name = "sneeper",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37,0, -0.37, 0.37, 1.5, 0.37},
      visual = "mesh",
      visual_size = {x = 3.2, y = 3.2},
@@ -814,7 +813,7 @@ mobs.register_mob(
     {
      name = "nitro_creeper",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37,0, -0.37, 0.37, 1.5, 0.37},
      visual = "mesh",
      visual_size = {x = 3.2, y = 3.2},
@@ -905,7 +904,7 @@ mobs.register_mob(
     {
      name = "spider",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
      visual = "mesh",
      visual_size = {x = 3, y = 3},
@@ -995,7 +994,7 @@ mobs.register_mob(
     {
      name = "snoider",
      physical = true,
-     collide_with_objects = false,
+     
      collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
      visual = "mesh",
      visual_size = {x = 3, y = 3},
