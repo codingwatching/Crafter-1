@@ -1,5 +1,8 @@
 local minetest,vector,math,table = minetest,vector,math,table
 
+--for debug testing to isolate mobs
+local spawn = false
+
 --this is where mob spawning is defined
 
 --spawn mob in a square doughnut shaped radius
@@ -9,9 +12,6 @@ local spawn_goal_per_player = 10
 
 --the height in which the game will search the x and z chosen (NUMBER up, NUMBER down)
 local find_node_height = 32
-
---for debug testing to isolate mobs
-local spawn = true
 
 local spawn_table = {"pig","chicken","sheep"}
 local snow_dark_spawn_table = {"snoider","sneeper","zombie","zombie"}
