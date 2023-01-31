@@ -1,4 +1,4 @@
-local minetest,math,vector = minetest,math,vector
+-- local minetest,math,vector = minetest,math,vector
 --this is where mobs are defined
 
 local path = minetest.get_modpath(minetest.get_current_modname())
@@ -8,7 +8,7 @@ dofile(path.."/api/api_hook.lua")
 dofile(path.."/items.lua")
 dofile(path.."/chatcommands.lua")
 
-
+--[[
 mobs.register_mob(
     {
      mobname = "pig",
@@ -603,7 +603,7 @@ mobs.register_mob(
     }
 )
 
-]]--
+
 
 
 mobs.register_mob(
@@ -1059,3 +1059,4 @@ mobs.register_mob(
     }
     }
 )
+]]
