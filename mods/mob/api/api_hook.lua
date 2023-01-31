@@ -134,8 +134,7 @@ mobs.create_timer_functions(definition,mob)
 ]]
 
 
-mob.on_step = function(self, dtime,moveresult)
-    
+function mob:on_step(dtime,moveresult)
     if self.dead then
         if self.death_animation_timer >= 0 then
             self.manage_death_animation(self,dtime)
@@ -148,9 +147,9 @@ mob.on_step = function(self, dtime,moveresult)
         return
     end
 
-    self:move(dtime,moveresult)
-
     --[[
+    self:move(dtime,moveresult)
+    
     self:collision_detection()
     if self.fall_damage then
         self:fall_damage()
