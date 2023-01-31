@@ -1,12 +1,12 @@
 -- local minetest,math,vector = minetest,math,vector
 --this is where mobs are defined
 
-local path = minetest.get_modpath(minetest.get_current_modname())
+local path = minetest.get_modpath(minetest.get_current_modname()) .. "/"
 
-dofile(path.."/spawning.lua")
-dofile(path.."/api/api_hook.lua")
-dofile(path.."/items.lua")
-dofile(path.."/chatcommands.lua")
+dofile(path.."spawning.lua")
+dofile(path.."framework.lua")
+dofile(path.."items.lua")
+dofile(path.."chatcommands.lua")
 
 
 minetest.register_mob(
@@ -30,6 +30,8 @@ minetest.register_mob(
      hp = 10,
      gravity = {x = 0, y = -9.81, z = 0},
      movement_type = "walk",
+     -- Wandering speeds
+     min_speed = 3,
      max_speed = 5,
      state = 0,
      view_distance = 15,
