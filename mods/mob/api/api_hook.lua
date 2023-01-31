@@ -1,14 +1,3 @@
-
---mobs = {}
-
-local path = minetest.get_modpath(minetest.get_current_modname()).."/api/"
-dofile(path.."movement.lua")
-dofile(path.."interaction.lua")
-dofile(path.."data_handling.lua")
-dofile(path.."head_code.lua")
-dofile(path.."animation.lua")
-dofile(path.."timers.lua")
-
 function minetest.register_mob(definition)
 
 
