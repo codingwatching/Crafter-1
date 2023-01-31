@@ -1,11 +1,11 @@
 function minetest.register_mob(definition)
 
 
-local mob_register = {}
+local mob = {}
 
 register_mob_spawner(definition.mobname,definition.textures,definition.mesh)
 
-mob_register.initial_properties = {
+mob.initial_properties = {
     physical = definition.physical,
     collide_with_objects = definition.collide_with_objects,
     collisionbox = definition.collisionbox,
@@ -22,119 +22,119 @@ mob_register.initial_properties = {
 }
 
 --[[
-mob_register.is_mob = true
-mob_register.hp = definition.hp
-mob_register.max_speed = definition.max_speed
-mob_register.jump_timer = 0
-mob_register.head_bone = definition.head_bone
--- mobs.create_head_functions(definition,mob_register)
-mob_register.debug_head_pos = definition.debug_head_pos
-mob_register.head_directional_offset = definition.head_directional_offset
-mob_register.head_height_offset = definition.head_height_offset
-mob_register.head_rotation_offset = definition.head_rotation_offset
-mob_register.head_position_correction = definition.head_position_correction
-mob_register.head_coord = definition.head_coord
-mob_register.flip_pitch = definition.flip_pitch
-mob_register.hurt_inside_timer = 0
-mob_register.death_animation_timer = 0
-mob_register.dead = false
-mob_register.mob = true
-mob_register.mobname = definition.mobname
-mob_register.hostile = definition.hostile
-mob_register.friendly_in_daylight = definition.friendly_in_daylight
-mob_register.friendly_in_daylight_timer = 0
-mob_register.hostile_cooldown = definition.hostile_cooldown
-mob_register.hostile_timer = 0
-mob_register.timer = 0
-mob_register.state = definition.state
-mob_register.hunger = 200
-mob_register.view_distance = definition.view_distance
-mob_register.punch_timer = 0
-mob_register.punched_timer = 0
-mob_register.group_attack = definition.group_attack
-mob_register.death_rotation = definition.death_rotation
-mob_register.head_mount = definition.head_mount
-mob_register.rotational_correction = definition.rotational_correction or 0
-mob_register.hurt_sound = definition.hurt_sound
-mob_register.die_sound = definition.die_sound
-mob_register.attack_type = definition.attack_type
+mob.is_mob = true
+mob.hp = definition.hp
+mob.max_speed = definition.max_speed
+mob.jump_timer = 0
+mob.head_bone = definition.head_bone
+-- mobs.create_head_functions(definition,mob)
+mob.debug_head_pos = definition.debug_head_pos
+mob.head_directional_offset = definition.head_directional_offset
+mob.head_height_offset = definition.head_height_offset
+mob.head_rotation_offset = definition.head_rotation_offset
+mob.head_position_correction = definition.head_position_correction
+mob.head_coord = definition.head_coord
+mob.flip_pitch = definition.flip_pitch
+mob.hurt_inside_timer = 0
+mob.death_animation_timer = 0
+mob.dead = false
+mob.mob = true
+mob.mobname = definition.mobname
+mob.hostile = definition.hostile
+mob.friendly_in_daylight = definition.friendly_in_daylight
+mob.friendly_in_daylight_timer = 0
+mob.hostile_cooldown = definition.hostile_cooldown
+mob.hostile_timer = 0
+mob.timer = 0
+mob.state = definition.state
+mob.hunger = 200
+mob.view_distance = definition.view_distance
+mob.punch_timer = 0
+mob.punched_timer = 0
+mob.group_attack = definition.group_attack
+mob.death_rotation = definition.death_rotation
+mob.head_mount = definition.head_mount
+mob.rotational_correction = definition.rotational_correction or 0
+mob.hurt_sound = definition.hurt_sound
+mob.die_sound = definition.die_sound
+mob.attack_type = definition.attack_type
 
 if definition.attack_type == "explode" then
-    mob_register.tnt_tick_timer = 0
-    mob_register.explosion_type = definition.explosion_type
+    mob.tnt_tick_timer = 0
+    mob.explosion_type = definition.explosion_type
 end
-mob_register.explosion_radius = definition.explosion_radius
-mob_register.explosion_power = definition.explosion_power
-mob_register.tnt_timer = nil
-mob_register.explosion_time = definition.explosion_time
-mob_register.explosion_blink_color = definition.explosion_blink_color or "white"
-mob_register.explosion_blink_timer = definition.explosion_blink_timer or 0.2
+mob.explosion_radius = definition.explosion_radius
+mob.explosion_power = definition.explosion_power
+mob.tnt_timer = nil
+mob.explosion_time = definition.explosion_time
+mob.explosion_blink_color = definition.explosion_blink_color or "white"
+mob.explosion_blink_timer = definition.explosion_blink_timer or 0.2
 
-mob_register.custom_function_begin = definition.custom_function_begin
-mob_register.custom_function = definition.custom_function
-mob_register.custom_function_end = definition.custom_function_end
-mob_register.projectile_timer_cooldown = definition.projectile_timer_cooldown
-mob_register.attacked_hostile = definition.attacked_hostile
+mob.custom_function_begin = definition.custom_function_begin
+mob.custom_function = definition.custom_function
+mob.custom_function_end = definition.custom_function_end
+mob.projectile_timer_cooldown = definition.projectile_timer_cooldown
+mob.attacked_hostile = definition.attacked_hostile
 if not definition.hostile and not definition.attacked_hostile then
-    mob_register.scared = false
-    mob_register.scared_timer = 0
+    mob.scared = false
+    mob.scared_timer = 0
 end
-mob_register.attack_damage = definition.attack_damage
-mob_register.projectile_timer = 0
-mob_register.projectile_type = definition.projectile_type
-mob_register.takes_fall_damage = definition.takes_fall_damage or true
-mob_register.make_jump_noise = definition.make_jump_noise
-mob_register.jump_animation = definition.jump_animation
-mob_register.jumping_frame = definition.jumping_frame
-mob_register.item_drop = definition.item_drop
-mob_register.item_minimum = definition.item_minimum or 1
-mob_register.item_max = definition.item_max
-mob_register.die_in_light = definition.die_in_light
-mob_register.die_in_light_level = definition.die_in_light_level
-mob_register.current_animation = 0
-mob_register.hurt_color_timer = 0
-mob_register.damage_color = definition.damage_color or "red"
-mob_register.deactivating = false
-mob_register.on_fire = false
+mob.attack_damage = definition.attack_damage
+mob.projectile_timer = 0
+mob.projectile_type = definition.projectile_type
+mob.takes_fall_damage = definition.takes_fall_damage or true
+mob.make_jump_noise = definition.make_jump_noise
+mob.jump_animation = definition.jump_animation
+mob.jumping_frame = definition.jumping_frame
+mob.item_drop = definition.item_drop
+mob.item_minimum = definition.item_minimum or 1
+mob.item_max = definition.item_max
+mob.die_in_light = definition.die_in_light
+mob.die_in_light_level = definition.die_in_light_level
+mob.current_animation = 0
+mob.hurt_color_timer = 0
+mob.damage_color = definition.damage_color or "red"
+mob.deactivating = false
+mob.on_fire = false
 
 
-mob_register.custom_on_death = definition.custom_on_death
-mob_register.custom_on_activate = definition.custom_on_activate
-mob_register.custom_on_punch = definition.custom_on_punch
-mob_register.c_mob_data = definition.c_mob_data
+mob.custom_on_death = definition.custom_on_death
+mob.custom_on_activate = definition.custom_on_activate
+mob.custom_on_punch = definition.custom_on_punch
+mob.c_mob_data = definition.c_mob_data
 
-mob_register.fire_table = definition.fire_table
-mob_register.sound_pitch_mod_min = definition.sound_pitch_mod_min
-mob_register.sound_pitch_mod_max = definition.sound_pitch_mod_max
+mob.fire_table = definition.fire_table
+mob.sound_pitch_mod_min = definition.sound_pitch_mod_min
+mob.sound_pitch_mod_max = definition.sound_pitch_mod_max
 
-mob_register.sound_pitch_mod_min_die = definition.sound_pitch_mod_min_die
-mob_register.sound_pitch_mod_max_die = definition.sound_pitch_mod_max_die
+mob.sound_pitch_mod_min_die = definition.sound_pitch_mod_min_die
+mob.sound_pitch_mod_max_die = definition.sound_pitch_mod_max_die
 
-function mob_register:get_hp()
+function mob:get_hp()
     return self.hp
 end
 
 if definition.pathfinds then
-    mob_register.path = {}
-    mob_register.pathfinding_timer = 0
+    mob.path = {}
+    mob.pathfinding_timer = 0
 end
 
 if definition.custom_timer then
-    mob_register.c_timer = 0
-    mob_register.custom_timer = definition.custom_timer
-    mob_register.custom_timer_function = definition.custom_timer_function
+    mob.c_timer = 0
+    mob.custom_timer = definition.custom_timer
+    mob.custom_timer_function = definition.custom_timer_function
 end
 
 --[[
-mobs.create_movement_functions(definition,mob_register)
-mobs.create_interaction_functions(definition,mob_register)
-mobs.create_data_handling_functions(definition,mob_register)
-mobs.create_animation_functions(definition,mob_register)
-mobs.create_timer_functions(definition,mob_register)
+mobs.create_movement_functions(definition,mob)
+mobs.create_interaction_functions(definition,mob)
+mobs.create_data_handling_functions(definition,mob)
+mobs.create_animation_functions(definition,mob)
+mobs.create_timer_functions(definition,mob)
 ]]
 
 
-mob_register.on_step = function(self, dtime,moveresult)
+mob.on_step = function(self, dtime,moveresult)
     
     if self.dead then
         if self.death_animation_timer >= 0 then
@@ -216,6 +216,6 @@ mob_register.on_step = function(self, dtime,moveresult)
     ]]
 end
 
-minetest.register_entity("mob:"..definition.mobname, mob_register)
+minetest.register_entity("mob:"..definition.mobname, mob)
 
 end
