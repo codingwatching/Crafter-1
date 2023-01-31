@@ -26,7 +26,7 @@ local axis
 local inner = 18
 local outer = 50
 local int = {-1,1}
-local position_calculation = function(pos)                
+local position_calculation = function(pos)
     --this is used to determine the axis buffer from the player
     axis = math.random(0,1)
 
