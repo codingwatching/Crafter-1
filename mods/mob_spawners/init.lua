@@ -6,7 +6,7 @@ dungeon_loot.STACKS_PER_CHEST_MAX = 10
 
 mob_spawners = {}
 
-function register_mob_spawner(mobname,texture,mesh)
+function minetest.register_mob_spawner(mobname,texture,mesh)
     minetest.register_node(":mob_spawners:"..mobname,{
         description = mobname:gsub("^%l", string.upper).." Spawner",
         drawtype = "allfaces",

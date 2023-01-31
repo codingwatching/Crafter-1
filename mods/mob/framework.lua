@@ -1,6 +1,6 @@
 function minetest.register_mob(definition)
 
-register_mob_spawner(definition.name,definition.textures,definition.mesh)
+minetest.register_mob_spawner(definition.name,definition.textures,definition.mesh)
 
 -- Mob class
 local mob = {}
