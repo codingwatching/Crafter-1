@@ -1,9 +1,11 @@
 function minetest.register_mob(definition)
 
+register_mob_spawner(definition.name,definition.textures,definition.mesh)
 
+-- Mob class
 local mob = {}
 
-register_mob_spawner(definition.name,definition.textures,definition.mesh)
+-- Mob fields
 
 mob.initial_properties = {
     physical = definition.physical,
@@ -25,6 +27,7 @@ mob.initial_properties = {
 mob.is_mob = true
 mob.jump_timer = 0
 mob.movement_timer = 0
+mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
 --[[
 
@@ -137,50 +140,63 @@ mobs.create_animation_functions(definition,mob)
 mobs.create_timer_functions(definition,mob)
 ]]
 
+-- Mob methods
+
+function mob:on_activate(staticdata, dtime_s)
+    print("hi")
+end
+
+-- Handles the jumping timer - TODO: make this handle jumping too!
 function mob:manage_jump_timer(dtime)
     if self.jump_timer > 0 then
         self.jump_timer = self.jump_timer - dtime
     end
 end
 
-function mob:move(dtime,moveresult)
-
-    self:manage_jump_timer(dtime)
-
+-- Random direction state change when wandering
+function mob:manage_wandering_direction_change(dtime)
+    if self.following then return end
     self.movement_timer = self.movement_timer - dtime
-    
-    -- self:jump(moveresult)
+    if self.movement_timer > 0 then return end
+    self.movement_timer = math.random(0,4) + math.random()
+    self.direction = vector.new(math.random()*math.random(-1,1),0,math.random()*math.random(-1,1))
+    self.speed = math.random(self.min_speed,self.max_speed)
+end
 
-    -- self.swim(self,dtime)
-
-    -- Random direction state change
-    if self.movement_timer <= 0 and not self.following == true then
-        --print("changing direction")
-        self.movement_timer = math.random(2,7) + math.random()
-        self.direction = vector.new(math.random()*math.random(-1,1),0,math.random()*math.random(-1,1))
-        --local yaw = self.object:get_yaw() + dtime
-        self.speed = math.random(0,self.max_speed)
-        --self.object:set_yaw(yaw)
-    end
-
-    -- self.hurt_inside(self,dtime)
+function mob:manage_wandering(dtime)
 
     local currentvel = self.object:get_velocity()
-    local goal = vector.multiply(self.direction,self.speed)
-    local acceleration = vector.new(goal.x-currentvel.x,0,goal.z-currentvel.z)
 
-    --[[
+    currentvel.y = 0
+
+    local goal = vector.multiply(self.direction,self.speed)
+    local acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
+    acceleration = vector.multiply(acceleration, 0.05)
+
+
+    --[[ whip_turn used to be used for when a mob was on a path TODO: change this to fast_turn
     if self.whip_turn then
         self.whip_turn = self.whip_turn - dtime
         if self.whip_turn <= 0 then
             self.whip_turn = nil
         end
     else
-        acceleration = vector.multiply(acceleration, 0.05)
+        
     end
     ]]
 
     self.object:add_velocity(acceleration)
+end
+
+function mob:move(dtime,moveresult)
+
+    self:manage_jump_timer(dtime)
+    self:manage_wandering_direction_change(dtime)
+
+    -- self.hurt_inside(self,dtime)
+
+    self:manage_wandering(dtime)
+    
 end
 function mob:jump(moveresult)
 
