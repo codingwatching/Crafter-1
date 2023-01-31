@@ -1,3 +1,11 @@
+-- Movement type enum
+local MOVEMENT_TYPE = {
+    walk = 1,
+    jump = 2,
+    swim = 3,
+    fly = 4
+}
+
 function minetest.register_mob(definition)
 
 minetest.register_mob_spawner(definition.name,definition.textures,definition.mesh)
@@ -29,8 +37,8 @@ mob.jump_timer = 0
 mob.movement_timer = 0
 mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
-
 mob.gravity = definition.gravity or -9.81
+mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
 --[[
 mob.hp = definition.hp
 
