@@ -21,6 +21,8 @@ minetest.register_mob(
          --blank out the first two to create adult pig
         "pig.png"
      },
+     -- Degrees
+     yaw_adjustment = 90,
 
      is_visible = true,
      pointable = true,
