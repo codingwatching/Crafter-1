@@ -3,6 +3,8 @@ local ipairs = ipairs
 local HALF_PI = math.pi / 2
 local DOUBLE_PI = math.pi * 2
 
+-- TODO: mobs figuring out a path up stairs & slabs
+
 -- Wrap around yaw calculations so addition can be applied freely
 local function wrap_yaw(yaw)
     if yaw < -math.pi then
