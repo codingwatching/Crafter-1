@@ -23,8 +23,12 @@ local function yaw_equals( a, b, precision)
 end
 
 -- Linear interpolation, start, end, 0 to 1
-local function lerp(x, y, amount)
-    return (x * amount) + y
+local function fma(x, y, z)
+    return (x * y) + z
+end
+
+local function lerp(start, finish, amount)
+    return fma(finish - start, amount, start)
 end
 
 -- Movement type enum
@@ -67,8 +71,9 @@ mob.max_speed = definition.max_speed
 mob.gravity = definition.gravity or -9.81
 mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
 mob.yaw_start = 0
-mob.yaw_goal = 0
+mob.yaw_end = 0
 mob.yaw_interpolation_progress = 0
+mob.yaw_rotation_multiplier = 0
 --[[
 mob.hp = definition.hp
 
@@ -196,11 +201,11 @@ function mob:manage_wandering_direction_change(dtime)
     if self.following then return end
     self.movement_timer = self.movement_timer - dtime
     if self.movement_timer > 0 then return end
-    self.movement_timer = math.random(0,4) + math.random()
+    self.movement_timer = 1--math.random(0,4) + math.random()
+    -- TODO: this can equal 0,0, make a custom function to set a random dirction!
     self.direction = vector.normalize(vector.new(--[[math.random()*]]math.random(-1,1),0,--[[math.random()*]]math.random(-1,1)))
-    self.yaw_goal = minetest.dir_to_yaw(self.direction)
+    self:set_yaw(minetest.dir_to_yaw(self.direction))
     self.speed = math.random(self.min_speed,self.max_speed)
-    self:unlock_yaw()
 end
 
 function mob:manage_wandering()
@@ -244,20 +249,64 @@ function mob:manage_jumping(moveresult)
 end
 
 
-function mob:interpolate_yaw( )
+function mob:set_yaw(new_goal)
 
-    local yaw_goal = self.yaw_goal
+    self.yaw_interpolation_progress = 0
+
+    local current_yaw = wrap_yaw(self.object:get_yaw())
+
+    local smaller = math.min(current_yaw, new_goal)
+    local larger = math.max(current_yaw, new_goal)
+
+    local result = math.abs(larger - smaller)
+
+    -- Brute force wrap it around, wrap_yaw is used a few lines above
+    if result > math.pi then
+        if new_goal > 0 then
+            new_goal = new_goal - DOUBLE_PI
+        elseif new_goal < 0 then
+            new_goal = new_goal + DOUBLE_PI
+        end
+    end
+
+    self.yaw_start = current_yaw
+    self.yaw_end = new_goal
+
+    self.yaw_rotation_multiplier = 1
+    
+
+    print("-----------------")
+    print("current", current_yaw)
+    print("start",self.yaw_start,"end",self.yaw_end)
+    print("rotation mult", self.yaw_rotation_multiplier)
+end
+
+function mob:interpolate_yaw(dtime)
+    if self.yaw_interpolation_progress >= 1 then return end
+
+    self.yaw_interpolation_progress = self.yaw_interpolation_progress + (dtime * self.yaw_rotation_multiplier)
+    if self.yaw_interpolation_progress > 1 then
+        self.yaw_interpolation_progress = 1
+    end
+
+    local new_yaw = lerp(self.yaw_start, self.yaw_end, self.yaw_interpolation_progress)
+
+    print(new_yaw)
+    self.object:set_yaw(new_yaw)
+    --[[
+    local yaw_end = self.yaw_end
 
     local vel = self.object:get_velocity()
     vel.y = 0
     vel = vector.normalize(vel)
     local current_yaw = minetest.dir_to_yaw(vel)
+    ]]--
 end
 function mob:move(dtime,moveresult)
     self:manage_wandering_direction_change(dtime)
     -- self:manage_jumping(moveresult)
     self:manage_wandering()
-    self:interpolate_yaw()
+    self:interpolate_yaw(dtime)
 end
 
 function mob:on_step(dtime,moveresult)
