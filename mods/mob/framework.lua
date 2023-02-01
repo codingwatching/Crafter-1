@@ -13,11 +13,13 @@ local function wrap_yaw(yaw)
     return yaw
 end
 
--- 0.00 precision of float equality
-local function yaw_equals( a, b )
-    local x = math.floor(a * 100)
-    local y = math.floor(b * 100)
-    return x == y
+
+-- X precision of float equality (x ^ 2 == 100 or 0.00)
+local function yaw_equals( a, b, precision)
+    local multiplier = 10 ^ precision
+    local x = math.floor(a * multiplier + 0.5) / multiplier
+    local y = math.floor(b * multiplier + 0.5) / multiplier
+    return x == y or x + y == 0
 end
 
 -- Movement type enum
@@ -47,8 +49,6 @@ mob.initial_properties = {
     textures = definition.textures,
     is_visible = definition.is_visible,
     pointable = definition.pointable,
-    automatic_face_movement_dir = 0,
-    automatic_face_movement_max_rotation_per_sec = definition.automatic_face_movement_max_rotation_per_sec,
     makes_footstep_sound = definition.makes_footstep_sound,
     static_save = false,
 }
@@ -61,6 +61,7 @@ mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
 mob.gravity = definition.gravity or -9.81
 mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
+
 mob.yaw_goal = 0
 --[[
 mob.hp = definition.hp
@@ -190,9 +191,10 @@ function mob:manage_wandering_direction_change(dtime)
     self.movement_timer = self.movement_timer - dtime
     if self.movement_timer > 0 then return end
     self.movement_timer = math.random(0,4) + math.random()
-    self.direction = vector.new(math.random()*math.random(-1,1),0,math.random()*math.random(-1,1))
-    self.yaw_goal = wrap_yaw(minetest.dir_to_yaw(self.direction) + HALF_PI)
+    self.direction = vector.normalize(vector.new(--[[math.random()*]]math.random(-1,1),0,--[[math.random()*]]math.random(-1,1)))
+    self.yaw_goal = minetest.dir_to_yaw(self.direction)
     self.speed = math.random(self.min_speed,self.max_speed)
+    self:unlock_yaw()
 end
 
 function mob:manage_wandering()
@@ -296,14 +298,32 @@ function mob:jump(moveresult)
 end
 ]]
 
+function mob:unlock_yaw()
+    self.object:set_properties({
+        automatic_face_movement_dir = 0,
+        automatic_face_movement_max_rotation_per_sec = 360
+    })
+end
+function mob:lock_yaw()
+    self.object:set_properties({
+        automatic_face_movement_dir = false,
+        automatic_face_movement_max_rotation_per_sec = 0
+    })
+end
+
 function mob:manage_yaw_lock( )
 
-    local current_yaw = self.object:get_yaw()
-    
     local yaw_goal = self.yaw_goal
 
-    print(current_yaw, yaw_goal)
-    
+    local vel = self.object:get_velocity()
+    vel.y = 0
+    vel = vector.normalize(vel)
+    local current_yaw = minetest.dir_to_yaw(vel)
+
+    if yaw_equals( current_yaw, yaw_goal, 1 ) then
+        print("lock it")
+        self:lock_yaw()
+    end
 end
 function mob:move(dtime,moveresult)
     self:manage_wandering_direction_change(dtime)
