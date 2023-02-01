@@ -22,6 +22,11 @@ local function yaw_equals( a, b, precision)
     return x == y or x + y == 0
 end
 
+-- Linear interpolation, start, end, 0 to 1
+local function lerp(x, y, amount)
+    return (x * amount) + y
+end
+
 -- Movement type enum
 local MOVEMENT_TYPE = {
     walk = 1,
