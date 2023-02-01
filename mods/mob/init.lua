@@ -24,8 +24,6 @@ minetest.register_mob(
 
      is_visible = true,
      pointable = true,
-     automatic_face_movement_dir = 0,
-     automatic_face_movement_max_rotation_per_sec = 300,
      makes_footstep_sound = false,
      hp = 10,
      movement_type = "walk",
