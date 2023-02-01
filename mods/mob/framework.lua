@@ -203,8 +203,8 @@ function mob:manage_wandering_direction_change(dtime)
     self.movement_timer = self.movement_timer - dtime
     if self.movement_timer > 0 then return end
     self.movement_timer = 1--math.random(0,4) + math.random()
-    -- TODO: this can equal 0,0, make a custom function to set a random dirction!
-    self.direction = vector.normalize(vector.new(--[[math.random()*]]math.random(-1,1),0,--[[math.random()*]]math.random(-1,1)))
+    local new_dir = ( math.random() * ( math.pi * 2 ) ) - math.pi
+    self.direction = minetest.yaw_to_dir(new_dir)
     self:set_yaw(minetest.dir_to_yaw(self.direction))
     self.speed = math.random(self.min_speed,self.max_speed)
 end
