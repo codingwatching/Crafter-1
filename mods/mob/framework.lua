@@ -74,6 +74,7 @@ mob.yaw_start = 0
 mob.yaw_end = 0
 mob.yaw_interpolation_progress = 0
 mob.yaw_rotation_multiplier = 0
+mob.yaw_adjustment = math.rad(definition.yaw_adjustment)
 --[[
 mob.hp = definition.hp
 
@@ -253,7 +254,7 @@ function mob:set_yaw(new_goal)
 
     self.yaw_interpolation_progress = 0
 
-    local current_yaw = wrap_yaw(self.object:get_yaw())
+    local current_yaw = wrap_yaw(self.object:get_yaw() - self.yaw_adjustment)
 
     local smaller = math.min(current_yaw, new_goal)
     local larger = math.max(current_yaw, new_goal)
@@ -262,23 +263,20 @@ function mob:set_yaw(new_goal)
 
     -- Brute force wrap it around, wrap_yaw is used a few lines above
     if result > math.pi then
-        if new_goal > 0 then
-            new_goal = new_goal - DOUBLE_PI
-        elseif new_goal < 0 then
+        if new_goal < 0 then
             new_goal = new_goal + DOUBLE_PI
+        else
+            new_goal = new_goal - DOUBLE_PI
         end
+        result = result - math.pi
     end
+
+    -- Keeps a constant rotation factor while interpolating
+    local rotation_multiplier = 4 * math.pi / (math.pi + result)
 
     self.yaw_start = current_yaw
     self.yaw_end = new_goal
-
-    self.yaw_rotation_multiplier = 1
-    
-
-    print("-----------------")
-    print("current", current_yaw)
-    print("start",self.yaw_start,"end",self.yaw_end)
-    print("rotation mult", self.yaw_rotation_multiplier)
+    self.yaw_rotation_multiplier = rotation_multiplier
 end
 
 function mob:interpolate_yaw(dtime)
@@ -290,8 +288,8 @@ function mob:interpolate_yaw(dtime)
     end
 
     local new_yaw = lerp(self.yaw_start, self.yaw_end, self.yaw_interpolation_progress)
+    new_yaw = new_yaw + self.yaw_adjustment
 
-    print(new_yaw)
     self.object:set_yaw(new_yaw)
     --[[
     local yaw_end = self.yaw_end
