@@ -61,8 +61,9 @@ mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
 mob.gravity = definition.gravity or -9.81
 mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
-
+mob.yaw_start = 0
 mob.yaw_goal = 0
+mob.yaw_interpolation_progress = 0
 --[[
 mob.hp = definition.hp
 
