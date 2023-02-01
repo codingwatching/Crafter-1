@@ -52,7 +52,7 @@ local mob = {}
 
 mob.initial_properties = {
     physical = definition.physical,
-    collide_with_objects = definition.collide_with_objects,
+    collide_with_objects = false,
     collisionbox = definition.collisionbox,
     visual = definition.visual,
     visual_size = definition.visual_size,
@@ -212,6 +212,10 @@ function mob:manage_wandering_direction_change(dtime)
     self.speed = math.random(self.min_speed,self.max_speed)
 end
 
+function mob:reset_movement_timer()
+    self.movement_timer = 0
+end
+
 function mob:manage_wandering()
     local currentvel = self.object:get_velocity()
     currentvel.y = 0
@@ -248,10 +252,17 @@ function mob:manage_jumping(moveresult)
     if #collisions <= 0 then return end
     local should_jump = false
     local still_on_wall = false
+    -- Only try to jump over nodes in the way
     for _,collision in ipairs(collisions) do
-        if collision.axis ~= "y" then
+        if collision.axis ~= "y" and collision.type == "node" then
             if moveresult.touching_ground then
-                should_jump = true
+                local check_pos = collision.node_pos
+                check_pos.y = check_pos.y + 1
+                if minetest.registered_nodes[minetest.get_node(check_pos).name].walkable then
+                    self:reset_movement_timer()
+                else
+                    should_jump = true
+                end
             else
                 still_on_wall = true
             end
