@@ -244,20 +244,7 @@ function mob:manage_jumping(moveresult)
 end
 
 
-function mob:unlock_yaw()
-    self.object:set_properties({
-        automatic_face_movement_dir = 0,
-        automatic_face_movement_max_rotation_per_sec = 360
-    })
-end
-function mob:lock_yaw()
-    self.object:set_properties({
-        automatic_face_movement_dir = false,
-        automatic_face_movement_max_rotation_per_sec = 0
-    })
-end
-
-function mob:manage_yaw_lock( )
+function mob:interpolate_yaw( )
 
     local yaw_goal = self.yaw_goal
 
@@ -265,17 +252,12 @@ function mob:manage_yaw_lock( )
     vel.y = 0
     vel = vector.normalize(vel)
     local current_yaw = minetest.dir_to_yaw(vel)
-
-    if yaw_equals( current_yaw, yaw_goal, 1 ) then
-        print("lock it")
-        self:lock_yaw()
-    end
 end
 function mob:move(dtime,moveresult)
     self:manage_wandering_direction_change(dtime)
     -- self:manage_jumping(moveresult)
     self:manage_wandering()
-    self:manage_yaw_lock()
+    self:interpolate_yaw()
 end
 
 function mob:on_step(dtime,moveresult)
