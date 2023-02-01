@@ -3,7 +3,7 @@ local ipairs = ipairs
 local HALF_PI = math.pi / 2
 local DOUBLE_PI = math.pi * 2
 
--- Used for wrapping around yaw calculations
+-- Wrap around yaw calculations so addition can be applied freely
 local function wrap_yaw(yaw)
     if yaw < -math.pi then
         return yaw + DOUBLE_PI
@@ -11,6 +11,13 @@ local function wrap_yaw(yaw)
         return yaw - DOUBLE_PI
     end
     return yaw
+end
+
+-- 0.00 precision of float equality
+local function yaw_equals( a, b )
+    local x = math.floor(a * 100)
+    local y = math.floor(b * 100)
+    return x == y
 end
 
 -- Movement type enum
