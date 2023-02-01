@@ -1,3 +1,18 @@
+local ipairs = ipairs
+
+local HALF_PI = math.pi / 2
+local DOUBLE_PI = math.pi * 2
+
+-- Used for wrapping around yaw calculations
+local function wrap_yaw(yaw)
+    if yaw < -math.pi then
+        return yaw + DOUBLE_PI
+    elseif yaw > math.pi then
+        return yaw - DOUBLE_PI
+    end
+    return yaw
+end
+
 -- Movement type enum
 local MOVEMENT_TYPE = {
     walk = 1,
@@ -25,7 +40,7 @@ mob.initial_properties = {
     textures = definition.textures,
     is_visible = definition.is_visible,
     pointable = definition.pointable,
-    automatic_face_movement_dir = definition.automatic_face_movement_dir,
+    automatic_face_movement_dir = 0,
     automatic_face_movement_max_rotation_per_sec = definition.automatic_face_movement_max_rotation_per_sec,
     makes_footstep_sound = definition.makes_footstep_sound,
     static_save = false,
@@ -39,6 +54,7 @@ mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
 mob.gravity = definition.gravity or -9.81
 mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
+mob.yaw_goal = 0
 --[[
 mob.hp = definition.hp
 
@@ -160,12 +176,6 @@ function mob:on_deactivate()
     print("bye")
 end
 
--- Handles the jumping timer - TODO: make this handle jumping too!
-function mob:manage_jump_timer(dtime)
-    if self.jump_timer > 0 then
-        self.jump_timer = self.jump_timer - dtime
-    end
-end
 
 -- Random direction state change when wandering
 function mob:manage_wandering_direction_change(dtime)
@@ -174,15 +184,13 @@ function mob:manage_wandering_direction_change(dtime)
     if self.movement_timer > 0 then return end
     self.movement_timer = math.random(0,4) + math.random()
     self.direction = vector.new(math.random()*math.random(-1,1),0,math.random()*math.random(-1,1))
+    self.yaw_goal = wrap_yaw(minetest.dir_to_yaw(self.direction) + HALF_PI)
     self.speed = math.random(self.min_speed,self.max_speed)
 end
 
-function mob:manage_wandering(dtime)
-
+function mob:manage_wandering()
     local currentvel = self.object:get_velocity()
-
     currentvel.y = 0
-
     local goal = vector.multiply(self.direction,self.speed)
     local acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
     acceleration = vector.multiply(acceleration, 0.05)
@@ -202,16 +210,25 @@ function mob:manage_wandering(dtime)
     self.object:add_velocity(acceleration)
 end
 
-function mob:move(dtime,moveresult)
 
-    self:manage_jump_timer(dtime)
-    self:manage_wandering_direction_change(dtime)
-
-    -- self.hurt_inside(self,dtime)
-
-    self:manage_wandering(dtime)
-    
+function mob:manage_jumping(moveresult)
+    if not moveresult then return end
+    if not moveresult.collides then return end
+    if not moveresult.touching_ground then return end
+    local collisions = moveresult.collisions
+    if #collisions <= 0 then return end
+    local should_jump = false
+    for _,collision in ipairs(collisions) do
+        if collision.axis ~= "y" then
+            should_jump = true
+            break
+        end
+    end
+    if not should_jump then return end
+    self.object:add_velocity(vector.new(0,5,0))
 end
+
+--[[
 function mob:jump(moveresult)
 
     if moveresult and moveresult.touching_ground and self.direction then
@@ -269,6 +286,23 @@ function mob:jump(moveresult)
             end
         end
     end
+end
+]]
+
+function mob:manage_yaw_lock( )
+
+    local current_yaw = self.object:get_yaw()
+    
+    local yaw_goal = self.yaw_goal
+
+    print(current_yaw, yaw_goal)
+    
+end
+function mob:move(dtime,moveresult)
+    self:manage_wandering_direction_change(dtime)
+    -- self:manage_jumping(moveresult)
+    self:manage_wandering()
+    self:manage_yaw_lock()
 end
 
 function mob:on_step(dtime,moveresult)
