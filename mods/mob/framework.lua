@@ -75,6 +75,7 @@ mob.yaw_end = 0
 mob.yaw_interpolation_progress = 0
 mob.yaw_rotation_multiplier = 0
 mob.yaw_adjustment = math.rad(definition.yaw_adjustment)
+mob.still_on_wall = false
 --[[
 mob.hp = definition.hp
 
@@ -202,7 +203,7 @@ function mob:manage_wandering_direction_change(dtime)
     if self.following then return end
     self.movement_timer = self.movement_timer - dtime
     if self.movement_timer > 0 then return end
-    self.movement_timer = 1--math.random(0,4) + math.random()
+    self.movement_timer = math.random(2,6) + math.random()
     local new_dir = ( math.random() * ( math.pi * 2 ) ) - math.pi
     self.direction = minetest.yaw_to_dir(new_dir)
     self:set_yaw(minetest.dir_to_yaw(self.direction))
@@ -212,6 +213,11 @@ end
 function mob:manage_wandering()
     local currentvel = self.object:get_velocity()
     currentvel.y = 0
+    -- Mob will not move when still jumping up against the side of a wall
+    if self.still_on_wall then
+        self.object:add_velocity(vector.new(0 - currentvel.x,0,0 - currentvel.z))
+        return
+    end
     local goal = vector.multiply(self.direction,self.speed)
     local acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
     acceleration = vector.multiply(acceleration, 0.05)
@@ -233,34 +239,37 @@ end
 
 
 function mob:manage_jumping(moveresult)
+    self.still_on_wall = false
     if not moveresult then return end
     if not moveresult.collides then return end
-    if not moveresult.touching_ground then return end
     local collisions = moveresult.collisions
     if #collisions <= 0 then return end
     local should_jump = false
+    local still_on_wall = false
     for _,collision in ipairs(collisions) do
         if collision.axis ~= "y" then
-            should_jump = true
+            if moveresult.touching_ground then
+                should_jump = true
+            else
+                still_on_wall = true
+            end
             break
         end
     end
+
+    self.still_on_wall = still_on_wall
+
     if not should_jump then return end
     self.object:add_velocity(vector.new(0,5,0))
 end
 
 
 function mob:set_yaw(new_goal)
-
     self.yaw_interpolation_progress = 0
-
     local current_yaw = wrap_yaw(self.object:get_yaw() - self.yaw_adjustment)
-
     local smaller = math.min(current_yaw, new_goal)
     local larger = math.max(current_yaw, new_goal)
-
     local result = math.abs(larger - smaller)
-
     -- Brute force wrap it around, wrap_yaw is used a few lines above
     if result > math.pi then
         if new_goal < 0 then
@@ -270,10 +279,8 @@ function mob:set_yaw(new_goal)
         end
         result = result - math.pi
     end
-
     -- Keeps a constant rotation factor while interpolating
     local rotation_multiplier = 4 * math.pi / (math.pi + result)
-
     self.yaw_start = current_yaw
     self.yaw_end = new_goal
     self.yaw_rotation_multiplier = rotation_multiplier
@@ -281,28 +288,17 @@ end
 
 function mob:interpolate_yaw(dtime)
     if self.yaw_interpolation_progress >= 1 then return end
-
     self.yaw_interpolation_progress = self.yaw_interpolation_progress + (dtime * self.yaw_rotation_multiplier)
     if self.yaw_interpolation_progress > 1 then
         self.yaw_interpolation_progress = 1
     end
-
     local new_yaw = lerp(self.yaw_start, self.yaw_end, self.yaw_interpolation_progress)
     new_yaw = new_yaw + self.yaw_adjustment
-
     self.object:set_yaw(new_yaw)
-    --[[
-    local yaw_end = self.yaw_end
-
-    local vel = self.object:get_velocity()
-    vel.y = 0
-    vel = vector.normalize(vel)
-    local current_yaw = minetest.dir_to_yaw(vel)
-    ]]--
 end
 function mob:move(dtime,moveresult)
     self:manage_wandering_direction_change(dtime)
-    -- self:manage_jumping(moveresult)
+    self:manage_jumping(moveresult)
     self:manage_wandering()
     self:interpolate_yaw(dtime)
 end
