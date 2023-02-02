@@ -74,6 +74,7 @@ mob.yaw_interpolation_progress = 0
 mob.yaw_rotation_multiplier = 0
 mob.yaw_adjustment = math.rad(definition.yaw_adjustment)
 mob.still_on_wall = false
+
 --[[
 mob.hp = definition.hp
 
@@ -291,10 +292,13 @@ function mob:manage_jumping(moveresult)
     self.object:add_velocity(vector.new(0,5,0))
 end
 
+function mob:get_yaw()
+    return wrap_yaw(self.object:get_yaw() - self.yaw_adjustment)
+end
 
 function mob:set_yaw(new_goal)
     self.yaw_interpolation_progress = 0
-    local current_yaw = wrap_yaw(self.object:get_yaw() - self.yaw_adjustment)
+    local current_yaw = self:get_yaw()
     local smaller = math.min(current_yaw, new_goal)
     local larger = math.max(current_yaw, new_goal)
     local result = math.abs(larger - smaller)
