@@ -64,15 +64,20 @@ mob.initial_properties = {
     backface_culling = definition.backface_culling
 }
 
--- Walk movement type variables
-mob.jump_timer = 0
-mob.movement_timer = 0
-mob.still_on_wall = false
-
+-- Generic variables for movement
 mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
 mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
 mob.gravity = definition.gravity or -9.81
+
+-- Walk movement type variables
+mob.jump_timer = 0
+mob.movement_timer = 0
+mob.still_on_wall = false
+mob.speed = 0
+
+-- Swim movement type variables
+mob.swim_goal = vector.new(0,0,0)
 
 -- Yaw & yaw interpolation
 mob.yaw_start = 0
