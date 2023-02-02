@@ -61,6 +61,7 @@ mob.initial_properties = {
     is_visible = definition.is_visible,
     pointable = definition.pointable,
     makes_footstep_sound = definition.makes_footstep_sound,
+    backface_culling = definition.backface_culling
 }
 
 -- Walk movement type variables
@@ -85,7 +86,7 @@ mob.pitch_start = 0
 mob.pitch_end = 0
 mob.pitch_interpolation_progress = 0
 mob.pitch_rotation_multiplier = 0
-mob.pitch_adjustment = math.rad(definition.pitch_adjustment)
+mob.pitch_adjustment = (definition.pitch_adjustment and math.rad(definition.pitch_adjustment)) or 0
 
 
 --[[
