@@ -65,16 +65,16 @@ mob.initial_properties = {
 }
 
 -- Generic variables for movement
+mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
 mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
-mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
 mob.gravity = definition.gravity or -9.81
+mob.movement_timer = 0
+mob.speed = 0
 
 -- Walk movement type variables
 mob.jump_timer = 0
-mob.movement_timer = 0
 mob.still_on_wall = false
-mob.speed = 0
 
 -- Swim movement type variables
 mob.swim_goal = vector.new(0,0,0)
@@ -241,10 +241,31 @@ function mob:interpolate_yaw(dtime)
     self.object:set_yaw(new_yaw)
 end
 
-
+function mob:is_in_water()
+    local pos = self.object:get_pos()
+    local node = minetest.get_node(pos).name
+    return node and (node == "main:water" or node == "main:waterflow")
+end
 
 function mob:manage_swim_direction_change(dtime)
 
+    if self.following then return end
+
+    self.movement_timer = self.movement_timer - dtime
+
+    if self.movement_timer > 0 then return end
+
+    self.movement_timer = math.random(2,6) + math.random()
+
+    if not self:is_in_water() then return end
+
+    local new_dir = ( math.random() * ( math.pi * 2 ) ) - math.pi
+
+    self.direction = minetest.yaw_to_dir(new_dir)
+
+    self:set_yaw(minetest.dir_to_yaw(self.direction))
+
+    self.speed = math.random(self.min_speed,self.max_speed)
 end
 
 
