@@ -1,0 +1,152 @@
+{
+	"meta": {
+		"format_version": "4.5",
+		"model_format": "free",
+		"box_uv": false
+	},
+	"name": "fish",
+	"model_identifier": "",
+	"visible_box": [1, 1, 0],
+	"variable_placeholders": "",
+	"variable_placeholder_buttons": [],
+	"timeline_setups": [],
+	"unhandled_root_fields": {},
+	"resolution": {
+		"width": 32,
+		"height": 32
+	},
+	"elements": [
+		{
+			"name": "cube",
+			"color": 3,
+			"origin": [0, 0, 0],
+			"rotation": [0, 0, 0],
+			"visibility": true,
+			"locked": false,
+			"vertices": {
+				"uZkU": [2, 6, 8],
+				"9VBT": [2, 6, -8],
+				"gSML": [2, 0, 8],
+				"up08": [2, 0, -8],
+				"yav0": [-2, 6, 8],
+				"HqHN": [-2, 6, -8],
+				"Byxf": [-2, 0, 8],
+				"ebVj": [-2, 0, -8],
+				"1H1c": [0, 6, 8],
+				"8Grm": [0, 6, 14],
+				"8WPZ": [0, 0, 8],
+				"miUY": [0, 0, 14],
+				"0KKF": [0, 6, 8],
+				"MR2e": [0, 6, 14],
+				"IzIL": [0, 0, 8],
+				"DJQ5": [0, 0, 14]
+			},
+			"faces": {
+				"HK4UeWhS": {
+					"uv": {
+						"uZkU": [0, 0],
+						"gSML": [0, 6],
+						"9VBT": [16, 0],
+						"up08": [16, 6]
+					},
+					"vertices": ["uZkU", "gSML", "9VBT", "up08"],
+					"texture": 0
+				},
+				"c3VBRdst": {
+					"uv": {
+						"yav0": [16, 6],
+						"HqHN": [0, 6],
+						"Byxf": [16, 12],
+						"ebVj": [0, 12]
+					},
+					"vertices": ["yav0", "HqHN", "Byxf", "ebVj"],
+					"texture": 0
+				},
+				"3u6N5XRh": {
+					"uv": {
+						"uZkU": [4, 28],
+						"9VBT": [4, 12],
+						"yav0": [0, 28],
+						"HqHN": [0, 12]
+					},
+					"vertices": ["uZkU", "9VBT", "yav0", "HqHN"],
+					"texture": 0
+				},
+				"56EwYhCZ": {
+					"uv": {
+						"gSML": [8, 12],
+						"Byxf": [4, 12],
+						"up08": [8, 28],
+						"ebVj": [4, 28]
+					},
+					"vertices": ["gSML", "Byxf", "up08", "ebVj"],
+					"texture": 0
+				},
+				"558ZKjmd": {
+					"uv": {
+						"uZkU": [20, 0],
+						"yav0": [16, 0],
+						"gSML": [20, 6],
+						"Byxf": [16, 6]
+					},
+					"vertices": ["uZkU", "yav0", "gSML", "Byxf"],
+					"texture": 0
+				},
+				"pTF8DKjL": {
+					"uv": {
+						"9VBT": [16, 6],
+						"up08": [16, 12],
+						"HqHN": [20, 6],
+						"ebVj": [20, 12]
+					},
+					"vertices": ["9VBT", "up08", "HqHN", "ebVj"],
+					"texture": 0
+				},
+				"6dyi4vup": {
+					"uv": {
+						"1H1c": [14, 18],
+						"8Grm": [14, 12],
+						"miUY": [8, 12],
+						"8WPZ": [8, 18]
+					},
+					"vertices": ["1H1c", "8Grm", "miUY", "8WPZ"],
+					"texture": 0
+				},
+				"svsFd5Qw": {
+					"uv": {
+						"0KKF": [20, 18],
+						"MR2e": [20, 12],
+						"DJQ5": [14, 12],
+						"IzIL": [14, 18]
+					},
+					"vertices": ["0KKF", "MR2e", "DJQ5", "IzIL"],
+					"texture": 0
+				}
+			},
+			"type": "mesh",
+			"uuid": "d879ffed-8ca8-65d9-076f-48b8323e9611"
+		}
+	],
+	"outliner": ["d879ffed-8ca8-65d9-076f-48b8323e9611"],
+	"textures": [
+		{
+			"path": "/home/jordan/Desktop/minetest/games/Crafter/mods/mob/textures/fish.png",
+			"name": "fish.png",
+			"folder": "block",
+			"namespace": "",
+			"id": "0",
+			"particle": false,
+			"render_mode": "default",
+			"render_sides": "auto",
+			"frame_time": 1,
+			"frame_order_type": "loop",
+			"frame_order": "",
+			"frame_interpolate": false,
+			"visible": true,
+			"mode": "link",
+			"saved": true,
+			"uuid": "8ca5e233-6c12-9eb6-9ab0-44c6bf9fa512",
+			"relative_path": "../../textures/fish.png"
+		}
+	]
+}
