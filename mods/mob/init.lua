@@ -9,99 +9,96 @@ dofile(path.."items.lua")
 dofile(path.."chatcommands.lua")
 
 
-minetest.register_mob(
-    {
-     name = "pig",
-     physical = true,
-     collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
-     visual = "mesh",
-     visual_size = {x = 3, y = 3},
-     mesh = "pig.b3d",
-     textures = {
-         --blank out the first two to create adult pig
+minetest.register_mob({
+    name = "pig",
+    physical = true,
+    collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
+    visual = "mesh",
+    visual_size = {x = 1, y = 1},
+    mesh = "pig.b3d",
+    textures = {
         "pig.png"
-     },
-     -- Degrees
-     yaw_adjustment = 90,
+    },
+    -- Degrees
+    yaw_adjustment = 90,
 
-     is_visible = true,
-     pointable = true,
-     makes_footstep_sound = false,
-     hp = 10,
-     movement_type = "walk",
-     -- Wandering speeds
-     min_speed = 3,
-     max_speed = 5,
-     state = 0,
-     view_distance = 15,
-     
-     --these are used to anchor a point to the head position
+    is_visible = true,
+    pointable = true,
+    makes_footstep_sound = false,
+    hp = 10,
+    movement_type = "walk",
+    -- Wandering speeds
+    min_speed = 3,
+    max_speed = 5,
+    state = 0,
+    view_distance = 15,
+    
+    --these are used to anchor a point to the head position
 
 
-     -----
-     head_bone = "head",
-     debug_head_pos = false,
-     head_directional_offset = 0.5, --used in vector.multiply(minetest.yaw_to_dir(body_yaw),head_offset)
-     head_height_offset = 0.8, --added to the base y position
-     --use this to correct the head position initially because it becomes severly offset - look at your blender model to get this perfect
-     head_position_correction = vector.new(0,3,-0.5),
-     --this is used to tell the game the orientation of the bone (swaps x to and y, then z and y)
-     head_coord = "horizontal",
-     -----
-     
-     
-     item_drop = "mob:raw_porkchop", 
-     standing_frame = {x=0,y=0},
-     moving_frame = {x=0,y=40},
-     animation_multiplier = 20,
-     ----
-     ----
-     death_rotation = "x",
-     
-     hurt_sound = "pig",
-     die_sound = "pig_die",
-     
-     
-     hostile = false,
-     attacked_hostile = false,
-     attack_type = "punch",
-     group_attack = true,
+    -----
+    head_bone = "head",
+    debug_head_pos = false,
+    head_directional_offset = 0.5, --used in vector.multiply(minetest.yaw_to_dir(body_yaw),head_offset)
+    head_height_offset = 0.8, --added to the base y position
+    --use this to correct the head position initially because it becomes severly offset - look at your blender model to get this perfect
+    head_position_correction = vector.new(0,3,-0.5),
+    --this is used to tell the game the orientation of the bone (swaps x to and y, then z and y)
+    head_coord = "horizontal",
+    -----
+    
+    
+    item_drop = "mob:raw_porkchop", 
+    standing_frame = {x=0,y=0},
+    moving_frame = {x=0,y=40},
+    animation_multiplier = 20,
+    ----
+    ----
+    death_rotation = "x",
+    
+    hurt_sound = "pig",
+    die_sound = "pig_die",
+    
+    
+    hostile = false,
+    attacked_hostile = false,
+    attack_type = "punch",
+    group_attack = true,
 
-     
-     --explosion_radius = 4, -- how far away the mob has to be to initialize the explosion
-     --explosion_power = 7, -- how big the explosion has to be
-     --explosion_time = 3, -- how long it takes for a mob to explode
-     fire_table = {
+    
+    --explosion_radius = 4, -- how far away the mob has to be to initialize the explosion
+    --explosion_power = 7, -- how big the explosion has to be
+    --explosion_time = 3, -- how long it takes for a mob to explode
+    fire_table = {
         visual_size = vector.new(1/3,2/3,1/3),
         position = vector.new(0,3,0),
     }
-    }
-)
+})
 
-minetest.register_mob(
-    {
-     name = "fish",
-     physical = true,
-     collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
-     visual = "mesh",
-     visual_size = {x = 3, y = 3},
-     mesh = "fish_mob.obj",
-     textures = {
-        "fish_mob.png"
-     },
-     -- Degrees
-     yaw_adjustment = 0,
+minetest.register_mob({
+    name = "fish",
+    physical = true,
+    collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
+    visual = "mesh",
+    visual_size = {x = 3, y = 3},
+    mesh = "fish_mob.obj",
+    textures = {
+    "fish_mob.png"
+    },
+    backface_culling = false,
+    -- Degrees
+    yaw_adjustment = 0,
 
-     is_visible = true,
-     pointable = true,
-     makes_footstep_sound = false,
-     hp = 10,
-     movement_type = "walk",
-     -- Wandering speeds
-     min_speed = 3,
-     max_speed = 5,
-     state = 0,
-     view_distance = 15,
+    is_visible = true,
+    pointable = true,
+    makes_footstep_sound = false,
+    hp = 10,
+    movement_type = "walk",
+    -- Wandering speeds
+    min_speed = 3,
+    max_speed = 5,
+    state = 0,
+    view_distance = 15,
 })
 --[[
 mobs.register_mob(
