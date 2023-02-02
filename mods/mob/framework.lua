@@ -336,7 +336,6 @@ function mob:move(dtime,moveresult)
 end
 
 function mob:on_step(dtime,moveresult)
-    print("HELLO I AM RUNNING!")
     if self.dead then
         if self.death_animation_timer >= 0 then
             self.manage_death_animation(self,dtime)
