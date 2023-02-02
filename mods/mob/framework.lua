@@ -337,10 +337,12 @@ end
 
 function mob:on_step(dtime,moveresult)
     if self.dead then
+        -- TODO: make death management it's own set of procedures
         if self.death_animation_timer >= 0 then
             self.manage_death_animation(self,dtime)
             if self.move_head then
-                self.move_head(self,nil,dtime)
+                -- TODO: recenter head here
+                -- self.move_head(self,nil,dtime)
             end
         else
             self.on_death(self)
@@ -348,9 +350,9 @@ function mob:on_step(dtime,moveresult)
         return
     end
 
-    
+
     self:move(dtime,moveresult)
-    
+
     --[[
     self:collision_detection()
     if self.fall_damage then
