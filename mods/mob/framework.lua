@@ -185,6 +185,11 @@ mobs.create_animation_functions(definition,mob)
 mobs.create_timer_functions(definition,mob)
 ]]
 
+-- Dispatcher functions
+local function match_move(input)
+    return mob.movement_type == input
+end
+
 -- Mob methods
 
 function mob:on_activate(staticdata, dtime_s)
@@ -329,12 +334,27 @@ function mob:interpolate_yaw(dtime)
     new_yaw = new_yaw + self.yaw_adjustment
     self.object:set_yaw(new_yaw)
 end
-function mob:move(dtime,moveresult)
-    self:manage_wandering_direction_change(dtime)
-    self:manage_jumping(moveresult)
-    self:manage_wandering()
-    self:interpolate_yaw(dtime)
+
+
+-- Dispatch the correct method based on what the mob movement type is
+-- TODO: move walk type into final else branch as a catchall
+if match_move(MOVEMENT_TYPE.walk) then
+    function mob:move(dtime,moveresult)
+        self:manage_wandering_direction_change(dtime)
+        self:manage_jumping(moveresult)
+        self:manage_wandering()
+        self:interpolate_yaw(dtime)
+    end
+elseif match_move(MOVEMENT_TYPE.swim) then
+    function mob:move(dtime,moveresult)
+
+        -- self:manage_wandering_direction_change(dtime)
+        -- self:manage_jumping(moveresult)
+        -- self:manage_wandering()
+        self:interpolate_yaw(dtime)
+    end
 end
+
 
 function mob:on_step(dtime,moveresult)
     if self.dead then
