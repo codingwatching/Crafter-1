@@ -49,7 +49,7 @@ minetest.register_mob_spawner(definition.name,definition.textures,definition.mes
 local mob = {}
 
 -- Mob fields
-
+mob.is_mob = true
 mob.initial_properties = {
     physical = definition.physical,
     collide_with_objects = false,
@@ -61,11 +61,7 @@ mob.initial_properties = {
     is_visible = definition.is_visible,
     pointable = definition.pointable,
     makes_footstep_sound = definition.makes_footstep_sound,
-    static_save = false,
 }
-
-
-mob.is_mob = true
 mob.jump_timer = 0
 mob.movement_timer = 0
 mob.min_speed = definition.min_speed
@@ -191,12 +187,31 @@ mobs.create_timer_functions(definition,mob)
 -- Mob methods
 
 function mob:on_activate(staticdata, dtime_s)
-    print("hi")
+    print(staticdata)
+    if not staticdata or staticdata == "" then goto skip_data_assign end
+
+    do
+    local old_data = minetest.deserialize(staticdata)
+    print(dump(staticdata))
+
+
+    end
+        
+
+    ::skip_data_assign::
     self.object:set_acceleration(vector.new(0,self.gravity,0))
 end
 
+--[[
 function mob:on_deactivate()
     print("bye")
+end
+]]
+
+function mob:get_staticdata()
+    return minetest.serialize({
+        hp = self.hp
+    })
 end
 
 
@@ -317,6 +332,7 @@ function mob:move(dtime,moveresult)
 end
 
 function mob:on_step(dtime,moveresult)
+    print("HELLO I AM RUNNING!")
     if self.dead then
         if self.death_animation_timer >= 0 then
             self.manage_death_animation(self,dtime)
