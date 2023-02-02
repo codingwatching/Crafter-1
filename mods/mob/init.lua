@@ -77,6 +77,32 @@ minetest.register_mob(
     }
     }
 )
+
+minetest.register_mob(
+    {
+     name = "fish",
+     physical = true,
+     collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
+     visual = "mesh",
+     visual_size = {x = 3, y = 3},
+     mesh = "fish_mob.obj",
+     textures = {
+        "fish_mob.png"
+     },
+     -- Degrees
+     yaw_adjustment = 0,
+
+     is_visible = true,
+     pointable = true,
+     makes_footstep_sound = false,
+     hp = 10,
+     movement_type = "walk",
+     -- Wandering speeds
+     min_speed = 3,
+     max_speed = 5,
+     state = 0,
+     view_distance = 15,
+})
 --[[
 mobs.register_mob(
     {
