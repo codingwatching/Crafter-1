@@ -1,10 +1,4 @@
 # Made in Blockbench 4.6.0
 newmtl m_23e43c49-69b9-d6de-345d-29558409aa9a
 map_Kd fish_mob.png 
-newmtl m_83900c00-5a9b-195e-6ed4-836aa99fea4f
-map_Kd fish_hat.png 
-newmtl m_fecae773-9a08-10aa-3e54-e09d9f41e060
-map_Kd fish_cigarette.png 
-newmtl m_3b7c854c-7446-5ce4-b465-9e2d623bf9b3
-map_Kd fish_ibm briefcase.png 
 newmtl none
