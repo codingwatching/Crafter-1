@@ -62,18 +62,31 @@ mob.initial_properties = {
     pointable = definition.pointable,
     makes_footstep_sound = definition.makes_footstep_sound,
 }
+
+-- Walk movement type variables
 mob.jump_timer = 0
 mob.movement_timer = 0
+mob.still_on_wall = false
+
 mob.min_speed = definition.min_speed
 mob.max_speed = definition.max_speed
-mob.gravity = definition.gravity or -9.81
 mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
+mob.gravity = definition.gravity or -9.81
+
+-- Yaw & yaw interpolation
 mob.yaw_start = 0
 mob.yaw_end = 0
 mob.yaw_interpolation_progress = 0
 mob.yaw_rotation_multiplier = 0
 mob.yaw_adjustment = math.rad(definition.yaw_adjustment)
-mob.still_on_wall = false
+
+-- Pitch & pitch interpolation
+mob.pitch_start = 0
+mob.pitch_end = 0
+mob.pitch_interpolation_progress = 0
+mob.pitch_rotation_multiplier = 0
+mob.pitch_adjustment = math.rad(definition.pitch_adjustment)
+
 
 --[[
 mob.hp = definition.hp
@@ -197,12 +210,9 @@ function mob:on_activate(staticdata, dtime_s)
     if not staticdata or staticdata == "" then goto skip_data_assign end
 
     do
-    local old_data = minetest.deserialize(staticdata)
-    print(dump(staticdata))
-
-
+        local old_data = minetest.deserialize(staticdata)
+        print(dump(staticdata))
     end
-        
 
     ::skip_data_assign::
     self.object:set_acceleration(vector.new(0,self.gravity,0))
