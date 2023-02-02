@@ -270,20 +270,21 @@ function mob:manage_jumping(moveresult)
     local still_on_wall = false
     -- Only try to jump over nodes in the way
     for _,collision in ipairs(collisions) do
-        if collision.axis ~= "y" and collision.type == "node" then
-            if moveresult.touching_ground then
-                local check_pos = collision.node_pos
-                check_pos.y = check_pos.y + 1
-                if minetest.registered_nodes[minetest.get_node(check_pos).name].walkable then
-                    self:reset_movement_timer()
-                else
-                    should_jump = true
-                end
+        if collision.axis == "y" or collision.type ~= "node" then goto continue end
+
+        if moveresult.touching_ground then
+            local check_pos = collision.node_pos
+            check_pos.y = check_pos.y + 1
+            if minetest.registered_nodes[minetest.get_node(check_pos).name].walkable then
+                self:reset_movement_timer()
             else
-                still_on_wall = true
+                should_jump = true
             end
-            break
+        else
+            still_on_wall = true
         end
+        do break end
+        ::continue::
     end
 
     self.still_on_wall = still_on_wall
