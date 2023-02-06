@@ -17,10 +17,11 @@ minetest.register_entity("test:error", {initial_properties = {
     textures = {"snow_man.png"}
 }})
 
-minetest.register_entity("test:tri", {initial_properties = {
+minetest.register_entity("test:tri", {
+	initial_properties = {
     visual = "mesh",
-    mesh = "minimal_triangle.gltf",
-    textures = {"snow_man.png"}
+    mesh = "animated_triangle.gltf",
+    textures = {"dirt.png"}
 }})
 
 minetest.register_entity("test:debug_cube", {initial_properties = {
