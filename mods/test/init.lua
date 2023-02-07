@@ -23,7 +23,8 @@ minetest.register_entity("test:tri", {
         mesh = "animated_triangle.gltf",
         textures = {"dirt.png"}
     },
-    on_active = function(self)
+    on_activate = function(self)
+        print("LUA: TRIGGERED MESH ANIMATION")
         self.object:set_animation({x=0,y=5}, 1, 0.0, true)
     end
 })
