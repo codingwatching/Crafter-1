@@ -19,10 +19,14 @@ minetest.register_entity("test:error", {initial_properties = {
 
 minetest.register_entity("test:tri", {
 	initial_properties = {
-    visual = "mesh",
-    mesh = "animated_triangle.gltf",
-    textures = {"dirt.png"}
-}})
+        visual = "mesh",
+        mesh = "animated_triangle.gltf",
+        textures = {"dirt.png"}
+    },
+    on_active = function(self)
+        self.object:set_animation({x=0,y=5}, 1, 0.0, true)
+    end
+})
 
 minetest.register_entity("test:debug_cube", {initial_properties = {
     visual = "mesh",
