@@ -26,6 +26,22 @@ minetest.register_entity("test:tri", {
     on_activate = function(self)
         print("LUA: TRIGGERED MESH ANIMATION")
         self.object:set_animation({x=0,y=5}, 1, 0, true)
+    end,
+    time = 0,
+    rot = 0,
+    on_step = function(self, dtime)
+        if self.time > 2 then
+
+            self.rot = self.rot + (dtime * 500)
+            self.object:set_bone_position("debug", vector.new(0,0,0), vector.new(0,0,self.rot))
+            return
+        end
+        self.time = self.time + dtime
+
+        if self.time >= 2 then
+            print("BOOM BABY")
+            minetest.chat_send_all("LET'S PARTY!")
+        end
     end
 })
 
