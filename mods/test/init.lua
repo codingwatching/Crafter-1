@@ -32,15 +32,15 @@ minetest.register_entity("test:tri", {
     on_step = function(self, dtime)
         if self.time > 2 then
 
-            self.rot = self.rot + (dtime * 500)
-            self.object:set_bone_position("debug", vector.new(0,0,0), vector.new(0,0,self.rot))
+            --self.rot = self.rot + (dtime * 500)
+            -- self.object:set_bone_position("debug", vector.new(0,0,0), vector.new(0,0,self.rot))
             return
         end
         self.time = self.time + dtime
 
         if self.time >= 2 then
-            print("BOOM BABY")
-            minetest.chat_send_all("LET'S PARTY!")
+            -- print("BOOM BABY")
+            --minetest.chat_send_all("LET'S PARTY!")
         end
     end
 })
@@ -50,13 +50,26 @@ minetest.register_entity("test:debug_cube", {initial_properties = {
     mesh = "debug_cube.gltf",
     textures = {"debug_cube.png"}
 }})
+minetest.register_entity("test:engine", {initial_properties = {
+    visual = "mesh",
+    mesh = "engine.gltf",
+    textures = {"dirt.png"}
+}})
+
+minetest.register_entity("test:boxanim", {initial_properties = {
+    visual = "mesh",
+    mesh = "animated_box.gltf",
+    textures = {"dirt.png"}
+}})
+
+
 
 
 minetest.register_entity("test:c", {
     initial_properties = {
         visual = "mesh",
-        mesh = "debug_character.gltf",
-        textures = {"debug_character.png"}
+        mesh = "rigged_figure.gltf",
+        textures = {"dirt.png"}
     },
     triggered = false,
     timer = 0,
