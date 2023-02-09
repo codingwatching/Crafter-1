@@ -45,21 +45,16 @@ minetest.register_entity("test:tri", {
     end
 })
 
+minetest.register_entity("test:spider", {initial_properties = {
+    visual = "mesh",
+    mesh = "debug_spider.gltf",
+    textures = {"debug_spider.png"}
+}})
+
 minetest.register_entity("test:debug_cube", {initial_properties = {
     visual = "mesh",
     mesh = "debug_cube.gltf",
     textures = {"debug_cube.png"}
-}})
-minetest.register_entity("test:engine", {initial_properties = {
-    visual = "mesh",
-    mesh = "engine.gltf",
-    textures = {"dirt.png"}
-}})
-
-minetest.register_entity("test:boxanim", {initial_properties = {
-    visual = "mesh",
-    mesh = "animated_box.gltf",
-    textures = {"dirt.png"}
 }})
 
 
