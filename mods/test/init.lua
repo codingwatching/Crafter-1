@@ -47,7 +47,7 @@ minetest.register_entity("test:tri", {
 
 minetest.register_entity("test:spider", {initial_properties = {
     visual = "mesh",
-    mesh = "debug_spider.gltf",
+    mesh = "spider_animated.gltf",
     textures = {"debug_spider.png"}
 }})
 
