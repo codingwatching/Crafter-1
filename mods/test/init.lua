@@ -45,11 +45,18 @@ minetest.register_entity("test:tri", {
     end
 })
 
-minetest.register_entity("test:spider", {initial_properties = {
-    visual = "mesh",
-    mesh = "spider_animated.gltf",
-    textures = {"debug_spider.png"}
-}})
+minetest.register_entity("test:spider", {
+    initial_properties = {
+        visual = "mesh",
+        mesh = "spider_animated.gltf",
+        textures = {"debug_spider.png"}
+    },
+    on_activate = function(self)
+        print("I am a spider")
+        self.object:set_animation({x=0,y=1}, 1, 0, true)
+    end,
+
+})
 
 minetest.register_entity("test:debug_cube", {initial_properties = {
     visual = "mesh",
