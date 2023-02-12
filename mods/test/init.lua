@@ -67,7 +67,7 @@ minetest.register_entity("test:spider", {
     },
     on_activate = function(self)
         print("I am a test model")
-        self.object:set_animation({x=0,y=1}, 1, 0, true)
+        self.object:set_animation({x=0,y=6}, 1, 0, true)
     end,
 
 })
