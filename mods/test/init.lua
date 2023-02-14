@@ -62,15 +62,36 @@ minetest.register_entity("test:spider", {
 minetest.register_entity("test:spider", {
     initial_properties = {
         visual = "mesh",
+        mesh = "spider_animated.gltf",
+        textures = {"dirt.png"}
+    },
+    on_activate = function(self)
+        self.object:set_animation({x=0,y=7}, 1, 0, true)
+    end,
+})
+
+minetest.register_entity("test:bendy", {
+    initial_properties = {
+        visual = "mesh",
         mesh = "magical_bendy_boi.gltf",
         textures = {"dirt.png"}
     },
     on_activate = function(self)
-        print("I am a test model")
-        self.object:set_animation({x=0,y=1}, 1, 0, true)
+        self.object:set_animation({x=0,y=7}, 1, 0, true)
     end,
-
 })
+
+minetest.register_entity("test:simple", {
+    initial_properties = {
+        visual = "mesh",
+        mesh = "simple_animated.gltf",
+        textures = {"dirt.png"}
+    },
+    on_activate = function(self)
+        self.object:set_animation({x=0,y=7}, 1, 0, true)
+    end,
+})
+
 
 minetest.register_entity("test:debug_cube", {initial_properties = {
     visual = "mesh",
