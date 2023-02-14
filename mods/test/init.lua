@@ -62,7 +62,7 @@ minetest.register_entity("test:spider", {
 minetest.register_entity("test:spider", {
     initial_properties = {
         visual = "mesh",
-        mesh = "simple_animated.gltf",
+        mesh = "spider_animated.gltf",
         textures = {"dirt.png"}
     },
     on_activate = function(self)
