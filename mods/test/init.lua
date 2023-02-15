@@ -81,6 +81,28 @@ minetest.register_entity("test:bendy", {
     end,
 })
 
+minetest.register_entity("test:sb", {
+    initial_properties = {
+        visual = "mesh",
+        mesh = "simple_bendy_boi.gltf",
+        textures = {"dirt.png"}
+    },
+    on_activate = function(self)
+        self.object:set_animation({x=0,y=7}, 1, 0, true)
+    end,
+})
+
+minetest.register_entity("test:archy", {
+    initial_properties = {
+        visual = "mesh",
+        mesh = "archfan_bendy.gltf",
+        textures = {"dirt.png"}
+    },
+    on_activate = function(self)
+        self.object:set_animation({x=0,y=20}, 1, 0, true)
+    end,
+})
+
 minetest.register_entity("test:simple", {
     initial_properties = {
         visual = "mesh",
@@ -88,7 +110,7 @@ minetest.register_entity("test:simple", {
         textures = {"dirt.png"}
     },
     on_activate = function(self)
-        self.object:set_animation({x=0,y=7}, 1, 0, true)
+        self.object:set_animation({x=0,y=140}, 100, 0, true)
     end,
 })
 
