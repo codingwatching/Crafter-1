@@ -66,7 +66,18 @@ minetest.register_entity("test:spider", {
         textures = {"dirt.png"}
     },
     on_activate = function(self)
-        self.object:set_animation({x=0,y=7}, 1, 0, true)
+        self.object:set_animation({x=0,y=0}, 1, 0, true)
+    end,
+})
+
+minetest.register_entity("test:simp", {
+    initial_properties = {
+        visual = "mesh",
+        mesh = "ultra_simple.gltf",
+        textures = {"dirt.png"}
+    },
+    on_activate = function(self)
+        self.object:set_animation({x=0,y=50}, 24, 0, true)
     end,
 })
 
@@ -99,7 +110,7 @@ minetest.register_entity("test:archy", {
         textures = {"dirt.png"}
     },
     on_activate = function(self)
-        self.object:set_animation({x=0,y=20}, 1, 0, true)
+        self.object:set_animation({x=0,y=40}, 24, 0, true)
     end,
 })
 
@@ -110,7 +121,7 @@ minetest.register_entity("test:simple", {
         textures = {"dirt.png"}
     },
     on_activate = function(self)
-        self.object:set_animation({x=0,y=140}, 100, 0, true)
+        self.object:set_animation({x=0,y=132}, 24, 0, true)
     end,
 })
 
