@@ -66,7 +66,7 @@ minetest.register_entity("test:spider", {
         textures = {"dirt.png"}
     },
     on_activate = function(self)
-        self.object:set_animation({x=0,y=0}, 1, 0, true)
+        self.object:set_animation({x=0,y=120}, 24, 0, true)
     end,
 })
 
@@ -138,18 +138,13 @@ minetest.register_entity("test:debug_cube", {initial_properties = {
 minetest.register_entity("test:c", {
     initial_properties = {
         visual = "mesh",
-        mesh = "rigged_figure.gltf",
-        textures = {"dirt.png"}
+        mesh = "debug_character.gltf",
+        textures = {"debug_character.png"}
     },
     triggered = false,
     timer = 0,
-    on_step = function(self,dtime)
-        if self.triggered then return end
-        self.timer = self.timer + dtime
-        if self.timer > 2 then
-            print("triggered")
-            self.triggered = true
-            self.object:set_animation({x=168,y=188}, 10, 0, true)
-        end
+    on_activate = function(self)
+        -- self.object:set_animation({x=168,y=188}, 10, 0, true)
+        -- self.object:set_animation({x=0,y=0}, 10, 0, true)
     end
 })
