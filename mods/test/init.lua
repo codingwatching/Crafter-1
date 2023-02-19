@@ -66,7 +66,7 @@ minetest.register_entity("test:spider", {
         textures = {"dirt.png"}
     },
     on_activate = function(self)
-        self.object:set_animation({x=0,y=120}, 24, 0, true)
+        self.object:set_animation({x=9,y=9}, 24, 0, true)
     end,
 })
 
@@ -144,7 +144,7 @@ minetest.register_entity("test:c", {
     triggered = false,
     timer = 0,
     on_activate = function(self)
-        -- self.object:set_animation({x=168,y=188}, 10, 0, true)
+        self.object:set_animation({x=0,y=220}, 10, 0, true)
         -- self.object:set_animation({x=0,y=0}, 10, 0, true)
     end
 })
