@@ -81,7 +81,7 @@ minetest.register_entity("test:simp", {
     end,
 })
 
-minetest.register_entity("test:simp", {
+minetest.register_entity("test:compass", {
     initial_properties = {
         visual = "mesh",
         mesh = "compass.gltf",
