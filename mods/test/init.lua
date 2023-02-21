@@ -62,11 +62,11 @@ minetest.register_entity("test:spider", {
 minetest.register_entity("test:spider", {
     initial_properties = {
         visual = "mesh",
-        mesh = "spider_animated.gltf",
+        mesh = "spider.gltf",
         textures = {"dirt.png"}
     },
     on_activate = function(self)
-        self.object:set_animation({x=9,y=12}, 0.25, 0, true)
+        self.object:set_animation({x=30,y=30}, 24, 0, true)
     end,
 })
 
@@ -87,6 +87,9 @@ minetest.register_entity("test:compass", {
         mesh = "compass.gltf",
         textures = {"stone.png"}
     },
+    on_activate = function(self)
+        self.object:set_animation({x=0,y=240}, 24, 0, true)
+    end,
 })
 
 minetest.register_entity("test:bendy", {
@@ -152,7 +155,7 @@ minetest.register_entity("test:c", {
     triggered = false,
     timer = 0,
     on_activate = function(self)
-        self.object:set_animation({x=0,y=220}, 10, 0, true)
+        self.object:set_animation({x=0,y=220}, 24, 0, true)
         -- self.object:set_animation({x=0,y=0}, 10, 0, true)
     end
 })
