@@ -30,6 +30,7 @@ minetest.register_mob({
     -- Wandering speeds
     min_speed = 3,
     max_speed = 5,
+    ---! wat is state? wat
     state = 0,
     view_distance = 15,
     
