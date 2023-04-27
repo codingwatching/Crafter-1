@@ -237,7 +237,7 @@ local function furnace_node_timer(pos, elapsed)
         local fuel_percent = 100 - math.floor(fuel_time / fuel_totaltime * 100)
         fuel_state = (fuel_percent)
         formspec = furnace.get_furnace_active_formspec(fuel_percent, item_percent)
-        swap_node(pos, "utility:furnace_active")
+        swap_node(pos, "storage:furnace_active")
         -- make sure timer restarts automatically
         result = true
     else
@@ -245,7 +245,7 @@ local function furnace_node_timer(pos, elapsed)
             fuel_state = (0)
         end
         formspec = furnace.get_furnace_inactive_formspec()
-        swap_node(pos, "utility:furnace")
+        swap_node(pos, "storage:furnace")
         -- stop timer on the inactive furnace
         minetest.get_node_timer(pos):stop()
     end
@@ -289,7 +289,7 @@ end
 -- Node definitions
 --
 
-minetest.register_node("utility:furnace", {
+minetest.register_node("storage:furnace", {
     description = ("Furnace"),
     tiles = {
         "furnace_top.png", "furnace_bottom.png",
@@ -334,7 +334,7 @@ minetest.register_node("utility:furnace", {
         furnace.get_inventory_drops(pos, "src", drops)
         furnace.get_inventory_drops(pos, "fuel", drops)
         furnace.get_inventory_drops(pos, "dst", drops)
-        drops[#drops+1] = "utility:furnace"
+        drops[#drops+1] = "storage:furnace"
         minetest.remove_node(pos)
         return drops
     end,
@@ -347,7 +347,7 @@ minetest.register_node("utility:furnace", {
     allow_metadata_inventory_take = allow_metadata_inventory_take,
 })
 
-minetest.register_node("utility:furnace_active", {
+minetest.register_node("storage:furnace_active", {
     description = ("Furnace"),
     tiles = {
         "furnace_top.png", "furnace_bottom.png",
@@ -366,7 +366,7 @@ minetest.register_node("utility:furnace_active", {
     },
     paramtype2 = "facedir",
     light_source = 8,
-    drop = "utility:furnace",
+    drop = "storage:furnace",
     groups = {stone=2},
     legacy_facedir_simple = true,
     is_ground_content = false,
@@ -384,7 +384,7 @@ minetest.register_node("utility:furnace_active", {
 })
 
 minetest.register_craft({
-    output = "utility:furnace",
+    output = "storage:furnace",
     recipe = {
         {"main:cobble", "main:cobble", "main:cobble"},
         {"main:cobble", "",            "main:cobble"},

@@ -30,8 +30,8 @@ function chest.chest_lid_close(pn)
 
     local node = minetest.get_node(pos)
     minetest.after(0.2, function(pos,swap,node)
-        if minetest.get_node(pos).name == "utility:chest_open" then
-            minetest.swap_node(pos,{name = "utility:"..swap,param2=node.param2})
+        if minetest.get_node(pos).name == "storage:chest_open" then
+            minetest.swap_node(pos,{name = "storage:"..swap,param2=node.param2})
             minetest.sound_play(sound, {gain = 0.3, pos = pos, max_hear_distance = 10},true)
         end
         --redstone.collect_info(pos)
@@ -41,7 +41,7 @@ end
 chest.open_chests = {}
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname ~= "utility:chest" then
+    if formname ~= "storage:chest" then
         return
     end
     if not player or not fields.quit then
@@ -126,9 +126,9 @@ function chest.register_chest(name, d)
                     pos = pos, max_hear_distance = 10}, true)
             
                 minetest.swap_node(pos,
-                        { name = "utility:" .. name .. "_open",
+                        { name = "storage:" .. name .. "_open",
                         param2 = node.param2 })
-             minetest.show_formspec(clicker:get_player_name(),"utility:chest", chest.get_chest_formspec(pos))
+             minetest.show_formspec(clicker:get_player_name(),"storage:chest", chest.get_chest_formspec(pos))
             chest.open_chests[clicker:get_player_name()] = { pos = pos,
                     sound = def.sound_close, swap = name }
             
@@ -154,7 +154,7 @@ function chest.register_chest(name, d)
 
             minetest.show_formspec(
                 player:get_player_name(),
-                "utility:chest_locked",
+                "storage:chest_locked",
                 chest.get_chest_formspec(pos)
             )
         end
@@ -183,20 +183,20 @@ function chest.register_chest(name, d)
         end
         
         def.on_rightclick = function(pos, node, clicker)
-            if minetest.get_node(pos).name ~= "utility:chest" and  minetest.get_node(pos).name ~= "utility:chest_open" then
+            if minetest.get_node(pos).name ~= "storage:chest" and  minetest.get_node(pos).name ~= "storage:chest_open" then
                 return
             end
             minetest.sound_play(def.sound_open, {gain = 0.3, pos = pos, max_hear_distance = 10}, true)    
-            minetest.swap_node(pos, {name = "utility:" .. name .. "_open", param2 = node.param2 })
+            minetest.swap_node(pos, {name = "storage:" .. name .. "_open", param2 = node.param2 })
                 
-            minetest.show_formspec(clicker:get_player_name(),"utility:chest", chest.get_chest_formspec(pos))
+            minetest.show_formspec(clicker:get_player_name(),"storage:chest", chest.get_chest_formspec(pos))
             chest.open_chests[clicker:get_player_name()] = { pos = pos,sound = def.sound_close, swap = name }
             --redstone.collect_info(pos)
         end
         def.on_blast = function(pos)
             local drops = {}
             default.get_inventory_drops(pos, "main", drops)
-            drops[#drops+1] = "utility:" .. name
+            drops[#drops+1] = "storage:" .. name
             minetest.remove_node(pos)
             return drops
         end
@@ -217,7 +217,7 @@ function chest.register_chest(name, d)
             def_opened.tiles[i].backface_culling = true
         end
     end
-    def_opened.drop = "utility:" .. name
+    def_opened.drop = "storage:" .. name
     def_opened.groups.not_in_creative_inventory = 1
     def_opened.selection_box = {
         type = "fixed",
@@ -232,8 +232,8 @@ function chest.register_chest(name, d)
     def_closed.tiles[5] = def.tiles[3] -- drawtype to make them match the mesh
     def_closed.tiles[3] = def.tiles[3].."^[transformFX"
 
-    minetest.register_node("utility:" .. name, def_closed)
-    minetest.register_node("utility:" .. name .. "_open", def_opened)
+    minetest.register_node("storage:" .. name, def_closed)
+    minetest.register_node("storage:" .. name .. "_open", def_opened)
 
 end
 
@@ -254,7 +254,7 @@ chest.register_chest("chest", {
 })
 
 minetest.register_craft({
-    output = "utility:chest",
+    output = "storage:chest",
     recipe = {
         {"main:wood", "main:wood", "main:wood"},
         {"main:wood", "",          "main:wood"},
@@ -265,14 +265,14 @@ minetest.register_craft({
 
 minetest.register_craft({
     type = "fuel",
-    recipe = "utility:chest",
+    recipe = "storage:chest",
     burntime = 5,
 })
 
 
-local groups = minetest.registered_nodes["utility:chest_open"].groups
+local groups = minetest.registered_nodes["storage:chest_open"].groups
 groups["redstone_torch"]=1
 groups["redstone_power"]=9
-minetest.override_item("utility:chest_open", {
+minetest.override_item("storage:chest_open", {
     groups = groups    
 })

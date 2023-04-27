@@ -43,6 +43,11 @@ local MOVEMENT_TYPE = {
 
 function minetest.register_mob(definition)
 
+    --! BEGIN REQUIRED DATA
+    
+
+    --! END REQUIRED DATA
+
     minetest.register_mob_spawner(definition.name,definition.textures,definition.mesh)
 
     -- Mob class
