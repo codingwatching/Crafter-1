@@ -5,7 +5,7 @@ minetest.register_on_mods_loaded(function()
     registered_nodes  = minetest.registered_nodes
 end)
 
-local excluded_mods = {utility=true,craftingtable=true,buildtest=true,sign=true,bed=true}
+local excluded_mods = {storage=true,craftingtable=true,buildtest=true,sign=true,bed=true}
 local excluded_nodes = {
     ["redstone:piston_on"]=true,
     ["redstone:sticky_piston_on"]=true,
