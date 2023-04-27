@@ -160,21 +160,21 @@ add_container({
     {"bottom", "hopper:sorter", "main"},
     {"side", "hopper:sorter", "main"},
 
-    {"top", "utility:chest", "main"},
-    {"bottom", "utility:chest", "main"},
-    {"side", "utility:chest", "main"},
+    {"top", "storage:chest", "main"},
+    {"bottom", "storage:chest", "main"},
+    {"side", "storage:chest", "main"},
 
-    {"top", "utility:chest_open", "main"},
-    {"bottom", "utility:chest_open", "main"},
-    {"side", "utility:chest_open", "main"},
+    {"top", "storage:chest_open", "main"},
+    {"bottom", "storage:chest_open", "main"},
+    {"side", "storage:chest_open", "main"},
 
-    {"top", "utility:furnace", "dst"},
-    {"bottom", "utility:furnace", "src"},
-    {"side", "utility:furnace", "fuel"},
+    {"top", "storage:furnace", "dst"},
+    {"bottom", "storage:furnace", "src"},
+    {"side", "storage:furnace", "fuel"},
 
-    {"top", "utility:furnace_active", "dst"},
-    {"bottom", "utility:furnace_active", "src"},
-    {"side", "utility:furnace_active", "fuel"},
+    {"top", "storage:furnace_active", "dst"},
+    {"bottom", "storage:furnace_active", "src"},
+    {"side", "storage:furnace_active", "fuel"},
 })
 
 -- Target inventory retrieval
@@ -969,7 +969,7 @@ register_node("hopper:sorter", {
 register_craft({
     output = "hopper:hopper",
     recipe = {
-        {"main:iron","utility:chest","main:iron"},
+        {"main:iron","storage:chest","main:iron"},
         {"","main:iron",""},
     }
 })
@@ -977,7 +977,7 @@ register_craft({
 register_craft({
     output = "hopper:chute",
     recipe = {
-        {"main:iron","utility:chest","main:iron"},
+        {"main:iron","storage:chest","main:iron"},
     }
 })
 
@@ -985,7 +985,7 @@ register_craft({
     output = "hopper:sorter",
     recipe = {
         {"","main:gold",""},
-        {"main:iron","utility:chest","main:iron"},
+        {"main:iron","storage:chest","main:iron"},
         {"","main:iron",""},
     }
 })
