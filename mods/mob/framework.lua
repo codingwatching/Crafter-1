@@ -168,9 +168,9 @@ end
 
 function minetest.register_mob(definition)
     ---Error check: Success
-    MOVEMENT_TYPE.swim = 5;
-    print("swim:", MOVEMENT_TYPE.swim);
-    print("swim2: ", MOVEMENT_TYPE.getSwim());
+    -- MOVEMENT_TYPE.swim = 5;
+    -- print("swim:", MOVEMENT_TYPE.swim);
+    -- print("swim2: ", MOVEMENT_TYPE.getSwim());
 
     scanRequired(definition);
 
