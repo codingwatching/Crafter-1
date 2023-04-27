@@ -421,7 +421,7 @@ end
 
 train.on_rightclick = function(self,clicker)
     --[[
-    if clicker:get_wielded_item():get_name() == "utility:furnace" then
+    if clicker:get_wielded_item():get_name() == "storage:furnace" then
         local obj = minetest.add_entity(pos, "train:furnace")
         obj:set_attach(self.object,"",vector.new(0,0,0),vector.new(0,0,0))
         minetest.sound_play("wrench",{
@@ -733,7 +733,7 @@ minetest.register_entity("train:furnace", {
     set_node = function(self)
         self.object:set_properties({
             is_visible = true,
-            textures = {"utility:furnace"},
+            textures = {"storage:furnace"},
         })
     end,
 
