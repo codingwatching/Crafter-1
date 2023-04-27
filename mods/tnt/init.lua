@@ -72,10 +72,10 @@ local explosion_depletion
 local range_calc
 local boom_time = minetest.get_us_time()/1000000
 local digging_nodes = {
-    ["utility:chest_open"] = true,
-    ["utility:chest"] = true,
-    ["utility:furnace_active"] = true,
-    ["utility:furnace"] = true,
+    ["storage:chest_open"] = true,
+    ["storage:chest"] = true,
+    ["storage:furnace_active"] = true,
+    ["storage:furnace"] = true,
 }
 function tnt(pos,range,explosion_type)
     in_node = minetest.get_node(pos).name
