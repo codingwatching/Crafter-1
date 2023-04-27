@@ -5,6 +5,7 @@ local HALF_PI = math.pi / 2;
 local DOUBLE_PI = math.pi * 2;
 
 -- TODO: mobs figuring out a path up stairs & slabs
+---Todo: shovel a few of these functions into a utility mod.
 
 -- Wrap around yaw calculations so addition can be applied freely
 local function wrap_yaw(yaw)
@@ -34,13 +35,57 @@ local function lerp(start, finish, amount)
     return fma(finish - start, amount, start)
 end
 
--- Movement type enum
-local MOVEMENT_TYPE = {
+---Capitalizes the first letter in a string.
+---@param inputString string Input string to capitalize the first letter of.
+---@return string Returns string with capitalized first letter.
+local function capitalizeFirstLetter(inputString)
+    ---@Immutable <- Doesn't do anything yet
+    local output = inputString:gsub("^%l",string.upper);
+    return output;
+end
+
+---Converts a dynamic mutable table into an immutable table.
+---@param inputTable table The table which will become immutable.
+---@return table The new immutable table.
+local function makeImmutable(inputTable)
+    local proxy = {};
+    local meta = {
+        __index = inputTable,
+        __newindex = function (table,key,value)
+            error("attempt to update a read-only table");
+        end
+    }
+    setmetatable(proxy, meta);
+    return proxy;
+end
+
+---Auto dispatcher for readonly enumerators via functions & direct values.
+---@param dataSet { [string]: any } Input data set of key value enumerators.
+---@return function[] Immutable data output getters.
+local function dispatchGetterTable(dataSet)
+    ---@type function[]
+    local output = {};
+    ---Creates hanging references so the GC does not collect them.
+    for key,value in pairs(dataSet) do
+        ---@Immutable <- Doesn't do anything yet
+        local fieldGetterName = "get" .. capitalizeFirstLetter(key);
+        ---OOP style. Example: data.getName();
+        output[fieldGetterName] = function ()
+            return value;
+        end
+        ---Functional style. Example: data.name; 
+        output[key] = output[fieldGetterName]();
+    end
+    return makeImmutable(output);
+end
+
+---@type any[] Immutable mob movement type enumerators. Field names accessed via direct or getName().
+local MOVEMENT_TYPE = dispatchGetterTable({
     walk = 1,
     jump = 2,
     swim = 3,
     fly = 4
-}
+})
 
 ---Basic data return gate. Boolean case -> (true data | false data)
 ---@param case boolean
@@ -109,7 +154,7 @@ local REQUIRED = {
 ---@param definition table The mob definition table.
 ---@return nil
 local function scanRequired(definition)
-    ---@const <- this doesn't do anything yet
+    ---@Immutable <- This doesn't do anything yet.
     local mobName = definition.name;
     for _,fieldName in ipairs(REQUIRED) do
         nullCheck(definition[fieldName], fieldName, mobName);
@@ -117,6 +162,10 @@ local function scanRequired(definition)
 end
 
 function minetest.register_mob(definition)
+    ---Error check: Success
+    -- MOVEMENT_TYPE.swim = 5;
+    print("swim:", MOVEMENT_TYPE.swim);
+    print("swim2: ", MOVEMENT_TYPE.getSwim());
 
     scanRequired(definition);
 
