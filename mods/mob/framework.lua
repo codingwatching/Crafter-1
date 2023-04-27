@@ -41,6 +41,35 @@ local MOVEMENT_TYPE = {
     fly = 4
 }
 
+---Basic data return gate. Boolean case -> (true data | false data)
+---@param case boolean
+---@param trueResult any
+---@param falseResult any
+local function ternary(case, trueResult, falseResult)
+end
+
+---Basic function exectution gate. Boolean case -> (true function | false function)
+---@param case boolean
+---@param trueFunction function
+---@param falseFunction function
+local function ternaryExec(case, trueFunction, falseFunction)
+
+end
+
+---@param fieldName string Name of field within defined table.
+---@return nil
+local function throwUnfound(fieldName)
+    ---@type string
+    local output = "Mob: Error! (" .. fieldName .. ") must be defined!";
+    error(output);
+end
+
+---@param fieldName string Name of field within defined table.
+---@return nil
+local function nullCheck(fieldName)
+    
+end
+
 function minetest.register_mob(definition)
 
     --! BEGIN REQUIRED DATA
