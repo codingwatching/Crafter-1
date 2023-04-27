@@ -166,7 +166,7 @@ minetest.register_on_generated(function(minp, maxp, blockseed)
         -- make it face inwards to the room
         if math.random() >= 0.5 then
             local facedir = minetest.dir_to_facedir(vector.multiply(wall.facing, -1))
-            minetest.add_node(chestpos, {name = "utility:chest", param2 = facedir})
+            minetest.add_node(chestpos, {name = "storage:chest", param2 = facedir})
             populate_chest(chestpos, PcgRandom(noise3d_integer(noise, chestpos)))
         else
             minetest.add_node(chestpos, {name = mob_spawners[math.random(1,table.getn(mob_spawners))]})
