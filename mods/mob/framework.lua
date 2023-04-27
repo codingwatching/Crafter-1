@@ -52,7 +52,12 @@ local function makeImmutable(inputTable)
     local meta = {
         __index = inputTable,
         __newindex = function (table,key,value)
-            error("attempt to update a read-only table");
+            error(
+                "ERROR! Attempted to modify an immutable table!\n" ..
+                "Pointer: " .. tostring(table) .. "\n" ..
+                "Key: " .. key .. "\n" ..
+                "Value: " .. value .. "\n"
+            );
         end
     }
     setmetatable(proxy, meta);
@@ -163,7 +168,7 @@ end
 
 function minetest.register_mob(definition)
     ---Error check: Success
-    -- MOVEMENT_TYPE.swim = 5;
+    MOVEMENT_TYPE.swim = 5;
     print("swim:", MOVEMENT_TYPE.swim);
     print("swim2: ", MOVEMENT_TYPE.getSwim());
 
