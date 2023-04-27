@@ -16,7 +16,7 @@ when cooking have fire and smoke on cooking item
 ]]--
 
 --furnace class
-minetest.register_craftitem("utility:nothing", {
+minetest.register_craftitem("storage:nothing", {
     description = "Nothing",
     inventory_image = "wood.png",
 })
@@ -55,40 +55,40 @@ end
 --
 
 local function furnace_setup(pos)
-    local obj = minetest.add_entity(vector.new(pos.x,pos.y+fuel_height,pos.z), "utility:fuel")
-    obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
-    local obj = minetest.add_entity(vector.new(pos.x,pos.y+cook_height,pos.z), "utility:cook")
-    obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
-    local obj = minetest.add_entity(vector.new(pos.x,pos.y+output_height,pos.z), "utility:output")
-    obj:get_luaentity().set_item(obj:get_luaentity(),"utility:nothing")
+    local obj = minetest.add_entity(vector.new(pos.x,pos.y+fuel_height,pos.z), "storage:fuel")
+    obj:get_luaentity().set_item(obj:get_luaentity(),"storage:nothing")
+    local obj = minetest.add_entity(vector.new(pos.x,pos.y+cook_height,pos.z), "storage:cook")
+    obj:get_luaentity().set_item(obj:get_luaentity(),"storage:nothing")
+    local obj = minetest.add_entity(vector.new(pos.x,pos.y+output_height,pos.z), "storage:output")
+    obj:get_luaentity().set_item(obj:get_luaentity(),"storage:nothing")
 end
 
 local function furnace_remove(pos)
     for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+fuel_height,pos.z), 0.1)) do
-        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:fuel" then
+        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "storage:fuel" then
             local pos = object:get_pos()
             local item = object:get_luaentity().itemstring
-            if item ~= "utility:nothing" then
+            if item ~= "storage:nothing" then
                 local obj = minetest.add_item(pos,item)                
             end
             object:remove()
         end
     end
     for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+cook_height,pos.z), 0.1)) do
-        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:cook" then
+        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "storage:cook" then
             local pos = object:get_pos()
             local item = object:get_luaentity().itemstring
-            if item ~= "utility:nothing" then
+            if item ~= "storage:nothing" then
                 local obj = minetest.add_item(pos,item)
             end
             object:remove()
         end
     end
     for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+output_height,pos.z), 0.1)) do
-        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:output" then
+        if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "storage:output" then
             local pos = object:get_pos()
             local item = object:get_luaentity().itemstring
-            if item ~= "utility:nothing" then
+            if item ~= "storage:nothing" then
                 local obj = minetest.add_item(pos,item)
             end
             object:remove()
@@ -96,7 +96,7 @@ local function furnace_remove(pos)
     end
 end
 
-minetest.register_node("utility:furnace", {
+minetest.register_node("storage:furnace", {
     description = "Furnace",
     tiles = {
         "furnace_top.png", "furnace_bottom.png",
@@ -117,7 +117,7 @@ minetest.register_node("utility:furnace", {
 })
 
 minetest.register_craft({
-    output = "utility:furnace",
+    output = "storage:furnace",
     recipe = {
         {"main:stone", "main:stone", "main:stone"},
         {"main:stone", "",         "main:stone"},
@@ -138,7 +138,7 @@ space in between = 0.55
 
 
 --fuel entity
-minetest.register_entity("utility:fuel", {
+minetest.register_entity("storage:fuel", {
     initial_properties = {
         hp_max = 1,
         physical = true,
@@ -227,12 +227,12 @@ minetest.register_entity("utility:fuel", {
         
         local item = stack:get_name()
         local count = stack:get_count()
-        if stack:get_name() == "utility:nothing" then
+        if stack:get_name() == "storage:nothing" then
             count = 0
         end
         
         --shoot out existing item
-        if self.itemstring ~= item.." "..count and self.itemstring ~= "utility:nothing" then
+        if self.itemstring ~= item.." "..count and self.itemstring ~= "storage:nothing" then
             local pos = self.object:get_pos()
             local pos2 = clicker:get_pos()
             pos2.y = pos2.y + 1.25
@@ -248,7 +248,7 @@ minetest.register_entity("utility:fuel", {
         end
         
         if (item == "" or item == "hand:player") then
-            self.set_item(self,"utility:nothing")
+            self.set_item(self,"storage:nothing")
             self.object:set_nametag_attributes({
                 color = "red",
                 text = "",
@@ -272,7 +272,7 @@ minetest.register_entity("utility:fuel", {
             return
         end
         
-        if self.itemstring == "utility:nothing" then
+        if self.itemstring == "storage:nothing" then
             return
         end
         
@@ -284,7 +284,7 @@ minetest.register_entity("utility:fuel", {
         local dir = vector.subtract(pos2,pos)
         vector.multiply(dir,5)
         
-        self.set_item(self,"utility:nothing")
+        self.set_item(self,"storage:nothing")
         self.object:set_nametag_attributes({
             color = "red",
             text = "",
@@ -301,7 +301,7 @@ minetest.register_entity("utility:fuel", {
         local pos = self.object:get_pos()
         --check the cook timer
         for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+0.55,pos.z), 0.1)) do
-            if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:cook" then
+            if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "storage:cook" then
                 local item = object:get_luaentity().itemstring
                 return(minetest.get_craft_result({method = "cooking", width = 1, items = {ItemStack(item)}}).time)
             end
@@ -311,7 +311,7 @@ minetest.register_entity("utility:fuel", {
     cook_item = function(self)
         local pos = self.object:get_pos()
         for _,object in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+0.55,pos.z), 0.1)) do
-            if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "utility:cook" then
+            if not object:is_player() and object:get_luaentity() and object:get_luaentity().name == "storage:cook" then
                 local item = ItemStack(object:get_luaentity().itemstring)
                 if not item then
                     return
@@ -332,7 +332,7 @@ minetest.register_entity("utility:fuel", {
                 
                 --add to output
                 for _,object2 in ipairs(minetest.get_objects_inside_radius(vector.new(pos.x,pos.y+1.10,pos.z), 0.1)) do
-                    if not object2:is_player() and object2:get_luaentity() and object2:get_luaentity().name == "utility:output" then
+                    if not object2:is_player() and object2:get_luaentity() and object2:get_luaentity().name == "storage:output" then
                         local goal_item = ItemStack(object2:get_luaentity().itemstring)
                         local goal_item_name = goal_item:get_name()
                         local goal_item_count = goal_item:get_count()
@@ -343,7 +343,7 @@ minetest.register_entity("utility:fuel", {
                         end
                         
                         --add item to output or throw existing item out if not matched
-                        if goal_item_name ~= outputitem and goal_item_name ~= "utility:nothing" then
+                        if goal_item_name ~= outputitem and goal_item_name ~= "storage:nothing" then
                             local pos2 = object2:get_pos()
                             local obj = minetest.add_item(pos2,object2:get_luaentity().itemstring)
                             local dir = vector.new(math.random(-3,3),math.random(3,6),math.random(-3,3))
@@ -369,7 +369,7 @@ minetest.register_entity("utility:fuel", {
                 
                 --update count and nametag
                 if object:get_luaentity().count == 0 then
-                    object:get_luaentity().set_item(object:get_luaentity(), "utility:nothing")
+                    object:get_luaentity().set_item(object:get_luaentity(), "storage:nothing")
                     object:set_nametag_attributes({
                         color = "blue",
                         text = "",
@@ -463,7 +463,7 @@ minetest.register_entity("utility:fuel", {
             self.fuel_timer = self.fuel_timer - dtime
             --print(self.fuel_timer)
         elseif self.fuel_timer < 0 then
-            if ItemStack(self.itemstring):get_name() == "utility:nothing" then
+            if ItemStack(self.itemstring):get_name() == "storage:nothing" then
                 return
             end
             if self.cooking == false then
@@ -475,7 +475,7 @@ minetest.register_entity("utility:fuel", {
             local itemname = ItemStack(self.itemstring):get_name()
             
             if self.count == 0 then
-                self.set_item(self, "utility:nothing")
+                self.set_item(self, "storage:nothing")
                 self.object:set_nametag_attributes({
                     color = "red",
                     text = "",
@@ -504,7 +504,7 @@ minetest.register_entity("utility:fuel", {
 
 ----------------------------------------------------------------------------
 --cook entity
-minetest.register_entity("utility:cook", {
+minetest.register_entity("storage:cook", {
     initial_properties = {
         hp_max = 1,
         physical = true,
@@ -531,7 +531,7 @@ minetest.register_entity("utility:cook", {
         --end
         
         local count = stack:get_count()
-        if stack:get_name() == "utility:nothing" then
+        if stack:get_name() == "storage:nothing" then
             count = 0
         end
         self.count = count
@@ -595,7 +595,7 @@ minetest.register_entity("utility:cook", {
         local count = stack:get_count()
         
         --shoot out existing item
-        if self.itemstring ~= item.." "..count and self.itemstring ~= "utility:nothing" then
+        if self.itemstring ~= item.." "..count and self.itemstring ~= "storage:nothing" then
             local pos = self.object:get_pos()
             local pos2 = clicker:get_pos()
             pos2.y = pos2.y + 1.25
@@ -611,7 +611,7 @@ minetest.register_entity("utility:cook", {
         end
         
         if (item == "" or item == "hand:player") then
-            self.set_item(self,"utility:nothing")
+            self.set_item(self,"storage:nothing")
             self.object:set_nametag_attributes({
                 color = "blue",
                 text = "",
@@ -635,7 +635,7 @@ minetest.register_entity("utility:cook", {
             return
         end
         
-        if self.itemstring == "utility:nothing" then
+        if self.itemstring == "storage:nothing" then
             return
         end
         
@@ -647,7 +647,7 @@ minetest.register_entity("utility:cook", {
         local dir = vector.subtract(pos2,pos)
         vector.multiply(dir,5)
         
-        self.set_item(self,"utility:nothing")
+        self.set_item(self,"storage:nothing")
         self.object:set_nametag_attributes({
             color = "blue",
             text = "",
@@ -668,7 +668,7 @@ minetest.register_entity("utility:cook", {
 })
 ----------------------------------------------------------------------------
 --ouput entity
-minetest.register_entity("utility:output", {
+minetest.register_entity("storage:output", {
     initial_properties = {
         hp_max = 1,
         physical = true,
@@ -695,7 +695,7 @@ minetest.register_entity("utility:output", {
         --end
         
         local count = stack:get_count()
-        if stack:get_name() == "utility:nothing" then
+        if stack:get_name() == "storage:nothing" then
             count = 0
         end
         self.count = count
@@ -752,7 +752,7 @@ minetest.register_entity("utility:output", {
             return
         end
         
-        if self.itemstring == "utility:nothing" then
+        if self.itemstring == "storage:nothing" then
             return
         end
         
@@ -766,7 +766,7 @@ minetest.register_entity("utility:output", {
         local dir = vector.subtract(pos2,pos)
         vector.multiply(dir,5)
         
-        self.set_item(self,"utility:nothing")
+        self.set_item(self,"storage:nothing")
         self.object:set_nametag_attributes({
             color = "blue",
             text = "",
@@ -788,7 +788,7 @@ minetest.register_entity("utility:output", {
 
 
 minetest.register_craft({
-    output = "utility:furnace",
+    output = "storage:furnace",
     recipe = {
         {"main:cobble", "main:cobble", "main:cobble"},
         {"main:cobble", "", "main:cobble"},
