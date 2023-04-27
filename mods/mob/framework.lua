@@ -1,7 +1,8 @@
-local ipairs = ipairs
+local ipairs = ipairs;
+local null = nil;
 
-local HALF_PI = math.pi / 2
-local DOUBLE_PI = math.pi * 2
+local HALF_PI = math.pi / 2;
+local DOUBLE_PI = math.pi * 2;
 
 -- TODO: mobs figuring out a path up stairs & slabs
 
@@ -45,6 +46,7 @@ local MOVEMENT_TYPE = {
 ---@param case boolean
 ---@param trueResult any
 ---@param falseResult any
+---@return any
 local function ternary(case, trueResult, falseResult)
 end
 
@@ -52,10 +54,16 @@ end
 ---@param case boolean
 ---@param trueFunction function
 ---@param falseFunction function
+---@return any
 local function ternaryExec(case, trueFunction, falseFunction)
-
+    if (case) then
+        trueFunction();
+        return;
+    end
+    falseFunction();
 end
 
+---Throws an error corresponding to the name of the data which was null.
 ---@param fieldName string Name of field within defined table.
 ---@return nil
 local function throwUnfound(fieldName)
@@ -64,10 +72,13 @@ local function throwUnfound(fieldName)
     error(output);
 end
 
----@param fieldName string Name of field within defined table.
+---Checks a piece of data and automatically throws an error if it does not exist.
+---@param field any A piece of data.
+---@param fieldName string The name of the piece of data for debugging.
 ---@return nil
-local function nullCheck(fieldName)
-    
+local function nullCheck(field, fieldName)
+    if (field ~= null) then return end
+    throwUnfound(fieldName)
 end
 
 function minetest.register_mob(definition)
