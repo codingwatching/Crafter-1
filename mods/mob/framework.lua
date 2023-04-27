@@ -98,6 +98,10 @@ local MOVEMENT_TYPE = dispatchGetterTable({
 ---@param falseResult any
 ---@return any
 local function ternary(case, trueResult, falseResult)
+    if (case) then
+        return trueResult;
+    end
+    return falseResult;
 end
 
 ---Basic function exectution gate. Boolean case -> (true function | false function)
@@ -107,10 +111,16 @@ end
 ---@return any
 local function ternaryExec(case, trueFunction, falseFunction)
     if (case) then
-        trueFunction();
-        return;
+        return trueFunction();
     end
-    falseFunction();
+    return falseFunction();
+end
+
+---This function piggybacks on top of error simply because I like using the word throw more.
+---@param errorOutput string The error message.
+---@return nil
+local function throw(errorOutput)
+    error(errorOutput);
 end
 
 ---Throws an error corresponding to the name of the data which was null.
@@ -120,7 +130,7 @@ end
 local function throwUnfound(fieldName, mobName)
     ---@type string
     local output = "Mob: Error! (" .. tostring(mobName) .. ") is missing field (" .. fieldName .. ")!";
-    error(output);
+    throw(output);
 end
 
 ---Checks a piece of data and automatically throws an error if it does not exist.
@@ -134,6 +144,7 @@ local function nullCheck(field, fieldName, mobName)
 end
 
 ---Required fields in the mob's registration table.
+---@type string[]
 local REQUIRED = {
     "name",
     "physical",
@@ -166,11 +177,10 @@ local function scanRequired(definition)
     end
 end
 
+---Registers a new mob into the game.
+---@param definition table Holds the definition of the mob.
+---@return nil
 function minetest.register_mob(definition)
-    ---Error check: Success
-    -- MOVEMENT_TYPE.swim = 5;
-    -- print("swim:", MOVEMENT_TYPE.swim);
-    -- print("swim2: ", MOVEMENT_TYPE.getSwim());
 
     scanRequired(definition);
 
