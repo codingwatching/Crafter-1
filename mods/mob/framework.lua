@@ -65,28 +65,60 @@ end
 
 ---Throws an error corresponding to the name of the data which was null.
 ---@param fieldName string Name of field within defined table.
+---@param mobName string Name of the mob.
 ---@return nil
-local function throwUnfound(fieldName)
+local function throwUnfound(fieldName, mobName)
     ---@type string
-    local output = "Mob: Error! (" .. fieldName .. ") must be defined!";
+    local output = "Mob: Error! (" .. tostring(mobName) .. ") is missing field (" .. fieldName .. ")!";
     error(output);
 end
 
 ---Checks a piece of data and automatically throws an error if it does not exist.
 ---@param field any A piece of data.
 ---@param fieldName string The name of the piece of data for debugging.
+---@param mobName string The name of the mob.
 ---@return nil
-local function nullCheck(field, fieldName)
+local function nullCheck(field, fieldName, mobName)
     if (field ~= null) then return end
-    throwUnfound(fieldName)
+    throwUnfound(fieldName, mobName)
+end
+
+---Required fields in the mob's registration table.
+local REQUIRED = {
+    "name",
+    "physical",
+    "collisionbox",
+    "visual",
+    "visual_size",
+    "textures",
+    "yaw_adjustment",
+    "is_visible",
+    "pointable",
+    "makes_footstep_sound",
+    "hp",
+    "movement_type",
+    "min_speed",
+    "max_speed",
+    "view_distance",
+    "hostile",
+    "attacked_hostile",
+    "attack_type",
+    "group_attack",
+};
+---Scan the mob's definition 
+---@param definition table The mob definition table.
+---@return nil
+local function scanRequired(definition)
+    ---@const <- this doesn't do anything yet
+    local mobName = definition.name;
+    for _,fieldName in ipairs(REQUIRED) do
+        nullCheck(definition[fieldName], fieldName, mobName);
+    end
 end
 
 function minetest.register_mob(definition)
 
-    --! BEGIN REQUIRED DATA
-    
-
-    --! END REQUIRED DATA
+    scanRequired(definition);
 
     minetest.register_mob_spawner(definition.name,definition.textures,definition.mesh)
 
