@@ -1,17 +1,18 @@
 local ipairs = ipairs;
 local null = nil;
 
-local HALF_PI = math.pi / 2;
-local DOUBLE_PI = math.pi * 2;
+local PI = math.pi
+local HALF_PI = PI / 2;
+local DOUBLE_PI = PI * 2;
 
 -- TODO: mobs figuring out a path up stairs & slabs
 ---Todo: shovel a few of these functions into a utility mod.
 
 -- Wrap around yaw calculations so addition can be applied freely
 local function wrap_yaw(yaw)
-    if yaw < -math.pi then
+    if yaw < -PI then
         return yaw + DOUBLE_PI
-    elseif yaw > math.pi then
+    elseif yaw > PI then
         return yaw - DOUBLE_PI
     end
     return yaw
@@ -306,7 +307,7 @@ function minetest.register_mob(definition)
         self.movement_timer = self.movement_timer - dtime
         if self.movement_timer > 0 then return end
         self.movement_timer = math.random(2,6) + math.random()
-        local new_dir = ( math.random() * ( math.pi * 2 ) ) - math.pi
+        local new_dir = ( math.random() * ( PI * 2 ) ) - PI
         self.direction = minetest.yaw_to_dir(new_dir)
         self:set_yaw(minetest.dir_to_yaw(self.direction))
         self.speed = math.random(self.min_speed,self.max_speed)
@@ -388,16 +389,16 @@ function minetest.register_mob(definition)
         local larger = math.max(current_yaw, new_goal)
         local result = math.abs(larger - smaller)
         -- Brute force wrap it around, wrap_yaw is used a few lines above
-        if result > math.pi then
+        if result > PI then
             if new_goal < 0 then
                 new_goal = new_goal + DOUBLE_PI
             else
                 new_goal = new_goal - DOUBLE_PI
             end
-            result = result - math.pi
+            result = result - PI
         end
         -- Keeps a constant rotation factor while interpolating
-        local rotation_multiplier = 4 * math.pi / (math.pi + result)
+        local rotation_multiplier = 4 * PI / (PI + result)
         self.yaw_start = current_yaw
         self.yaw_end = new_goal
         self.yaw_rotation_multiplier = rotation_multiplier
@@ -432,7 +433,7 @@ function minetest.register_mob(definition)
 
         if not self:is_in_water() then return end
 
-        local new_dir = ( math.random() * ( math.pi * 2 ) ) - math.pi
+        local new_dir = ( math.random() * ( PI * 2 ) ) - PI
 
         self.direction = minetest.yaw_to_dir(new_dir)
 
