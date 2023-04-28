@@ -1,4 +1,6 @@
-local ipairs, null, random, PI, HALF_PI, DOUBLE_PI, wrap_yaw, yaw_equals, randomTableSelection, lerp, makeImmutable, dispatchGetterTable, locomotion_types, attack_types, ternary, ternaryExec, ternaryExecParam, throw = ...
+local random = math.random;
+local PI = utility.PI;
+
 --- Builds walking methods & fields into the mob.
 ---@param mob mob
 ---@param definition table

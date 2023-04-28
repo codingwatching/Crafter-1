@@ -1,4 +1,16 @@
-local ipairs, null, random, PI, HALF_PI, DOUBLE_PI, wrap_yaw, yaw_equals, randomTableSelection, lerp, makeImmutable, dispatchGetterTable, locomotion_types, attack_types, ternary, ternaryExec, ternaryExecParam, throw = ...
+
+local ipairs = ipairs;
+local null = nil;
+
+local random = math.random;
+local PI = math.pi;
+local HALF_PI = PI / 2;
+local DOUBLE_PI = PI * 2;
+
+local wrap_yaw = utility.wrap_yaw;
+local lerp = utility.lerp;
+local randomTableSelection = utility.randomTableSelection;
+
 
 ---Builds the basic structure of the mob. Returns the mob with the new assembled components
 ---This is the entry point into constructing a mob.
@@ -8,6 +20,8 @@ return function(definition)
 
     ---@class mob The basis for a mob's class.
     local mob = {}
+
+    print(dump(definition))
 
     -- Mob fields
     mob.is_mob = true
