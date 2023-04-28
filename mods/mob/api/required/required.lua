@@ -69,6 +69,9 @@ return function(definition)
     mob.pitch_rotation_multiplier = 0
     mob.pitch_adjustment = (definition.pitch_adjustment and math.rad(definition.pitch_adjustment)) or 0
 
+    -- Generic fields for behavior
+    mob.following = false
+
 
     function mob:enable_gravity()
         -- Stop the lua to c++ interface from getting destroyed
