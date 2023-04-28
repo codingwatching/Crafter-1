@@ -6,37 +6,6 @@ local PI = math.pi;
 local HALF_PI = PI / 2;
 local DOUBLE_PI = PI * 2;
 
----@public
----@class definition Contains a definition for a mob's class.
-local d = {};
-
----@immutable <- Does nothing for now
-local apiDirectory = minetest.get_modpath("mob") .. "/api/";
-
----Automatically loads in api components.
----@param package string The package in which the file resides.
----@param apiFile string The file in which contains that portion of the api resides.
----@return function function The usable API element which streams in required class methods & fields.
-local function load(package, apiFile)
-    return dofile(apiDirectory .. "/" .. package .. "/" .. apiFile .. ".lua");
-end
-
--- Required
-local attachRequired = load("required", "required");
-
--- Locomotion
-local attachLocomotionFly  = load("locomotion", "fly");
-local attachLocomotionJump = load("locomotion", "jump");
-local attachLocomotionSwim = load("locomotion", "swim");
-local attachLocomotionWalk = load("locomotion", "walk");
-
--- Attack
-local attachAttackExplode    = load("attack", "explode");
-local attachAttackJump       = load("attack", "jump");
-local attachAttackNone       = load("attack", "none");
-local attachAttackProjectile = load("attack", "projectile");
-local attachAttackPunch      = load("attack", "punch");
-
 
 -- TODO: mobs figuring out a path up stairs & slabs
 ---Todo: shovel a few of these functions into a utility mod.
@@ -280,8 +249,37 @@ local function scanRequired(definition)
     end
 end
 
+
+---@immutable <- Does nothing for now
+local apiDirectory = minetest.get_modpath("mob") .. "/api/";
+
+---Automatically loads in api components.
+---@param package string The package in which the file resides.
+---@param apiFile string The file in which contains that portion of the api resides.
+---@return function function The usable API element which streams in required class methods & fields.
+local function load(package, apiFile)
+    return dofile(apiDirectory .. "/" .. package .. "/" .. apiFile .. ".lua")
+end
+
+-- Required
+local attachRequired = load("required", "required");
+
+-- Locomotion
+local attachLocomotionFly  = load("locomotion", "fly");
+local attachLocomotionJump = load("locomotion", "jump");
+local attachLocomotionSwim = load("locomotion", "swim");
+local attachLocomotionWalk = load("locomotion", "walk");
+
+-- Attack
+local attachAttackExplode    = load("attack", "explode");
+local attachAttackJump       = load("attack", "jump");
+local attachAttackNone       = load("attack", "none");
+local attachAttackProjectile = load("attack", "projectile");
+local attachAttackPunch      = load("attack", "punch");
+
+
 ---Registers a new mob into the game.
----@param definition definition Holds the definition of the mob.
+---@param definition table Holds the definition of the mob.
 ---@return nil
 function minetest.register_mob(definition)
 
@@ -303,281 +301,6 @@ function minetest.register_mob(definition)
         attachLocomotionWalk(definition, mob);
     end
     
-    
-
-    -- Swim locomotion type variables
-    mob.swim_goal = null
-    mob.swimmable_nodes = definition.swimmable_nodes or {"main:water", "main:waterflow"}
-    mob.swim_goal_cooldown_timer = 0
-
-    -- Yaw & yaw interpolation
-    mob.yaw_start = 0
-    mob.yaw_end = 0
-    mob.yaw_interpolation_progress = 0
-    mob.yaw_rotation_multiplier = 0
-    mob.yaw_adjustment = math.rad(definition.yaw_adjustment)
-
-    -- Pitch & pitch interpolation
-    mob.pitch_start = 0
-    mob.pitch_end = 0
-    mob.pitch_interpolation_progress = 0
-    mob.pitch_rotation_multiplier = 0
-    mob.pitch_adjustment = (definition.pitch_adjustment and math.rad(definition.pitch_adjustment)) or 0
-
-    -- Mob methods
-
-    function mob:on_activate(staticdata, dtime_s)
-        print(staticdata)
-        if not staticdata or staticdata == "" then goto skip_data_assign end
-
-        do
-            local old_data = minetest.deserialize(staticdata)
-            print(dump(staticdata))
-        end
-
-        ::skip_data_assign::
-        self:enable_gravity()
-    end
-
-    function mob:enable_gravity()
-        -- Stop the lua to c++ interface from getting destroyed
-        if (self.gravity_enabled) then return end
-        print("gravity enabled for mob: ", definition.name)
-        self.object:set_acceleration(vector.new(0,self.gravity,0))
-        self.gravity_enabled = true
-    end
-    function mob:disable_gravity()
-        -- Stop the lua to c++ interface from getting destroyed
-        if (not self.gravity_enabled) then return end
-        print("gravity disabled for mob: ", definition.name)
-        self.object:set_acceleration(vector.new(0,0,0))
-
-
-        --! This might cause a bad jolt, FIXME: if this doesn't work correctly
-        self.object:set_velocity(vector.new(0,0,0))
-
-
-        self.gravity_enabled = false
-    end
-
-    --[[
-    function mob:on_deactivate()
-        print("bye")
-    end
-    ]]
-
-    function mob:get_staticdata()
-        return minetest.serialize({
-            hp = self.hp
-        })
-    end
-
-
-    -- Random direction state change when wandering
-    function mob:manage_wandering_direction_change(dtime)
-        if self.following then return end
-        self.locomotion_timer = self.locomotion_timer - dtime
-        if self.locomotion_timer > 0 then return end
-        self.locomotion_timer = random(2,6) + random()
-        local new_dir = ( random() * ( PI * 2 ) ) - PI
-        self.direction = minetest.yaw_to_dir(new_dir)
-        self:set_yaw(minetest.dir_to_yaw(self.direction))
-        self.speed = random(self.min_speed,self.max_speed)
-    end
-
-    function mob:reset_locomotion_timer()
-        self.locomotion_timer = 0
-    end
-
-    function mob:manage_wandering()
-        local currentvel = self.object:get_velocity()
-        currentvel.y = 0
-        -- Mob will not move when still jumping up against the side of a wall
-        if self.still_on_wall then
-            self.object:add_velocity(vector.new(0 - currentvel.x,0,0 - currentvel.z))
-            return
-        end
-        local goal = vector.multiply(self.direction,self.speed)
-        local acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
-        acceleration = vector.multiply(acceleration, 0.05)
-
-
-        --[[ whip_turn used to be used for when a mob was on a path TODO: change this to fast_turn
-        if self.whip_turn then
-            self.whip_turn = self.whip_turn - dtime
-            if self.whip_turn <= 0 then
-                self.whip_turn = nil
-            end
-        else
-            
-        end
-        ]]
-
-        self.object:add_velocity(acceleration)
-    end
-    
-    function mob:manage_swimming(dtime)
-        if (self:is_in_water()) then
-
-            -- Basic locomotion calculations within water
-            self:disable_gravity()
-            if (self.swim_goal_cooldown_timer > 0.0) then
-                self.swim_goal_cooldown_timer = self.swim_goal_cooldown_timer - dtime
-            else
-                if (self.swim_goal) then goto skipCalculation end
-
-                self.swim_goal_cooldown_timer = 2--seconds
-                self.swim_goal = self:locate_water()
-                
-                if (not self.swim_goal) then goto skipCalculation end
-
-                local p1 = self.object:get_pos()
-                local p2 = self.swim_goal
-
-                print("found water at: ", p2.x, p2.y, p2.z)
-                
-                local directionVector = vector.direction(p1, p2)
-
-                self:set_yaw(directionVector.y)
-            end
-
-            ::skipCalculation::
-
-
-        else
-            -- fall like a rock
-            self:enable_gravity()
-        end
-    end
-
-
-    function mob:manage_jumping(moveresult)
-        self.still_on_wall = false
-        if not moveresult then return end
-        if not moveresult.collides then return end
-        local collisions = moveresult.collisions
-        if #collisions <= 0 then return end
-        local should_jump = false
-        local still_on_wall = false
-        -- Only try to jump over nodes in the way
-        for _,collision in ipairs(collisions) do
-            if collision.axis == "y" or collision.type ~= "node" then goto continue end
-
-            if moveresult.touching_ground then
-                local check_pos = collision.node_pos
-                check_pos.y = check_pos.y + 1
-                if minetest.registered_nodes[minetest.get_node(check_pos).name].walkable then
-                    self:reset_locomotion_timer()
-                else
-                    should_jump = true
-                end
-            else
-                still_on_wall = true
-            end
-            do break end
-            ::continue::
-        end
-
-        self.still_on_wall = still_on_wall
-
-        if not should_jump then return end
-        self.object:add_velocity(vector.new(0,5,0))
-    end
-
-    function mob:get_yaw()
-        return wrap_yaw(self.object:get_yaw() - self.yaw_adjustment)
-    end
-
-    function mob:set_yaw(new_goal)
-        self.yaw_interpolation_progress = 0
-        local current_yaw = self:get_yaw()
-        local smaller = math.min(current_yaw, new_goal)
-        local larger = math.max(current_yaw, new_goal)
-        local result = math.abs(larger - smaller)
-        -- Brute force wrap it around, wrap_yaw is used a few lines above
-        if result > PI then
-            if new_goal < 0 then
-                new_goal = new_goal + DOUBLE_PI
-            else
-                new_goal = new_goal - DOUBLE_PI
-            end
-            result = result - PI
-        end
-        -- Keeps a constant rotation factor while interpolating
-        local rotation_multiplier = 4 * PI / (PI + result)
-        self.yaw_start = current_yaw
-        self.yaw_end = new_goal
-        self.yaw_rotation_multiplier = rotation_multiplier
-    end
-
-    function mob:interpolate_yaw(dtime)
-        if self.yaw_interpolation_progress >= 1 then return end
-        self.yaw_interpolation_progress = self.yaw_interpolation_progress + (dtime * self.yaw_rotation_multiplier)
-        if self.yaw_interpolation_progress > 1 then
-            self.yaw_interpolation_progress = 1
-        end
-        local new_yaw = lerp(self.yaw_start, self.yaw_end, self.yaw_interpolation_progress)
-        new_yaw = new_yaw + self.yaw_adjustment
-        self.object:set_yaw(new_yaw)
-    end
-
-    function mob:locate_water()
-        local position = self.object:get_pos()
-        local scalar = vector.new(5, 5, 5);
-        local foundPositions = minetest.find_nodes_in_area(vector.subtract(position, scalar), vector.add(position, scalar), self.swimmable_nodes, false)
-        return randomTableSelection(foundPositions)
-    end
-
-    function mob:is_in_water()
-        local pos = self.object:get_pos()
-        local node = minetest.get_node(pos).name
-        return node and (node == "main:water" or node == "main:waterflow")
-    end
-
-    function mob:manage_swim_direction_change(dtime)
-
-        if self.following then return end
-
-        self.locomotion_timer = self.locomotion_timer - dtime
-
-        if self.locomotion_timer > 0 then return end
-
-        self.locomotion_timer = random(2,6) + random()
-
-        if not self:is_in_water() then return end
-
-        local new_dir = ( random() * ( PI * 2 ) ) - PI
-
-        self.direction = minetest.yaw_to_dir(new_dir)
-
-        self:set_yaw(minetest.dir_to_yaw(self.direction))
-
-        self.speed = random(self.min_speed,self.max_speed)
-    end
-
-
-
-    -- Dispatch the correct method based on what the mob locomotion type is
-    -- TODO: move walk type into final else branch as a catchall
-    if matchLocomotion(locomotion_types.walk) then
-        function mob:move(dtime,moveresult)
-            self:manage_wandering_direction_change(dtime)
-
-            --- self:manage_jumping(moveresult)
-            self:manage_wandering()
-            self:interpolate_yaw(dtime)
-        end
-    elseif matchLocomotion(locomotion_types.swim) then
-        function mob:move(dtime,moveresult)
-
-            self:manage_swimming(dtime);
-            -- self:manage_wandering_direction_change(dtime)
-            -- self:manage_jumping(moveresult)
-            -- self:manage_wandering()
-
-            self:interpolate_yaw(dtime)
-        end
-    end
 
 
     function mob:on_step(dtime,moveresult)
@@ -664,6 +387,6 @@ function minetest.register_mob(definition)
         ]]
     end
 
-    minetest.register_entity("mob:"..definition.name, mob)
+    minetest.register_entity("mob:" .. definition.name, mob)
 
 end -- !END REGISTER_MOB

@@ -32,6 +32,120 @@ return function(definition)
     mob.speed = 0
     mob.gravity_enabled = false;
 
+    -- Yaw & yaw interpolation
+    mob.yaw_start = 0
+    mob.yaw_end = 0
+    mob.yaw_interpolation_progress = 0
+    mob.yaw_rotation_multiplier = 0
+    mob.yaw_adjustment = math.rad(definition.yaw_adjustment)
+
+    -- Pitch & pitch interpolation
+    mob.pitch_start = 0
+    mob.pitch_end = 0
+    mob.pitch_interpolation_progress = 0
+    mob.pitch_rotation_multiplier = 0
+    mob.pitch_adjustment = (definition.pitch_adjustment and math.rad(definition.pitch_adjustment)) or 0
+
+
+    function mob:enable_gravity()
+        -- Stop the lua to c++ interface from getting destroyed
+        if (self.gravity_enabled) then return end
+        print("gravity enabled for mob: ", definition.name)
+        self.object:set_acceleration(vector.new(0,self.gravity,0))
+        self.gravity_enabled = true
+    end
+
+    function mob:disable_gravity()
+        -- Stop the lua to c++ interface from getting destroyed
+        if (not self.gravity_enabled) then return end
+        print("gravity disabled for mob: ", definition.name)
+        self.object:set_acceleration(vector.new(0,0,0))
+
+
+        --! This might cause a bad jolt, FIXME: if this doesn't work correctly
+        self.object:set_velocity(vector.new(0,0,0))
+
+
+        self.gravity_enabled = false
+    end
+
+    function mob:on_activate(staticdata, dtime)
+        print(staticdata)
+        if not staticdata or staticdata == "" then goto skip_data_assign end
+
+        do
+            local old_data = minetest.deserialize(staticdata)
+            print(dump(staticdata))
+        end
+
+        ::skip_data_assign::
+        self:enable_gravity()
+    end
+
+    function mob:on_deactivate()
+        print("bye")
+    end
+
+    function mob:get_staticdata()
+        return minetest.serialize({
+            hp = self.hp
+        })
+    end
+
+    function mob:reset_locomotion_timer()
+        self.locomotion_timer = 0
+    end
+
+    function mob:get_yaw()
+        return wrap_yaw(self.object:get_yaw() - self.yaw_adjustment)
+    end
+
+    function mob:set_yaw(new_goal)
+        self.yaw_interpolation_progress = 0
+        local current_yaw = self:get_yaw()
+        local smaller = math.min(current_yaw, new_goal)
+        local larger = math.max(current_yaw, new_goal)
+        local result = math.abs(larger - smaller)
+        -- Brute force wrap it around, wrap_yaw is used a few lines above
+        if result > PI then
+            if new_goal < 0 then
+                new_goal = new_goal + DOUBLE_PI
+            else
+                new_goal = new_goal - DOUBLE_PI
+            end
+            result = result - PI
+        end
+        -- Keeps a constant rotation factor while interpolating
+        local rotation_multiplier = 4 * PI / (PI + result)
+        self.yaw_start = current_yaw
+        self.yaw_end = new_goal
+        self.yaw_rotation_multiplier = rotation_multiplier
+    end
+
+    function mob:interpolate_yaw(dtime)
+        if self.yaw_interpolation_progress >= 1 then return end
+        self.yaw_interpolation_progress = self.yaw_interpolation_progress + (dtime * self.yaw_rotation_multiplier)
+        if self.yaw_interpolation_progress > 1 then
+            self.yaw_interpolation_progress = 1
+        end
+        local new_yaw = lerp(self.yaw_start, self.yaw_end, self.yaw_interpolation_progress)
+        new_yaw = new_yaw + self.yaw_adjustment
+        self.object:set_yaw(new_yaw)
+    end
+
+    function mob:locate_water(distance)
+        local position = self.object:get_pos()
+        local scalar = vector.new(distance, distance, distance);
+        local foundPositions = minetest.find_nodes_in_area(vector.subtract(position, scalar), vector.add(position, scalar), self.swimmable_nodes, false)
+        return randomTableSelection(foundPositions)
+    end
+
+    function mob:is_in_water()
+        local pos = self.object:get_pos()
+        local node = minetest.get_node(pos).name
+        return node and (node == "main:water" or node == "main:waterflow")
+    end
+
 
     return mob;
 end
