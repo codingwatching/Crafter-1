@@ -272,6 +272,7 @@ function minetest.register_mob(definition)
     mob.gravity = definition.gravity or -9.81
     mob.locomotion_timer = 0
     mob.speed = 0
+    mob.gravity_enabled = false;
 
     -- Walk locomotion type variables
     mob.jump_timer = 0
@@ -280,6 +281,7 @@ function minetest.register_mob(definition)
     -- Swim locomotion type variables
     mob.swim_goal = null
     mob.swimmable_nodes = definition.swimmable_nodes or {"main:water", "main:waterflow"}
+    mob.swim_goal_cooldown_timer = 0
 
     -- Yaw & yaw interpolation
     mob.yaw_start = 0
@@ -313,7 +315,20 @@ function minetest.register_mob(definition)
         end
 
         ::skip_data_assign::
+        self:enable_gravity()
+    end
+
+    function mob:enable_gravity()
+        -- Stop the lua to c++ interface from getting destroyed
+        if (self.gravity_enabled) then return end
         self.object:set_acceleration(vector.new(0,self.gravity,0))
+        self.gravity_enabled = true
+    end
+    function mob:disable_gravity()
+        -- Stop the lua to c++ interface from getting destroyed
+        if (not self.gravity_enabled) then return end
+        self.object:set_acceleration(vector.new(0,0,0))
+        self.gravity_enabled = false
     end
 
     --[[
@@ -374,9 +389,16 @@ function minetest.register_mob(definition)
     
     function mob:manage_swimming(dtime)
         if (self:is_in_water()) then
-            if (self.swim_goal == null) then
-                print("I need a swim goal!")
+            if (self.swim_goal_cooldown_timer > 0.0) then
+                self.swim_goal_cooldown_timer = self.swim_goal_cooldown_timer - dtimes
+            else
+                if (self.swim_goal == null) then
+                
+                end
             end
+        else
+            -- fall like a rock
+
         end
     end
 
@@ -453,7 +475,8 @@ function minetest.register_mob(definition)
 
     function mob:locate_water()
         local position = self.object:get_pos()
-        minetest.find_node_near(position, 5, nodenames, false)
+        local foundPosition = minetest.find_node_near(position, 5, self.swimmable_nodes, false)
+        return foundPosition
     end
 
     function mob:is_in_water()
