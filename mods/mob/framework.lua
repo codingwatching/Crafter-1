@@ -91,8 +91,19 @@ local MOVEMENT_TYPE = dispatchGetterTable({
     swim = 3,
     fly = 4
 })
-
+--- Possible choices: none, punch, jump, explode, projectile.
+---
+---@type any[] Immutable mob attack type enumerators. Field names accessed via direct or getName().
 minetest.attack_types = dispatchGetterTable({
+    none = 0,
+    punch = 1,
+    jump = 2,
+    explode = 3,
+    projectile = 4
+})
+--- Localized version of the table above.
+---@type any[]
+local attack_types = dispatchGetterTable({
     none = 0,
     punch = 1,
     jump = 2,
