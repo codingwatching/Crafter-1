@@ -216,6 +216,7 @@ local REQUIRED = {
     "attack_type",
     "group_attack",
 };
+
 ---Scan the mob's definition 
 ---@param definition table The mob definition table.
 ---@return nil
