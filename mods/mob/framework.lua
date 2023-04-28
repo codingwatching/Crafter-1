@@ -33,6 +33,16 @@ local function yaw_equals(comparitor1, comparitor2, precision)
     return x == y or x + y == 0
 end
 
+---Selects a random element from the given table.
+---@param inputTable table The table in which to select items from.
+---@return any any The selected item from the table. Or null if nothing.
+local function randomTableSelection(inputTable)
+    ---@Immutable <- Doesn't do anything yet
+    local count = #inputTable
+    if (count == 0) then return null end
+    return inputTable[math.random(1, count)]
+end
+
 ---1 dimensional linear interpolation.
 ---@param origin number Starting point.
 ---@param amount number Amount, 0.0 to 1.0.
@@ -321,13 +331,21 @@ function minetest.register_mob(definition)
     function mob:enable_gravity()
         -- Stop the lua to c++ interface from getting destroyed
         if (self.gravity_enabled) then return end
+        print("gravity enabled for mob: ", definition.name)
         self.object:set_acceleration(vector.new(0,self.gravity,0))
         self.gravity_enabled = true
     end
     function mob:disable_gravity()
         -- Stop the lua to c++ interface from getting destroyed
         if (not self.gravity_enabled) then return end
+        print("gravity disabled for mob: ", definition.name)
         self.object:set_acceleration(vector.new(0,0,0))
+
+
+        --! This might cause a bad jolt, FIXME: if this doesn't work correctly
+        self.object:set_velocity(vector.new(0,0,0))
+
+
         self.gravity_enabled = false
     end
 
@@ -389,16 +407,35 @@ function minetest.register_mob(definition)
     
     function mob:manage_swimming(dtime)
         if (self:is_in_water()) then
+
+            -- Basic locomotion calculations within water
+            self:disable_gravity()
             if (self.swim_goal_cooldown_timer > 0.0) then
-                self.swim_goal_cooldown_timer = self.swim_goal_cooldown_timer - dtimes
+                self.swim_goal_cooldown_timer = self.swim_goal_cooldown_timer - dtime
             else
-                if (self.swim_goal == null) then
+                if (self.swim_goal) then goto skipCalculation end
+
+                self.swim_goal_cooldown_timer = 2--seconds
+                self.swim_goal = self:locate_water()
                 
-                end
+                if (not self.swim_goal) then goto skipCalculation end
+
+                local p1 = self.object:get_pos()
+                local p2 = self.swim_goal
+
+                print("found water at: ", p2.x, p2.y, p2.z)
+                
+                local directionVector = vector.direction(p1, p2)
+
+                self:set_yaw(directionVector.y)
             end
+
+            ::skipCalculation::
+
+
         else
             -- fall like a rock
-
+            self:enable_gravity()
         end
     end
 
