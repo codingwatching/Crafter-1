@@ -13,33 +13,63 @@ return function(mob, definition)
     mob.swim_goal_cooldown_timer = 0
 
 
+    function mob:swim(dtime)
+        local currentvel = self.object:get_velocity()
+        currentvel.y = 0
+        local goal = vector.multiply(self.direction,self.speed)
+        local acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
+        acceleration = vector.multiply(acceleration, 0.05)
+        self.object:add_velocity(acceleration)
+
+    end
+
+    function mob:track_towards_swim_goal(dtime)
+        local p1 = self.object:get_pos()
+        local p2 = self.swim_goal
+        local directionVector = vector.direction(p1, p2)
+        self.direction = directionVector;
+        local yaw = minetest.dir_to_yaw(directionVector)
+        self:set_yaw(yaw)
+    end
+
+    function mob:reset_trigger_when_too_close_to_swim_goal(dtime)
+        local p1 = self.object:get_pos()
+        local p2 = self.swim_goal
+        if (vector.distance(p1,p2) < 0.25) then
+            self.swim_goal_cooldown_timer = 0
+        end
+    end
+
 
     function mob:manage_swimming(dtime)
         if (self:is_in_water()) then
-
             -- Basic locomotion calculations within water
             self:disable_gravity()
             if (self.swim_goal_cooldown_timer > 0.0) then
                 self.swim_goal_cooldown_timer = self.swim_goal_cooldown_timer - dtime
             else
-                if (self.swim_goal) then goto skipCalculation end
+                if (self.swim_goal and self.swim_goal_cooldown_timer > 0.0) then goto skipCalculation end
 
                 self.swim_goal_cooldown_timer = 2--seconds
-                self.swim_goal = self:locate_water()
+                self.swim_goal = self:locate_water(5)
                 
                 if (not self.swim_goal) then goto skipCalculation end
 
-                local p1 = self.object:get_pos()
-                local p2 = self.swim_goal
+                self.speed = random(self.min_speed,self.max_speed)
 
-                print("found water at: ", p2.x, p2.y, p2.z)
-                
-                local directionVector = vector.direction(p1, p2)
-
-                self:set_yaw(directionVector.y)
             end
 
             ::skipCalculation::
+
+            -- This thing couldn't figure out where to go, abort! ABORT!
+            if (not self.swim_goal) then return end
+
+            self:reset_trigger_when_too_close_to_swim_goal(dtime)
+
+            -- print("I'm swimming woo")
+            self:track_towards_swim_goal(dtime)
+
+            self:swim(dtime)
 
 
         else
