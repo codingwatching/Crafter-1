@@ -175,7 +175,9 @@ function minetest.register_mob(definition)
         return mob.attack_type == input;
     end
 
-    if matchLocomotion(locomotion_types.fly) then
+    --FIXME: implement a switch statement into utility because this is awful
+
+    if (matchLocomotion(locomotion_types.fly)) then
         mob = attachLocomotionFly(mob, definition)
     elseif (matchLocomotion(locomotion_types.jump)) then
         mob = attachLocomotionJump(mob, definition)
@@ -183,6 +185,18 @@ function minetest.register_mob(definition)
         mob = attachLocomotionSwim(mob, definition)
     elseif (matchLocomotion(locomotion_types.walk)) then
         mob = attachLocomotionWalk(mob, definition);
+    end
+
+    if (matchAttack(attack_types.explode)) then
+        attachAttackExplode(mob, definition)
+    elseif (matchAttack(attack_types.jump)) then
+        attachAttackJump(mob, definition)
+    elseif (matchAttack(attack_types.none)) then
+        attachAttackNone(mob, definition)
+    elseif (matchAttack(attack_types.projectile)) then
+        attachAttackProjectile(mob, definition)
+    elseif (matchAttack(attack_types.punch)) then
+        attachAttackPunch(mob, definition)
     end
 
     function mob:on_step(dtime,moveresult)
