@@ -1,0 +1,23 @@
+Elements of this api were getting so complicated I was basically searching through the entire file for individual functions 98% of the time.
+
+So I've decided to do a builder pattern for mobs. Each of these files contains a function specific to streaming the required data & methods of that mob into it.
+
+These classifications so far are broken down as such:
+
+required ->
+-- requred #All mobs utilize some instance of these methods, hence the name
+
+attack ->
+-- none
+-- punch
+-- jump
+-- explode
+-- projectile
+
+locomotion ->
+-- walk
+-- jump
+-- swim
+-- fly
+
+You can probably see this looks like a java project. Oops.
