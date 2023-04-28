@@ -53,7 +53,14 @@ return function(definition)
     mob.yaw_end = 0
     mob.yaw_interpolation_progress = 0
     mob.yaw_rotation_multiplier = 0
-    mob.yaw_adjustment = math.rad(definition.yaw_adjustment)
+    mob.yaw_adjustment = math.rad(definition.yaw_adjustment or 0)
+
+    -- Pitch & pitch interpolation
+    mob.pitch_start = 0
+    mob.pitch_end = 0
+    mob.pitch_interpolation_progress = 0
+    mob.pitch_rotation_multiplier = 0
+    mob.pitch_adjustment = math.rad(definition.pitch_adjustment or 0)
 
     -- Pitch & pitch interpolation
     mob.pitch_start = 0
