@@ -63,7 +63,7 @@ minetest.register_mob({
     
     hostile = false,
     attacked_hostile = false,
-    attack_type = "punch",
+    attack_type = minetest.attack_types.none,
     group_attack = true,
 
     
@@ -100,6 +100,10 @@ minetest.register_mob({
     max_speed = 5,
     state = 0,
     view_distance = 15,
+    hostile = false,
+    attacked_hostile = false,
+    attack_type = minetest.attack_types.none;
+    group_attack = false
 })
 --[[
 mobs.register_mob(
