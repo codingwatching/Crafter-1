@@ -92,6 +92,14 @@ local MOVEMENT_TYPE = dispatchGetterTable({
     fly = 4
 })
 
+minetest.attack_types = dispatchGetterTable({
+    none = 0,
+    punch = 1,
+    jump = 2,
+    explode = 3,
+    projectile = 4
+})
+
 ---Basic data return gate. Boolean case -> (true data | false data)
 ---@param case boolean
 ---@param trueResult any
