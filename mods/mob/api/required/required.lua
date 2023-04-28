@@ -153,7 +153,9 @@ return function(definition)
         end
         local new_yaw = lerp(self.yaw_start, self.yaw_end, self.yaw_interpolation_progress)
         new_yaw = new_yaw + self.yaw_adjustment
-        self.object:set_yaw(new_yaw)
+        local oldRotation = self.object:get_rotation()
+        oldRotation.y = new_yaw
+        self.object:set_rotation(oldRotation)
     end
 
     function mob:get_pitch()
@@ -191,7 +193,11 @@ return function(definition)
         end
         local new_pitch = lerp(self.pitch_start, self.pitch_end, self.pitch_interpolation_progress)
         new_pitch = new_pitch + self.pitch_adjustment
-        self.object:set_pitch(new_pitch)
+
+        local oldRotation = self.object:get_rotation()
+        oldRotation.x = new_pitch;
+
+        self.object:set_rotation(oldRotation)
     end
 
     function mob:locate_water(distance)

@@ -26,12 +26,19 @@ return function(mob, definition)
     end
 
     function mob:track_towards_swim_goal(dtime)
+        --! YAW
         local p1 = self.object:get_pos()
         local p2 = self.swim_goal
         local directionVector = vector.direction(p1, p2)
         self.direction = directionVector;
         local yaw = minetest.dir_to_yaw(directionVector)
         self:set_yaw(yaw)
+
+        --! PITCH
+        local pitch = minetest.dir_to_yaw(directionVector)
+        self:set_pitch(pitch)
+
+
     end
 
     function mob:reset_trigger_when_too_close_to_swim_goal(dtime)
@@ -110,6 +117,7 @@ return function(mob, definition)
         -- self:manage_wandering()
 
         self:interpolate_yaw(dtime)
+        self:interpolate_pitch(dtime)
     end
 
 
