@@ -158,7 +158,7 @@ local attachAttackPunch      = load("attack", "punch");
 
 ---Registers a new mob into the game.
 ---@param definition table Holds the definition of the mob.
----@return nil
+---@return nil nil Game's internal framework will now have ownership over definition table & mob class blueprint.
 function minetest.register_mob(definition)
 
     scanRequired(definition);
