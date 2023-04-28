@@ -165,8 +165,6 @@ function minetest.register_mob(definition)
     elseif (matchLocomotion(locomotion_types.walk)) then
         mob = attachLocomotionWalk(mob, definition);
     end
-    
-
 
     function mob:on_step(dtime,moveresult)
         if self.dead then
