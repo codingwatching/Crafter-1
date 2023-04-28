@@ -31,9 +31,7 @@ minetest.locomotion_types = dispatchGetterTable({
     fly = 4
 })
 
---- Possible choices: walk, jump, swim, fly.
---- 
---- Immutable mob locomotion type enumerators. Field names accessed via direct or getName().
+---Localized version of the table above.
 ---@type any[]
 ---@enum
 ---@class locomotion_types
@@ -46,6 +44,13 @@ local locomotion_types = dispatchGetterTable({
 --- Possible choices: none, punch, jump, explode, projectile.
 ---
 ---@type any[] Immutable mob attack type enumerators. Field names accessed via direct or getName().
+---@enum
+---@class attack_types
+---@field none integer
+---@field punch integer
+---@field jump integer
+---@field explode integer
+---@field projectile integer
 minetest.attack_types = dispatchGetterTable({
     none = 0,
     punch = 1,
@@ -53,8 +58,9 @@ minetest.attack_types = dispatchGetterTable({
     explode = 3,
     projectile = 4
 })
---- Localized version of the table above.
+---Localized version of the table above.
 ---@type any[]
+---@class attack_types
 local attack_types = dispatchGetterTable({
     none = 0,
     punch = 1,
