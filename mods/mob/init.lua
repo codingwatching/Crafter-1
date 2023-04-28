@@ -93,6 +93,7 @@ minetest.register_mob({
     makes_footstep_sound = false,
     hp = 10,
     locomotion_type = minetest.locomotion_types.swim,
+    swimmable_nodes = {"main:water", "main:waterflow"},
     -- Wandering speeds
     min_speed = 3,
     max_speed = 5,

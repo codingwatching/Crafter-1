@@ -278,7 +278,8 @@ function minetest.register_mob(definition)
     mob.still_on_wall = false
 
     -- Swim locomotion type variables
-    mob.swim_goal = vector.new(0,0,0)
+    mob.swim_goal = null
+    mob.swimmable_nodes = definition.swimmable_nodes or {"main:water", "main:waterflow"}
 
     -- Yaw & yaw interpolation
     mob.yaw_start = 0
@@ -370,10 +371,12 @@ function minetest.register_mob(definition)
 
         self.object:add_velocity(acceleration)
     end
-
-    function mob:manage_swimming()
+    
+    function mob:manage_swimming(dtime)
         if (self:is_in_water()) then
-            print("I'm in water!")
+            if (self.swim_goal == null) then
+                print("I need a swim goal!")
+            end
         end
     end
 
@@ -448,6 +451,11 @@ function minetest.register_mob(definition)
         self.object:set_yaw(new_yaw)
     end
 
+    function mob:locate_water()
+        local position = self.object:get_pos()
+        minetest.find_node_near(position, 5, nodenames, false)
+    end
+
     function mob:is_in_water()
         local pos = self.object:get_pos()
         local node = minetest.get_node(pos).name
@@ -479,9 +487,7 @@ function minetest.register_mob(definition)
 
     -- Dispatch the correct method based on what the mob locomotion type is
     -- TODO: move walk type into final else branch as a catchall
-    print(definition.name, " has locomotion ", definition.locomotion_type)
     if match_move(locomotion_types.walk) then
-        print(definition.name, " walks")
         function mob:move(dtime,moveresult)
             self:manage_wandering_direction_change(dtime)
 
@@ -490,9 +496,9 @@ function minetest.register_mob(definition)
             self:interpolate_yaw(dtime)
         end
     elseif match_move(locomotion_types.swim) then
-        print(definition.name, " swims")
         function mob:move(dtime,moveresult)
 
+            self:manage_swimming(dtime);
             -- self:manage_wandering_direction_change(dtime)
             -- self:manage_jumping(moveresult)
             -- self:manage_wandering()
