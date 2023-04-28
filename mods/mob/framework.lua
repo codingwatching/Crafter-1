@@ -199,6 +199,8 @@ function minetest.register_mob(definition)
         attachAttackPunch(mob, definition)
     end
 
+    --FIXME: Perhaps a mob should have a matched onstep branch? Look into this
+
     function mob:on_step(dtime,moveresult)
         if self.dead then
             -- TODO: make death management it's own set of procedures
