@@ -12,6 +12,7 @@ local lerp = utility.lerp;
 local randomTableSelection = utility.randomTableSelection;
 
 
+
 ---Builds the basic structure of the mob. Returns the mob with the new assembled components
 ---This is the entry point into constructing a mob.
 ---@param definition table definition.
@@ -21,7 +22,7 @@ return function(definition)
     ---@class mob The basis for a mob's class.
     local mob = {}
 
-    print(dump(definition))
+    -- print(dump(definition))
 
     -- Mob fields
     mob.is_mob = true
@@ -214,6 +215,23 @@ return function(definition)
         local pos = self.object:get_pos()
         local node = minetest.get_node(pos).name
         return node and (node == "main:water" or node == "main:waterflow")
+    end
+
+    --! BEGIN default implementations to avoid crashes
+
+    ---This is the default action for placeholder methods.
+    ---@param placeHolder string Method name.
+    local function outputUnimplementedPlaceholder(placeHolder)
+        ---@immutable <- Does nothing right now
+        local mobName = definition.name;
+        print("Mob: Warning! (", mobName,") does not implement (", placeHolder, ")!");
+    end
+
+    ---Placeholder method for following implementation
+    ---@default
+    ---@function
+    function mob:follow(dtime)
+        outputUnimplementedPlaceholder("follow");
     end
 
 
