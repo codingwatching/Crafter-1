@@ -111,7 +111,7 @@ utility.dispatchGetterTable = function(dataSet)
     ---Creates hanging references so the GC does not collect them.
     for key,value in pairs(dataSet) do
         ---@immutable <- Does nothing for now
-        local fieldGetterName = "get" .. capitalizeFirstLetter(key);
+        local fieldGetterName = "get" .. utility.capitalizeFirstLetter(key);
         ---OOP style. Example: data.getName();
         output[fieldGetterName] = function ()
             return value;
@@ -119,7 +119,7 @@ utility.dispatchGetterTable = function(dataSet)
         ---Functional style. Example: data.name; 
         output[key] = output[fieldGetterName]();
     end
-    return makeImmutable(output);
+    return utility.makeImmutable(output);
 end
 
 ---Basic data return gate. Boolean case -> (true data | false data)
