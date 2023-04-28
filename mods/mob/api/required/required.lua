@@ -11,7 +11,7 @@ local wrap_angle = utility.wrap_angle;
 local lerp = utility.lerp;
 local randomTableSelection = utility.randomTableSelection;
 
-
+local water_nodes = {"main:water", "main:waterflow"}
 
 ---Builds the basic structure of the mob. Returns the mob with the new assembled components
 ---This is the entry point into constructing a mob.
@@ -19,13 +19,13 @@ local randomTableSelection = utility.randomTableSelection;
 ---@return table table Newly constructed mob class.
 return function(definition)
 
-    ---@class mob The basis for a mob's class.
+    ---@class mob
+    ---@field object table
     local mob = {}
 
     -- print(dump(definition))
 
-    -- Mob fields
-    mob.is_mob = true
+    -- Initial properties
     mob.initial_properties = {
         physical = definition.physical,
         collide_with_objects = false,
@@ -71,7 +71,10 @@ return function(definition)
     mob.pitch_adjustment = (definition.pitch_adjustment and math.rad(definition.pitch_adjustment)) or 0
 
     -- Generic fields for behavior
+    mob.is_mob = true
     mob.following = false
+    mob.hp = definition.hp
+
 
 
     function mob:enable_gravity()
@@ -207,7 +210,7 @@ return function(definition)
     function mob:locate_water(distance)
         local position = self.object:get_pos()
         local scalar = vector.new(distance, distance, distance);
-        local foundPositions = minetest.find_nodes_in_area(vector.subtract(position, scalar), vector.add(position, scalar), self.swimmable_nodes, false)
+        local foundPositions = minetest.find_nodes_in_area(vector.subtract(position, scalar), vector.add(position, scalar), water_nodes, false)
         return randomTableSelection(foundPositions)
     end
 

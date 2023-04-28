@@ -38,7 +38,6 @@ return function(mob, definition)
         local pitch = minetest.dir_to_yaw(directionVector)
         self:set_pitch(pitch)
 
-
     end
 
     function mob:reset_trigger_when_too_close_to_swim_goal(dtime)
