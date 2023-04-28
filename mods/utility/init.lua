@@ -18,6 +18,8 @@ utility.HALF_PI = HALF_PI;
 utility.DOUBLE_PI = DOUBLE_PI;
 
 
+---todo: This needs a better name because it can also wrap pitch
+---
 ---Under/over flows yaw to stay within boundary of -pi to pi.
 ---@param yaw number Input yaw.
 ---@return number number Corrected yaw.
