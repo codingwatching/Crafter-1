@@ -4,7 +4,7 @@
 ---@return table table Newly constructed mob class.
 return function(definition)
 
-    -- Mob class
+    ---@class mob The basis for a mob's class.
     local mob = {}
 
     -- Mob fields
