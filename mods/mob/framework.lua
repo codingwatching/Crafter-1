@@ -102,8 +102,17 @@ local function dispatchGetterTable(dataSet)
     return makeImmutable(output);
 end
 
----@type any[] Immutable mob movement type enumerators. Field names accessed via direct or getName().
-local MOVEMENT_TYPE = dispatchGetterTable({
+--- Possible choices: walk, jump, swim, fly.
+---
+---@type any[] Immutable mob locomotion type enumerators. Field names accessed via direct or getName().
+minetest.locomotion_types = dispatchGetterTable({
+    walk = 1,
+    jump = 2,
+    swim = 3,
+    fly = 4
+})
+---@type any[] Immutable mob locomotion type enumerators. Field names accessed via direct or getName().
+local locomotion_types = dispatchGetterTable({
     walk = 1,
     jump = 2,
     swim = 3,
@@ -207,7 +216,7 @@ local REQUIRED = {
     "pointable",
     "makes_footstep_sound",
     "hp",
-    "movement_type",
+    "locomotion_type",
     "min_speed",
     "max_speed",
     "view_distance",
@@ -256,19 +265,19 @@ function minetest.register_mob(definition)
         backface_culling = definition.backface_culling
     }
 
-    -- Generic variables for movement
-    mob.movement_type = (definition.movement_type and MOVEMENT_TYPE[definition.movement_type]) or MOVEMENT_TYPE.walk
+    -- Generic variables for locomotion
+    mob.locomotion_type = (definition.locomotion_type and locomotion_types[definition.locomotion_type]) or locomotion_types.walk
     mob.min_speed = definition.min_speed
     mob.max_speed = definition.max_speed
     mob.gravity = definition.gravity or -9.81
-    mob.movement_timer = 0
+    mob.locomotion_timer = 0
     mob.speed = 0
 
-    -- Walk movement type variables
+    -- Walk locomotion type variables
     mob.jump_timer = 0
     mob.still_on_wall = false
 
-    -- Swim movement type variables
+    -- Swim locomotion type variables
     mob.swim_goal = vector.new(0,0,0)
 
     -- Yaw & yaw interpolation
@@ -288,7 +297,7 @@ function minetest.register_mob(definition)
 
     -- Dispatcher functions
     local function match_move(input)
-        return mob.movement_type == input
+        return mob.locomotion_type == input
     end
 
     -- Mob methods
@@ -322,17 +331,17 @@ function minetest.register_mob(definition)
     -- Random direction state change when wandering
     function mob:manage_wandering_direction_change(dtime)
         if self.following then return end
-        self.movement_timer = self.movement_timer - dtime
-        if self.movement_timer > 0 then return end
-        self.movement_timer = math.random(2,6) + math.random()
+        self.locomotion_timer = self.locomotion_timer - dtime
+        if self.locomotion_timer > 0 then return end
+        self.locomotion_timer = math.random(2,6) + math.random()
         local new_dir = ( math.random() * ( PI * 2 ) ) - PI
         self.direction = minetest.yaw_to_dir(new_dir)
         self:set_yaw(minetest.dir_to_yaw(self.direction))
         self.speed = math.random(self.min_speed,self.max_speed)
     end
 
-    function mob:reset_movement_timer()
-        self.movement_timer = 0
+    function mob:reset_locomotion_timer()
+        self.locomotion_timer = 0
     end
 
     function mob:manage_wandering()
@@ -362,6 +371,12 @@ function minetest.register_mob(definition)
         self.object:add_velocity(acceleration)
     end
 
+    function mob:manage_swimming()
+        if (self:is_in_water()) then
+            print("I'm in water!")
+        end
+    end
+
 
     function mob:manage_jumping(moveresult)
         self.still_on_wall = false
@@ -379,7 +394,7 @@ function minetest.register_mob(definition)
                 local check_pos = collision.node_pos
                 check_pos.y = check_pos.y + 1
                 if minetest.registered_nodes[minetest.get_node(check_pos).name].walkable then
-                    self:reset_movement_timer()
+                    self:reset_locomotion_timer()
                 else
                     should_jump = true
                 end
@@ -443,11 +458,11 @@ function minetest.register_mob(definition)
 
         if self.following then return end
 
-        self.movement_timer = self.movement_timer - dtime
+        self.locomotion_timer = self.locomotion_timer - dtime
 
-        if self.movement_timer > 0 then return end
+        if self.locomotion_timer > 0 then return end
 
-        self.movement_timer = math.random(2,6) + math.random()
+        self.locomotion_timer = math.random(2,6) + math.random()
 
         if not self:is_in_water() then return end
 
@@ -462,9 +477,9 @@ function minetest.register_mob(definition)
 
 
 
-    -- Dispatch the correct method based on what the mob movement type is
+    -- Dispatch the correct method based on what the mob locomotion type is
     -- TODO: move walk type into final else branch as a catchall
-    if match_move(MOVEMENT_TYPE.walk) then
+    if match_move(locomotion_types.walk) then
         function mob:move(dtime,moveresult)
             self:manage_wandering_direction_change(dtime)
 
@@ -472,12 +487,13 @@ function minetest.register_mob(definition)
             self:manage_wandering()
             self:interpolate_yaw(dtime)
         end
-    elseif match_move(MOVEMENT_TYPE.swim) then
+    elseif match_move(locomotion_types.swim) then
         function mob:move(dtime,moveresult)
 
             -- self:manage_wandering_direction_change(dtime)
             -- self:manage_jumping(moveresult)
             -- self:manage_wandering()
+
             self:interpolate_yaw(dtime)
         end
     end
