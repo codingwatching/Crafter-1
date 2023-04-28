@@ -259,6 +259,8 @@ local apiDirectory = minetest.get_modpath("mob") .. "/api/";
 ---@return function function The usable API element which streams in required class methods & fields.
 local function load(package, apiFile)
     return dofile(apiDirectory .. "/" .. package .. "/" .. apiFile .. ".lua")
+    -- with localized vars
+    (ipairs, null, random, PI, HALF_PI, DOUBLE_PI, wrap_yaw, yaw_equals, randomTableSelection, lerp, makeImmutable, dispatchGetterTable, locomotion_types, attack_types, ternary, ternaryExec, ternaryExecParam, throw);
 end
 
 -- Required
