@@ -47,7 +47,7 @@ minetest.register_mob({
     -----
     
     
-    item_drop = "mob:raw_porkchop", 
+    item_drop = "mob:raw_porkchop",
     standing_frame = {x=0,y=0},
     moving_frame = {x=0,y=40},
     animation_multiplier = 20,
@@ -92,7 +92,7 @@ minetest.register_mob({
     pointable = true,
     makes_footstep_sound = false,
     hp = 10,
-    locomotion_type = "walk",
+    locomotion_type = minetest.locomotion_types.swim,
     -- Wandering speeds
     min_speed = 3,
     max_speed = 5,
