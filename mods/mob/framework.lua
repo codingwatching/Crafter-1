@@ -266,7 +266,7 @@ function minetest.register_mob(definition)
     }
 
     -- Generic variables for locomotion
-    mob.locomotion_type = (definition.locomotion_type and locomotion_types[definition.locomotion_type]) or locomotion_types.walk
+    mob.locomotion_type = definition.locomotion_type
     mob.min_speed = definition.min_speed
     mob.max_speed = definition.max_speed
     mob.gravity = definition.gravity or -9.81
@@ -479,7 +479,9 @@ function minetest.register_mob(definition)
 
     -- Dispatch the correct method based on what the mob locomotion type is
     -- TODO: move walk type into final else branch as a catchall
+    print(definition.name, " has locomotion ", definition.locomotion_type)
     if match_move(locomotion_types.walk) then
+        print(definition.name, " walks")
         function mob:move(dtime,moveresult)
             self:manage_wandering_direction_change(dtime)
 
@@ -488,6 +490,7 @@ function minetest.register_mob(definition)
             self:interpolate_yaw(dtime)
         end
     elseif match_move(locomotion_types.swim) then
+        print(definition.name, " swims")
         function mob:move(dtime,moveresult)
 
             -- self:manage_wandering_direction_change(dtime)
