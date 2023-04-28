@@ -6,6 +6,19 @@ local PI = math.pi;
 local HALF_PI = PI / 2;
 local DOUBLE_PI = PI * 2;
 
+---@immutable <- Does nothing for now
+local apiDirectory = minetest.get_modpath("mob") .. "/api/"
+
+---Automatically loads in api components.
+---@param package string The package in which the file resides.
+---@param apiFile string The file in which contains that portion of the api resides.
+---@return function function The usable API element which streams in required class methods & fields.
+local function load(package, apiFile)
+    return dofile(apiDirectory .. "/" .. package .. "/" .. apiFile .. ".lua")
+end
+
+local buildRequired = load("required", "required")
+
 -- TODO: mobs figuring out a path up stairs & slabs
 ---Todo: shovel a few of these functions into a utility mod.
 
@@ -38,7 +51,7 @@ end
 ---@param inputTable table The table in which to select items from.
 ---@return any any The selected item from the table. Or null if nothing.
 local function randomTableSelection(inputTable)
-    ---@Immutable <- Doesn't do anything yet
+    ---@immutable <- Does nothing for now
     local count = #inputTable
     if (count == 0) then return null end
     return inputTable[random(1, count)]
@@ -68,7 +81,7 @@ end
 ---@param inputString string Input string to capitalize the first letter of.
 ---@return string Returns string with capitalized first letter.
 local function capitalizeFirstLetter(inputString)
-    ---@Immutable <- Doesn't do anything yet
+    ---@immutable <- Does nothing for now
     local output = inputString:gsub("^%l",string.upper);
     return output;
 end
@@ -101,7 +114,7 @@ local function dispatchGetterTable(dataSet)
     local output = {};
     ---Creates hanging references so the GC does not collect them.
     for key,value in pairs(dataSet) do
-        ---@Immutable <- Doesn't do anything yet
+        ---@immutable <- Does nothing for now
         local fieldGetterName = "get" .. capitalizeFirstLetter(key);
         ---OOP style. Example: data.getName();
         output[fieldGetterName] = function ()
@@ -241,7 +254,7 @@ local REQUIRED = {
 ---@param definition table The mob definition table.
 ---@return nil
 local function scanRequired(definition)
-    ---@Immutable <- This doesn't do anything yet.
+    ---@immutable <- This Does nothing for now.
     local mobName = definition.name;
     for _,fieldName in ipairs(REQUIRED) do
         nullCheck(definition[fieldName], fieldName, mobName);
@@ -257,33 +270,7 @@ function minetest.register_mob(definition)
 
     minetest.register_mob_spawner(definition.name,definition.textures,definition.mesh)
 
-    -- Mob class
-    local mob = {}
-
-    -- Mob fields
-    mob.is_mob = true
-    mob.initial_properties = {
-        physical = definition.physical,
-        collide_with_objects = false,
-        collisionbox = definition.collisionbox,
-        visual = definition.visual,
-        visual_size = definition.visual_size,
-        mesh = definition.mesh,
-        textures = definition.textures,
-        is_visible = definition.is_visible,
-        pointable = definition.pointable,
-        makes_footstep_sound = definition.makes_footstep_sound,
-        backface_culling = definition.backface_culling
-    }
-
-    -- Generic variables for locomotion
-    mob.locomotion_type = definition.locomotion_type
-    mob.min_speed = definition.min_speed
-    mob.max_speed = definition.max_speed
-    mob.gravity = definition.gravity or -9.81
-    mob.locomotion_timer = 0
-    mob.speed = 0
-    mob.gravity_enabled = false;
+    local mob = buildRequired(definition);
 
     -- Walk locomotion type variables
     mob.jump_timer = 0
