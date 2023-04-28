@@ -8,7 +8,9 @@ local DOUBLE_PI = PI * 2;
 -- TODO: mobs figuring out a path up stairs & slabs
 ---Todo: shovel a few of these functions into a utility mod.
 
--- Wrap around yaw calculations so addition can be applied freely
+---Under/over flows yaw to stay within boundary of -pi to pi.
+---@param yaw number Input yaw.
+---@return number number Corrected yaw.
 local function wrap_yaw(yaw)
     if yaw < -PI then
         return yaw + DOUBLE_PI
