@@ -6,18 +6,37 @@ local PI = math.pi;
 local HALF_PI = PI / 2;
 local DOUBLE_PI = PI * 2;
 
+---@public
+---@class definition Contains a definition for a mob's class.
+local d = {};
+
 ---@immutable <- Does nothing for now
-local apiDirectory = minetest.get_modpath("mob") .. "/api/"
+local apiDirectory = minetest.get_modpath("mob") .. "/api/";
 
 ---Automatically loads in api components.
 ---@param package string The package in which the file resides.
 ---@param apiFile string The file in which contains that portion of the api resides.
 ---@return function function The usable API element which streams in required class methods & fields.
 local function load(package, apiFile)
-    return dofile(apiDirectory .. "/" .. package .. "/" .. apiFile .. ".lua")
+    return dofile(apiDirectory .. "/" .. package .. "/" .. apiFile .. ".lua");
 end
 
-local buildRequired = load("required", "required")
+-- Required
+local attachRequired = load("required", "required");
+
+-- Locomotion
+local attachLocomotionFly  = load("locomotion", "fly");
+local attachLocomotionJump = load("locomotion", "jump");
+local attachLocomotionSwim = load("locomotion", "swim");
+local attachLocomotionWalk = load("locomotion", "walk");
+
+-- Attack
+local attachAttackExplode    = load("attack", "explode");
+local attachAttackJump       = load("attack", "jump");
+local attachAttackNone       = load("attack", "none");
+local attachAttackProjectile = load("attack", "projectile");
+local attachAttackPunch      = load("attack", "punch");
+
 
 -- TODO: mobs figuring out a path up stairs & slabs
 ---Todo: shovel a few of these functions into a utility mod.
@@ -262,19 +281,29 @@ local function scanRequired(definition)
 end
 
 ---Registers a new mob into the game.
----@param definition table Holds the definition of the mob.
+---@param definition definition Holds the definition of the mob.
 ---@return nil
 function minetest.register_mob(definition)
 
     scanRequired(definition);
+    
 
     minetest.register_mob_spawner(definition.name,definition.textures,definition.mesh)
 
-    local mob = buildRequired(definition);
+    local mob = attachRequired(definition);
 
-    -- Walk locomotion type variables
-    mob.jump_timer = 0
-    mob.still_on_wall = false
+    local function matchLocomotion(input)
+        return mob.locomotion_type == input;
+    end
+    local function matchAttack(input)
+        return mob.attack_type == input;
+    end
+
+    if (matchLocomotion(locomotion_types.walk)) then
+        attachLocomotionWalk(definition, mob);
+    end
+    
+    
 
     -- Swim locomotion type variables
     mob.swim_goal = null
@@ -294,12 +323,6 @@ function minetest.register_mob(definition)
     mob.pitch_interpolation_progress = 0
     mob.pitch_rotation_multiplier = 0
     mob.pitch_adjustment = (definition.pitch_adjustment and math.rad(definition.pitch_adjustment)) or 0
-
-
-    -- Dispatcher functions
-    local function match_move(input)
-        return mob.locomotion_type == input
-    end
 
     -- Mob methods
 
@@ -536,7 +559,7 @@ function minetest.register_mob(definition)
 
     -- Dispatch the correct method based on what the mob locomotion type is
     -- TODO: move walk type into final else branch as a catchall
-    if match_move(locomotion_types.walk) then
+    if matchLocomotion(locomotion_types.walk) then
         function mob:move(dtime,moveresult)
             self:manage_wandering_direction_change(dtime)
 
@@ -544,7 +567,7 @@ function minetest.register_mob(definition)
             self:manage_wandering()
             self:interpolate_yaw(dtime)
         end
-    elseif match_move(locomotion_types.swim) then
+    elseif matchLocomotion(locomotion_types.swim) then
         function mob:move(dtime,moveresult)
 
             self:manage_swimming(dtime);
