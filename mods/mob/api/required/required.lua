@@ -3,9 +3,9 @@ local ipairs = ipairs;
 local null = nil;
 
 local random = math.random;
-local PI = math.pi;
-local HALF_PI = PI / 2;
-local DOUBLE_PI = PI * 2;
+local PI = utility.PI;
+local HALF_PI = utility.HALF_PI;
+local DOUBLE_PI = utility.DOUBLE_PI;
 
 local wrap_angle = utility.wrap_angle;
 local lerp = utility.lerp;
