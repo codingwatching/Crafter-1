@@ -448,7 +448,8 @@ function minetest.register_mob(definition)
     if match_move(MOVEMENT_TYPE.walk) then
         function mob:move(dtime,moveresult)
             self:manage_wandering_direction_change(dtime)
-            self:manage_jumping(moveresult)
+
+            --- self:manage_jumping(moveresult)
             self:manage_wandering()
             self:interpolate_yaw(dtime)
         end
