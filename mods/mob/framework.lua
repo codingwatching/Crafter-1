@@ -15,15 +15,28 @@ local throw = utility.throw;
 
 
 --- Possible choices: walk, jump, swim, fly.
----
----@type any[] Immutable mob locomotion type enumerators. Field names accessed via direct or getName().
+--- 
+--- Immutable mob locomotion type enumerators. Field names accessed via direct or getName().
+---@type any[]
+---@enum
+---@class locomotion_types
+---@field walk integer
+---@field jump integer
+---@field swim integer
+---@field fly integer
 minetest.locomotion_types = dispatchGetterTable({
     walk = 1,
     jump = 2,
     swim = 3,
     fly = 4
 })
----@type any[] Immutable mob locomotion type enumerators. Field names accessed via direct or getName().
+
+--- Possible choices: walk, jump, swim, fly.
+--- 
+--- Immutable mob locomotion type enumerators. Field names accessed via direct or getName().
+---@type any[]
+---@enum
+---@class locomotion_types
 local locomotion_types = dispatchGetterTable({
     walk = 1,
     jump = 2,
