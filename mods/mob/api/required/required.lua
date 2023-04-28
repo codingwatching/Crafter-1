@@ -156,6 +156,44 @@ return function(definition)
         self.object:set_yaw(new_yaw)
     end
 
+    function mob:get_pitch()
+        --todo: This needs a better name because it can also wrap pitch
+        return wrap_yaw(self.object:get_rotation().x - self.pitch_adjustment)
+    end
+
+    function mob:set_pitch(new_goal)
+        self.pitch_interpolation_progress = 0
+        local current_pitch = self:get_pitch()
+        local smaller = math.min(current_pitch, new_goal)
+        local larger = math.max(current_pitch, new_goal)
+        local result = math.abs(larger - smaller)
+        -- Brute force wrap it around, wrap_pitch is used a few lines above
+        if result > PI then
+            if new_goal < 0 then
+                new_goal = new_goal + DOUBLE_PI
+            else
+                new_goal = new_goal - DOUBLE_PI
+            end
+            result = result - PI
+        end
+        -- Keeps a constant rotation factor while interpolating
+        local rotation_multiplier = 4 * PI / (PI + result)
+        self.pitch_start = current_pitch
+        self.pitch_end = new_goal
+        self.pitch_rotation_multiplier = rotation_multiplier
+    end
+    
+    function mob:interpolate_pitch(dtime)
+        if self.pitch_interpolation_progress >= 1 then return end
+        self.pitch_interpolation_progress = self.pitch_interpolation_progress + (dtime * self.pitch_rotation_multiplier)
+        if self.pitch_interpolation_progress > 1 then
+            self.pitch_interpolation_progress = 1
+        end
+        local new_pitch = lerp(self.pitch_start, self.pitch_end, self.pitch_interpolation_progress)
+        new_pitch = new_pitch + self.pitch_adjustment
+        self.object:set_pitch(new_pitch)
+    end
+
     function mob:locate_water(distance)
         local position = self.object:get_pos()
         local scalar = vector.new(distance, distance, distance);
