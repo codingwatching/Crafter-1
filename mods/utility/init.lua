@@ -12,6 +12,11 @@ local DOUBLE_PI = PI * 2;
 ---@class utility
 utility = {}
 
+---@exports Utility exports.
+utility.PI = PI;
+utility.HALF_PI = HALF_PI;
+utility.DOUBLE_PI = DOUBLE_PI;
+
 
 ---Under/over flows yaw to stay within boundary of -pi to pi.
 ---@param yaw number Input yaw.
