@@ -1,6 +1,8 @@
 local random = math.random;
 local PI = math.pi;
 
+-- An important note: Swimming mobs are pretty stupid
+
 --- Builds swimming methods & fields into the mob.
 ---@param mob mob
 ---@param definition table
