@@ -116,6 +116,19 @@ local function ternaryExec(case, trueFunction, falseFunction)
     return falseFunction();
 end
 
+---Basic function execution gate with parameters. Bool case (parameters...) -> (true function ... | false function ...)
+---@param case boolean
+---@param trueFunction function
+---@param falseFunction function
+---@param ...  any A collection of parameters which you define.
+---@return any
+local function ternaryExecParam(case, trueFunction, falseFunction, ...)
+    if (case) then
+        return trueFunction(...);
+    end
+    return falseFunction(...);
+end
+
 ---This function piggybacks on top of error simply because I like using the word throw more.
 ---@param errorOutput string The error message.
 ---@return nil
