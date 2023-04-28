@@ -14,7 +14,7 @@ minetest.register_mob({
     physical = true,
     collisionbox = {-0.37, 0, -0.37, 0.37, 0.85, 0.37},
     visual = "mesh",
-    visual_size = {x = 1, y = 1},
+    visual_size = {x = 3, y = 3},
     mesh = "pig.b3d",
     textures = {
         "pig.png"
@@ -30,8 +30,6 @@ minetest.register_mob({
     -- Wandering speeds
     min_speed = 3,
     max_speed = 5,
-    ---! wat is state? wat
-    state = 0,
     view_distance = 15,
     
     --these are used to anchor a point to the head position
@@ -98,7 +96,7 @@ minetest.register_mob({
     -- Wandering speeds
     min_speed = 3,
     max_speed = 5,
-    state = 0,
+    
     view_distance = 15,
     hostile = false,
     attacked_hostile = false,
@@ -143,7 +141,7 @@ mobs.register_mob(
      gravity = {x = 0, y = -9.81, z = 0},
      movement_type = "walk",
      max_speed = 5,
-     state = 0,
+     
      view_distance = 15,
      
      item_drop = "mob:raw_porkchop", 
@@ -228,7 +226,7 @@ mobs.register_mob(
      gravity = {x = 0, y = -9.81, z = 0},
      movement_type = "walk",
      max_speed = 5,
-     state = 0,
+     
      view_distance = 15,
      
      item_drop = {"mob:egg","mob:feather"}, 
@@ -306,7 +304,7 @@ mobs.register_mob(
      gravity = {x = 0, y = -9.81, z = 0},
      movement_type = "walk",
      max_speed = 5,
-     state = 0,
+     
      view_distance = 15,
      
      item_drop = {"weather:snowball","main:coal","mob:carrot","main:stick"}, 
@@ -405,7 +403,7 @@ mobs.register_mob(
      gravity = {x = 0, y = -1, z = 0},
      movement_type = "walk",
      max_speed = 5,
-     state = 0,
+     
      view_distance = 15,
      
      item_drop = "main:gold", 
@@ -462,7 +460,7 @@ mobs.register_mob(
     make_jump_noise = true,
     max_speed = 4,
     hostile = true,
-    state = 0,
+    
     view_distance = 20,
     death_rotation = "z",
     hurt_sound = "slime_die",
@@ -510,7 +508,7 @@ mobs.register_mob(
     make_jump_noise = true,
     max_speed = 4,
     hostile = true,
-    state = 0,
+    
     view_distance = 20,
     death_rotation = "z",
     hurt_sound = "slime_die",
@@ -558,7 +556,7 @@ mobs.register_mob(
     make_jump_noise = true,
     max_speed = 4,
     hostile = true,
-    state = 0,
+    
     view_distance = 20,
     death_rotation = "z",
     hurt_sound = "slime_die",
@@ -599,7 +597,7 @@ mobs.register_mob(
      movement_type = "walk",
      max_speed = 4,
      hostile = true,
-     state = 0,
+     
      view_distance = 20,
      item_drop = "mob:cooked_porkchop",
       
@@ -657,7 +655,7 @@ mobs.register_mob(
      max_speed = 3,
      hostile = true,
      hostile_cooldown = false,
-     state = 0,
+     
      view_distance = 32,
      item_drop = "mob:cooked_porkchop",
       
@@ -724,7 +722,7 @@ mobs.register_mob(
      max_speed = 4,
      hostile = true,
      hostile_cooldown = false,
-     state = 0,
+     
      view_distance = 32,
      item_drop = "mob:gunpowder",
       
@@ -791,7 +789,7 @@ mobs.register_mob(
      max_speed = 4,
      hostile = true,
      hostile_cooldown = false,
-     state = 0,
+     
      view_distance = 32,
      item_drop = "mob:gunpowder",
       
@@ -861,7 +859,7 @@ mobs.register_mob(
      max_speed = 6,
      hostile = true,
      hostile_cooldown = false,
-     state = 0,
+     
      view_distance = 40,
      item_drop = "mob:gunpowder",
 
@@ -965,7 +963,7 @@ mobs.register_mob(
      gravity = {x = 0, y = -9.81, z = 0},
      movement_type = "walk",
      max_speed = 4,
-     state = 0,
+     
      view_distance = 32,
      
      item_drop = "mob:string", 
@@ -1055,7 +1053,7 @@ mobs.register_mob(
      gravity = {x = 0, y = -9.81, z = 0},
      movement_type = "walk",
      max_speed = 4,
-     state = 0,
+     
      view_distance = 32,
      
      item_drop = "mob:string", 
