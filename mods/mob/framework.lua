@@ -1,7 +1,8 @@
 local ipairs = ipairs;
 local null = nil;
 
-local PI = math.pi
+local random = math.random;
+local PI = math.pi;
 local HALF_PI = PI / 2;
 local DOUBLE_PI = PI * 2;
 
@@ -40,7 +41,7 @@ local function randomTableSelection(inputTable)
     ---@Immutable <- Doesn't do anything yet
     local count = #inputTable
     if (count == 0) then return null end
-    return inputTable[math.random(1, count)]
+    return inputTable[random(1, count)]
 end
 
 ---1 dimensional linear interpolation.
@@ -367,11 +368,11 @@ function minetest.register_mob(definition)
         if self.following then return end
         self.locomotion_timer = self.locomotion_timer - dtime
         if self.locomotion_timer > 0 then return end
-        self.locomotion_timer = math.random(2,6) + math.random()
-        local new_dir = ( math.random() * ( PI * 2 ) ) - PI
+        self.locomotion_timer = random(2,6) + random()
+        local new_dir = ( random() * ( PI * 2 ) ) - PI
         self.direction = minetest.yaw_to_dir(new_dir)
         self:set_yaw(minetest.dir_to_yaw(self.direction))
-        self.speed = math.random(self.min_speed,self.max_speed)
+        self.speed = random(self.min_speed,self.max_speed)
     end
 
     function mob:reset_locomotion_timer()
@@ -531,17 +532,17 @@ function minetest.register_mob(definition)
 
         if self.locomotion_timer > 0 then return end
 
-        self.locomotion_timer = math.random(2,6) + math.random()
+        self.locomotion_timer = random(2,6) + random()
 
         if not self:is_in_water() then return end
 
-        local new_dir = ( math.random() * ( PI * 2 ) ) - PI
+        local new_dir = ( random() * ( PI * 2 ) ) - PI
 
         self.direction = minetest.yaw_to_dir(new_dir)
 
         self:set_yaw(minetest.dir_to_yaw(self.direction))
 
-        self.speed = math.random(self.min_speed,self.max_speed)
+        self.speed = random(self.min_speed,self.max_speed)
     end
 
 
