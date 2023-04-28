@@ -1,6 +1,7 @@
+local ipairs, null, random, PI, HALF_PI, DOUBLE_PI, wrap_yaw, yaw_equals, randomTableSelection, lerp, makeImmutable, dispatchGetterTable, locomotion_types, attack_types, ternary, ternaryExec, ternaryExecParam, throw = ...
 --- Builds swimming methods & fields into the mob.
 ---@param mob mob
----@param definition definition
+---@param definition table
 ---@return mob mob
 return function(mob, definition)
     
