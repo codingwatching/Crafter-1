@@ -18,18 +18,16 @@ utility.HALF_PI = HALF_PI;
 utility.DOUBLE_PI = DOUBLE_PI;
 
 
----todo: This needs a better name because it can also wrap pitch
----
----Under/over flows yaw to stay within boundary of -pi to pi.
----@param yaw number Input yaw.
+---Under/over flows angle to stay within boundary of -pi to pi.
+---@param angle number Input yaw.
 ---@return number number Corrected yaw.
-utility.wrap_yaw = function(yaw)
-    if yaw < -PI then
-        return yaw + DOUBLE_PI
-    elseif yaw > PI then
-        return yaw - DOUBLE_PI
+utility.wrap_angle = function(angle)
+    if angle < -PI then
+        return angle + DOUBLE_PI
+    elseif angle > PI then
+        return angle - DOUBLE_PI
     end
-    return yaw
+    return angle
 end
 
 

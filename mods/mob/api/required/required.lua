@@ -7,7 +7,7 @@ local PI = math.pi;
 local HALF_PI = PI / 2;
 local DOUBLE_PI = PI * 2;
 
-local wrap_yaw = utility.wrap_yaw;
+local wrap_angle = utility.wrap_angle;
 local lerp = utility.lerp;
 local randomTableSelection = utility.randomTableSelection;
 
@@ -124,7 +124,7 @@ return function(definition)
     end
 
     function mob:get_yaw()
-        return wrap_yaw(self.object:get_yaw() - self.yaw_adjustment)
+        return wrap_angle(self.object:get_yaw() - self.yaw_adjustment)
     end
 
     function mob:set_yaw(new_goal)
@@ -133,7 +133,7 @@ return function(definition)
         local smaller = math.min(current_yaw, new_goal)
         local larger = math.max(current_yaw, new_goal)
         local result = math.abs(larger - smaller)
-        -- Brute force wrap it around, wrap_yaw is used a few lines above
+        -- Brute force wrap it around, wrap_angle is used a few lines above
         if result > PI then
             if new_goal < 0 then
                 new_goal = new_goal + DOUBLE_PI
@@ -164,7 +164,7 @@ return function(definition)
 
     function mob:get_pitch()
         --todo: This needs a better name because it can also wrap pitch
-        return wrap_yaw(self.object:get_rotation().x - self.pitch_adjustment)
+        return wrap_angle(self.object:get_rotation().x - self.pitch_adjustment)
     end
 
     function mob:set_pitch(new_goal)
