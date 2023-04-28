@@ -512,8 +512,9 @@ function minetest.register_mob(definition)
 
     function mob:locate_water()
         local position = self.object:get_pos()
-        local foundPosition = minetest.find_node_near(position, 5, self.swimmable_nodes, false)
-        return foundPosition
+        local scalar = vector.new(5, 5, 5);
+        local foundPositions = minetest.find_nodes_in_area(vector.subtract(position, scalar), vector.add(position, scalar), self.swimmable_nodes, false)
+        return randomTableSelection(foundPositions)
     end
 
     function mob:is_in_water()
