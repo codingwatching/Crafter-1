@@ -19,19 +19,34 @@ local function wrap_yaw(yaw)
 end
 
 
--- X precision of float equality (x ^ 2 == 100 or 0.00)
-local function yaw_equals( a, b, precision)
+---X precision of float equality (x ^ 2 == 100 or 0.00)
+---@param comparitor1 number
+---@param comparitor2 number
+---@param precision integer Float precision past the decimal point.
+---@return boolean boolean Equality of comparitor1 and comparitor2 within float precision.
+local function yaw_equals(comparitor1, comparitor2, precision)
     local multiplier = 10 ^ precision
-    local x = math.floor(a * multiplier + 0.5) / multiplier
-    local y = math.floor(b * multiplier + 0.5) / multiplier
+    local x = math.floor(comparitor1 * multiplier + 0.5) / multiplier
+    local y = math.floor(comparitor2 * multiplier + 0.5) / multiplier
     return x == y or x + y == 0
 end
 
--- Linear interpolation, start, end, 0 to 1
-local function fma(x, y, z)
-    return (x * y) + z
+---1 dimensional linear interpolation.
+---@param origin number Starting point.
+---@param amount number Amount, 0.0 to 1.0.
+---@param destination number Destination point.
+---@return number number Interpolated float along 1 dimensional axis.
+local function fma(origin, amount, destination)
+    return (origin * amount) + destination
 end
 
+-- This is wrappered to make this more understandable
+
+---1 dimensional linear interpolation.
+---@param start number Starting point.
+---@param finish number Finishing point.
+---@param amount number Point between the two. Valid: 0.0 to 1.0.
+---@return number
 local function lerp(start, finish, amount)
     return fma(finish - start, amount, start)
 end
