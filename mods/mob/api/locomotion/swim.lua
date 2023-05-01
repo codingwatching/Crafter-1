@@ -32,7 +32,7 @@ local function dir_to_pitch(pos1, pos2)
 
     ---@immutable
     local distanceComponent = vector.distance(p1, p2);
-    
+
     ---@immutable
     local heightComponent = pos1.y - pos2.y;
 
@@ -93,9 +93,9 @@ return function(mob, definition)
     end
 
     function mob:reset_trigger_when_too_close_to_swim_goal(dtime)
-        local p1 = self.object:get_pos()
-        local p2 = self.swim_goal
-        if (vector.distance(p1,p2) < 0.25) then
+        local pos1 = self.object:get_pos()
+        local pos2 = self.swim_goal
+        if (vector.distance(pos1,pos2) < 0.25) then
             self.swim_goal_cooldown_timer = 0
         end
     end
@@ -138,26 +138,26 @@ return function(mob, definition)
         end
     end
 
-    function mob:manage_swim_direction_change(dtime)
+    -- function mob:manage_swim_direction_change(dtime)
 
-        if self.following then return end
+    --     if self.following then return end
 
-        self.locomotion_timer = self.locomotion_timer - dtime
+    --     self.locomotion_timer = self.locomotion_timer - dtime
 
-        if self.locomotion_timer > 0 then return end
+    --     if self.locomotion_timer > 0 then return end
 
-        self.locomotion_timer = random(2,6) + random()
+    --     self.locomotion_timer = random(2,6) + random()
 
-        if not self:is_in_water() then return end
+    --     if not self:is_in_water() then return end
 
-        local new_dir = ( random() * ( PI * 2 ) ) - PI
+    --     local new_dir = ( random() * ( PI * 2 ) ) - PI
 
-        self.direction = minetest.yaw_to_dir(new_dir)
+    --     self.direction = minetest.yaw_to_dir(new_dir)
 
-        self:set_yaw(minetest.dir_to_yaw(self.direction))
+    --     self:set_yaw(minetest.dir_to_yaw(self.direction))
 
-        self.speed = random(self.min_speed,self.max_speed)
-    end
+    --     self.speed = random(self.min_speed,self.max_speed)
+    -- end
 
 
     function mob:move(dtime,moveresult)
