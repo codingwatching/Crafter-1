@@ -44,13 +44,13 @@ local function dir_to_pitch(pos1, pos2)
     -- print(dump2(p3))
 
     ---@immutable
-    local yawIn90DegreeRotation = minetest.dir_to_yaw(p3);
+    local yawIn90DegreeRotation = -minetest.dir_to_yaw(p3);
 
     -- print("distance:", distanceComponent)
     -- print("height:", heightComponent)
     -- print("yaw:", yawIn90DegreeRotation)
 
-    return yawIn90DegreeRotation + HALF_PI;
+    return yawIn90DegreeRotation - HALF_PI;
 end
 
 --- Builds swimming methods & fields into the mob.
@@ -66,11 +66,18 @@ return function(mob, definition)
 
 
     function mob:swim(dtime)
+
         local currentvel = self.object:get_velocity()
-        currentvel.y = 0
+
+        -- currentvel.y = 0
+
         local goal = vector.multiply(self.direction,self.speed)
-        local acceleration = vector.new( goal.x - currentvel.x, 0, goal.z - currentvel.z )
+
+        --FIXME: replace this with vector.subtract or something!
+        local acceleration = vector.new( goal.x - currentvel.x, goal.y - currentvel.y, goal.z - currentvel.z )
+
         acceleration = vector.multiply(acceleration, 0.05)
+
         self.object:add_velocity(acceleration)
 
     end
