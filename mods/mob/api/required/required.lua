@@ -6,6 +6,7 @@ local random = math.random;
 local PI = utility.PI;
 local HALF_PI = utility.HALF_PI;
 local DOUBLE_PI = utility.DOUBLE_PI;
+local ternary = utility.ternary;
 
 local wrap_angle = utility.wrap_angle;
 local lerp = utility.lerp;
@@ -68,7 +69,7 @@ return function(definition)
     mob.pitch_end = 0
     mob.pitch_interpolation_progress = 0
     mob.pitch_rotation_multiplier = 0
-    mob.pitch_adjustment = (definition.pitch_adjustment and math.rad(definition.pitch_adjustment)) or 0
+    mob.pitch_adjustment = math.rad(definition.pitch_adjustment or 0);
 
     -- Generic fields for behavior
     mob.is_mob = true
