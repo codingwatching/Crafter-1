@@ -166,7 +166,6 @@ return function(definition)
     end
 
     function mob:get_pitch()
-        --todo: This needs a better name because it can also wrap pitch
         return wrap_angle(self.object:get_rotation().x - self.pitch_adjustment)
     end
 
