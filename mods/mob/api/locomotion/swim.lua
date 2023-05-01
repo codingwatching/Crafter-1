@@ -4,6 +4,7 @@ local HALF_PI = utility.HALF_PI;
 
 -- An important note: Swimming mobs are pretty stupid
 
+--!TODO: This probably should be part of the mob itself? Or it should be in utility. OR something!
 
 -- A heap preallocations to be reused over and over since this is purely single threaded.
 ---@final
@@ -40,7 +41,7 @@ local function dir_to_pitch(pos1, pos2)
     p3.y = 0;
     p3.z = heightComponent;
 
-    print(dump2(p3))
+    -- print(dump2(p3))
 
     ---@immutable
     local yawIn90DegreeRotation = minetest.dir_to_yaw(p3);
