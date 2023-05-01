@@ -222,18 +222,19 @@ return function(definition)
 
     --! BEGIN default implementations to avoid crashes
 
+    ---@immutable <- Does nothing right now
+    local mobName = definition.name;
+
     ---This is the default action for placeholder methods.
     ---@param placeHolder string Method name.
     local function outputUnimplementedPlaceholder(placeHolder)
-        ---@immutable <- Does nothing right now
-        local mobName = definition.name;
         print("Mob: Warning! (", mobName,") does not implement (", placeHolder, ")!");
     end
 
     ---Placeholder method for following implementation
     ---@default
     ---@function
-    function mob:follow(dtime)
+    function mob:follow()
         outputUnimplementedPlaceholder("follow");
     end
 
