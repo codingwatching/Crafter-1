@@ -95,7 +95,6 @@ return function(mob, definition)
 
             self:reset_trigger_when_too_close_to_swim_goal()
 
-            -- print("I'm swimming woo")
             self:track_towards_swim_goal()
 
             self:swim()
