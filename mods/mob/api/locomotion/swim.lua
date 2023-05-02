@@ -104,6 +104,8 @@ return function(mob, definition)
         else
             -- fall like a rock
             self:enable_gravity()
+
+            --TODO: flopping decision
         end
     end
 
