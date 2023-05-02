@@ -5,6 +5,12 @@ local dir_to_pitch = utility.dir_to_pitch;
 
 -- An important note: Swimming mobs are pretty stupid
 
+
+--[[
+TODO: Perhaps a field of ATTRACTED_TO_BAIT or something so fish mobs...can be fished
+TODO: some sort of flop state -> make this a modifyable value, maybe the mob just sits there like a lump (like squids)
+]]
+
 local acceleration = vector.new(0,0,0);
 
 --- Builds swimming methods & fields into the mob.
