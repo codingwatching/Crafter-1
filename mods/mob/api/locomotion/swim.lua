@@ -110,9 +110,6 @@ return function(mob, definition)
     function mob:move(dtime, moveresult)
 
         self:manage_swimming(dtime);
-        -- self:manage_wandering_direction_change(dtime)
-        -- self:manage_jumping(moveresult)
-        -- self:manage_wandering()
 
         self:interpolate_yaw(dtime)
         self:interpolate_pitch(dtime)
