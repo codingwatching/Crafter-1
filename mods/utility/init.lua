@@ -166,3 +166,51 @@ end
 utility.throw = function(errorOutput)
     error(errorOutput);
 end
+
+
+-- A heap preallocations to be reused over and over since this is purely single threaded.
+---@final
+local p1 = vector.new(0,0,0);
+---@final
+local p2 = vector.new(0,0,0);
+---@final
+local p3 = vector.new(0,0,0);
+
+---Convertes x,y,z component of vector into a pitch floating point value in radians.
+---2D coordinate flipped into dir to yaw to calculate pitch.
+---@param pos1 table Starting point.
+---@param pos2 table Ending point.
+---@return number number Pitch in radians.
+utility.dir_to_pitch = function(pos1, pos2)
+
+    p1.x = pos1.x;
+    p1.y = 0;
+    p1.z = pos1.z;
+
+    p2.x = pos2.x;
+    p2.y = 0
+    p2.z = pos2.z;
+
+    -- print("-----\n","current" .. dump2(pos1), "goal" .. dump2(pos2) )
+
+    ---@immutable
+    local distanceComponent = vector.distance(p1, p2);
+
+    ---@immutable
+    local heightComponent = pos1.y - pos2.y;
+
+    p3.x = distanceComponent;
+    p3.y = 0;
+    p3.z = heightComponent;
+
+    -- print(dump2(p3))
+
+    ---@immutable
+    local yawIn90DegreeRotation = -minetest.dir_to_yaw(p3);
+
+    -- print("distance:", distanceComponent)
+    -- print("height:", heightComponent)
+    -- print("yaw:", yawIn90DegreeRotation)
+
+    return yawIn90DegreeRotation - HALF_PI;
+end
