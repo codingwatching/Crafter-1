@@ -13,7 +13,7 @@ TODO: some sort of flop state -> make this a modifyable value, maybe the mob jus
 
 local acceleration = vector.new(0,0,0);
 
---- Builds swimming methods & fields into the mob.
+--- Builds swimming locomotion methods & fields into the mob.
 ---@param mob mob
 ---@param definition table
 ---@return mob mob
