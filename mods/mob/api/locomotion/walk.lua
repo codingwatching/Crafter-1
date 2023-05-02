@@ -1,7 +1,7 @@
 local random = math.random;
 local PI = utility.PI;
 
---- Builds walking methods & fields into the mob.
+--- Builds walking locomotion methods & fields into the mob.
 ---@param mob mob
 ---@param definition table
 ---@return mob mob
