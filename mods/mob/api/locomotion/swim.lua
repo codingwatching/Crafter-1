@@ -5,6 +5,8 @@ local dir_to_pitch = utility.dir_to_pitch;
 
 -- An important note: Swimming mobs are pretty stupid
 
+local acceleration = vector.new(0,0,0);
+
 --- Builds swimming methods & fields into the mob.
 ---@param mob mob
 ---@param definition table
@@ -23,10 +25,11 @@ return function(mob, definition)
 
         -- currentvel.y = 0
 
-        local goal = vector.multiply(self.direction,self.speed)
-
-        --FIXME: replace this with vector.subtract or something!
-        local acceleration = vector.new( goal.x - currentvel.x, goal.y - currentvel.y, goal.z - currentvel.z )
+        local goal = vector.multiply(self.direction, self.speed)
+        
+        acceleration.x = goal.x - currentvel.x;
+        acceleration.y = goal.y - currentvel.y;
+        acceleration.z = goal.z - currentvel.z;
 
         acceleration = vector.multiply(acceleration, 0.05)
 
