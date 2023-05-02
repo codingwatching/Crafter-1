@@ -19,19 +19,19 @@ return function(mob, definition)
     mob.swim_goal_cooldown_timer = 0
 
 
-    function mob:swim(dtime)
+    function mob:swim()
 
         local currentvel = self.object:get_velocity()
 
-        -- currentvel.y = 0
-
         local goal = vector.multiply(self.direction, self.speed)
-        
-        acceleration.x = goal.x - currentvel.x;
-        acceleration.y = goal.y - currentvel.y;
-        acceleration.z = goal.z - currentvel.z;
 
-        acceleration = vector.multiply(acceleration, 0.05)
+        ---W component in quaternion
+        ---@immutable
+        local scalar = 0.05;
+
+        acceleration.x = (goal.x - currentvel.x) * scalar;
+        acceleration.y = (goal.y - currentvel.y) * scalar;
+        acceleration.z = (goal.z - currentvel.z) * scalar;
 
         self.object:add_velocity(acceleration)
 
