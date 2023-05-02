@@ -43,7 +43,7 @@ return function(mob, definition)
 
     end
 
-    function mob:track_towards_swim_goal(dtime)
+    function mob:track_towards_swim_goal()
         --! YAW
         local pos1 = self.object:get_pos()
         local pos2 = self.swim_goal
@@ -61,7 +61,7 @@ return function(mob, definition)
 
     end
 
-    function mob:reset_trigger_when_too_close_to_swim_goal(dtime)
+    function mob:reset_trigger_when_too_close_to_swim_goal()
         local pos1 = self.object:get_pos()
         local pos2 = self.swim_goal
         if (vector.distance(pos1,pos2) < 0.25) then
@@ -93,12 +93,12 @@ return function(mob, definition)
             -- This thing couldn't figure out where to go, abort! ABORT!
             if (not self.swim_goal) then return end
 
-            self:reset_trigger_when_too_close_to_swim_goal(dtime)
+            self:reset_trigger_when_too_close_to_swim_goal()
 
             -- print("I'm swimming woo")
-            self:track_towards_swim_goal(dtime)
+            self:track_towards_swim_goal()
 
-            self:swim(dtime)
+            self:swim()
 
 
         else
@@ -129,7 +129,7 @@ return function(mob, definition)
     -- end
 
 
-    function mob:move(dtime,moveresult)
+    function mob:move(dtime, moveresult)
 
         self:manage_swimming(dtime);
         -- self:manage_wandering_direction_change(dtime)
