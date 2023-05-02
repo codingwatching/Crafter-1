@@ -4,6 +4,8 @@
 ---@return mob mob
 return function(mob, definition)
 
+    -- Todo: insert things here
+    -- FIXME: build with chicken
 
     return mob;
 end
