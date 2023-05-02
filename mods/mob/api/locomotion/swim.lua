@@ -107,28 +107,6 @@ return function(mob, definition)
         end
     end
 
-    -- function mob:manage_swim_direction_change(dtime)
-
-    --     if self.following then return end
-
-    --     self.locomotion_timer = self.locomotion_timer - dtime
-
-    --     if self.locomotion_timer > 0 then return end
-
-    --     self.locomotion_timer = random(2,6) + random()
-
-    --     if not self:is_in_water() then return end
-
-    --     local new_dir = ( random() * ( PI * 2 ) ) - PI
-
-    --     self.direction = minetest.yaw_to_dir(new_dir)
-
-    --     self:set_yaw(minetest.dir_to_yaw(self.direction))
-
-    --     self.speed = random(self.min_speed,self.max_speed)
-    -- end
-
-
     function mob:move(dtime, moveresult)
 
         self:manage_swimming(dtime);
