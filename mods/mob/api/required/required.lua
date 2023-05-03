@@ -64,6 +64,7 @@ return function(definition)
     mob.pitch_interpolation_progress = 0
     mob.pitch_rotation_multiplier = 0
     mob.pitch_adjustment = math.rad(definition.pitch_adjustment or 0)
+    mob.invert_pitch = definition.invert_pitch or false;
 
     -- Pitch & pitch interpolation
     mob.pitch_start = 0
