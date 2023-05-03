@@ -1,14 +1,16 @@
+local random = math.random;
+local dir_to_pitch = utility.dir_to_pitch;
+
 -- Important note: Flying mobs are probably even stupider than swimming mobs because it's easier to see than when they're in water
 
+
+local acceleration = vector.new(0,0,0);
 
 --- Builds flying locomotion methods & fields into the mob.
 ---@param mob mob
 ---@param definition table
 ---@return mob mob
 return function(mob, definition)
-
-    -- Todo: insert things here
-    -- FIXME: build with chicken
 
         -- fly locomotion type variables
         mob.fly_goal = nil
