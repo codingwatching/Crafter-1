@@ -77,7 +77,7 @@ local digging_nodes = {
     ["storage:furnace_active"] = true,
     ["storage:furnace"] = true,
 }
-function tnt(pos,range,explosion_type)
+function tnt(pos,range)
     in_node = minetest.get_node(pos).name
     in_water =  ( in_node == "main:water" or minetest.get_node(pos).name == "main:waterflow")
     min = vector.add(pos,range)
