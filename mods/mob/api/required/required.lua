@@ -13,6 +13,7 @@ local lerp = utility.lerp;
 local randomTableSelection = utility.randomTableSelection;
 
 local water_nodes = {"main:water", "main:waterflow"}
+local air_nodes = {"air"}
 
 ---Builds the basic structure of the mob. Returns the mob with the new assembled components
 ---This is the entry point into constructing a mob.
@@ -207,10 +208,23 @@ return function(definition)
         self.object:set_rotation(oldRotation)
     end
 
+    ---@nullable
+    ---@param distance number squared distance
+    ---@return any vector nullable, will be position or nil
     function mob:locate_water(distance)
         local position = self.object:get_pos()
         local scalar = vector.new(distance, distance, distance);
         local foundPositions = minetest.find_nodes_in_area(vector.subtract(position, scalar), vector.add(position, scalar), water_nodes, false)
+        return randomTableSelection(foundPositions)
+    end
+
+    ---@nullable
+    ---@param distance number squared distance
+    ---@return any vector nullable, will be position or nil
+    function mob:locate_air(distance)
+        local position = self.object:get_pos()
+        local scalar = vector.new(distance, distance, distance);
+        local foundPositions = minetest.find_nodes_in_area(vector.subtract(position, scalar), vector.add(position, scalar), air_nodes, false)
         return randomTableSelection(foundPositions)
     end
 
