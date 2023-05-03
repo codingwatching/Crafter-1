@@ -48,7 +48,7 @@ return function(mob, definition)
             self:set_yaw(yaw)
     
             --! PITCH
-            local pitch = dir_to_pitch(pos1, pos2)
+            local pitch = dir_to_pitch(pos1, pos2, self.invert_pitch)
     
             self:set_pitch(pitch)
     
