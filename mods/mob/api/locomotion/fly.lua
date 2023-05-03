@@ -64,10 +64,11 @@ return function(mob, definition)
     
     
         function mob:manage_flying(dtime)
-            if (self:is_in_water()) then
-
-                -- some sort of floating thing here
-
+            if (self:is_in_water() or self:is_in_lava()) then
+                -- some sort of floating thing here - OR AN EXPLOSION WOOO
+                tnt(self.object:get_pos(), 10)
+                self.object:remove()
+                return;
             end
 
             -- Basic locomotion calculations within water
