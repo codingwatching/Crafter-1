@@ -220,6 +220,17 @@ return function(definition)
         return node and (node == "main:water" or node == "main:waterflow")
     end
 
+    function mob:is_in_lava()
+        local pos = self.object:get_pos()
+        local node = minetest.get_node(pos).name
+        return node and (node == "main:lava" or node == "main:lavaflow");
+    end
+    
+    function mob:is_in_air()
+        -- This will need some thinking because many nodes can act like air, such as tall grass & ladders
+        print("is_in_air is not implemented")
+    end
+
     --! BEGIN default implementations to avoid crashes
 
     ---@immutable <- Does nothing right now
