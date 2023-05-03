@@ -102,6 +102,7 @@ local REQUIRED = {
     "visual_size",
     "textures",
     "yaw_adjustment",
+    "pitch_adjustment",
     "is_visible",
     "pointable",
     "makes_footstep_sound",
