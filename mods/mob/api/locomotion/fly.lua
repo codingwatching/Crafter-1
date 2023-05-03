@@ -79,7 +79,7 @@ return function(mob, definition)
                 if (self.fly_goal and self.fly_goal_cooldown_timer > 0.0) then goto skipCalculation end
 
                 self.fly_goal_cooldown_timer = 2--seconds
-                self.fly_goal = self:locate_water(5)
+                self.fly_goal = self:locate_air(10)
                 
                 if (not self.fly_goal) then goto skipCalculation end
 

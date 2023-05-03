@@ -21,6 +21,7 @@ minetest.register_mob({
     },
     -- Degrees
     yaw_adjustment = 90,
+    pitch_adjustment = 0,
 
     is_visible = true,
     pointable = true,
@@ -87,6 +88,8 @@ minetest.register_mob({
     backface_culling = false,
     -- Degrees
     yaw_adjustment = 0,
+    pitch_adjustment = 0,
+    invert_pitch = true,
 
     is_visible = true,
     pointable = true,
@@ -104,6 +107,63 @@ minetest.register_mob({
     attack_type = minetest.attack_types.none;
     group_attack = false
 })
+
+
+
+minetest.register_mob(
+    {
+     name = "chicken",
+     physical = true,
+     
+     collisionbox = {-0.225, 0, -0.225, 0.225, 0.675, 0.225},
+     visual = "mesh",
+     visual_size = {x = 3, y = 3},
+     mesh = "chicken.b3d",
+     textures = {
+        "chicken.png"
+     },
+     
+     is_visible = true,
+     pointable = true,
+     automatic_face_movement_dir = 90,
+     automatic_face_movement_max_rotation_per_sec = 300,
+     makes_footstep_sound = false,
+     hp = 10,
+     locomotion_type = minetest.locomotion_types.fly,
+     min_speed = 2,
+     max_speed = 5,
+     yaw_adjustment = 180,
+     pitch_adjustment = 0,
+     invert_pitch = false,
+     
+     view_distance = 15,
+     
+     item_drop = {"mob:egg","mob:feather"},
+     standing_frame = {x=20,y=20},
+     moving_frame = {x=0,y=20},
+     animation_multiplier = 15,
+     
+     death_rotation = "z",
+     
+     hurt_sound = "chicken_hurt",
+     die_sound = "chicken_die",
+     
+     
+     hostile = false,
+     attacked_hostile = false,
+     attack_type = "punch",
+     group_attack = true,
+     --explosion_radius = 4, -- how far away the mob has to be to initialize the explosion
+     --explosion_power = 7, -- how big the explosion has to be
+     --explosion_time = 3, -- how long it takes for a mob to explode
+     fire_table = {
+        visual_size = vector.new(1/6,1/2.2,1/6),
+        position = vector.new(0,2.3,0),
+    }
+})
+
+
+
 --[[
 mobs.register_mob(
     {
@@ -188,73 +248,6 @@ mobs.register_mob(
     
 )
 
-mobs.register_mob(
-    {
-     name = "chicken",
-     physical = true,
-     
-     collisionbox = {-0.225, 0, -0.225, 0.225, 0.675, 0.225},
-     visual = "mesh",
-     visual_size = {x = 3, y = 3},
-     mesh = "chicken.b3d",
-     textures = {
-         --blank out the first two to create adult pig
-        "chicken.png"
-     },
-     
-     --these are used to anchor a point to the head position
-
-
-     -----
-     head_bone = "head",
-     debug_head_pos = false,
-     rotational_correction = -math.pi/2,
-     head_directional_offset = 0.2, --used in vector.multiply(minetest.yaw_to_dir(body_yaw),head_offset)
-     head_height_offset = 0.82, --added to the base y position
-     --use this to correct the head position initially because it becomes severly offset - look at your blender model to get this perfect
-     head_position_correction = vector.new(0,1.8,-0.89),
-     --this is used to tell the game the orientation of the bone (swaps x to and y, then z and y)
-     head_coord = "vertical",
-     flip_pitch = true,
-     -----
-     
-     is_visible = true,
-     pointable = true,
-     automatic_face_movement_dir = 90,
-     automatic_face_movement_max_rotation_per_sec = 300,
-     makes_footstep_sound = false,
-     hp = 10,
-     gravity = {x = 0, y = -9.81, z = 0},
-     locomotion_type = "walk",
-     max_speed = 5,
-     
-     view_distance = 15,
-     
-     item_drop = {"mob:egg","mob:feather"}, 
-     standing_frame = {x=20,y=20},
-     moving_frame = {x=0,y=20},
-     animation_multiplier = 15,
-     ----
-     ----
-     death_rotation = "z",
-     
-     hurt_sound = "chicken_hurt",
-     die_sound = "chicken_die",
-     
-     
-     hostile = false,
-     attacked_hostile = false,
-     attack_type = "punch",
-     group_attack = true,
-     --explosion_radius = 4, -- how far away the mob has to be to initialize the explosion
-     --explosion_power = 7, -- how big the explosion has to be
-     --explosion_time = 3, -- how long it takes for a mob to explode
-     fire_table = {
-        visual_size = vector.new(1/6,1/2.2,1/6),
-        position = vector.new(0,2.3,0),
-    }
-    }
-)
 
 
 local acceptable_drawtypes = {
