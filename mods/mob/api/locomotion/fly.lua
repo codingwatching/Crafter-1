@@ -1,3 +1,6 @@
+-- Important note: Flying mobs are probably even stupider than swimming mobs because it's easier to see than when they're in water
+
+
 --- Builds flying locomotion methods & fields into the mob.
 ---@param mob mob
 ---@param definition table
@@ -7,13 +10,13 @@ return function(mob, definition)
     -- Todo: insert things here
     -- FIXME: build with chicken
 
-        -- Swim locomotion type variables
-        mob.swim_goal = nil
-        mob.swimmable_nodes = definition.swimmable_nodes or {"main:water", "main:waterflow"}
-        mob.swim_goal_cooldown_timer = 0
+        -- fly locomotion type variables
+        mob.fly_goal = nil
+        mob.flyable_nodes = definition.flyable_nodes or {"main:water", "main:waterflow"}
+        mob.fly_goal_cooldown_timer = 0
     
     
-        function mob:swim()
+        function mob:fly()
     
             local currentvel = self.object:get_velocity()
     
@@ -31,10 +34,10 @@ return function(mob, definition)
     
         end
     
-        function mob:track_towards_swim_goal()
+        function mob:track_towards_fly_goal()
             --! YAW
             local pos1 = self.object:get_pos()
-            local pos2 = self.swim_goal
+            local pos2 = self.fly_goal
             local directionVector = vector.direction(pos1, pos2)
             self.direction = directionVector;
     
@@ -49,16 +52,16 @@ return function(mob, definition)
     
         end
     
-        function mob:reset_trigger_when_too_close_to_swim_goal()
+        function mob:reset_trigger_when_too_close_to_fly_goal()
             local pos1 = self.object:get_pos()
-            local pos2 = self.swim_goal
+            local pos2 = self.fly_goal
             if (vector.distance(pos1,pos2) < 0.25) then
-                self.swim_goal_cooldown_timer = 0
+                self.fly_goal_cooldown_timer = 0
             end
         end
     
     
-        function mob:manage_swimming(dtime)
+        function mob:manage_flying(dtime)
             if (self:is_in_water()) then
 
                 -- some sort of floating thing here
@@ -67,15 +70,15 @@ return function(mob, definition)
 
             -- Basic locomotion calculations within water
             self:disable_gravity()
-            if (self.swim_goal_cooldown_timer > 0.0) then
-                self.swim_goal_cooldown_timer = self.swim_goal_cooldown_timer - dtime
+            if (self.fly_goal_cooldown_timer > 0.0) then
+                self.fly_goal_cooldown_timer = self.fly_goal_cooldown_timer - dtime
             else
-                if (self.swim_goal and self.swim_goal_cooldown_timer > 0.0) then goto skipCalculation end
+                if (self.fly_goal and self.fly_goal_cooldown_timer > 0.0) then goto skipCalculation end
 
-                self.swim_goal_cooldown_timer = 2--seconds
-                self.swim_goal = self:locate_water(5)
+                self.fly_goal_cooldown_timer = 2--seconds
+                self.fly_goal = self:locate_water(5)
                 
-                if (not self.swim_goal) then goto skipCalculation end
+                if (not self.fly_goal) then goto skipCalculation end
 
                 self.speed = random(self.min_speed,self.max_speed)
 
@@ -84,19 +87,19 @@ return function(mob, definition)
             ::skipCalculation::
 
             -- This thing couldn't figure out where to go, abort! ABORT!
-            if (not self.swim_goal) then return end
+            if (not self.fly_goal) then return end
 
-            self:reset_trigger_when_too_close_to_swim_goal()
+            self:reset_trigger_when_too_close_to_fly_goal()
 
-            self:track_towards_swim_goal()
+            self:track_towards_fly_goal()
 
-            self:swim()
+            self:fly()
             
         end
     
         function mob:move(dtime, moveresult)
     
-            self:manage_swimming(dtime);
+            self:manage_flying(dtime);
     
             self:interpolate_yaw(dtime)
             self:interpolate_pitch(dtime)
