@@ -164,6 +164,8 @@ return function(definition)
         local new_yaw = lerp(self.yaw_start, self.yaw_end, self.yaw_interpolation_progress)
         new_yaw = new_yaw + self.yaw_adjustment
         local oldRotation = self.object:get_rotation()
+        ---Can be null!
+        if (not oldRotation) then return end
         oldRotation.y = new_yaw
         self.object:set_rotation(oldRotation)
     end
@@ -204,6 +206,8 @@ return function(definition)
         new_pitch = new_pitch + self.pitch_adjustment
 
         local oldRotation = self.object:get_rotation()
+        ---Can be null!
+        if (not oldRotation) then return end
         oldRotation.x = new_pitch;
 
         self.object:set_rotation(oldRotation)
