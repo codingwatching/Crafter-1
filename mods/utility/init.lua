@@ -181,7 +181,7 @@ local p3 = vector.new(0,0,0);
 ---@param pos1 table Starting point.
 ---@param pos2 table Ending point.
 ---@return number number Pitch in radians.
-utility.dir_to_pitch = function(pos1, pos2)
+utility.dir_to_pitch = function(pos1, pos2, invert)
 
     p1.x = pos1.x;
     p1.y = 0;
@@ -206,11 +206,15 @@ utility.dir_to_pitch = function(pos1, pos2)
     -- print(dump2(p3))
 
     ---@immutable
-    local yawIn90DegreeRotation = -minetest.dir_to_yaw(p3);
+    local yawIn90DegreeRotation = minetest.dir_to_yaw(p3);
+    
+    if (invert) then
+        yawIn90DegreeRotation = yawIn90DegreeRotation * -1.0;
+    end
 
     -- print("distance:", distanceComponent)
     -- print("height:", heightComponent)
     -- print("yaw:", yawIn90DegreeRotation)
 
-    return yawIn90DegreeRotation - HALF_PI;
+    return yawIn90DegreeRotation + HALF_PI;
 end
