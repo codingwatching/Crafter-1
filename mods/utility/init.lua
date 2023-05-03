@@ -206,15 +206,13 @@ utility.dir_to_pitch = function(pos1, pos2, invert)
     -- print(dump2(p3))
 
     ---@immutable
-    local yawIn90DegreeRotation = minetest.dir_to_yaw(p3);
+    
     
     if (invert) then
-        yawIn90DegreeRotation = yawIn90DegreeRotation * -1.0;
+        local yawIn90DegreeRotation = -minetest.dir_to_yaw(p3);
+        return yawIn90DegreeRotation - HALF_PI;
+    else
+        local yawIn90DegreeRotation = minetest.dir_to_yaw(p3);
+        return yawIn90DegreeRotation + HALF_PI;
     end
-
-    -- print("distance:", distanceComponent)
-    -- print("height:", heightComponent)
-    -- print("yaw:", yawIn90DegreeRotation)
-
-    return yawIn90DegreeRotation + HALF_PI;
 end
